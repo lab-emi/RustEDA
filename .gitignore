@@ -1,0 +1,13 @@
+/target/
+/.work/
+*.rea.backup*
+__pycache__/
+*.py[cod]
+/examples/tiny/*_tt.lib
+/experiments/gui-evaluation/target/
+
+AGENTS.md
+
+agents.md
+
+HANDOFF.md

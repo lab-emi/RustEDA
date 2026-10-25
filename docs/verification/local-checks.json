@@ -1,0 +1,63 @@
+{
+  "schema": "rustlane.local-checks.v1",
+  "date": "2026-10-23",
+  "host_scope": "Linux x86_64; source and existing native binaries on this machine",
+  "guards": {
+    "cgroup_memory_max_gib": 16,
+    "cgroup_swap_max_gib": 4,
+    "cargo_jobs": 2,
+    "rust_test_threads": 2,
+    "build_test_wall_seconds": 180,
+    "tcl_wall_seconds": 30
+  },
+  "release": {
+    "raw_receipt": ".work/release-build.time",
+    "exit_code": 0,
+    "wall_time": "0:10.91",
+    "peak_rss_kib": 278236,
+    "binary_sha256": "2ce1d10da1330e99092e4a83aebd46e8d8eb78f28a33133cfb6c748430c2b0e9"
+  },
+  "standard_tests": {
+    "raw_receipt": ".work/qa-tests.time",
+    "exit_code": 0,
+    "wall_time": "0:02.36",
+    "peak_rss_kib": 192048,
+    "passed": 22,
+    "failed": 0,
+    "ignored": 6,
+    "ignored_scope": "5 process helper entrypoints exercised by passing tests; Tcl test explicitly selected separately"
+  },
+  "explicit_tcl_test": {
+    "raw_receipt": ".work/qa-tcl.time",
+    "exit_code": 0,
+    "wall_time": "0:00.04",
+    "peak_rss_kib": 36640,
+    "passed": 1,
+    "failed": 0
+  },
+  "clippy": {
+    "raw_receipt": ".work/qa-clippy.time",
+    "exit_code": 0,
+    "wall_time": "0:00.43",
+    "peak_rss_kib": 214296,
+    "warnings_as_errors": true
+  },
+  "formatting": "cargo fmt --all -- --check",
+  "source_sha256": {
+    "Cargo.toml": "76bf00b3fb0e224c970fe0bad6afc0fc48bebe0dd74a64138d6cc588b0f6f658",
+    "Cargo.lock": "6bff750bb266a769dd584cab331e6050f01311512a6249716fccd51229fe5974",
+    "rust-toolchain.toml": "559f488c181e0e9e77cf17c29de663977f036ec7ff2e2060585714bf53c52d62",
+    "src/config.rs": "633c2bc9fb816bd137b7ea15f33d0c60a151f8c097462aab795555b5f4d7135b",
+    "src/engine.rs": "1ad59b7b76d57de8072c593af0fde18480fc5822bf4372cd303fe5d4d4efbd08",
+    "src/error.rs": "43e87313dc411c603eb27c9da38ba44a0b5e02e4ea7ff0a49b7d280535d09d15",
+    "src/flow.rs": "6b1325b5617109c623d8c23a72b67b8484f9a00532a98c08df95a41c2ac08f4a",
+    "src/lib.rs": "3a151bca6af6c685cfb14ebfd2292287c851469c84a0edd0c6bb0ee26271d4a0",
+    "src/main.rs": "676364a9996e140c30d5460a01398fe39e4318557f5a0601a7dbf697f247f815",
+    "src/process.rs": "43b9992026dae028a4eb4588e40770bef4c9388bb2c83873763022bca70cb74a",
+    "src/workspace.rs": "636729a7dd922882852c233fbe09440092c3c44be00c67e14808b9bbc6f83cf8"
+  },
+  "limitations": [
+    "Test timing includes Cargo invocation overhead. RSS is GNU time maximum, not aggregate concurrent process-family RSS.",
+    "No OpenROAD real-PDK, extracted-parasitic STA, DRC/LVS or full-chip qualification is established."
+  ]
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="64" viewBox="0 0 440 64" role="img" aria-labelledby="title desc"><title id="title">RustLane</title><desc id="desc">Reproducible execution of the design loop</desc><g transform="scale(.25)"><rect width="256" height="256" rx="54" fill="#101923"/>
+<g fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<path d="M83 48H48V83M48 173V208H83" stroke="#EF8B52"/>
+<path d="M173 48H208V83M208 173V208H173" stroke="#57D6BE"/>
+<g stroke="#F4F1E9"><polyline points="71,105 111,105 111,151 151,151 151,105 187,105"/><polyline points="187,140 187,186 71,186 71,143"/></g></g></g><text x="80" y="44" font-family="DejaVu Sans,sans-serif" font-size="32" font-weight="700" fill="#F4F1E9">RustLane</text></svg>

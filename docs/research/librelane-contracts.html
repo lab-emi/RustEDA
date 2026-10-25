@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LibreLane → RustLane：研究与接口契约</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Noto Sans CJK SC",sans-serif;color:#172536;background:#f2f5f8;line-height:1.7}
+    *{box-sizing:border-box}body{margin:0}main{max-width:1080px;margin:auto;padding:44px 24px 64px}h1{font-size:clamp(1.8rem,4vw,2.7rem);letter-spacing:-.04em;line-height:1.2;margin:0 0 18px}h2{font-size:1.35rem;line-height:1.4;margin:36px 0 12px}p{margin:10px 0 16px}a{color:#075d89;text-underline-offset:3px}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88em}code{overflow-wrap:anywhere;background:#eaf0f5;padding:1px 4px;border-radius:3px}pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:18px;background:#13283c;color:#eaf3ff;border-radius:8px;line-height:1.6}header{border-bottom:2px solid #1f759c;padding-bottom:24px}.evidence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}.evidence div{background:white;padding:16px;border:1px solid #d7e2eb;border-radius:8px}.evidence strong{display:block;font-size:1.2em}.evidence span{color:#475a6c;font-size:.9em}.notice{border-left:4px solid #c28429;background:#fff8ea;padding:15px 18px;margin:20px 0}.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.93em;background:#fff}th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid #dce5ec}th{background:#e5edf4}td:first-child{font-weight:600;min-width:125px}ol,ul{padding-left:22px}li{margin:7px 0}.source{font-size:.9em;color:#475a6c}.flow{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0}.flow span{background:#dfeef4;padding:7px 12px;border-radius:5px}.flow b{align-self:center;color:#4b657c}footer{margin-top:38px;padding-top:18px;border-top:1px solid #cddae5;font-size:.88em;color:#475a6c}@media(max-width:650px){main{padding:30px 16px}.evidence{grid-template-columns:1fr}th,td{padding:10px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>LibreLane → RustLane</h1>
+    <p>RustLane 应当是由 Rust 编写、可追溯和可恢复的 ASIC 流程执行器。综合由 RustSys 执行，时序分析由 RustSTA 执行；流程编排、设计状态和工具适配各有明确边界。</p>
+    <p>以下内容是对 LibreLane 公开契约的研究及 RustLane 的设计建议，并不表示已完成完整 RTL-to-GDS 实现或运行等价验证。</p>
+    <div class="evidence">
+      <div><strong>LibreLane 3.0.16</strong><span>固定提交 a09d248c49bd · Apache-2.0</span></div>
+      <div><strong>REA 6.7.0</strong><span>397 个文件完成哈希，目录清单为 partial</span></div>
+      <div><strong>5.16 秒 / 279 MiB</strong><span>本次 REA 调用耗时与最大 RSS，非 EDA 性能</span></div>
+    </div>
+    <p class="source">证据：<a href="rea-librelane-summary.json">REA 原始摘要</a> · <a href="provenance.json">提交、源文件哈希与资源收据</a> · <a href="https://github.com/librelane/librelane/tree/a09d248c49bd1f7170d41885936f63e4255b1fe5">LibreLane 固定源码</a></p>
+  </header>
+
+  <h2>真正需要重建的是流程契约</h2>
+  <p>LibreLane 把流程分成 Flow、Step、Configuration、State 四个概念。State 保存设计视图的路径及度量；Step 接收配置与输入状态，产生新的状态。SequentialFlow 按顺序连接这些状态。这个结构足以指导独立设计，无须移植 Python 类体系。</p>
+  <div class="flow" aria-label="状态转换"><span>已验证配置</span><b>+</b><span>输入 State</span><b>→</b><span>有界 Step 执行</span><b>→</b><span>新 State 与收据</span></div>
+  <p>文档要求 Step 不原地修改输入文件、不修改输入配置，只使用配置和输入状态显式列出的文件，并把新产物写入自己的目录。随机过程需要固定种子。RustLane 可据此采用不可变产物、明确输入哈希和独立步骤目录。</p>
+  <p class="source">来源：<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/reference/architecture.md">固定版 Architectural Overview</a>。这是文档约束，未通过本次运行验证其全部实现行为。</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>边界</th><th>LibreLane 的公开行为</th><th>RustLane 的建议契约</th></tr></thead>
+      <tbody>
+        <tr><td>配置</td><td>JSON、YAML、Tcl 经验证后形成解析后的配置；流程变量由步骤变量汇集而成。</td><td>先提供严格 JSON schema；未知语义、Tcl、表达式或未实现的条件键必须明确报错。保存完整解析结果和哈希。</td></tr>
+        <tr><td>设计状态</td><td>不同格式分别保存，例如网表、SDC、DEF、GDS；多 corner 产物可以嵌套组织。</td><td>格式、路径、内容哈希、corner 与生成步骤一并记录。工作区使用锁、base revision 和 mmap 侧表；句柄保持 shell 安全。</td></tr>
+        <tr><td>步骤输出</td><td>每步目录保存配置、输入/输出状态、命令、工具日志、运行时间及资源统计。</td><td>工具版本、可执行文件身份、argv、输入/输出哈希、退出码、wall time、峰值 RSS、诊断均进入收据。失败步骤不能推进成功状态。</td></tr>
+        <tr><td>恢复</td><td><code>--from</code>、<code>--to</code>、<code>--skip</code>、<code>--only</code> 配合输入状态快照控制执行区间。</td><td>恢复前核验必需视图及哈希、配置、PDK 和引擎身份；缺少前序产物时拒绝执行。跳过步骤不能凭空生成成功度量。</td></tr>
+        <tr><td>复现</td><td><code>resolved.json</code> 可再次用于同一流程；步骤可生成问题复现包。</td><td>固定 RustEDA 提交、工具与 PDK 修订、种子、线程数、corner、wire model 和预算；区分内容身份与机器路径/耗时等变化。</td></tr>
+        <tr><td>度量</td><td>步骤更新 metrics，最终导出 JSON/CSV；时序报告按 IPVT corner 组织。</td><td>缺少分析时记录 <code>unchecked</code>/<code>unverified</code>。时序必须含 corner、wire model、未约束端点，禁止用 0 表示未运行的 DRC 或时序结果。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="source">来源：<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/reference/configuration.md">配置文档</a>、<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/getting_started/migrants/index.md">迁移与输出文档</a>、<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/getting_started/newcomers/index.md">步骤目录和时序报告</a>。RustLane 列为本项目建议。</p>
+
+  <h2>Classic 流程的工作范围</h2>
+  <p>固定提交的 Classic 声明包含从检查、综合、布局布线到签核的步骤。下面按产物归并；实际步骤还包括天线修复、断连检查、PDN 检查和可选优化。它们不能因为综合及 STA 已接通而被算作完成。</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>阶段</th><th>输入 → 输出</th><th>RustLane 实施边界</th></tr></thead>
+      <tbody>
+        <tr><td>检查与综合</td><td>RTL、Liberty、约束 → 映射网表及综合诊断</td><td>使用 RustSys；不自动回退到 Yosys/ABC。转换正确性需 CEC 或黑盒差分证据。</td></tr>
+        <tr><td>布局前 STA</td><td>映射网表、Liberty、SDC → 时序报告</td><td>使用 RustSTA；显式说明 wire model，拒绝静默忽略约束或 Liberty 语义。</td></tr>
+        <tr><td>Floorplan / PDN</td><td>LEF、网表、物理配置 → DEF、供电网络</td><td>需要独立物理工具适配、PDK 技术层与单元视图；坐标为整数 DBU。</td></tr>
+        <tr><td>Placement / CTS</td><td>Floorplan、网表 → 放置结果、时钟网络</td><td>物理步骤单独建设；中间 STA 仍由 RustSTA 承担。时序驱动优化需要额外接口契约。</td></tr>
+        <tr><td>Routing / RCX</td><td>布局与技术规则 → 布线 DEF、SPEF</td><td>需要全局/详细布线器及寄生提取器；每个提取 corner 保存独立身份。</td></tr>
+        <tr><td>布局后 STA</td><td>最终网表、SDC、Liberty、SPEF → 多 corner 时序</td><td>使用 RustSTA；每个 corner 独立记录，验证增量与全量一致。</td></tr>
+        <tr><td>Stream-out / 签核</td><td>物理结果与 PDK deck → GDS、DRC、LVS 报告</td><td>需要实际流片格式与签核工具。未执行时保持 unchecked，不能声称已完成 RTL-to-GDS。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="source">来源：<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/librelane/flows/classic.py">Apache-2.0 Classic 步骤声明</a>、<a href="https://librelane.readthedocs.io/en/stable/reference/flows.html#classic">公开 Classic 文档</a>。只读取编排声明，未读取任何参考 EDA 引擎的实现源码。</p>
+  <div class="notice">Classic 不仅在开始与结束执行 STA：它在布局、CTS、布线期间反复执行中间 STA，并包含时序修复。仅替换前后报告不足以证明全部时序工作已使用 RustSTA。接入 OpenROAD 物理工具时，还需明确其内部时序驱动路径；未经确认的路径应保持未支持状态。</div>
+
+  <h2>Sky130 与 GF180 必须同时进入验收</h2>
+  <p>LibreLane 文档列出 Sky130 与 GF180 支持，默认 Sky130 单元库为 <code>sky130_fd_sc_hd</code>，GF180 的默认金属栈变体为 <code>gf180mcuD</code>。这些是 LibreLane 的兼容说明，并非本次对 RustLane 的 PDK 验证结果。</p>
+  <p>LibreLane 使用 Open PDKs 生成工具可用视图，并通过 Ciel 管理固定修订。手工 PDK 需要技术级和 SCL 级配置，以及步骤所需的额外变量。单独下载 Liberty 无法提供布图、RCX、DRC、LVS 和 stream-out 所需的全套数据。</p>
+  <p class="source">来源：<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/usage/about_pdks.md">固定版 PDK 文档</a>。该文档仍含“2.4/dev”旧文字；版本判断以本次固定提交的 <a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/pyproject.toml">pyproject.toml 3.0.16</a> 为准。</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>验收项</th><th>Sky130</th><th>GF180</th></tr></thead>
+      <tbody>
+        <tr><td>基础库</td><td><code>sky130_fd_sc_hd</code></td><td><code>gf180mcu_fd_sc_mcu7t5v0</code> 或 <code>gf180mcu_fd_sc_mcu9t5v0</code></td></tr>
+        <tr><td>综合</td><td colspan="2">固定 RTL、Liberty 与映射选项；RustSys 结果执行独立 CEC/黑盒检查；记录端到端时间和 QoR。</td></tr>
+        <tr><td>STA</td><td colspan="2">同一网表/SDC/Liberty/SPEF 下比较 RustSTA 全量、增量结果；与固定版本 OpenSTA 黑盒差分。逐 corner 报告误差和容限。</td></tr>
+        <tr><td>物理阶段</td><td colspan="2">核验技术/单元 LEF、GDS、RCX 规则、DRC/LVS deck 的实际存在及哈希；需要的 PDK Tcl 脚本不等于已支持的配置解析。</td></tr>
+        <tr><td>运行边界</td><td colspan="2">共享不可变解析库，限制 corner × 线程并发；每次大规模运行前估算内存，使用 cgroup/timeout、time -v；缺少工具或数据记录 unverified。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>时序 corner 应保存 PVT 与互连 corner 的明确对应，不能根据文件名猜测。比如 SPEF 常按互连条件组织，Liberty 描述单元的 PVT 条件；两者需在运行配置中显式组合。</p>
+  <p class="source">来源：<a href="https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/usage/timing_corners.md">Timing Corners</a>。上表验收要求来自本项目 AGENTS.md；两种 GF180 SCL 均需使用实际取得的合法 PDK 数据验证。</p>
+
+  <h2>REA 实际做了什么</h2>
+  <p>按用户要求调用了固定版本 <code>rea-agents@6.7.0 import-reference-source</code>。该工具给出 <code>HistoricalSourceSummary</code>，记录文件内容身份、语言分类、Git HEAD 与局限。它不是反编译结果，也没有执行 LibreLane。</p>
+  <ul>
+    <li>实际观察：397 个普通文件完成哈希，82 个目录，11,994,940 字节，0 个已解析关系，0 个解析失败。Python 语义未分析。</li>
+    <li>清单状态：<code>partial</code>，默认排除 <code>.git/</code>。两个测试子模块未初始化，其内容没有进入清单。</li>
+    <li>身份：Git HEAD 为 <code>a09d248c49bd1f7170d41885936f63e4255b1fe5</code>；REA 的 <code>dirty:null</code> 原样保留。另行执行 Git 状态检查，观察到工作树干净。</li>
+    <li>限制：REA 指出路径校验仍有 syscall 边界竞态；摘要不是可供源码对包比较的完整图。npm 注册表签名元数据已保存，未独立验签。</li>
+  </ul>
+  <p class="source">证据：<a href="rea-librelane-summary.json">未经改写的 REA JSON</a>、<a href="provenance.json">独立 provenance</a>。Manifest ID 与 root/graph SHA-256 均保存在这两个文件中。</p>
+
+  <h2>下一步的具体完成标准</h2>
+  <ol>
+    <li>执行器：配置严格验证，工作区锁与 revision 冲突可测试；失败或超限不会提交成功状态；输出和输入不可变。</li>
+    <li>真实引擎：以 RustSys 和 RustSTA 的实际公开接口建立适配；保存实际输出，不以空报告或模拟后端充当分析成功。</li>
+    <li>恢复：引擎中断后可从已验证状态继续；输入、配置、PDK 或引擎身份变化会阻止无效重用。</li>
+    <li>正确性：综合通过独立 CEC，STA 通过全量/增量与双 PDK OpenSTA 差分；工具缺失与测试未覆盖分别列出。</li>
+    <li>物理流程：逐阶段接入真实产物及签核，验证后再声明对应阶段支持。端到端时间包含状态读写、数据准备及工具同步。</li>
+  </ol>
+  <p>本次研究已回答流程结构、配置/状态/步骤契约、恢复与复现需求、Classic 阶段及双 PDK 接入条件。LibreLane 运行行为、RustLane 兼容性、实际 PDK 正确性、性能 QoR、DRC/LVS 和时序精度尚未由本次研究验证。</p>
+  <footer>2026-10-23 · 完整本地收据位于 <code>.work/research/</code>，参考检出位于 <code>.work/reference/librelane/</code>。仅阅读公开文档与 Apache-2.0 编排声明；未读取、移植或比较 Yosys、ABC、OpenSTA 等参考引擎实现。</footer>
+</main>
+</body>
+</html>

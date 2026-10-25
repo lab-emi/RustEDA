@@ -1,0 +1,36 @@
+name: RustLane
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  rust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CARGO_BUILD_JOBS: 2
+      RUST_TEST_THREADS: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Toolchain
+        run: rustup toolchain install 1.97.1 --profile minimal --component rustfmt --component clippy
+      - name: Memory preflight
+        run: free -h
+      - name: Formatting
+        run: cargo fmt --all -- --check
+      - name: Lints
+        shell: bash
+        run: |
+          ulimit -v 16777216
+          timeout 180s cargo clippy --locked --all-targets -- -D warnings
+      - name: Bounded tests
+        shell: bash
+        run: |
+          ulimit -v 16777216
+          /usr/bin/time -v timeout 180s cargo test --locked --all-targets
+      - name: Verify explicit Tcl literals
+        shell: bash
+        run: |
+          ulimit -v 16777216
+          /usr/bin/time -v timeout 30s cargo test --locked --test tcl_literals -- --ignored
