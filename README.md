@@ -1,6 +1,6 @@
 # RustEDA
 
-RustEDA 全系列的开发入口，聚合 RustSys、RustSTA、RustROAD、RustLane 和 RustEDA-Studio。
+RustEDA 全系列的开发入口，聚合五个产品项目及它们共同依赖的 RustEDA-Common。
 各模块保留独立 Git 历史和 Cargo 构建；本仓库固定它们的组合版本，管理 agent 约定与跨仓验证。
 
 ## 开始开发
@@ -15,7 +15,7 @@ cd RustEDA
 ./dev doctor
 ~~~
 
-RustEDA、RustROAD、RustLane 和 Studio 当前是私有仓库。克隆者需要这些仓库的访问权限，
+RustEDA、RustEDA-Common、RustROAD、RustLane 和 Studio 当前是私有仓库。克隆者需要这些仓库的访问权限，
 GitHub 的普通单仓 GITHUB_TOKEN 不会自动获得其他私有仓库的权限。
 
 先阅读 [AGENTS.md](AGENTS.md) 和 [HANDOFF.md](HANDOFF.md)。模块选择与接口边界见
@@ -27,8 +27,8 @@ GitHub 的普通单仓 GITHUB_TOKEN 不会自动获得其他私有仓库的权�
 ./dev init                         # 按 gitlink 初始化，不追逐远端最新分支
 ./dev status --json
 ./dev doctor                       # 开发环境、固定版本、共享文件完整性
-./dev shared                       # RustSys / RustSTA 一致性；Studio 单独报告
-./dev shared --include-studio       # 第二阶段的严格收敛目标，目前预期失败
+./dev shared                       # 共享源哈希、三个消费者的固定版本和锁文件
+./dev test RustEDA-Common           # 在唯一的共享实现上运行测试
 ./dev fmt all
 ./dev check RustSys RustSTA
 ./dev test RustLane
@@ -73,7 +73,8 @@ RustLane 负责产品的运行时流程，本仓库负责开发与集成。
 ## 当前范围
 
 - 五个模块接入并可从同一目录开发。
-- 共享代码仍在子仓内；RustSys 与 RustSTA 应保持一致，Studio 收敛留到下一阶段。
+- 四个共享库及公共 CLI 实现在 RustEDA-Common，消费者通过同一 Git 提交依赖。
+- 各产品保留薄 CLI 入口与本地回归测试；编辑方式见 [共享库工作流](docs/shared-foundation.md)。
 - 原目录里的 RustLane 未提交工作没有被自动合并，见接入记录。
 - PDK、参考工具、大型缓存与实验数据留在 Git 外，工具模板见 integration/tools.example.toml。
 - 根仓 CI 验证开发辅助脚本；不会将其结果称作 EDA 验证通过。

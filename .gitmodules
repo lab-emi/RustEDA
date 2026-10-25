@@ -13,3 +13,6 @@
 [submodule "modules/RustEDA-Studio"]
 	path = modules/RustEDA-Studio
 	url = git@github.com:lab-emi/RustEDA-Studio.git
+[submodule "modules/RustEDA-Common"]
+	path = modules/RustEDA-Common
+	url = git@github.com:lab-emi/RustEDA-Common.git

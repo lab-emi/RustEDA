@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import tomllib
 
 ROOT = Path(__file__).resolve().parent
 HASH_BUDGET = 64 * 1024 * 1024
@@ -217,13 +218,61 @@ def shared(all_modules: list[Module], include_studio: bool = False) -> dict:
     studio = inventories["RustEDA-Studio"]
     differences = sorted(p for p in reference.keys() | studio.keys()
                          if reference.get(p) != studio.get(p))
-    return {
+    result = {
         "ok": sta_ok and (not include_studio or not differences),
         "rustsys_ruststa_equal": sta_ok,
         "verified_files": {name: len(paths) for name, paths in inventories.items()},
         "studio": {"state": "pending_convergence" if differences else "converged",
                    "different_paths": len(differences), "examples": differences[:10]},
     }
+    if "RustEDA-Common" in by_name:
+        common = by_name["RustEDA-Common"]
+        common_state = state(common)
+        if common_state["state"] == "uninitialized":
+            raise DevError("UNINITIALIZED_MODULE", "Initialize RustEDA-Common first")
+        if common_state["head"] != common.expected:
+            raise DevError("FOUNDATION_REVISION", "Foundation checkout differs from its gitlink")
+        canonical = hashes(common)
+        url = "ssh://git@github.com/lab-emi/RustEDA-Common.git"
+        expected_packages = {
+            "rusteda-core": "rusteda-core",
+            "rusteda-workspace": "rusteda-workspace",
+            "rusteda-compute": "rusteda-compute",
+            "rusteda-formats": "rusteda-formats",
+            "rusteda-cli-shared": "rusteda-cli-common",
+        }
+        consumers = {}
+        for name in inventories:
+            module = by_name[name]
+            config = tomllib.loads((module.path / "Cargo.toml").read_text())
+            dependencies = config.get("workspace", {}).get("dependencies", {})
+            for key, package in expected_packages.items():
+                dep = dependencies.get(key, {})
+                if (not isinstance(dep, dict) or dep.get("git") != url
+                        or dep.get("rev") != common.expected
+                        or dep.get("package", key) != package):
+                    raise DevError("FOUNDATION_PIN_MISMATCH",
+                                   f"{name}: {key} must use the recorded foundation revision")
+            for group, package in (
+                ("core", "rusteda-core"), ("core", "rusteda-workspace"),
+                ("core", "rusteda-compute"), ("formats", "rusteda-formats"),
+            ):
+                if (module.path / "crates" / group / package / "Cargo.toml").exists():
+                    raise DevError("DUPLICATE_FOUNDATION", f"{name} retains a local {package}")
+            lock = tomllib.loads((module.path / "Cargo.lock").read_text())
+            sources = [p.get("source", "") for p in lock.get("package", [])
+                       if p.get("name") in expected_packages.values()]
+            if not sources or any(not source.startswith("git+" + url + "?rev=" + common.expected)
+                                  or not source.endswith("#" + common.expected)
+                                  for source in sources):
+                raise DevError("FOUNDATION_LOCK_MISMATCH", f"{name}: stale or local foundation lock entry")
+            consumers[name] = common.expected
+        result["ok"] = sta_ok and not differences
+        result["foundation"] = {
+            "revision": common.expected, "verified_files": len(canonical),
+            "consumers": consumers, "state": common_state["state"],
+        }
+    return result
 
 
 def cargo_binary() -> Path:

@@ -1,5 +1,63 @@
 # RustEDA integration handoff
 
+## 2026-10-25 — Phase 2 shared foundation completed
+
+- The owner explicitly chose a private foundation repository: https://github.com/lab-emi/RustEDA-Common.
+  The fixed foundation revision is 7e78e705908a3475018ab39df94b94423e158a13.
+- Four library implementations and the shared CLI now have one source. RustSys, RustSTA and
+  Studio consume the same Git revision and retain thin product CLI adapters. Their original
+  versions, command outputs and workspace history are preserved. No EDA algorithm changed.
+- Consumer commits are on feat/shared-foundation: RustSys 6012cf66e333c0719ba44c13dda33746193e6406,
+  RustSTA 9bfafdc3cc1d59a3330e269d26f844f667c78a93,
+  Studio 084aeb453268fbfd3fe621eeb62e8588aa7ae597. Original child main branches and sibling
+  workspaces, including the original RustLane WIP, remain unchanged.
+- Final results: Common 403 passed / 10 ignored; RustSys 467 / 6; RustSTA 411 / 17;
+  Studio headless 136 / 2; Studio GUI test platform 63 / 0; root safety tests 12 / 0.
+  Layout, shared manifests, requirement coverage and Clippy pass for all affected consumers.
+- The 161 original library files are byte-identical. All original shared test functions were
+  retained (401 each for RustSys/RustSTA, 327 for Studio). Canonical manifest: 267 files;
+  consumer adapter/specification manifests: 36 files each and identical.
+- Frozen pre-migration CLIs and new CLIs match on 10 commands x 2 pinned PDKs for both products,
+  including raw table hashes, exported netlists, errors and history. The wrong-product-version
+  negative control is rejected. Studio reads both resulting workspaces with the expected hierarchy
+  and explicitly reports timing not_analyzed.
+- Full evidence: integration/evidence/shared-foundation.json and docs/shared-foundation-validation.md.
+  Raw logs, binaries and library data remain under .work/phase2 and are not published as source.
+
+### Scope and known baseline issue
+
+- Source, license and version policy checks pass for Common/RustSys/RustSTA. Studio passes
+  source/version checks but its pre-existing license allowlist rejects cbindgen/MPL-2.0,
+  dwrote/MPL-2.0 and libfuzzer-sys/NCSA. The unchanged Studio baseline reproduces all three.
+  No license rule was relaxed. This remains a separate release-policy issue.
+- Common private CI passed: https://github.com/lab-emi/RustEDA-Common/actions/runs/40157777739 .
+  Do not inject private foundation credentials into public workflow logs or caches. Full cross-repo
+  CI belongs in a private integration environment; public child mains were not migrated.
+- This is packaging/API compatibility evidence, not new timing-accuracy, RTL-to-GDS, CUDA/Metal
+  or real desktop-rendering signoff. Stage 3 remains RustLane integration and explicit tool/PDK setup.
+
+### Budgets and lessons
+
+- Upfront source budget: linear hashing, at most 10,000 paths / 64 MiB, expected <128 MiB RAM.
+  No new graph paths, cuts, cones or solver clauses are materialized.
+- Builds ran serially behind .work/scale.lock with two build jobs/two test threads, 8 GiB RAM +
+  2 GiB swap and finite deadlines. Maximum observed child RSS including compilation was
+  2,057,184 KiB, below 2 GiB. Measurements use scripts/measure.py because GNU time is absent.
+- Use PATH/rustup discovery: the old /home/cgao/.cargo/bin/cargo path is gone, but /usr/bin/cargo
+  still selects Rust 1.97.1. Frozen sibling binaries and original target directories were untouched.
+- Test fixtures, coverage and verification plans must locate shared source through Cargo metadata;
+  checking old product-local paths can omit suites or fail source guards. A regression checks this.
+- Shared manifests sort by the repository-relative string, not pathlib component ordering.
+  Use the product's cargo xtask shared update to obtain the canonical ordering.
+- Studio's old >100-local-shared-files assertion was replaced with explicit canonical-source and
+  duplicate-source checks. Source relocation must not be papered over by lowering a count threshold.
+- Product documentation helpers use each product's required copyright header. They are not one of
+  the verbatim shared implementation files.
+- Studio's unconditional GPUI dev-dependency compiles even for headless tests. Preserve the populated
+  phase-2 targets; GUI-test feature isolation is future work, not grounds to skip current validation.
+- Saved CLI basenames affect clap help. The parity harness uses identical argv[0] via executable=,
+  and normalizes only timestamps and machine-specific paths, never versions or semantic results.
+
 ## 2026-10-25 — Initial superproject
 
 - User authorized implementing the reviewed aggregation plan at ~/git/RustEDA.

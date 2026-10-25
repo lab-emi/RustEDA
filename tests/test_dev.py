@@ -148,6 +148,53 @@ class DevSafety(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(value["code"], "SHARED_HASH_MISMATCH")
 
+    def foundation_fixture(self):
+        names = ("RustEDA-Common", "RustSys", "RustSTA", "RustEDA-Studio")
+        root, _ = fixture(self.base / "foundation", names, shared=True)
+        revision = git(root / "modules/RustEDA-Common", "rev-parse", "HEAD")
+        url = "ssh://git@github.com/lab-emi/RustEDA-Common.git"
+        for name in names[1:]:
+            path = root / "modules" / name
+            declarations = ["[workspace.dependencies]"]
+            for package in ("rusteda-core", "rusteda-workspace", "rusteda-compute", "rusteda-formats"):
+                declarations.append(f'{package} = {{ git = "{url}", rev = "{revision}" }}')
+            declarations.append(
+                f'rusteda-cli-shared = {{ package = "rusteda-cli-common", git = "{url}", rev = "{revision}" }}')
+            (path / "Cargo.toml").write_text("\n".join(declarations) + "\n")
+            (path / "Cargo.lock").write_text(
+                f'[[package]]\nname = "rusteda-core"\nversion = "0.1.0"\n'
+                f'source = "git+{url}?rev={revision}#{revision}"\n')
+        return root
+
+    def test_canonical_revision_is_checked_in_manifests(self):
+        root = self.foundation_fixture()
+        code, value = self.dev("shared", root=root)
+        self.assertEqual(code, 0, value)
+        manifest = root / "modules/RustSTA/Cargo.toml"
+        text = manifest.read_text()
+        revision = value["foundation"]["revision"]
+        manifest.write_text(text.replace(revision, "a" * 40))
+        code, value = self.dev("shared", root=root)
+        self.assertEqual(code, 1)
+        self.assertEqual(value["code"], "FOUNDATION_PIN_MISMATCH")
+
+    def test_copied_foundation_cannot_silently_return(self):
+        root = self.foundation_fixture()
+        path = root / "modules/RustSys/crates/core/rusteda-core"
+        path.mkdir(parents=True)
+        (path / "Cargo.toml").write_text('[package]\nname = "rusteda-core"\n')
+        code, value = self.dev("shared", root=root)
+        self.assertEqual(code, 1)
+        self.assertEqual(value["code"], "DUPLICATE_FOUNDATION")
+
+    def test_lockfile_must_resolve_the_canonical_revision(self):
+        root = self.foundation_fixture()
+        path = root / "modules/RustEDA-Studio/Cargo.lock"
+        path.write_text('[[package]]\nname = "rusteda-core"\nversion = "0.1.0"\n')
+        code, value = self.dev("shared", root=root)
+        self.assertEqual(code, 1)
+        self.assertEqual(value["code"], "FOUNDATION_LOCK_MISMATCH")
+
 
 if __name__ == "__main__":
     unittest.main()

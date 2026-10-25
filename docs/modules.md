@@ -7,6 +7,7 @@
 | RustROAD | modules/RustROAD | 物理设计、布局布线、提取、GDS |
 | RustLane | modules/RustLane | 持久化流程编排与外部进程管理 |
 | RustEDA-Studio | modules/RustEDA-Studio | 工作区可视化与人机交互 |
+| RustEDA-Common | modules/RustEDA-Common | 共享模型、格式、磁盘工作区、计算内核和公共 CLI |
 
 开始任务先读根 AGENTS.md / HANDOFF.md，再读模块自己的指导文件。若模块的 HANDOFF 没有
 纳入 Git，使用 docs/handoffs/ 中保存的初始历史记录；这些记录中的相对链接按原仓库解释。
@@ -18,9 +19,10 @@
 就把所有模型合并成一个 IR。模块各自维护 Cargo workspace 与 Cargo.lock。
 根目录没有 Cargo.toml，使用 ./dev 选择模块执行。
 
-当前共享层包括 rusteda-core、rusteda-workspace、rusteda-compute、rusteda-formats
-和 rusteda-cli。变更后须检查消费者兼容性及 shared.sha256，不能只更新生产者。
-RustEDA-Studio 的共享快照较旧，是已知的第二阶段工作。
+共享实现集中在 RustEDA-Common，包括 rusteda-core、rusteda-workspace、
+rusteda-compute、rusteda-formats 和 rusteda-cli-common。产品内的 rusteda-cli
+只负责调用共享实现并保留自己的版本信息。变更后须检查消费者兼容性、版本与锁文件，
+不能只更新生产者。
 
 ## 并行开发
 
