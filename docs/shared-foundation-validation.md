@@ -37,3 +37,9 @@ libfuzzer-sys 的 NCSA。这三个结果在未迁移的 Studio 基线上同样�
 
 这次验收不新增 RTL-to-GDS 签核、时序精度、CUDA/Metal 或真实桌面渲染结论。
 下一阶段仍是 RustLane 联合流程与私有跨仓 CI。
+
+## 远端复现
+
+最新版本在一次新的递归浅克隆中验证：六个模块固定提交一致，doctor 通过，三个消费者
+解析到同一个 Common 提交，再次初始化无改动。克隆耗时 40.080 秒，最大子进程 RSS
+146,664 KiB。[开发入口 CI](https://github.com/lab-emi/RustEDA/actions/runs/40159524460)也已通过。

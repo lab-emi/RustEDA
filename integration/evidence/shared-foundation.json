@@ -233,7 +233,24 @@
     "native desktop rendering validation"
   ],
   "ci": {
-    "common": "https://github.com/lab-emi/RustEDA-Common/actions/runs/40157777739"
+    "common": "https://github.com/lab-emi/RustEDA-Common/actions/runs/40157777739",
+    "development_entrypoint": "https://github.com/lab-emi/RustEDA/actions/runs/40159524460"
   },
-  "original_sibling_workspaces": "preserved"
+  "original_sibling_workspaces": "preserved",
+  "remote_acceptance": {
+    "root_revision": "d82d8b24504f0718b54bf3f7d8eaf68f6e040529",
+    "pinned_modules": 6,
+    "doctor": "passed",
+    "cargo_sources": "same pinned foundation in all three consumers",
+    "repeated_initialization": "no-op",
+    "resources": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 40.079626,
+      "maximum_resident_set_size_kib": 146664,
+      "user_seconds": 1.888037,
+      "system_seconds": 0.662561,
+      "exit_code": 0
+    }
+  }
 }

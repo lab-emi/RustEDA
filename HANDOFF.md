@@ -24,6 +24,19 @@
 - Full evidence: integration/evidence/shared-foundation.json and docs/shared-foundation-validation.md.
   Raw logs, binaries and library data remain under .work/phase2 and are not published as source.
 
+### Remote acceptance and Git tracking lesson
+
+- Development-entrypoint CI passed on d82d8b2:
+  https://github.com/lab-emi/RustEDA/actions/runs/40159524460 .
+- A new recursive shallow clone at d82d8b2 reproduced all six pins, passed doctor, resolved the
+  same Common revision in all consumer Cargo metadata, and performed a no-op initialization.
+  Clone time: 40.080 seconds; max child RSS: 146,664 KiB. Use .work/phase2/remote-clone-final
+  for this receipt, not the earlier attempt made before root publication.
+- Initial module clones used single-branch fetch refspecs. Git push --recurse-submodules=check
+  could not see already-published feature commits through those local tracking refs. The local
+  integration checkouts now fetch refs/heads/* and explicitly fetched the feature branches;
+  the recursive push check passed. No check was bypassed and no original sibling config changed.
+
 ### Scope and known baseline issue
 
 - Source, license and version policy checks pass for Common/RustSys/RustSTA. Studio passes
