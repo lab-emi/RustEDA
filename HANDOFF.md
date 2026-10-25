@@ -1,5 +1,52 @@
 # RustEDA integration handoff
 
+## 2026-10-25 — Claude status-report closeout, in progress
+
+- User requested auditing and finishing the unfinished work in RustEDA-status-2026-10-25.md
+  before starting the next phase. Do not start the new RustLane integration phase yet.
+- Root, RustROAD and RustSTA work is isolated on fix/claude-closeout. Original sibling
+  repositories and their existing uncommitted work remain untouched.
+- Scope and status are tracked in docs/closeout/STATUS.md; the original report and accepted
+  owner decisions are preserved alongside it.
+- Prioritize the six failing RTL-to-GDS rows: GF180 DRV and the explicitly approved MPW
+  declaration rule. A declaration requires all three existing evidence conditions; it must not
+  silently turn a timing mismatch into an ordinary pass.
+- The original report's headline miscounts its own matrix: 10/16 passed and six failed,
+  not 11/16 and five. Compute counts from the rows, never copy the old headline.
+- The migration README confirms original large scratch (raw netlists/SPEF/GDS/logs) was
+  deleted before this task. Retained summaries and frozen binaries are historical evidence;
+  regenerate missing raw observations before making a current acceptance claim.
+- Reference tools remain black-box only. Their source and rule-deck internals must not be used
+  to explain discrepancies. Legal/foundry/independent-human signoff cannot be self-certified.
+
+### Upfront resource budget
+
+- Audit reads and source comparisons: <128 MiB, bounded file inventories and streamed hashes.
+- Small regression designs: at most about 5,000 pins / 20,000 arcs, three corners and two
+  test workers. Even at 256 bytes of per-pin/tag state and 128 bytes per arc, this is tens of MiB;
+  immutable PDK tables dominate. Existing bounded graph/path/solver work limits remain active.
+- For physical gates, plan up to 8 million routing-grid states at 16–64 bytes each (128–512 MiB),
+  plus bounded frontiers, PDK/library data and subprocesses. Historical small-design runs were
+  below 1 GiB per child; retain a 2 GiB child target and an 8 GiB aggregate cgroup where possible.
+- Builds use two Cargo jobs; tests use two threads. Heavy verification is serialized with
+  .work/scale.lock, explicit memory/swap and wall-clock caps, with measured peak child RSS.
+- SERV/OpenC910 scale tests require a separate estimate from the actual graph/input size.
+  Do not start them by extrapolating the small-design budget or by removing hard limits.
+- The reviewed DRV candidate runs in an immutable separate worktree. At most three GF180
+  gates run concurrently, each with the existing 2 GiB child process limits and two tool
+  threads. Estimated combined peak is <=6 GiB plus controller state; the entire group is
+  capped at 8 GiB RAM / 2 GiB swap, serialized behind the global scale lock.
+- The first physical batch includes a SKY130 FIFO before the three GF180 candidates, still
+  at most three concurrent gates, so fresh MPW data is available while DRV runs continue.
+  MPW probe work is separately capped: at most 8 nets, 64 perturbations per net, 32 MiB SPEF,
+  10,000 circuit nodes / 50,000 elements and 16 MiB logs; no path enumeration is introduced.
+  Separate rise/fall reference steps require per-row brackets, with shared cached observations.
+  A single-net prototype used 511 MiB peak child RSS; each probe stays inside a 2 GiB scope.
+- Final qualification uses the same three-runner bound for all 16 design/PDK pairs, behind
+  the global scale lock, with an 8 GiB / 2 GiB swap scope and a 7,200 second group deadline.
+  Latch-polarity and RC probes have fewer than 100 electrical nodes each; their 1–2 GiB
+  process scopes measured below 400 MiB. They do not justify any large-design memory claim.
+
 ## 2026-10-25 — Phase 2 shared foundation completed
 
 - The owner explicitly chose a private foundation repository: https://github.com/lab-emi/RustEDA-Common.

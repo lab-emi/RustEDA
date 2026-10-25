@@ -78,5 +78,6 @@ RustLane 负责产品的运行时流程，本仓库负责开发与集成。
 - 原目录里的 RustLane 未提交工作没有被自动合并，见接入记录。
 - PDK、参考工具、大型缓存与实验数据留在 Git 外，工具模板见 integration/tools.example.toml。
 - 根仓 CI 验证开发辅助脚本；不会将其结果称作 EDA 验证通过。
+- Claude 遗留工作的核查、收尾验证与仍待解决的事项见 [收尾记录](docs/closeout/STATUS.md)。
 
 License: Apache-2.0。各子模块继续遵循自己的 LICENSE 与 NOTICE。
