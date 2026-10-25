@@ -87,8 +87,9 @@ def available():
 
 
 def cleanup(r):
-    details = dict(schema="rusteda.worker-cleanup.v1", request_id=r["request_id"], errors=[], removed=[])
-    unit = r["unit"]
+    # systemctl otherwise appends .service, but systemd-run --scope creates .scope.
+    unit = r["unit"]+".scope"
+    details = dict(schema="rusteda.worker-cleanup.v1", request_id=r["request_id"], unit=unit, errors=[], removed=[])
     description = "RustEDA worker "+r["request_id"]
     try:
         probe = command(["systemctl","--user","show",unit,"--property=LoadState,ActiveState,Description"])
@@ -174,7 +175,7 @@ def execute(path, expected):
     available()
     r = request(path,expected)
     directory = Path(r["cwd"])
-    probe = command(["systemctl","--user","is-active",r["unit"]])
+    probe = command(["systemctl","--user","is-active",r["unit"]+".scope"])
     if probe.stdout.strip() in ("active","activating","deactivating"):
         raise ValueError("worker unit already exists")
     stdout,stderr = directory/"worker.stdout",directory/"worker.stderr"

@@ -26,15 +26,54 @@
 
 ## 实施前资源预算
 
-- 编排元数据不超过 128 步；文件清单最多 4096 项、深度 32，每项约 256 B，
+- 编排元数据不超过 128 步；捕获文件最多 1024 项，每棵目录树最多扫描 4096 项、深度 32，每项约 256 B，
   加上最多 16 MiB 报告和解析副本，控制器预计低于 128 MiB RSS。
 - 所有文件身份通过 64 KiB 缓冲区流式计算；按文件/总字节限制捕获输入，不枚举图路径。
 - 真实小设计沿用已验收的 RustROAD 预算：不超过约 5000 pins / 20000 arcs，三个角、
   两个工具线程；内部阶段保留各自边界。历史最大单工具 RSS 约 520 MiB。
-- 构建用两个 Cargo jobs、两个测试线程，4 GiB 内存/1 GiB swap/有限时限。
+- 构建用两个 Cargo jobs、两个测试线程，4 GiB 内存/2 GiB swap/有限时限。
   完整物理 worker 用 8 GiB 内存/2 GiB swap、3600 秒范围，取得 `.work/scale.lock`，
   双 PDK验证串行；其内部 Podman/工具限制继续生效。
 - 协议与取消测试使用微型进程，预计低于 256 MiB；每个测试有独立时限和内存边界。
 - 每次重型运行前检查 `free -h`；用现有 GNU time 或 `scripts/measure.py` 记录实际 RSS。
 
 尚未扩展到 GUI、工业规模设计、晶圆厂签核或此前仍未关闭的数值研究问题。
+
+## 使用与恢复
+
+根目录 README 提供单设计命令。完整的本地验收可以重复执行，但每次使用新目录：
+
+```sh
+systemd-run --user --scope -p MemoryMax=2G -p MemorySwapMax=1G \
+  timeout 2400s python3 integration/verify_phase3_flow.py --out .work/new-flow-check
+systemd-run --user --scope -p MemoryMax=2G -p MemorySwapMax=1G \
+  timeout 180s python3 integration/verify_worker_control.py \
+  --out .work/new-worker-check --with-root-flow
+```
+
+外层范围约束验收控制器；每个实际 worker 另有 8 GiB / 2 GiB swap 范围和有限时限，
+容器保留生产者配置的独立内存上限。报告的 RSS 是所观测到的单个进程/工具/容器峰值，
+不是所有容器的瞬时内存总和。根目录开发构建助手的 swap 上限为 2 GiB。
+
+`run` 完成后使用它返回的 `new_rev`。进程被强杀时，先检查
+`.work/integration/active-worker.json` 和工作区 `HEAD`，再运行：
+
+```sh
+./dev flow --workspace PATH recover --base-rev revN
+./dev flow --workspace PATH run --base-rev revNext --retry-failed
+```
+
+恢复根据本次请求的进程范围和容器标签清理，不猜测 PID，也不清理其他任务。
+如果生产者输入已变化，仍可完成清理并提交失败记录，后续使用新工作区。
+
+## 私有 CI 环境
+
+`.github/workflows/physical-flow.yml` 是手动触发模板，使用 `rusteda-qualified` 专用 Linux runner。
+它需要预先配置跨私有仓库的 SSH 只读访问、用户 systemd manager、rootless Podman、固定 OCI
+镜像、工具清单匹配的可执行文件及 `RUSTEDA_GNU_TIME`。工具可以通过 PATH 或本机工具别名找到。
+PDK 路径仍由 RustROAD 固定的 signoff manifest 指定；其他机器必须提供相同的受验数据路径，
+不能只改 manifest 的哈希或跳过校验来获得通过。
+
+用户已确认本阶段先完成本地验收，并交付可启用的 CI 模板。
+本阶段未自动部署 runner、下载工具/PDK 或创建凭据。普通根仓 CI 只验证编排安全；
+RustLane CI 验证 Rust 合约、进程和 Tcl 字面量。完整物理 CI 在配置 runner 前为 `unverified`。

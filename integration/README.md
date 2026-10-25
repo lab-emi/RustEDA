@@ -24,4 +24,5 @@ tools.example.toml 是配置模板而非已完成的工具锁定；填写路径�
 
 `./dev tools configure` / `verify` 提供当前 RustROAD 固定配置的本机锁定与身份验证。
 `verify_phase3_flow.py` 通过根目录 CLI 执行双 PDK、完整生产者门禁、缓存复用和陈旧版本拒绝；
-`verify_worker_control.py` 只验证实际容器的取消和恢复，不能作为 EDA 数值 oracle。
+`verify_worker_control.py` 验证实际容器的取消和恢复；`--with-root-flow` 还覆盖根入口、
+全局任务登记、RustLane 修订和显式重试。它们不能作为 EDA 数值 oracle。

@@ -56,6 +56,8 @@ def case(root,kind,podman,python,image):
                 if process.poll() is not None:raise RuntimeError("controller exited before test container: "+err.read_text())
                 time.sleep(.1)
             else:raise RuntimeError("owned test container did not become active")
+            if cmd(["systemctl","--user","is-active",r["unit"]+".scope"])!="active":
+                raise RuntimeError("owned process scope was not active before cancellation")
             process.send_signal(signal.SIGTERM if kind=="sigterm" else signal.SIGKILL)
             process.wait(timeout=45)
         if kind=="sigkill":
@@ -76,9 +78,81 @@ def case(root,kind,podman,python,image):
             process.kill();process.wait(timeout=10)
 
 
+def root_flow_case(root, podman, tools):
+    """Exercise the real root CLI, registry, RustLane revisions and producer."""
+    W.require_idle(ROOT)
+    workspace=root/"root-flow"
+    prefix=[str(ROOT/"dev"),"flow","--workspace",str(workspace),"--tools",str(tools)]
+    def invoke(label,args):
+        output=root/(label+".json");errors=root/(label+".stderr")
+        with output.open("x") as out, errors.open("x") as err:
+            p=subprocess.run(prefix+args,stdin=subprocess.DEVNULL,stdout=out,stderr=err,timeout=180)
+        return p.returncode,read_json(output,16*1024**2)
+    code,initial=invoke("root-init",["init","--base-rev","empty","--design","counter","--pdk","gf180"])
+    if code or not initial["ok"]:raise RuntimeError("root lifecycle initialization failed")
+    rev=initial["new_rev"];observations=[]
+    for kind in ["sigterm","sigkill"]:
+        argv=["run","--base-rev",rev]+(["--retry-failed"] if observations else [])
+        output=root/("root-"+kind+".json");errors=root/("root-"+kind+".stderr")
+        active=None;process=None
+        try:
+            with output.open("x") as out, errors.open("x") as err:
+                process=subprocess.Popen(prefix+argv,stdin=subprocess.DEVNULL,stdout=out,stderr=err,start_new_session=True)
+                deadline=time.monotonic()+40
+                while time.monotonic()<deadline:
+                    registry=W.active_file(ROOT)
+                    if registry.exists():
+                        r=read_json(registry)
+                        if r.get("status")=="active" and r.get("workspace")==str(workspace):
+                            active=r
+                            owned=cmd([podman,"ps","--filter",f"label={W.LABEL}={r['request_id']}","--format","{{.ID}}"])
+                            if owned:break
+                    if process.poll() is not None:raise RuntimeError("root controller exited before container start")
+                    time.sleep(.1)
+                else:raise RuntimeError("root-owned container did not become active")
+                if cmd(["systemctl","--user","is-active",active["unit"]+".scope"])!="active":
+                    raise RuntimeError("root process scope was not active before cancellation")
+                process.send_signal(signal.SIGTERM if kind=="sigterm" else signal.SIGKILL)
+                process.wait(timeout=45)
+            if kind=="sigterm":
+                value=read_json(output,16*1024**2)
+                if value.get("status")!="failed":raise RuntimeError("root cancellation did not commit failure")
+            else:
+                rev=(workspace/"HEAD").read_text().strip()
+                code,blocked=invoke("root-blocked",["run","--base-rev",rev,"--retry-failed"])
+                if code==0 or (workspace/"HEAD").read_text().strip()!=rev:
+                    raise RuntimeError("crashed caller did not block new work")
+                code,value=invoke("root-recover",["recover","--base-rev",rev])
+                if value.get("status")!="failed":raise RuntimeError("explicit recovery did not commit failure")
+            rev=value["new_rev"]
+            if W.active_file(ROOT).exists() and read_json(W.active_file(ROOT))["status"]!="closed":
+                raise RuntimeError("successful cleanup did not close the registry")
+            request=Path(active["request"])
+            receipt=read_json(request.parent/"worker-receipt0.json")
+            if not receipt["cleanup_verified"] or not receipt["cancelled"]:
+                raise RuntimeError("root cancellation lacks verified cleanup")
+            observations.append(dict(signal=kind,revision=rev,receipt=receipt))
+            code,blocked=invoke("root-retry-required-"+kind,["run","--base-rev",rev])
+            if code==0 or blocked.get("code")!="FAILED_STEP":
+                raise RuntimeError("failed root flow did not require explicit retry")
+        finally:
+            if process is not None and process.poll() is None:
+                process.terminate();process.wait(timeout=45)
+            registry=W.active_file(ROOT)
+            if active and registry.exists() and read_json(registry).get("status")=="active":
+                current=(workspace/"HEAD").read_text().strip()
+                invoke("root-emergency-recover-"+kind,["recover","--base-rev",current])
+    code,report=invoke("root-report",["report"])
+    if code or report["summary"]["complete"] or report["stages"][0]["attempts"]!=2:
+        raise RuntimeError("root lifecycle final state differs")
+    return dict(status="passed",cases=observations,attempts=2,final_revision=rev)
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--out',type=Path,required=True)
-    p.add_argument('--tools',type=Path,default=ROOT/'.work/integration/toolchain.json');a=p.parse_args()
+    p.add_argument('--tools',type=Path,default=ROOT/'.work/integration/toolchain.json')
+    p.add_argument('--with-root-flow',action='store_true',help='also capture full producer inputs and test the root CLI lifecycle')
+    a=p.parse_args()
     root=a.out.resolve();root.mkdir(parents=True,exist_ok=False)
     lock=read_json(a.tools);podman=lock['programs']['podman']['path'];python=lock['programs']['python']['path']
     image=read_json(lock['signoff_manifest']['path'])['images']['iic_osic_tools']['id']
@@ -93,6 +167,10 @@ def main():
             result['cases'][kind]=case(root,kind,podman,python,image)
             if cmd([podman,'inspect','--format','{{.State.Running}}',sentinel])!='true':
                 raise RuntimeError('unrelated sentinel was affected')
+        if a.with_root_flow:
+            result['root_flow']=root_flow_case(root,podman,a.tools)
+            if cmd([podman,'inspect','--format','{{.State.Running}}',sentinel])!='true':
+                raise RuntimeError('root lifecycle test affected unrelated sentinel')
         result['unrelated_container_preserved']=True;result['status']='passed'
     except Exception as error:
         result['error']=str(error)

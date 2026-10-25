@@ -44,6 +44,7 @@ class WorkerSafety(unittest.TestCase):
         with mock.patch.object(worker_control,"command",command):result=worker_control.cleanup(r)
         self.assertFalse(result["verified"])
         self.assertFalse(any("stop" in c for c in calls))
+        self.assertTrue(all(r["unit"]+".scope" in c for c in calls if c[0]=="systemctl"))
 
     def test_cleanup_requires_matching_container_label(self):
         _,r=self.request();calls=[]

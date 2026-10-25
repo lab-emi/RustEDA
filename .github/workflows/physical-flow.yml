@@ -48,7 +48,7 @@ jobs:
           systemd-run --user --scope --quiet -p MemoryMax=2G -p MemorySwapMax=1G
           timeout --signal=TERM --kill-after=30s 180s
           python3 scripts/measure.py --output "$RUSTEDA_CI_OUT-worker.resources.json" --
-          python3 integration/verify_worker_control.py --out "$RUSTEDA_CI_OUT-worker"
+          python3 integration/verify_worker_control.py --out "$RUSTEDA_CI_OUT-worker" --with-root-flow
       - name: Acceptance summary
         if: always()
         run: |

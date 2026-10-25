@@ -12,6 +12,27 @@
   that protection to launch Podman. Keep revision checks, explicit ownership and fail-closed
   cleanup state. Use the qualified RustROAD protocol instead of stale WIP signoff assumptions.
 
+### Phase 3 implementation lessons
+
+- `systemd-run --scope --unit NAME` creates `NAME.scope`; a bare `systemctl NAME`
+  queries `NAME.service`. Always use the explicit scope suffix. Early lifecycle
+  probes that did not assert the actual scope was active are superseded; the final
+  probe asserts an active `.scope` before both SIGTERM and SIGKILL.
+- Podman force removal still has a default stop delay. Use `rm --force --time 0`
+  only after verifying this request's label, and keep an unrelated sentinel alive
+  in lifecycle tests. Never remove containers by broad process/name guesses.
+- An OS file lock disappears when the caller is killed. Persist the active request
+  as well; block new heavy work until exact ownership is recovered and verified.
+- Changed producer inputs must not prevent ownership recovery. Record a failed
+  result after cleanup; never promote changed inputs or unknown cleanup to success.
+- A cache must check both content hashes and a freshly bounded dependency list.
+  Newly added script/PDK tree files otherwise bypass checking old input identities.
+- The qualified producer runs two tool threads. Reject other advertised settings;
+  retain block-level scope, exclusions and declared deviations in compact reports.
+- RustLane initially fetched only feat/postroute-signoff. Expand the integration
+  checkout's fetch refspec and fetch the published feature ref before recursive
+  push checks. The original sibling's Git config and working files stay untouched.
+
 ## 2026-10-25 — Claude closeout qualification completed
 
 - Qualified all 16 baseline pairs: 15 ordinary passes and 1 explicit MPW deviation;
