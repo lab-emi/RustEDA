@@ -16,6 +16,13 @@
 - The migration README confirms original large scratch (raw netlists/SPEF/GDS/logs) was
   deleted before this task. Retained summaries and frozen binaries are historical evidence;
   regenerate missing raw observations before making a current acceptance claim.
+- Current final qualification is `.work/closeout/qualify-final.py`, with results written
+  incrementally to `.work/closeout/accepted-results.json`. It uses the immutable worktree
+  `.work/closeout/qualified-road-final2` at 1f86687baaf7e6753addb9351b83f3561fd714f4.
+  Do not edit that worktree while the runs are active. The earlier 17fb611 cohort is recorded
+  as superseded: it caught the non-faulty dense hold mutation, the mult circuit-vote failure,
+  and regfile's endpoint/annotation issues. Both revised clock-load pilots pass their normal
+  timing and physical checks; full controls and deterministic rebuilds are now running.
 - Reference tools remain black-box only. Their source and rule-deck internals must not be used
   to explain discrepancies. Legal/foundry/independent-human signoff cannot be self-certified.
 
@@ -46,6 +53,11 @@
   the global scale lock, with an 8 GiB / 2 GiB swap scope and a 7,200 second group deadline.
   Latch-polarity and RC probes have fewer than 100 electrical nodes each; their 1–2 GiB
   process scopes measured below 400 MiB. They do not justify any large-design memory claim.
+- The full 17fb611 run rejected mult/SKY130's declaration: some independently characterized
+  circuit points do not favor RustSTA. Preserve that failure. A bounded physical pilot halves
+  clock-leaf fanout (8 -> 4), improving load/slew without touching the SDC or parity threshold.
+  One extra pilot is estimated below 1 GiB RSS and capped at 3 GiB / 512 MiB swap / 1,200 s;
+  the existing three-runner cohort remains capped at 8 GiB. Available host RAM was 64 GiB.
 
 ## 2026-10-25 — Phase 2 shared foundation completed
 

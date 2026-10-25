@@ -4,18 +4,18 @@
   "scope": "supporting checks, not the final 16-row qualification",
   "checks": {
     "road_python_helpers": {
-      "result": "135 passed; no skipped local checks",
+      "result": "137 passed locally",
       "resources": {
         "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
         "rss_scope": "maximum_individual_child_rss_not_aggregate",
-        "wall_seconds": 2.762501,
-        "maximum_resident_set_size_kib": 336604,
-        "user_seconds": 1.8175629999999998,
-        "system_seconds": 0.099257,
+        "wall_seconds": 2.833638,
+        "maximum_resident_set_size_kib": 334572,
+        "user_seconds": 1.870244,
+        "system_seconds": 0.093652,
         "exit_code": 0
       },
-      "raw_receipt": ".work/closeout/python-policy-ci.resources.json",
-      "receipt_sha256": "cff6d72657541d273c187c538bf67fe7689f66bf45c1561617a971ed2c9d26cc"
+      "raw_receipt": ".work/closeout/python-final.resources.json",
+      "receipt_sha256": "570849ec5e58c45f3c24165597f63e8f3336ba3d4481d1126e15d8fc33a57b6c"
     },
     "sta_latch_cli": {
       "result": "5 passed",
@@ -170,8 +170,8 @@
   "independent_review": "pending; not self-certified",
   "ci": {
     "scope": "verification harness unit tests; not full physical signoff",
-    "revision": "17fb611f809085da733d5abbf52f4cd38cbdf1a5",
+    "revision": "1f86687baaf7e6753addb9351b83f3561fd714f4",
     "status": "passed",
-    "url": "https://github.com/lab-emi/RustROAD/actions/runs/40161786384"
+    "url": "https://github.com/lab-emi/RustROAD/actions/runs/40163108785"
   }
 }
