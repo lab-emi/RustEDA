@@ -1,0 +1,9 @@
+{
+  "schema": "rusteda.source-publication.v1",
+  "source_revision": "084aeb453268fbfd3fe621eeb62e8588aa7ae597",
+  "rust_source_files": 54,
+  "rust_source_manifest_sha256": "5ac6cea1d36694ee0c581aa4279cc07ff0c72effb0b166ced6c76eef5dd4f4cb",
+  "history": "Publication snapshot; original history retained by the maintainer.",
+  "licenses": "See LICENSE, NOTICE and per-fixture provenance.",
+  "verification": "Existing receipts retain their original revisions; this packaging change is not a new EDA validation."
+}

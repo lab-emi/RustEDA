@@ -1,0 +1,13 @@
+# Generated build outputs and local scratch work.
+/target/
+/.work/
+
+# Documentation tooling caches.
+__pycache__/
+*.py[cod]
+
+AGENTS.md
+
+agents.md
+
+HANDOFF.md

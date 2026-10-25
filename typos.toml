@@ -1,0 +1,6 @@
+[default.extend-words]
+# Hardware description vocabulary that spell checkers flag.
+wor = "wor"
+nand = "nand"
+inout = "inout"
+iff = "iff"
