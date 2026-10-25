@@ -12,12 +12,12 @@ authors = ["RustEDA Studio contributors"]
 repository = "https://github.com/lab-emi/RustEDA-Studio"
 
 [workspace.dependencies]
-rusteda-core = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c7038fd9ce672cc98efbabd23d094886e66313fc" }
-rusteda-workspace = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c7038fd9ce672cc98efbabd23d094886e66313fc" }
-rusteda-compute = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c7038fd9ce672cc98efbabd23d094886e66313fc" }
-rusteda-formats = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c7038fd9ce672cc98efbabd23d094886e66313fc" }
+rusteda-core = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-workspace = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-compute = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-formats = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
 rusteda-cli = { path = "crates/apps/rusteda-cli" }
-rusteda-cli-shared = { package = "rusteda-cli-common", git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c7038fd9ce672cc98efbabd23d094886e66313fc" }
+rusteda-cli-shared = { package = "rusteda-cli-common", git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
 clap = { version = "=4.6.7", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "color", "suggestions"] }
 clap_complete = { version = "=4.6.11", default-features = false }
 # Terminal size for the progress line of the command line. `windows`: crossterm does not compile
