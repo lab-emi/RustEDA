@@ -1,8 +1,23 @@
 # RustEDA integration handoff
 
-## 2026-10-25 — Phase 3 in progress
+## 2026-10-25 — Phase 3 local acceptance completed
 
 - User explicitly requested starting Phase 3. Scope and upfront budgets: docs/phase3.md.
+- Final evidence: integration/evidence/phase3.json. Root implementation 94d9695;
+  RustLane 321e71350f230c6bde9cd5416782146ede5046d3. The final three full flows are
+  counter/SKY130, counter/GF180 and fifo/SKY130: two ordinary passes and one retained
+  MPW deviation declaration, all 25 producer gates present and no failed/unverified gate.
+- Final verifier revalidated all cached outputs and dependency inventories; zero work,
+  unchanged rev2. Full init+run times: 109.273 / 151.883 / 237.357 s. Maximum observed
+  individual worker/tool/container RSS: 511.20 MiB; no aggregate-RSS claim.
+- Root tests: 20 passed. RustLane: 31 passed plus the separately executed real Tcl test;
+  five child-fixture entrypoints are exercised indirectly. Formatting, Clippy and Lane CI pass.
+- Actual SIGTERM/SIGKILL probes assert the owning scope is active before cancellation.
+  Root CLI reaches rev4 across two preserved attempts, requires explicit retry/recovery,
+  and keeps an unrelated sentinel container alive. Final worker registry is closed.
+- Owner explicitly chose local acceptance plus an enableable private CI template.
+  Full physical CI remains unverified until a configured runner exists; do not install
+  a daemon, create credentials, or describe bootstrap CI as physical validation.
 - Root branch feat/phase3-flow; RustLane branch feat/rustroad-worker.
 - Original RustLane WIP is preserved without modifying the sibling in local archive branch
   archive/postroute-wip-20261025 at 26bdfeab2426b2270f608b2ef27a9511a669cfdd.
