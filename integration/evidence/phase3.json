@@ -1,0 +1,778 @@
+{
+  "schema": "rusteda.phase3-acceptance.v1",
+  "date": "2026-10-25",
+  "status": "passed_local",
+  "owner_decision": "Complete local acceptance and deliver an enableable private CI template; no runner deployment or credentials requested.",
+  "implementation": {
+    "root": "94d9695ae24f402a7127b4c31f867bfd4f2bfe1a",
+    "rustlane": "321e71350f230c6bde9cd5416782146ede5046d3",
+    "rustroad": "a6ea5063fc39e1419b760901f1918328f73f065c",
+    "full_flow_root": "0cb77cc6305518296edba339d8d55dbc995f5ef0",
+    "full_flow_rustlane": "63aa965ffe1bfd897e3a7e2a52ec3c6ec567ead8",
+    "note": "Final RustLane adds stricter dependency-inventory/thread validation and richer summaries; all three outputs were revalidated with its release binary."
+  },
+  "cases": [
+    {
+      "case": "counter:sky130",
+      "status": "passed",
+      "gate_count": 25,
+      "gate_status_counts": {
+        "passed": 25
+      },
+      "endpoint_max_difference_ps": 0.6067952089967577,
+      "pulse_max_difference_ps": 0.08644752908026909,
+      "declared_pulse_rows": 0,
+      "wall_seconds": {
+        "init": 3.877274120983202,
+        "run": 105.3954327860265,
+        "init_plus_run": 109.2727069070097,
+        "final_contract_cache": 0.9754666480002925
+      },
+      "peak_worker_rss_kib": 502620,
+      "revision": "rev2",
+      "cache_executed_steps": 0,
+      "cache_revision": "rev2",
+      "analysis_scope": {
+        "backend": "cpu",
+        "clock_model": "propagated",
+        "corner": "tt",
+        "corners": [
+          "tt",
+          "ss",
+          "ff"
+        ],
+        "coupling": "grounded_factor_1",
+        "cppr": "off",
+        "delay_calculator": "nldm_ceff_ramp",
+        "drc_status": "unchecked",
+        "drv_rules": {
+          "clock_limits": "paths"
+        },
+        "parasitics": "spef",
+        "physical_clock_domains": 1,
+        "precision": "f64",
+        "pulse_rules": {
+          "groups": "worst",
+          "pins": "all"
+        },
+        "wire_load": null,
+        "wire_model": "spef_rc"
+      },
+      "qualification_scope": {
+        "antenna": "native check-antenna with a 0.10 safety margin + foundry deck (deck is the signoff gate)",
+        "async_reset_pulse_width": "unchecked: minimum pulse width of asynchronous set/clear inputs is a requirement on the reset source outside the block (pins listed per PDK in mpw_min_period); their recovery/removal checks are timed",
+        "clocks": "propagated, RustROAD CTS",
+        "cppr": "unchecked",
+        "density": "reported separately (density_status); not part of the gate (owner decision)",
+        "electromigration": "unchecked",
+        "ir_drop": "unchecked",
+        "level": "block/macro",
+        "ocv": "unchecked",
+        "pad_ring": "not_applicable (block level, no pad ring)",
+        "seal_ring": "not_applicable (block level, no seal ring)",
+        "signal_integrity": "unchecked (coupling grounded)"
+      },
+      "unconstrained_endpoints": 0,
+      "summary": ".work/phase3/final-flow/counter-sky130/steps/rtl2gds/attempt1/output/summary.json",
+      "summary_sha256": "3f5cab80e96d1fa8a3ac940ac8c116b6c5c4e04941980b99497088c4eb402f1e",
+      "binding_digest": "1d25e0ca2680254cb1fe78354affc94f42ff2a27287027f251d02714f9d1fcfd",
+      "producer_revision": {
+        "head": "a6ea5063fc39e1419b760901f1918328f73f065c",
+        "branch": "fix/claude-closeout",
+        "dirty": false,
+        "dirty_paths": 0,
+        "dirty_digest": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+        "rustroad_sha256": "b24b60b839e96c83b71a6d0b37cf5563347598f5fb75d20acbc92833199ab275",
+        "rustroad_path": "/home/cgao/git/RustEDA/.work/target/RustROAD/release/rustroad"
+      }
+    },
+    {
+      "case": "counter:gf180",
+      "status": "passed",
+      "gate_count": 25,
+      "gate_status_counts": {
+        "passed": 25
+      },
+      "endpoint_max_difference_ps": 0.1242088389341936,
+      "pulse_max_difference_ps": 0.014487103610072438,
+      "declared_pulse_rows": 0,
+      "wall_seconds": {
+        "init": 3.275311111996416,
+        "run": 148.6072420689743,
+        "init_plus_run": 151.88255318097072,
+        "final_contract_cache": 0.9549821389955468
+      },
+      "peak_worker_rss_kib": 457736,
+      "revision": "rev2",
+      "cache_executed_steps": 0,
+      "cache_revision": "rev2",
+      "analysis_scope": {
+        "backend": "cpu",
+        "clock_model": "propagated",
+        "corner": "tt",
+        "corners": [
+          "tt",
+          "ss",
+          "ff"
+        ],
+        "coupling": "grounded_factor_1",
+        "cppr": "off",
+        "delay_calculator": "nldm_ceff_ramp",
+        "drc_status": "unchecked",
+        "drv_rules": {
+          "clock_limits": "paths"
+        },
+        "parasitics": "spef",
+        "physical_clock_domains": 1,
+        "precision": "f64",
+        "pulse_rules": {
+          "groups": "worst",
+          "pins": "all"
+        },
+        "wire_load": null,
+        "wire_model": "spef_rc"
+      },
+      "qualification_scope": {
+        "antenna": "native check-antenna with a 0.10 safety margin + foundry deck (deck is the signoff gate)",
+        "async_reset_pulse_width": "unchecked: minimum pulse width of asynchronous set/clear inputs is a requirement on the reset source outside the block (pins listed per PDK in mpw_min_period); their recovery/removal checks are timed",
+        "clocks": "propagated, RustROAD CTS",
+        "cppr": "unchecked",
+        "density": "reported separately (density_status); not part of the gate (owner decision)",
+        "electromigration": "unchecked",
+        "ir_drop": "unchecked",
+        "level": "block/macro",
+        "ocv": "unchecked",
+        "pad_ring": "not_applicable (block level, no pad ring)",
+        "seal_ring": "not_applicable (block level, no seal ring)",
+        "signal_integrity": "unchecked (coupling grounded)"
+      },
+      "unconstrained_endpoints": 0,
+      "summary": ".work/phase3/final-flow/counter-gf180/steps/rtl2gds/attempt1/output/summary.json",
+      "summary_sha256": "090c01ea6f38cda7643fadee4365aecf7f24f557b879b7424cfbbc603883676f",
+      "binding_digest": "390be18d9610d4b475028425a96e4dce9f62693d99bccfb6f2f4f110d1d00d51",
+      "producer_revision": {
+        "head": "a6ea5063fc39e1419b760901f1918328f73f065c",
+        "branch": "fix/claude-closeout",
+        "dirty": false,
+        "dirty_paths": 0,
+        "dirty_digest": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+        "rustroad_sha256": "b24b60b839e96c83b71a6d0b37cf5563347598f5fb75d20acbc92833199ab275",
+        "rustroad_path": "/home/cgao/git/RustEDA/.work/target/RustROAD/release/rustroad"
+      }
+    },
+    {
+      "case": "fifo:sky130",
+      "status": "deviation_declared",
+      "gate_count": 25,
+      "gate_status_counts": {
+        "passed": 24,
+        "deviation_declared": 1
+      },
+      "endpoint_max_difference_ps": 0.6122598625140085,
+      "pulse_max_difference_ps": 1.2791103717413321,
+      "declared_pulse_rows": 15,
+      "wall_seconds": {
+        "init": 3.77806146297371,
+        "run": 233.57941262598615,
+        "init_plus_run": 237.35747408895986,
+        "final_contract_cache": 1.2368411329807714
+      },
+      "peak_worker_rss_kib": 523472,
+      "revision": "rev2",
+      "cache_executed_steps": 0,
+      "cache_revision": "rev2",
+      "analysis_scope": {
+        "backend": "cpu",
+        "clock_model": "propagated",
+        "corner": "tt",
+        "corners": [
+          "tt",
+          "ss",
+          "ff"
+        ],
+        "coupling": "grounded_factor_1",
+        "cppr": "off",
+        "delay_calculator": "nldm_ceff_ramp",
+        "drc_status": "unchecked",
+        "drv_rules": {
+          "clock_limits": "paths"
+        },
+        "parasitics": "spef",
+        "physical_clock_domains": 1,
+        "precision": "f64",
+        "pulse_rules": {
+          "groups": "worst",
+          "pins": "all"
+        },
+        "wire_load": null,
+        "wire_model": "spef_rc"
+      },
+      "qualification_scope": {
+        "antenna": "native check-antenna with a 0.10 safety margin + foundry deck (deck is the signoff gate)",
+        "async_reset_pulse_width": "unchecked: minimum pulse width of asynchronous set/clear inputs is a requirement on the reset source outside the block (pins listed per PDK in mpw_min_period); their recovery/removal checks are timed",
+        "clocks": "propagated, RustROAD CTS",
+        "cppr": "unchecked",
+        "density": "reported separately (density_status); not part of the gate (owner decision)",
+        "electromigration": "unchecked",
+        "ir_drop": "unchecked",
+        "level": "block/macro",
+        "ocv": "unchecked",
+        "pad_ring": "not_applicable (block level, no pad ring)",
+        "seal_ring": "not_applicable (block level, no seal ring)",
+        "signal_integrity": "unchecked (coupling grounded)"
+      },
+      "unconstrained_endpoints": 0,
+      "summary": ".work/phase3/final-flow/fifo-sky130/steps/rtl2gds/attempt1/output/summary.json",
+      "summary_sha256": "df5b8d715dcbaa46523cc5d7a617812f8f8470e788fbd5914f0af14a2ad4b54d",
+      "binding_digest": "629df6772a7eca71ada26d631777c129588e55db22f28c2fa0ef98fc0360bf1c",
+      "producer_revision": {
+        "head": "a6ea5063fc39e1419b760901f1918328f73f065c",
+        "branch": "fix/claude-closeout",
+        "dirty": false,
+        "dirty_paths": 0,
+        "dirty_digest": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+        "rustroad_sha256": "b24b60b839e96c83b71a6d0b37cf5563347598f5fb75d20acbc92833199ab275",
+        "rustroad_path": "/home/cgao/git/RustEDA/.work/target/RustROAD/release/rustroad"
+      }
+    }
+  ],
+  "tests": {
+    "rustlane": {
+      "passed": 31,
+      "ignored_child_fixture_entrypoints": 5,
+      "tcl_literal_passed": 1,
+      "measured": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 18.538281,
+        "maximum_resident_set_size_kib": 352192,
+        "user_seconds": 24.491246,
+        "system_seconds": 0.8472459999999999,
+        "exit_code": 0
+      },
+      "log": ".work/logs/RustLane-test-shw88483.log"
+    },
+    "root": {
+      "passed": 20,
+      "log": ".work/phase3/root-tests-scope.log"
+    },
+    "clippy": {
+      "status": "passed",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 0.569502,
+        "maximum_resident_set_size_kib": 232028,
+        "user_seconds": 0.824352,
+        "system_seconds": 0.16611599999999999,
+        "exit_code": 0
+      }
+    }
+  },
+  "lifecycle": {
+    "status": "passed",
+    "direct_signals": [
+      "sigterm",
+      "sigkill"
+    ],
+    "root_flow": {
+      "status": "passed",
+      "cases": [
+        {
+          "signal": "sigterm",
+          "revision": "rev2",
+          "receipt": {
+            "schema": "rustlane.worker-receipt.v1",
+            "request_sha256": "9f5602625a09318b184c02c710238bd91f12dd109e61b27e2e5f298b817441cc",
+            "exit_code": null,
+            "elapsed_seconds": 1.278969725011848,
+            "peak_rss_kib": null,
+            "timed_out": false,
+            "cancelled": true,
+            "log_limit_exceeded": false,
+            "cleanup_verified": true,
+            "stdout": "/home/cgao/git/RustEDA/.work/phase3/worker-control-accepted/root-flow/steps/rtl2gds/attempt1/worker.stdout",
+            "stderr": "/home/cgao/git/RustEDA/.work/phase3/worker-control-accepted/root-flow/steps/rtl2gds/attempt1/worker.stderr",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "cleanup_report": "/home/cgao/git/RustEDA/.work/phase3/worker-control-accepted/root-flow/steps/rtl2gds/attempt1/worker-receipt0-cleanup.json",
+            "cleanup_sha256": "2e4be433979a8d3a0e82d1d0e9d1b7c6fa0b59fda51e3db5ad5b3736583f8b8b"
+          }
+        },
+        {
+          "signal": "sigkill",
+          "revision": "rev4",
+          "receipt": {
+            "schema": "rustlane.worker-receipt.v1",
+            "request_sha256": "f6a7a768519c130cc791b01bddd7d34509e6f520de2dfc3575a9f49216180e21",
+            "exit_code": 125,
+            "elapsed_seconds": 0.5242614750168286,
+            "peak_rss_kib": null,
+            "timed_out": false,
+            "cancelled": true,
+            "log_limit_exceeded": false,
+            "cleanup_verified": true,
+            "stdout": "/home/cgao/git/RustEDA/.work/phase3/worker-control-accepted/root-flow/steps/rtl2gds/attempt2/worker-receipt0.stdout",
+            "stderr": "/home/cgao/git/RustEDA/.work/phase3/worker-control-accepted/root-flow/steps/rtl2gds/attempt2/worker-receipt0.stderr",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "26a251395bf508167578382c9f24a694e5c7c9dba4f03cad4369e9d1671ef031",
+            "cleanup_report": "/home/cgao/git/RustEDA/.work/phase3/worker-control-accepted/root-flow/steps/rtl2gds/attempt2/worker-receipt0-cleanup.json",
+            "cleanup_sha256": "474b5e943fe38389e778e6a82bdd0ce12f19954cb4f95ce4e1daefea51cc36c1"
+          }
+        }
+      ],
+      "attempts": 2,
+      "final_revision": "rev4"
+    },
+    "unrelated_container_preserved": true,
+    "active_scope_asserted_before_signal": true,
+    "measurement": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 34.631535,
+      "maximum_resident_set_size_kib": 55144,
+      "user_seconds": 6.419285,
+      "system_seconds": 1.619851,
+      "exit_code": 0
+    },
+    "raw": ".work/phase3/worker-control-accepted/result.json"
+  },
+  "ownership_recheck": {
+    "status": "passed",
+    "helper_sha256": "b3a6f18b87758b8461e1325012f62d855793af4b705b2ea4ebd9dcbd713cc32c",
+    "cases": {
+      "counter-sky130": {
+        "before": {
+          "Description": "rusteda-worker-58bf23c4fa4b2545fd50b3dc.scope",
+          "LoadState": "not-found",
+          "ActiveState": "inactive"
+        },
+        "cleanup": {
+          "schema": "rusteda.worker-cleanup.v1",
+          "request_id": "58bf23c4fa4b2545fd50b3dceb57421cce52628e018d4b35b3f87b97410f931d",
+          "unit": "rusteda-worker-58bf23c4fa4b2545fd50b3dc.scope",
+          "errors": [],
+          "removed": [],
+          "scope": "inactive",
+          "containers": "absent",
+          "verified": true
+        }
+      },
+      "counter-gf180": {
+        "before": {
+          "Description": "rusteda-worker-7eee2d5c5d951a76b6f8fb00.scope",
+          "LoadState": "not-found",
+          "ActiveState": "inactive"
+        },
+        "cleanup": {
+          "schema": "rusteda.worker-cleanup.v1",
+          "request_id": "7eee2d5c5d951a76b6f8fb006065966e2f5b1f1fc0957e9bee831c465e9f3889",
+          "unit": "rusteda-worker-7eee2d5c5d951a76b6f8fb00.scope",
+          "errors": [],
+          "removed": [],
+          "scope": "inactive",
+          "containers": "absent",
+          "verified": true
+        }
+      },
+      "fifo-sky130": {
+        "before": {
+          "Description": "rusteda-worker-34e1d0086be28ff64f79729b.scope",
+          "LoadState": "not-found",
+          "ActiveState": "inactive"
+        },
+        "cleanup": {
+          "schema": "rusteda.worker-cleanup.v1",
+          "request_id": "34e1d0086be28ff64f79729bfc30ee33ea05896312d2a35fb9c5d6cc20958233",
+          "unit": "rusteda-worker-34e1d0086be28ff64f79729b.scope",
+          "errors": [],
+          "removed": [],
+          "scope": "inactive",
+          "containers": "absent",
+          "verified": true
+        }
+      }
+    }
+  },
+  "measurements": {
+    "full_flow": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 506.916225,
+      "maximum_resident_set_size_kib": 523472,
+      "user_seconds": 217.58034,
+      "system_seconds": 34.164826,
+      "exit_code": 0
+    },
+    "scope": "maximum observed individual process/tool/container RSS, not aggregate family RSS"
+  },
+  "environment": {
+    "toolchain_sha256": "e0f09be5d4828c18695144efca58293456d47cf4d0766b0d5d5529854682b3a5",
+    "full_run_toolchain_sha256": "c7fd381925673c72212d1d0cc2546c808d7313957a5b5ae0e31710986bddd26f",
+    "programs": {
+      "rustsys": {
+        "path": "/home/cgao/git/RustROAD/.work/tools/rustsys-target/release/rustsys",
+        "sha256": "3de13b3a87deb103f89a3c7456ce9196ccdbf52fd145eab546c1c6e4732be4ae",
+        "version": "rustsys 0.1.0 (runtimes: cpu, cuda)"
+      },
+      "rusteda": {
+        "path": "/home/cgao/git/RustROAD/.work/tools/sta-gate/rusteda",
+        "sha256": "c39dbde459db506ab3731be75900eae93bcb71691d8e4945e05c2013f4cdd11a",
+        "version": "rusteda 0.4.3"
+      },
+      "ruststa": {
+        "path": "/home/cgao/git/RustROAD/.work/tools/sta-gate/ruststa",
+        "sha256": "472de8e8980100310005a817709a68cdda7b376d1fbd51f8ae3ad684aad08fea",
+        "version": "ruststa 0.4.3 (backends: cpu)"
+      },
+      "yosys": {
+        "path": "/home/cgao/tools/yosys/fb535e0ed0e872720d4fc832d1d1dab4ccd2a4d644be5020bca1db7772fb2db6/root/bin/yosys",
+        "sha256": "de10c3ee405ea4bc4b887041b215ee16a517a87dddc420cc6574b20b113d6327",
+        "version": "Yosys 0.70 (git sha1 28ba3cb92, Release, GNU /usr/bin/g++ 16.2.1)"
+      },
+      "verilator": {
+        "path": "/home/cgao/tools/verilator/3c8ae4dcb3387a14268904936faaaa47db7dbe6007f12a03c4294fb6e81ab6f9/root/bin/verilator",
+        "sha256": "098b09b11ba7d3e904ae13d924a9e8dac8ced5c9d7c9beff3b9d36119a417581",
+        "version": "Verilator 5.052 2026-09-05 rev v5.052-61-g983a06a16"
+      },
+      "opensta": {
+        "path": "/home/cgao/.local/share/containers/storage/overlay/c2cc5a7e2baaa2c6bdac6951f759273edbb27a34c710ea4593e43ef22d00e4b8/diff/foss/tools/openroad/bin/sta",
+        "sha256": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b",
+        "version": "3.1.0"
+      },
+      "gnu_time": {
+        "path": "/home/cgao/.local/share/containers/storage/overlay/d1a194c6048338802bb33b89e26ffcad28186a9fdf7082312592e14711add98e/diff/usr/bin/time",
+        "sha256": "3b11dec50514a8473e9f6efa7a34d584d0657538c09988f61b72d38ad4991a10",
+        "version": null
+      },
+      "ngspice": {
+        "path": "/home/cgao/tools/ngspice/872486af34517c75e5a413b2ef30c7fea60ea6d7146ba718f1bc6a5db4a5fe71/root/bin/ngspice",
+        "sha256": "e088057de17fdfe8ea499b11f13a9aaf6f145dc4b1be0f045e583395637f673b",
+        "version": "ngspice-47 (KLU)"
+      },
+      "python": {
+        "path": "/home/cgao/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/bin/python3.13",
+        "sha256": "4ceefc12dbe6f01efa99bf5cf594df33cc8dc45a0ff23c3229e2e955059a374e"
+      },
+      "rustlane": {
+        "path": "/home/cgao/git/RustEDA/.work/target/RustLane/release/rustlane",
+        "sha256": "011ce5cc5c0825e6994edaacc3fee7798a92cd5f988134f3fac5991f50e0a943"
+      },
+      "rustroad": {
+        "path": "/home/cgao/git/RustEDA/.work/target/RustROAD/release/rustroad",
+        "sha256": "b24b60b839e96c83b71a6d0b37cf5563347598f5fb75d20acbc92833199ab275"
+      },
+      "podman": {
+        "path": "/usr/bin/podman",
+        "sha256": "463c8fb0bbe360388c1f7786a0a6c8cd070e0f8a59b9bc53200c23bb5c0d9a85"
+      }
+    },
+    "pdk_identity": {
+      "status": "verified",
+      "manifest": "/home/cgao/git/RustEDA/modules/RustROAD/fixtures/flow/signoff-pinned.json",
+      "manifest_sha256": "26fc1a1f230ee3c1b4ea568e549d87c96d84d3087ba47382926bbe097adbaf9b",
+      "pdks": [
+        "gf180",
+        "sky130"
+      ],
+      "tools": [
+        "coreutils",
+        "klayout",
+        "magic",
+        "netgen",
+        "python3",
+        "strmxor",
+        "openroad",
+        "opensta"
+      ],
+      "mismatches": [],
+      "checked": {
+        "files": 67,
+        "trees": 7,
+        "versions": 6
+      },
+      "receipts": [
+        {
+          "label": "identity",
+          "exit_code": 0,
+          "wall_seconds": 1.017,
+          "peak_rss_kib": 200700
+        },
+        {
+          "label": "identity_orfs",
+          "exit_code": 0,
+          "wall_seconds": 0.516,
+          "peak_rss_kib": 14180
+        }
+      ]
+    }
+  },
+  "preservation": {
+    "status": "passed",
+    "checks": [
+      {
+        "item": "tracked patch",
+        "match": true
+      },
+      {
+        "item": "examples/physical/classic/common.tcl",
+        "match": true
+      },
+      {
+        "item": "examples/physical/classic/drc.tcl",
+        "match": true
+      },
+      {
+        "item": "examples/physical/classic/lvs.tcl",
+        "match": true
+      },
+      {
+        "item": "examples/physical/classic/route.tcl",
+        "match": true
+      },
+      {
+        "item": "scripts/fixtures/postroute_bad_gds.py",
+        "match": true
+      },
+      {
+        "item": "scripts/fixtures/postroute_bad_lvs.tcl",
+        "match": true
+      },
+      {
+        "item": "scripts/verify_postroute.py",
+        "match": true
+      },
+      {
+        "item": "src/signoff.rs",
+        "match": true
+      }
+    ],
+    "snapshot_commit": "26bdfeab2426b2270f608b2ef27a9511a669cfdd"
+  },
+  "bootstrap": {
+    "status": "passed",
+    "doctor": ".work/phase3/doctor-accepted.json",
+    "remote_clone": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 38.866674,
+      "maximum_resident_set_size_kib": 146532,
+      "user_seconds": 1.9712269999999998,
+      "system_seconds": 0.565234,
+      "exit_code": 0
+    },
+    "remote_doctor": ".work/phase3/remote-doctor-accepted.json",
+    "remote_init": ".work/phase3/remote-init-accepted.json",
+    "remote_update": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 4.135701,
+      "maximum_resident_set_size_kib": 27412,
+      "user_seconds": 0.24093499999999998,
+      "system_seconds": 0.17604,
+      "exit_code": 0
+    },
+    "remote_head": "94d9695ae24f402a7127b4c31f867bfd4f2bfe1a",
+    "remote_pins": {
+      "RustEDA-Common": "7e78e705908a3475018ab39df94b94423e158a13",
+      "RustEDA-Studio": "084aeb453268fbfd3fe621eeb62e8588aa7ae597",
+      "RustLane": "321e71350f230c6bde9cd5416782146ede5046d3",
+      "RustROAD": "a6ea5063fc39e1419b760901f1918328f73f065c",
+      "RustSTA": "dd8ade8ca622c97f3fc45c88446f9bb06a6ef9d6",
+      "RustSys": "6012cf66e333c0719ba44c13dda33746193e6406"
+    }
+  },
+  "ci": {
+    "rustlane": {
+      "conclusion": "success",
+      "jobs": [
+        {
+          "completedAt": "2026-10-25T11:05:39Z",
+          "conclusion": "success",
+          "databaseId": 121150815482,
+          "name": "rust",
+          "startedAt": "2026-10-25T11:04:21Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-25T11:04:22Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-25T11:04:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:04:23Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "number": 2,
+              "startedAt": "2026-10-25T11:04:22Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:04:32Z",
+              "conclusion": "success",
+              "name": "Toolchain",
+              "number": 3,
+              "startedAt": "2026-10-25T11:04:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:04:32Z",
+              "conclusion": "success",
+              "name": "Memory preflight",
+              "number": 4,
+              "startedAt": "2026-10-25T11:04:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:04:33Z",
+              "conclusion": "success",
+              "name": "Formatting",
+              "number": 5,
+              "startedAt": "2026-10-25T11:04:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:04:45Z",
+              "conclusion": "success",
+              "name": "Lints",
+              "number": 6,
+              "startedAt": "2026-10-25T11:04:33Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:05:37Z",
+              "conclusion": "success",
+              "name": "Bounded tests",
+              "number": 7,
+              "startedAt": "2026-10-25T11:04:45Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:05:37Z",
+              "conclusion": "success",
+              "name": "Verify explicit Tcl literals",
+              "number": 8,
+              "startedAt": "2026-10-25T11:05:37Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:05:37Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "number": 16,
+              "startedAt": "2026-10-25T11:05:37Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:05:37Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 17,
+              "startedAt": "2026-10-25T11:05:37Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/lab-emi/RustLane/actions/runs/40187337490/job/121150815482"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/lab-emi/RustLane/actions/runs/40187337490"
+    },
+    "root": {
+      "conclusion": "success",
+      "jobs": [
+        {
+          "completedAt": "2026-10-25T11:08:06Z",
+          "conclusion": "success",
+          "databaseId": 121151529077,
+          "name": "orchestration-safety",
+          "startedAt": "2026-10-25T11:07:55Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-25T11:07:57Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-25T11:07:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:07:58Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "number": 2,
+              "startedAt": "2026-10-25T11:07:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:08:03Z",
+              "conclusion": "success",
+              "name": "Test orchestration with disposable repositories",
+              "number": 3,
+              "startedAt": "2026-10-25T11:07:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:08:03Z",
+              "conclusion": "success",
+              "name": "Report measured resources",
+              "number": 4,
+              "startedAt": "2026-10-25T11:08:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:08:03Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "number": 8,
+              "startedAt": "2026-10-25T11:08:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-25T11:08:03Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 9,
+              "startedAt": "2026-10-25T11:08:03Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/lab-emi/RustEDA/actions/runs/40187577944/job/121151529077"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/lab-emi/RustEDA/actions/runs/40187577944"
+    },
+    "full_physical": {
+      "status": "unverified",
+      "reason": "No configured self-hosted runner; owner chose local acceptance and template delivery.",
+      "runner_count": 0,
+      "workflow": ".github/workflows/physical-flow.yml"
+    }
+  },
+  "limitations": [
+    "Block/macro qualification, not chip/foundry signoff.",
+    "GF180 coverage is 7T; 9T is explicitly rejected.",
+    "PDK data locations remain those in the qualified RustROAD signoff manifest.",
+    "Generic Classic recipes and legacy postroute WIP remain unqualified.",
+    "No new GUI, industrial scale, or previously open numerical-research claims."
+  ],
+  "superseded": [
+    {
+      "path": ".work/phase3/worker-control/result.json",
+      "reason": "Caught delayed Podman force-removal cleanup; fixed with verified-label rm --force --time 0."
+    },
+    {
+      "path": ".work/phase3/worker-control-v2/result.json",
+      "reason": "Did not assert the actual .scope; superseded by active-scope tests."
+    },
+    {
+      "path": ".work/phase3/worker-control-final/result.json",
+      "reason": "Direct active-scope tests passed, but root-lifecycle harness stopped on a Path.parent typo; fixed and rerun."
+    }
+  ]
+}

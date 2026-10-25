@@ -1,0 +1,57 @@
+name: Qualified physical flow (configured runner)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rusteda-private-physical
+  cancel-in-progress: false
+
+jobs:
+  full-flow:
+    runs-on: [self-hosted, linux, rusteda-qualified]
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: 2
+      RUST_TEST_THREADS: 2
+      RUSTEDA_CI_OUT: .work/ci-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: false
+          persist-credentials: false
+          clean: false
+      - name: Initialize exact public module pins over HTTPS
+        run: git submodule update --init --recursive
+      - name: Resource and source preflight
+        run: |
+          free -h
+          ./dev doctor
+          ./dev build RustLane RustROAD --release --memory-mib 4096 --timeout 180 --json
+      - name: Verify preinstalled qualified tools, PDKs and OCI images
+        shell: bash
+        run: |
+          : "${RUSTEDA_GNU_TIME:?Configure the pinned GNU time executable on this runner}"
+          ./dev tools configure --tool "gnu_time=$RUSTEDA_GNU_TIME"
+          ./dev tools verify
+      - name: Full gates and persistent cache
+        run: >-
+          systemd-run --user --scope --quiet -p MemoryMax=2G -p MemorySwapMax=1G
+          timeout --signal=TERM --kill-after=60s 2400s
+          python3 scripts/measure.py --output "$RUSTEDA_CI_OUT-flow.resources.json" --
+          python3 integration/verify_phase3_flow.py --out "$RUSTEDA_CI_OUT-flow"
+      - name: Actual container cancellation and recovery
+        run: >-
+          systemd-run --user --scope --quiet -p MemoryMax=2G -p MemorySwapMax=1G
+          timeout --signal=TERM --kill-after=30s 180s
+          python3 scripts/measure.py --output "$RUSTEDA_CI_OUT-worker.resources.json" --
+          python3 integration/verify_worker_control.py --out "$RUSTEDA_CI_OUT-worker" --with-root-flow
+      - name: Acceptance summary
+        if: always()
+        run: |
+          for report in "$RUSTEDA_CI_OUT-flow/result.json" "$RUSTEDA_CI_OUT-worker/result.json" "$RUSTEDA_CI_OUT-flow.resources.json"; do
+            if test -f "$report"; then cat "$report"; fi
+          done

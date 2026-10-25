@@ -1,0 +1,137 @@
+{
+  "schema": "rusteda.local-consolidation.v1",
+  "status": "complete",
+  "completed_utc": "2026-10-25T11:24:21.969997+00:00",
+  "scope": "Local directory, Git history/WIP and pinned-tool consolidation; six module gitlinks unchanged.",
+  "root_revision": "cc38cfeb6e485d5f673761a260cfa92f6cf12f2d",
+  "old_directories_removed_from_parent": [
+    "RustEDA-Studio",
+    "RustLane",
+    "RustROAD",
+    "RustSTA",
+    "RustSys",
+    "RustSys-vivado-zynq-ibex",
+    "_migration",
+    "_migration-audit-20261025"
+  ],
+  "source_entries_rechecked_before_removal": 4402,
+  "preservation": {
+    "original_entries_verified": 26936,
+    "git_reference_checks": 75,
+    "source_archive_sha256": {
+      "RustEDA-Studio": "23ca1c769e475730ce050d62ee7bd998ac309701fbc0f14977a0df74414f8d11",
+      "RustLane": "11d74217e63482ca9bcbe1b0c91b502c627ee17e7bd7fc4feb1ff7f47dd0c273",
+      "RustROAD": "fed3e2b27d0c104d146b60a85cec2752f8cb6aa24f755979a6b652e6cfdf2deb",
+      "RustSTA": "0c5186d5ae8ec4cd9f58f6ad79f365045b9d171130dcb09a0b079f5b76d863c0",
+      "RustSys": "cc4ae3a419be017b3e24a4929aa22af7715be2eb17fdd1cc75f6b13441601026",
+      "RustSys-vivado-zynq-ibex": "cf94f40c37b35b8d8c7e58c18416a837ec7022041e5318a3156717a8e517bb6e"
+    },
+    "vivado_wip_revision": "2b23db3c98d5d505c51caa15ba683a0f484fbb1e",
+    "vivado_worktree": ".work/experiments/RustSys-vivado-zynq-ibex",
+    "vivado_status_and_patches_match": true
+  },
+  "agents": {
+    "source": "/home/cgao/git/AGENTS.md",
+    "destination": "/home/cgao/git/RustEDA/AGENTS.md",
+    "source_sha256": "63382b0720be4fcb1cd569f8bc057dc2b24083c74beb40d0334f56347909b944",
+    "parent_content_preserved": true,
+    "existing_repository_coordination_preserved": true,
+    "parent_removed": true
+  },
+  "toolchain": {
+    "qualified_tools": {
+      "rustsys": {
+        "path": "/home/cgao/git/RustEDA/.work/tools/sha256/3de13b3a87deb103f89a3c7456ce9196ccdbf52fd145eab546c1c6e4732be4ae/rustsys",
+        "sha256": "3de13b3a87deb103f89a3c7456ce9196ccdbf52fd145eab546c1c6e4732be4ae"
+      },
+      "rusteda": {
+        "path": "/home/cgao/git/RustEDA/.work/tools/sha256/c39dbde459db506ab3731be75900eae93bcb71691d8e4945e05c2013f4cdd11a/rusteda",
+        "sha256": "c39dbde459db506ab3731be75900eae93bcb71691d8e4945e05c2013f4cdd11a"
+      },
+      "ruststa": {
+        "path": "/home/cgao/git/RustEDA/.work/tools/sha256/472de8e8980100310005a817709a68cdda7b376d1fbd51f8ae3ad684aad08fea/ruststa",
+        "sha256": "472de8e8980100310005a817709a68cdda7b376d1fbd51f8ae3ad684aad08fea"
+      }
+    },
+    "toolchain_sha256": "835075ea23c3ab7bdfa78646c2934a53b384f703da4a7b0400d99362970f4966",
+    "old_path_symlinks": 0,
+    "git_directories_checked": 55
+  },
+  "validation": {
+    "root_safety_tests_passed": 20,
+    "git_connectivity": "all_six_modules_passed",
+    "doctor": true,
+    "shared": true,
+    "init": "no_changes",
+    "cases": [
+      {
+        "case": "counter:sky130",
+        "status": "passed",
+        "qualification_status": "passed",
+        "wall_seconds": {
+          "init": 3.8258489060099237,
+          "run": 102.69770639197668,
+          "report": 0.8663571799988858,
+          "cache": 0.8666394709725864
+        }
+      },
+      {
+        "case": "counter:gf180",
+        "status": "passed",
+        "qualification_status": "passed",
+        "wall_seconds": {
+          "init": 3.373616361990571,
+          "run": 150.9098845340195,
+          "report": 0.9175388799631037,
+          "cache": 0.9169645640067756
+        }
+      },
+      {
+        "case": "fifo:sky130",
+        "status": "passed",
+        "qualification_status": "deviation_declared",
+        "wall_seconds": {
+          "init": 3.872988508956041,
+          "run": 229.01646775001427,
+          "report": 1.117245769011788,
+          "cache": 1.1178933280170895
+        }
+      }
+    ],
+    "worker_registry": "closed",
+    "new_vivado_implementation_signoff": "not_run",
+    "post_cleanup": {
+      "doctor": true,
+      "tool_identity": "verified",
+      "vivado_status_preserved": true,
+      "parent_agents_absent": true,
+      "source_quarantine_absent": true
+    }
+  },
+  "measurements": {
+    "file_verification": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 25.617769,
+      "maximum_resident_set_size_kib": 28292,
+      "user_seconds": 18.072841,
+      "system_seconds": 5.459341,
+      "exit_code": 0
+    },
+    "full_flow": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 502.154465,
+      "maximum_resident_set_size_kib": 525220,
+      "user_seconds": 215.315311,
+      "system_seconds": 32.405487,
+      "exit_code": 0
+    }
+  },
+  "local_records": ".work/consolidation-20261025",
+  "limitations": [
+    "Local archive branches and .work artifacts were not pushed to a remote.",
+    "Historical evidence retains original path strings; new runs use the current toolchain.",
+    "Experimental Vivado code and WIP were preserved, not promoted to qualified production code."
+  ]
+}

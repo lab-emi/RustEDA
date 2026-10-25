@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "scope": "shared_foundation_migration",
+  "foundation": {
+    "repository": "lab-emi/RustEDA-Common",
+    "visibility": "private",
+    "revision": "7e78e705908a3475018ab39df94b94423e158a13",
+    "verified_source_files": 267,
+    "unchanged_library_files": 161
+  },
+  "consumers": [
+    {
+      "module": "RustSys",
+      "commit": "6012cf66e333c0719ba44c13dda33746193e6406",
+      "branch": "feat/shared-foundation"
+    },
+    {
+      "module": "RustSTA",
+      "commit": "9bfafdc3cc1d59a3330e269d26f844f667c78a93",
+      "branch": "feat/shared-foundation"
+    },
+    {
+      "module": "RustEDA-Studio",
+      "commit": "084aeb453268fbfd3fe621eeb62e8588aa7ae597",
+      "branch": "feat/shared-foundation"
+    }
+  ],
+  "tests": {
+    "common": {
+      "passed": 403,
+      "failed": 0,
+      "ignored": 10
+    },
+    "rustsys": {
+      "passed": 467,
+      "failed": 0,
+      "ignored": 6
+    },
+    "ruststa": {
+      "passed": 411,
+      "failed": 0,
+      "ignored": 17
+    },
+    "studio_headless": {
+      "passed": 136,
+      "failed": 0,
+      "ignored": 2
+    },
+    "studio_gui": {
+      "passed": 63,
+      "failed": 0,
+      "ignored": 0
+    },
+    "orchestration": {
+      "passed": 12,
+      "failed": 0
+    }
+  },
+  "accepted_checks": [
+    {
+      "module": "RustSys",
+      "check": "layout",
+      "exit_code": 0
+    },
+    {
+      "module": "RustSys",
+      "check": "shared",
+      "exit_code": 0
+    },
+    {
+      "module": "RustSTA",
+      "check": "layout",
+      "exit_code": 0
+    },
+    {
+      "module": "RustSTA",
+      "check": "shared",
+      "exit_code": 0
+    },
+    {
+      "module": "RustEDA-Studio",
+      "check": "layout",
+      "exit_code": 0
+    },
+    {
+      "module": "RustEDA-Studio",
+      "check": "shared",
+      "exit_code": 0
+    },
+    {
+      "module": "RustEDA-Studio",
+      "check": "clippy",
+      "exit_code": 0
+    }
+  ],
+  "cli_compatibility": {
+    "RustSys": {
+      "ok": true,
+      "scope": "shared_cli_and_workspace_compatibility",
+      "commands_per_pdk": 10,
+      "pdks": [
+        "sky130",
+        "gf180"
+      ],
+      "normalization": [
+        "created_unix_ms",
+        "time_unix_ms",
+        "workspace path",
+        "executable path"
+      ],
+      "library_hashes": {
+        "sky130": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+        "gf180": "a9ef92db6a01498a0d7b041423d45ea8f9035d927f34a916d9e7b7ef4e61b89f"
+      },
+      "before_binary": "6508d84826d31a6bc8bc2369e3424236ba088dea48d8207976f2a73ea67fb8fd",
+      "after_binary": "d8ee171caf9167dd2b7b0c5d4cd39c6ef787a06332cf761c01898bc9291d2ce3"
+    },
+    "RustSTA": {
+      "ok": true,
+      "scope": "shared_cli_and_workspace_compatibility",
+      "commands_per_pdk": 10,
+      "pdks": [
+        "sky130",
+        "gf180"
+      ],
+      "normalization": [
+        "created_unix_ms",
+        "time_unix_ms",
+        "workspace path",
+        "executable path"
+      ],
+      "library_hashes": {
+        "sky130": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+        "gf180": "a9ef92db6a01498a0d7b041423d45ea8f9035d927f34a916d9e7b7ef4e61b89f"
+      },
+      "before_binary": "c19579610981ed4041a59d828a19d71c814eb8ea17ab775ee123a2cd49cbf37d",
+      "after_binary": "f66a225ad2bab36b0dc13e43e670a16927181dafd46f9e081e7a69846d5db3be"
+    }
+  },
+  "negative_control": {
+    "different_product_versions": "rejected"
+  },
+  "studio_interoperability": {
+    "binary_sha256": "e345930d71a728f64846dc5af15b645a900e9e9998544eae4df7e5891f622d17",
+    "checks": [
+      {
+        "pdk": "sky130",
+        "exit_code": 0,
+        "output_present": true,
+        "instances": 1,
+        "nets": 2,
+        "ports": 2,
+        "timing_status": "not_analyzed"
+      },
+      {
+        "pdk": "gf180",
+        "exit_code": 0,
+        "output_present": true,
+        "instances": 1,
+        "nets": 2,
+        "ports": 2,
+        "timing_status": "not_analyzed"
+      }
+    ]
+  },
+  "resources": {
+    "common": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 102.595063,
+      "maximum_resident_set_size_kib": 545008,
+      "user_seconds": 173.533382,
+      "system_seconds": 7.457254,
+      "exit_code": 0
+    },
+    "initial_consumer_run": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 966.161476,
+      "maximum_resident_set_size_kib": 2057184,
+      "user_seconds": 1881.65611,
+      "system_seconds": 98.10578,
+      "exit_code": 1
+    },
+    "corrected_studio_run": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 7.749562,
+      "maximum_resident_set_size_kib": 309276,
+      "user_seconds": 6.5947,
+      "system_seconds": 0.614564,
+      "exit_code": 0
+    },
+    "final_validation": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 1.943557,
+      "maximum_resident_set_size_kib": 255820,
+      "user_seconds": 1.954132,
+      "system_seconds": 0.39772799999999997,
+      "exit_code": 0
+    }
+  },
+  "dependency_policy": {
+    "tool": "cargo-deny 0.20.2",
+    "sources": "passed for all four workspaces",
+    "bans": "passed for all four workspaces",
+    "licenses": {
+      "common": "passed",
+      "rustsys": "passed",
+      "ruststa": "passed",
+      "studio": "preexisting_failure"
+    },
+    "studio_baseline_findings": [
+      {
+        "package": "cbindgen 0.28.0",
+        "license": "MPL-2.0"
+      },
+      {
+        "package": "dwrote 0.11.5",
+        "license": "MPL-2.0"
+      },
+      {
+        "package": "libfuzzer-sys 0.4.13",
+        "license": "NCSA"
+      }
+    ]
+  },
+  "not_claimed": [
+    "new timing accuracy signoff",
+    "full RTL-to-GDS signoff",
+    "CUDA or Metal validation",
+    "native desktop rendering validation"
+  ],
+  "ci": {
+    "common": "https://github.com/lab-emi/RustEDA-Common/actions/runs/40157777739",
+    "development_entrypoint": "https://github.com/lab-emi/RustEDA/actions/runs/40159524460"
+  },
+  "original_sibling_workspaces": "preserved",
+  "remote_acceptance": {
+    "root_revision": "d82d8b24504f0718b54bf3f7d8eaf68f6e040529",
+    "pinned_modules": 6,
+    "doctor": "passed",
+    "cargo_sources": "same pinned foundation in all three consumers",
+    "repeated_initialization": "no-op",
+    "resources": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 40.079626,
+      "maximum_resident_set_size_kib": 146664,
+      "user_seconds": 1.888037,
+      "system_seconds": 0.662561,
+      "exit_code": 0
+    }
+  }
+}

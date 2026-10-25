@@ -1,0 +1,177 @@
+{
+  "schema": "rusteda.closeout-support.v1",
+  "date": "2026-10-25",
+  "scope": "supporting checks, not the final 16-row qualification",
+  "checks": {
+    "road_python_helpers": {
+      "result": "137 passed locally",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 2.833638,
+        "maximum_resident_set_size_kib": 334572,
+        "user_seconds": 1.870244,
+        "system_seconds": 0.093652,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/python-final.resources.json",
+      "receipt_sha256": "570849ec5e58c45f3c24165597f63e8f3336ba3d4481d1126e15d8fc33a57b6c"
+    },
+    "sta_latch_cli": {
+      "result": "5 passed",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 1.914102,
+        "maximum_resident_set_size_kib": 287128,
+        "user_seconds": 1.612914,
+        "system_seconds": 0.344489,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/sta-latch-final.resources.json",
+      "receipt_sha256": "8b25ac4ef0b6ab0a66180f2da8bead13159f6ea9a6e34feeae66cf76df5a17bc"
+    },
+    "sta_changed_test_clippy": {
+      "result": "passed",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 0.17376,
+        "maximum_resident_set_size_kib": 168480,
+        "user_seconds": 0.12817399999999998,
+        "system_seconds": 0.047547,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/sta-clippy-v2.resources.json",
+      "receipt_sha256": "2a02faf4e6b3530501de499b0634079f0747f46fb82cdc2228342d4438000983"
+    },
+    "ngspice_rc_driver": {
+      "result": "1 passed",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 0.654915,
+        "maximum_resident_set_size_kib": 21216,
+        "user_seconds": 0.5718019999999999,
+        "system_seconds": 0.080873,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/rc-driver.resources.json",
+      "receipt_sha256": "943603878590a18454128f23cb9d265af8601dfb112688f98ee4af2087ad72c6"
+    },
+    "ngspice_rc_mesh": {
+      "result": "1 passed",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 1.750589,
+        "maximum_resident_set_size_kib": 32108,
+        "user_seconds": 1.5441509999999998,
+        "system_seconds": 0.20124299999999998,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/rc-mesh.resources.json",
+      "receipt_sha256": "0669ccc5a895152caf938faced6c36d714c4c913e423b5e81046310f1e51ba1c"
+    },
+    "ngspice_latch_polarity": {
+      "result": "both PDKs passed; polarity only",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 5.859778,
+        "maximum_resident_set_size_kib": 378188,
+        "user_seconds": 5.95294,
+        "system_seconds": 0.558083,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/latch-final-v2.resources.json",
+      "receipt_sha256": "daa843863ab8e93611e96de0faa66e781f6750feae91827fbfdb6224f363e047"
+    },
+    "sta_static": {
+      "layout": "passed",
+      "coverage_requirements": 595,
+      "coverage_gaps": 0,
+      "format": "passed",
+      "markdown_pages": 68,
+      "markdown_local_references": 313,
+      "markdown_failures": 0
+    },
+    "root_orchestration": {
+      "result": "12 passed",
+      "resources": {
+        "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+        "rss_scope": "maximum_individual_child_rss_not_aggregate",
+        "wall_seconds": 2.930284,
+        "maximum_resident_set_size_kib": 23736,
+        "user_seconds": 1.490573,
+        "system_seconds": 1.540492,
+        "exit_code": 0
+      },
+      "raw_receipt": ".work/closeout/root-tests.resources.json",
+      "receipt_sha256": "e8686abe24c73959775dc3e4dda5b86525a256cc77aa1ac39a8931b76889c64e"
+    }
+  },
+  "latch_polarity": {
+    "schema": "rusteda.latch-polarity.v1",
+    "status": "passed",
+    "scope": "transparent-latch data polarity only; not timing parity",
+    "rows": [
+      {
+        "pdk": "sky130",
+        "cell": "sky130_fd_sc_hd__dlxtp_1",
+        "status": "passed",
+        "corner": "tt",
+        "spice_model_corner": "tt",
+        "temperature_c": 25,
+        "load_pf": 0.01,
+        "enable": "held_high",
+        "wire_model": "transistor model with lumped output load",
+        "supply_v": 1.8,
+        "measurements_v": {
+          "q_low": 2.67658e-09,
+          "q_high": 1.8,
+          "q_low_after": 5.28507e-09
+        },
+        "ngspice_sha256": "e088057de17fdfe8ea499b11f13a9aaf6f145dc4b1be0f045e583395637f673b",
+        "model_tree": [
+          "6867371e10a4a8803d68500c970fcf7cb2269d9652d8a275a93d3848b4e78852",
+          181
+        ],
+        "cell_spice_sha256": "6dec6626decd1ee15afacafab9925b1a336ab344b7b5e1bec9d7483f2a6badc3",
+        "deck_sha256": "35f5106fd6c24ecffa0bea9dfcbf6b53bafbe0bb059cc68bbb295becbe51407c"
+      },
+      {
+        "pdk": "gf180",
+        "cell": "gf180mcu_fd_sc_mcu7t5v0__latq_1",
+        "status": "passed",
+        "corner": "tt",
+        "spice_model_corner": "typical",
+        "temperature_c": 25,
+        "load_pf": 0.01,
+        "enable": "held_high",
+        "wire_model": "transistor model with lumped output load",
+        "supply_v": 3.3,
+        "measurements_v": {
+          "q_low": 1.03983e-08,
+          "q_high": 3.3,
+          "q_low_after": 1.43857e-07
+        },
+        "ngspice_sha256": "e088057de17fdfe8ea499b11f13a9aaf6f145dc4b1be0f045e583395637f673b",
+        "model_tree": [
+          "1dcb7d5553300683e4ac14c5e1c87c25fbec47a965ca1f9e1eed008f84686e4c",
+          9
+        ],
+        "cell_spice_sha256": "0e126c5e10e45e705a83acfa47f6fd2c4ef0357e99c339dec43cdc16bfb13664",
+        "deck_sha256": "d4dea19632802ac8580925c9ff51734f6f5096a8409951594fe5eeac284e24f5"
+      }
+    ],
+    "script_sha256": "f0fc11dcc459cb48ce8d4ea5af0af9b6b94037e7d888560d7ef6fa3d24a0384d"
+  },
+  "independent_review": "pending; not self-certified",
+  "ci": {
+    "scope": "verification harness unit tests; not full physical signoff",
+    "revision": "1f86687baaf7e6753addb9351b83f3561fd714f4",
+    "status": "passed",
+    "url": "https://github.com/lab-emi/RustROAD/actions/runs/40163108785"
+  }
+}

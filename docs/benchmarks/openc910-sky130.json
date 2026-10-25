@@ -1,0 +1,142 @@
+{
+  "schema": "rusteda.benchmark-summary.v1",
+  "design": "OpenC910 ct_core",
+  "library": "sky130hd_tt",
+  "recorded_at": "2026-10-23T14:14:29.482498+00:00",
+  "allocated_physical_cores": 16,
+  "repetitions": 3,
+  "warmups": 1,
+  "source": "modules/RustSys/verification/benchmarks/open-hardware/results/2026-10-23-gf180-runtime-audit",
+  "sources_sha256": {
+    "measurements.json.gz": "81a9f2639e9256bf4069f4e57974fa334dcdb20bdcc5d05e9bf4b41022056d19",
+    "quality-and-lec.json.gz": "b74ae3fb7376477ca6f9c43efaf28d722562deffa7804592b8279d3f95697305"
+  },
+  "rustsys": {
+    "median_wall_s": 68.78999999999999,
+    "peak_rss_kib": 7886936,
+    "netlist_sha256": "60b7d8ff2c1a1c30f562a627e57a04852f320c6b45c49ce4c1fafe4c467d1325",
+    "area_um2": 53453687.57432624
+  },
+  "yosys": {
+    "median_wall_s": 1413.58,
+    "peak_rss_kib": 16731992,
+    "netlist_sha256": "1861276955dac4afc0def6791c4e71ec1517a793a6d4d3333ea3f64240aaba5d",
+    "area_um2": 59995157.614674
+  },
+  "quality": {
+    "rustsys": [
+      {
+        "area_um2": 53453687.57432624,
+        "fmax_mhz": 0.6899406651028012,
+        "fresh_solver_run": false,
+        "fresh_sta_run": false,
+        "id": "openc910",
+        "library": "sky130hd_tt",
+        "method": "abc-independent-rtl-event-sliced-v1",
+        "netlist_sha256": "60b7d8ff2c1a1c30f562a627e57a04852f320c6b45c49ce4c1fafe4c467d1325",
+        "scope": {
+          "corner": "tt_025C_1v80",
+          "design_top": "ct_core",
+          "drc_status": "unchecked",
+          "gate_input": "measured exported Verilog reimported into fresh checked gate tables",
+          "initial_states": "all implementation initial states under checked named correspondence",
+          "input_assumptions": "none",
+          "outputs": "all original output bits and all retained state clock/enable, clear, preset and next-data obligations",
+          "reference": "independent RustSys checker RTL interpreter",
+          "reset_assumptions": "none",
+          "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+          "wire_model": "none"
+        },
+        "timing_scope": {
+          "clock": "bench_clk on forever_cpuclk",
+          "clock_model": "ideal;100ps transition;zero uncertainty",
+          "corner": "tt_025C_1v80",
+          "excluded_checks": [
+            "routed timing",
+            "hold closure",
+            "clock tree",
+            "physical DRC"
+          ],
+          "fmax_scope": "same-clock same-edge register-to-register setup paths; excludes port paths, cross-edge paths and level-sensitive latches",
+          "input_output_delays_ns": 0,
+          "input_transition_ns": 0.1,
+          "output_load_pf": 0.01,
+          "period_purpose": "loose reference period; report_clock_min_period derives the actual minimum",
+          "reset_assumptions": "none for functional proof; this is a separate timing model",
+          "root_clock_period_ns": 1000,
+          "unconstrained_endpoints": "explicit OpenSTA check_setup receipt; not presumed zero",
+          "wire_model": "none; no estimated or routed parasitics"
+        },
+        "tool": "rustsys",
+        "verdict": "proven"
+      }
+    ],
+    "yosys": [
+      {
+        "area_um2": 59995157.614674,
+        "fmax_mhz": 0.0485674307780551,
+        "fresh_solver_run": false,
+        "fresh_sta_run": false,
+        "id": "openc910",
+        "library": "sky130hd_tt",
+        "method": "abc-independent-rtl-event-sliced-v1",
+        "netlist_sha256": "1861276955dac4afc0def6791c4e71ec1517a793a6d4d3333ea3f64240aaba5d",
+        "scope": {
+          "corner": "tt_025C_1v80",
+          "design_top": "ct_core",
+          "drc_status": "unchecked",
+          "gate_input": "measured exported Verilog reimported into fresh checked gate tables",
+          "initial_states": "all implementation initial states under checked named correspondence",
+          "input_assumptions": "none",
+          "outputs": "all original output bits and all retained state clock/enable, clear, preset and next-data obligations",
+          "reference": "independent RustSys checker RTL interpreter",
+          "reset_assumptions": "none",
+          "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+          "wire_model": "none"
+        },
+        "timing_scope": {
+          "clock": "bench_clk on forever_cpuclk",
+          "clock_model": "ideal;100ps transition;zero uncertainty",
+          "corner": "tt_025C_1v80",
+          "excluded_checks": [
+            "routed timing",
+            "hold closure",
+            "clock tree",
+            "physical DRC"
+          ],
+          "fmax_scope": "same-clock same-edge register-to-register setup paths; excludes port paths, cross-edge paths and level-sensitive latches",
+          "input_output_delays_ns": 0,
+          "input_transition_ns": 0.1,
+          "output_load_pf": 0.01,
+          "period_purpose": "loose reference period; report_clock_min_period derives the actual minimum",
+          "reset_assumptions": "none for functional proof; this is a separate timing model",
+          "root_clock_period_ns": 1000,
+          "unconstrained_endpoints": "explicit OpenSTA check_setup receipt; not presumed zero",
+          "wire_model": "none; no estimated or routed parasitics"
+        },
+        "tool": "yosys",
+        "verdict": "proven"
+      }
+    ]
+  },
+  "full_rtl_to_gds": {
+    "status": "unverified",
+    "rusteda_wall_s": null,
+    "baseline_wall_s": null,
+    "speedup": null
+  },
+  "scope": {
+    "corner": "tt_025C_1v80",
+    "wire_model": "none",
+    "clock_model": "ideal",
+    "unconstrained_endpoints": "see original OpenSTA check_setup receipts; not presumed zero",
+    "drc_status": "unchecked",
+    "lvs_status": "unchecked",
+    "fresh_solver_run": false
+  },
+  "ratios": {
+    "speedup": 20.549207733682223,
+    "area": 1.122376403522245,
+    "rss": 2.121481903745637
+  }
+}

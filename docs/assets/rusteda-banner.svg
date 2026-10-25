@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc"><title id="title">RustEDA</title><desc id="desc">Chip-design infrastructure for recursive self-improvement. RTL → GDS → feedback → better RTL</desc><rect width="1200" height="360" rx="20" fill="#101923"/>
+<g stroke="#304451" opacity=".25"><path d="M24 24V336"/><path d="M56 24V336"/><path d="M88 24V336"/><path d="M120 24V336"/><path d="M152 24V336"/><path d="M184 24V336"/><path d="M216 24V336"/><path d="M248 24V336"/><path d="M280 24V336"/><path d="M312 24V336"/><path d="M344 24V336"/><path d="M376 24V336"/><path d="M408 24V336"/><path d="M440 24V336"/><path d="M472 24V336"/><path d="M504 24V336"/><path d="M536 24V336"/><path d="M568 24V336"/><path d="M600 24V336"/><path d="M632 24V336"/><path d="M664 24V336"/><path d="M696 24V336"/><path d="M728 24V336"/><path d="M760 24V336"/><path d="M792 24V336"/><path d="M824 24V336"/><path d="M856 24V336"/><path d="M888 24V336"/><path d="M920 24V336"/><path d="M952 24V336"/><path d="M984 24V336"/><path d="M1016 24V336"/><path d="M1048 24V336"/><path d="M1080 24V336"/><path d="M1112 24V336"/><path d="M1144 24V336"/><path d="M1176 24V336"/><path d="M24 24H1176"/><path d="M24 56H1176"/><path d="M24 88H1176"/><path d="M24 120H1176"/><path d="M24 152H1176"/><path d="M24 184H1176"/><path d="M24 216H1176"/><path d="M24 248H1176"/><path d="M24 280H1176"/><path d="M24 312H1176"/><path d="M24 344H1176"/></g>
+<text x="52" y="61" fill="#57D6BE" font-family="DejaVu Sans,sans-serif" font-size="13" letter-spacing="4">RUSTEDA / DESIGN. MEASURE. IMPROVE.</text>
+<text x="49" y="163" fill="#F4F1E9" font-family="DejaVu Sans,sans-serif" font-size="65" font-weight="700">RustEDA</text>
+<text x="53" y="214" fill="#A4B6BF" font-family="DejaVu Sans,sans-serif" font-size="18">Chip-design infrastructure for recursive self-improvement</text>
+<path d="M53 254H105" stroke="#EF8B52" stroke-width="3"/>
+<text x="53" y="302" fill="#F4F1E9" font-family="DejaVu Sans,sans-serif" font-size="16">RTL → GDS → feedback → better RTL</text>
+<polyline points="874,105 1050,105 1108,164 1108,246 1050,304 874,304 824,254 824,163 874,105" fill="none" stroke="#304451" stroke-width="3"/>
+<g transform="translate(850 100) scale(.8)"><rect width="256" height="256" rx="54" fill="#101923"/>
+<g fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<path d="M83 48H48V83M48 173V208H83" stroke="#EF8B52"/>
+<path d="M173 48H208V83M208 173V208H173" stroke="#57D6BE"/>
+<g stroke="#F4F1E9"><polyline points="84,100 128,76 172,100 172,154 128,180 84,154 84,100"/><polyline points="84,100 128,126 172,100"/><polyline points="128,126 128,180"/></g></g></g>
+<circle cx="874" cy="105" r="6" fill="#57D6BE"/>
+<path d="M866 98L874 105L865 112" fill="none" stroke="#57D6BE" stroke-width="3"/></svg>

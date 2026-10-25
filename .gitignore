@@ -1,0 +1,11 @@
+/.work/
+/target/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+AGENTS.md
+
+agents.md
+
+HANDOFF.md

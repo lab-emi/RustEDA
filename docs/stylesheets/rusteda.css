@@ -1,0 +1,27 @@
+:root { --md-primary-fg-color: #101923; --md-accent-fg-color: #ba551f; }
+[data-md-color-scheme="slate"] { --md-default-bg-color: #101923; --md-default-fg-color: #f4f1e9; --md-typeset-a-color: #57d6be; --md-accent-fg-color: #57d6be; --md-code-bg-color: #162431; }
+.md-header { border-bottom: 1px solid #304451; }
+.md-header__button.md-logo img { height: 1.8rem; width: 1.8rem; }
+.md-typeset h1, .md-typeset h2 { font-weight: 700; letter-spacing: -.035em; }
+.md-typeset h1 { color: var(--md-default-fg-color); }
+.eda-home h1 { max-width: 850px; font-size: clamp(2.2rem, 5vw, 3.3rem); line-height: 1.08; margin: .35em 0; }
+.eda-home .eda-eyebrow { color: #c66a37; font-size: .65rem; font-weight: 700; letter-spacing: .2em; margin-top: 2em; }
+[data-md-color-scheme="slate"] .eda-home .eda-eyebrow { color: #57d6be; }
+.eda-lead { font-size: 1.2rem; }
+.eda-home picture { display: block; margin: 2rem 0 1rem; }
+.eda-home picture img { border-radius: 12px; width: 100%; height: auto; }
+.eda-metrics { display: grid; grid-template-columns: repeat(3,1fr); border-block: 1px solid #667b8944; margin: 1.3rem 0; padding: 1.3rem 0; gap: 1rem; }
+.eda-metrics strong { display: block; font-size: clamp(1.3rem,3vw,2rem); letter-spacing: -.04em; }
+.eda-metrics span { display: block; font-size: .68rem; margin-top: .3rem; }
+.eda-home .grid.cards > ul > li { border-radius: 10px; padding: 1rem; }
+.eda-home .grid.cards img { vertical-align: middle; margin-right: .4rem; }
+.eda-home .md-button { border-radius: 5px; margin: .4rem .4rem 0 0; }
+.eda-amdahl { padding: 1.4rem; border: 1px solid #667b8955; border-radius: 12px; margin: 1.4rem 0; max-width: 680px; }
+.eda-amdahl label { display: flex; justify-content: space-between; gap: 1rem; }
+.eda-amdahl input { display: block; width: 100%; accent-color: #3ba68e; margin: .7rem 0 1.4rem; }
+#iteration-speedup { font-size: 2rem; font-weight: 700; letter-spacing: -.04em; }
+.md-typeset table:not([class]) th { white-space: nowrap; }
+.md-typeset .md-typeset__table { display: block; overflow-x: auto; }
+.rustsys-comparison, .rustsys-audit, .ruststa-comparison { max-width: 100%; overflow-x: auto; }
+@media(max-width:600px) { .eda-metrics { grid-template-columns: 1fr; gap: 1.2rem; } .eda-home h1 { font-size: 2rem; } }
+@media(prefers-reduced-motion:reduce) { *, *:before, *:after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }

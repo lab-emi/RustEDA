@@ -1,0 +1,59 @@
+site_name: RustEDA
+site_description: Infrastructure for chip-design recursive self-improvement.
+site_url: https://lab-emi.github.io/RustEDA/
+repo_url: https://github.com/lab-emi/RustEDA
+repo_name: lab-emi/RustEDA
+edit_uri: ''
+copyright: RustEDA contributors · Apache-2.0
+strict: true
+theme:
+  name: material
+  logo: assets/rusteda-logo.svg
+  favicon: assets/favicon.svg
+  font: false
+  palette:
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+extra_css:
+  - stylesheets/rusteda.css
+extra_javascript:
+  - javascripts/amdahl.js
+validation:
+  nav:
+    omitted_files: info
+  links:
+    not_found: warn
+    anchors: warn

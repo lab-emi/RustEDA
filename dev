@@ -1,0 +1,470 @@
+#!/usr/bin/env python3
+"""Bounded, daemonless development commands for the RustEDA superproject."""
+from __future__ import annotations
+
+import argparse
+from contextlib import contextmanager
+from dataclasses import dataclass
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import resource
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+import tomllib
+
+ROOT = Path(__file__).resolve().parent
+HASH_BUDGET = 64 * 1024 * 1024
+
+
+class DevError(Exception):
+    def __init__(self, code: str, message: str):
+        self.code = code
+        super().__init__(message)
+
+
+def git(*args: str, cwd: Path = ROOT, check: bool = True,
+        timeout: int = 30) -> subprocess.CompletedProcess:
+    environment = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    environment.setdefault("GIT_SSH_COMMAND", "ssh -o BatchMode=yes -o ConnectTimeout=15")
+    process = subprocess.Popen(
+        ["git", "--no-pager", *args], cwd=cwd, text=True,
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        env=environment, start_new_session=True,
+    )
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired as error:
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            process.communicate(timeout=3)
+        except subprocess.TimeoutExpired:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.communicate()
+        raise DevError("GIT_TIMEOUT", f"Git exceeded its {timeout}-second deadline") from error
+    result = subprocess.CompletedProcess(process.args, process.returncode, stdout, stderr)
+    if len(result.stdout) + len(result.stderr) > 4 * 1024 * 1024:
+        raise DevError("OUTPUT_BUDGET", "Git output exceeds 4 MiB")
+    if check and result.returncode:
+        raise DevError("GIT_FAILED", result.stderr.strip()[-4000:])
+    return result
+
+
+@dataclass(frozen=True)
+class Module:
+    name: str
+    section: str
+    relative: str
+    url: str
+    expected: str
+
+    @property
+    def path(self) -> Path:
+        return ROOT / self.relative
+
+
+def modules() -> list[Module]:
+    config = ROOT / ".gitmodules"
+    if not config.is_file():
+        raise DevError("MISSING_CONFIG", ".gitmodules is missing")
+    if (ROOT / "modules").is_symlink():
+        raise DevError("UNSAFE_PATH", "modules must not be a symbolic link")
+    rows = git("config", "--file", str(config), "--get-regexp",
+               r"^submodule\..*\.path$", check=False)
+    if rows.returncode not in (0, 1):
+        raise DevError("INVALID_CONFIG", rows.stderr.strip())
+    result = []
+    seen = set()
+    for line in rows.stdout.splitlines():
+        key, relative = line.split(None, 1)
+        if not re.fullmatch(r"modules/[A-Za-z0-9][A-Za-z0-9_.-]*", relative):
+            raise DevError("UNSAFE_PATH", f"Unsupported module path: {relative}")
+        if relative in seen or (ROOT / relative).is_symlink():
+            raise DevError("UNSAFE_PATH", f"Duplicate or symlink module: {relative}")
+        seen.add(relative)
+        section = key[len("submodule."):-len(".path")]
+        url = git("config", "--file", str(config), "--get",
+                  f"submodule.{section}.url").stdout.strip()
+        row = git("ls-files", "--stage", "--", relative).stdout.strip()
+        match = re.fullmatch(r"160000 ([a-f0-9]{40,64}) 0\t" + re.escape(relative), row)
+        if not match:
+            raise DevError("MISSING_GITLINK", f"No unmerged gitlink in index: {relative}")
+        result.append(Module(Path(relative).name, section, relative, url, match[1]))
+    if not result or len(result) > 32:
+        raise DevError("MODULE_BUDGET", "Expected between 1 and 32 modules")
+    return sorted(result, key=lambda item: item.name)
+
+
+def select(all_modules: list[Module], names: list[str]) -> list[Module]:
+    if not names or names == ["all"]:
+        return all_modules
+    unknown = set(names) - {m.name for m in all_modules}
+    if unknown or "all" in names:
+        raise DevError("UNKNOWN_MODULE", f"Invalid module selection: {', '.join(sorted(unknown))}")
+    return [m for m in all_modules if m.name in names]
+
+
+def state(module: Module) -> dict:
+    info = {"name": module.name, "path": module.relative, "expected": module.expected}
+    if not (module.path / ".git").exists():
+        return {**info, "state": "uninitialized", "head": None, "dirty": False}
+    top = git("rev-parse", "--show-toplevel", cwd=module.path).stdout.strip()
+    if Path(top).resolve() != module.path.resolve():
+        raise DevError("WRONG_REPOSITORY", f"{module.relative} resolves to another repository")
+    head = git("rev-parse", "HEAD", cwd=module.path).stdout.strip()
+    dirty = bool(git("status", "--porcelain=v1", "--untracked-files=normal",
+                     cwd=module.path).stdout)
+    branch = git("branch", "--show-current", cwd=module.path).stdout.strip()
+    status = "revision_mismatch" if head != module.expected else ("dirty" if dirty else "pinned")
+    return {**info, "state": status, "head": head, "dirty": dirty,
+            "branch": branch or "(detached)"}
+
+
+def safe_states(chosen: list[Module]) -> list[dict]:
+    states = [state(module) for module in chosen]
+    unsafe = [s for s in states if s["dirty"] or s["state"] == "revision_mismatch"]
+    if unsafe:
+        raise DevError("LOCAL_CHANGES", "Preserve or commit these module changes before proceeding: "
+                       + ", ".join(s["name"] for s in unsafe))
+    return states
+
+
+def initialize(chosen: list[Module], local_root: Path | None) -> dict:
+    # Validate every module before the first write, including modules already initialized.
+    states = safe_states(chosen)
+    missing = [m for m, s in zip(chosen, states) if s["state"] == "uninitialized"]
+    for module in missing:
+        if module.path.exists() and any(module.path.iterdir()):
+            raise DevError("NONEMPTY_PATH", f"Refusing to overwrite {module.relative}")
+        if local_root:
+            source = local_root.resolve() / module.name
+            probe = git("cat-file", "-e", f"{module.expected}^{{commit}}",
+                        cwd=source, check=False) if source.is_dir() else None
+            if probe is None or probe.returncode:
+                raise DevError("MISSING_LOCAL_REVISION", f"{source} lacks {module.expected}")
+    initialized = []
+    for module in missing:
+        command = []
+        if local_root:
+            command += ["-c", "protocol.file.allow=always",
+                        "-c", f"submodule.{module.section}.url={local_root.resolve() / module.name}"]
+        command += ["submodule", "update", "--init", "--", module.relative]
+        git(*command, timeout=300)
+        if local_root:
+            git("remote", "set-url", "origin", module.url, cwd=module.path)
+            git("config", f"submodule.{module.section}.url", module.url)
+        initialized.append(module.name)
+    return {"ok": True, "initialized": initialized, "modules": [state(m) for m in chosen]}
+
+
+def hashes(module: Module) -> dict[str, str]:
+    manifest = module.path / "verification/shared.sha256"
+    if not manifest.is_file() or manifest.stat().st_size > 2 * 1024 * 1024:
+        raise DevError("INVALID_MANIFEST", f"Missing or oversized manifest: {module.name}")
+    lines = manifest.read_text().splitlines()
+    if len(lines) > 10000:
+        raise DevError("HASH_BUDGET", f"Too many shared paths: {module.name}")
+    total = 0
+    result = {}
+    for line in lines:
+        match = re.fullmatch(r"([a-f0-9]{64})  (.+)", line)
+        if not match:
+            raise DevError("INVALID_MANIFEST", f"Malformed shared manifest: {module.name}")
+        expected, relative = match.groups()
+        path = PurePosixPath(relative)
+        if path.is_absolute() or ".." in path.parts or relative in result:
+            raise DevError("UNSAFE_PATH", f"Unsafe or duplicate shared path: {relative}")
+        file = module.path / relative
+        if file.is_symlink() or not file.is_file() or not file.resolve().is_relative_to(module.path.resolve()):
+            raise DevError("UNSAFE_PATH", f"Invalid shared file: {module.name}/{relative}")
+        if total + file.stat().st_size > HASH_BUDGET:
+            raise DevError("HASH_BUDGET", f"Shared files exceed 64 MiB: {module.name}")
+        digest = hashlib.sha256()
+        with file.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                total += len(chunk)
+                if total > HASH_BUDGET:
+                    raise DevError("HASH_BUDGET", f"Shared files exceed 64 MiB: {module.name}")
+                digest.update(chunk)
+        actual = digest.hexdigest()
+        if actual != expected:
+            raise DevError("SHARED_HASH_MISMATCH", f"{module.name}/{relative}")
+        result[relative] = actual
+    return result
+
+
+def shared(all_modules: list[Module], include_studio: bool = False) -> dict:
+    by_name = {m.name: m for m in all_modules}
+    inventories = {}
+    for name in ("RustSys", "RustSTA", "RustEDA-Studio"):
+        if name not in by_name or state(by_name[name])["state"] == "uninitialized":
+            raise DevError("UNINITIALIZED_MODULE", f"Initialize {name} before shared checks")
+        inventories[name] = hashes(by_name[name])
+    reference = inventories["RustSys"]
+    sta_ok = reference == inventories["RustSTA"]
+    studio = inventories["RustEDA-Studio"]
+    differences = sorted(p for p in reference.keys() | studio.keys()
+                         if reference.get(p) != studio.get(p))
+    result = {
+        "ok": sta_ok and (not include_studio or not differences),
+        "rustsys_ruststa_equal": sta_ok,
+        "verified_files": {name: len(paths) for name, paths in inventories.items()},
+        "studio": {"state": "pending_convergence" if differences else "converged",
+                   "different_paths": len(differences), "examples": differences[:10]},
+    }
+    if "RustEDA-Common" in by_name:
+        common = by_name["RustEDA-Common"]
+        common_state = state(common)
+        if common_state["state"] == "uninitialized":
+            raise DevError("UNINITIALIZED_MODULE", "Initialize RustEDA-Common first")
+        if common_state["head"] != common.expected:
+            raise DevError("FOUNDATION_REVISION", "Foundation checkout differs from its gitlink")
+        canonical = hashes(common)
+        url = "https://github.com/lab-emi/RustEDA-Common.git"
+        expected_packages = {
+            "rusteda-core": "rusteda-core",
+            "rusteda-workspace": "rusteda-workspace",
+            "rusteda-compute": "rusteda-compute",
+            "rusteda-formats": "rusteda-formats",
+            "rusteda-cli-shared": "rusteda-cli-common",
+        }
+        consumers = {}
+        for name in inventories:
+            module = by_name[name]
+            config = tomllib.loads((module.path / "Cargo.toml").read_text())
+            dependencies = config.get("workspace", {}).get("dependencies", {})
+            for key, package in expected_packages.items():
+                dep = dependencies.get(key, {})
+                if (not isinstance(dep, dict) or dep.get("git") != url
+                        or dep.get("rev") != common.expected
+                        or dep.get("package", key) != package):
+                    raise DevError("FOUNDATION_PIN_MISMATCH",
+                                   f"{name}: {key} must use the recorded foundation revision")
+            for group, package in (
+                ("core", "rusteda-core"), ("core", "rusteda-workspace"),
+                ("core", "rusteda-compute"), ("formats", "rusteda-formats"),
+            ):
+                if (module.path / "crates" / group / package / "Cargo.toml").exists():
+                    raise DevError("DUPLICATE_FOUNDATION", f"{name} retains a local {package}")
+            lock = tomllib.loads((module.path / "Cargo.lock").read_text())
+            sources = [p.get("source", "") for p in lock.get("package", [])
+                       if p.get("name") in expected_packages.values()]
+            if not sources or any(not source.startswith("git+" + url + "?rev=" + common.expected)
+                                  or not source.endswith("#" + common.expected)
+                                  for source in sources):
+                raise DevError("FOUNDATION_LOCK_MISMATCH", f"{name}: stale or local foundation lock entry")
+            consumers[name] = common.expected
+        result["ok"] = sta_ok and not differences
+        result["foundation"] = {
+            "revision": common.expected, "verified_files": len(canonical),
+            "consumers": consumers, "state": common_state["state"],
+        }
+    return result
+
+
+def cargo_binary() -> Path:
+    proxy = Path.home() / ".cargo/bin/cargo"
+    found = str(proxy) if proxy.is_file() else shutil.which("cargo")
+    if not found:
+        raise DevError("MISSING_CARGO", "Install the pinned Rust toolchain before building")
+    return Path(found)
+
+
+def doctor(all_modules: list[Module]) -> dict:
+    states = [state(m) for m in all_modules]
+    binary = cargo_binary()
+    try:
+        version = subprocess.run([str(binary), "--version"], cwd=ROOT,
+                                 capture_output=True, text=True, timeout=30, check=True).stdout.strip()
+    except (subprocess.SubprocessError, OSError) as error:
+        raise DevError("TOOLCHAIN_UNAVAILABLE", str(error)) from error
+    agreement = shared(all_modules)
+    ready = all(s["state"] == "pinned" for s in states)
+    return {"ok": ready and agreement["ok"], "scope": "development_bootstrap",
+            "cargo": version, "modules": states, "shared": agreement,
+            "eda_validation": "unchecked",
+            "warnings": ["Studio shared code still needs convergence"] if
+            agreement["studio"]["state"] == "pending_convergence" else []}
+
+
+@contextmanager
+def scale_lock(memory_mib: int):
+    work = ROOT / ".work"
+    work.mkdir(exist_ok=True)
+    with (work / "scale.lock").open("a") as lock:
+        if memory_mib > 4096:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as error:
+                raise DevError("RESOURCE_BUSY", "Another high-memory RustEDA command is running") from error
+        yield
+
+
+def guarded(chosen: list[Module], args: argparse.Namespace) -> dict:
+    # Validation must work on the feature branch and uncommitted edits being developed.
+    # Only initialization may insist on clean, already-pinned checkouts.
+    statuses = [state(module) for module in chosen]
+    if any(s["state"] == "uninitialized" for s in statuses):
+        raise DevError("UNINITIALIZED_MODULE", "Run ./dev init first")
+    if not 1 <= args.jobs <= 4 or not 1 <= args.test_threads <= 4:
+        raise DevError("RESOURCE_BUDGET", "Build jobs and test threads must be between 1 and 4")
+    if not 256 <= args.memory_mib <= 32768 or not 1 <= args.timeout <= 3600:
+        raise DevError("RESOURCE_BUDGET", "Memory must be 256..32768 MiB; deadline 1..3600 seconds")
+    meminfo = Path("/proc/meminfo")
+    if meminfo.is_file():
+        match = re.search(r"^MemAvailable:\s+(\d+)", meminfo.read_text(), re.MULTILINE)
+        if match and int(match[1]) // 1024 < args.memory_mib:
+            raise DevError("INSUFFICIENT_MEMORY", "Available RAM is below the requested memory ceiling")
+    binary = cargo_binary()
+    logs = ROOT / ".work/logs"
+    logs.mkdir(parents=True, exist_ok=True)
+    scoped = bool(shutil.which("systemd-run")) and subprocess.run(
+        ["systemctl", "--user", "is-active", "--quiet", "default.target"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode == 0
+    results = []
+    with scale_lock(args.memory_mib):
+        for module, before in zip(chosen, statuses):
+            command = [str(binary), args.command]
+            command += ["--all", "--", "--check"] if args.command == "fmt" else ["--workspace", "--locked"]
+            if getattr(args, "release", False) and args.command != "fmt":
+                command.append("--release")
+            if args.no_default_features and args.command != "fmt":
+                command += ["--no-default-features"]
+            environment = {
+                **os.environ, "PATH": str(binary.parent) + os.pathsep + os.environ.get("PATH", ""),
+                "CARGO_BUILD_JOBS": str(args.jobs), "RUST_TEST_THREADS": str(args.test_threads),
+                "CARGO_TARGET_DIR": str(ROOT / ".work/target" / module.name),
+            }
+            fd, log_name = tempfile.mkstemp(prefix=f"{module.name}-{args.command}-",
+                                           suffix=".log", dir=logs)
+            os.close(fd)
+            stats = log_name + ".time"
+            gnu_time = shutil.which("time")
+            measure = [gnu_time, "-v", "-o", stats] if gnu_time else [
+                sys.executable, str(ROOT / "scripts/measure.py"), "--output", stats, "--"]
+            prefix = ["timeout", "--signal=TERM", "--kill-after=10s", f"{args.timeout}s", *measure]
+            if scoped:
+                prefix = ["systemd-run", "--user", "--scope", "--quiet",
+                          "-p", f"MemoryMax={args.memory_mib}M", "-p", "MemorySwapMax=2048M", *prefix]
+
+            def cpu_limit():
+                limit = args.memory_mib * 1024 * 1024
+                soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+                inherited = min(v for v in (soft, hard, limit) if v != resource.RLIM_INFINITY)
+                resource.setrlimit(resource.RLIMIT_AS, (inherited, inherited))
+
+            started = time.monotonic()
+            with open(log_name, "w") as stream:
+                process = subprocess.run(prefix + command, cwd=module.path, env=environment,
+                                         stdin=subprocess.DEVNULL,
+                                         stdout=stream, stderr=subprocess.STDOUT,
+                                         preexec_fn=None if scoped else cpu_limit, check=False)
+            results.append({"module": module.name, "exit_code": process.returncode,
+                            "source_head": before["head"], "source_dirty": before["dirty"],
+                            "wall_seconds": round(time.monotonic() - started, 3),
+                            "log": str(Path(log_name).relative_to(ROOT)),
+                            "resource_usage": str(Path(stats).relative_to(ROOT)),
+                            "measurement": "gnu_time" if gnu_time else "python_rusage",
+                            "guard": "cgroup" if scoped else "cpu_address_space",
+                            "eda_validation": "unchecked"})
+            if process.returncode:
+                break
+    return {"ok": all(r["exit_code"] == 0 for r in results), "runs": results}
+
+
+def emit(value: dict, as_json: bool):
+    if as_json:
+        print(json.dumps(value, indent=2))
+        return
+    if "modules" in value:
+        for entry in value["modules"]:
+            print(f'{entry["name"]:17} {entry["state"]:18} {(entry.get("head") or "-")[:12]}')
+    for entry in value.get("runs", []):
+        print(f'{entry["module"]}: exit {entry["exit_code"]}; {entry["wall_seconds"]}s; {entry["log"]}')
+    if "shared" in value:
+        print("Shared:", json.dumps(value["shared"], sort_keys=True))
+    elif "verified_files" in value:
+        print(json.dumps(value, indent=2))
+    for warning in value.get("warnings", []):
+        print("Note:", warning)
+    if value.get("eda_validation"):
+        print("EDA validation:", value["eda_validation"])
+
+
+def main() -> int:
+    if len(sys.argv)>1 and sys.argv[1] in ("tools", "flow"):
+        try:
+            modules()  # Preserve superproject path safety for these entrypoints too.
+            if sys.argv[1] == "tools":
+                from integration.toolchain import main as entry
+            else:
+                from integration.rusteda_flow import main as entry
+            value=entry(sys.argv[2:],root=ROOT)
+            print(json.dumps(value,indent=2))
+            return 0 if value.get("ok") is True else 1
+        except (ValueError, KeyError, TypeError, OSError, subprocess.SubprocessError, DevError) as error:
+            print(json.dumps(dict(ok=False,code=getattr(error,"code","INTEGRATION_ERROR"),message=str(error))))
+            return 1
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    for name in ("status", "init", "doctor", "shared", "fmt", "check", "build", "test"):
+        item = sub.add_parser(name)
+        item.add_argument("--json", action="store_true")
+        if name in ("status", "init", "fmt", "check", "build", "test"):
+            item.add_argument("modules", nargs="*", help="Module names, or all")
+        if name == "init":
+            item.add_argument("--from-local", type=Path, help="Directory containing local source repositories")
+        if name == "shared":
+            item.add_argument("--include-studio", action="store_true")
+        if name in ("fmt", "check", "build", "test"):
+            item.add_argument("--timeout", type=int, default=180)
+            item.add_argument("--memory-mib", type=int, default=8192)
+            item.add_argument("--jobs", type=int, default=2)
+            item.add_argument("--test-threads", type=int, default=2)
+            item.add_argument("--no-default-features", action="store_true")
+            if name != "fmt":
+                item.add_argument("--release", action="store_true")
+    sub.add_parser("tools", help="Configure and verify pinned integration tools")
+    sub.add_parser("flow", help="Run RustLane-managed RustEDA flows")
+    args = parser.parse_args()
+    try:
+        inventory = modules()
+        if args.command == "status":
+            states = [state(m) for m in select(inventory, args.modules)]
+            value = {"ok": all(s["state"] == "pinned" for s in states), "modules": states}
+        elif args.command == "init":
+            value = initialize(select(inventory, args.modules), args.from_local)
+        elif args.command == "doctor":
+            value = doctor(inventory)
+        elif args.command == "shared":
+            value = shared(inventory, args.include_studio)
+        else:
+            if args.command in ("test", "build") and not args.modules:
+                raise DevError("SELECT_MODULES", "Select a module explicitly, or pass all")
+            value = guarded(select(inventory, args.modules), args)
+        emit(value, args.json)
+        return 0 if value["ok"] else 1
+    except (DevError, OSError) as error:
+        value = {"ok": False, "code": getattr(error, "code", "OS_ERROR"), "message": str(error)}
+        if args.json:
+            print(json.dumps(value))
+        else:
+            print(f'{value["code"]}: {value["message"]}', file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

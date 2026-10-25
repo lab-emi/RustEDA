@@ -1,0 +1,37 @@
+name: Development entrypoint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  orchestration-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Test orchestration with disposable repositories
+        shell: bash
+        run: |
+          mkdir -p .work/bootstrap
+          ulimit -v 524288
+          timeout --signal=TERM --kill-after=5s 90s \
+            python3 scripts/measure.py --output .work/bootstrap/infra-tests.json -- \
+            python3 -m unittest discover -s tests -v
+      - name: Report measured resources
+        if: always()
+        run: |
+          if test -f .work/bootstrap/infra-tests.json; then
+            cat .work/bootstrap/infra-tests.json
+          fi
