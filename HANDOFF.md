@@ -1,6 +1,22 @@
 # RustEDA integration handoff
 
-## 2026-10-25 — Claude status-report closeout, in progress
+## 2026-10-25 — Claude closeout qualification completed
+
+- Qualified all 16 baseline pairs: 15 ordinary passes and 1 explicit MPW deviation;
+  no failed or unverified gating items. Full source: RustROAD 1f86687baaf7e6753addb9351b83f3561fd714f4.
+- Current report and unresolved-item inventory: docs/closeout/STATUS.md. Machine evidence:
+  integration/evidence/claude-closeout.json; detailed module evidence is linked there.
+- Every row includes two engines/two SPEF sources, required PDK corners, DRC/LVS/antenna,
+  equivalence/co-simulation, negative controls, deterministic rebuild and artifact binding.
+- The old headline miscount (10/16, not 11/16), mixed SERV licenses, tool portability and
+  ineffective hold mutation were corrected. A failed MPW circuit vote was not waived:
+  clock loading was improved and reverified under the unchanged thresholds.
+- RustSTA now has an explicit tested SPEF topology safety boundary; OpenC910 raw case
+  recovery, full latch timing, high-R Ceff, scale and independent human reviews remain open.
+- This completes the reproducible baseline closeout, not every research or signoff item.
+  The next RustLane integration phase has not started. Original siblings and their WIP are intact.
+
+## 2026-10-25 — Claude closeout implementation and audit notes
 
 - User requested auditing and finishing the unfinished work in RustEDA-status-2026-10-25.md
   before starting the next phase. Do not start the new RustLane integration phase yet.
@@ -16,7 +32,7 @@
 - The migration README confirms original large scratch (raw netlists/SPEF/GDS/logs) was
   deleted before this task. Retained summaries and frozen binaries are historical evidence;
   regenerate missing raw observations before making a current acceptance claim.
-- Current final qualification is `.work/closeout/qualify-final.py`, with results written
+- Final qualification ran through `.work/closeout/qualify-final.py`, with results written
   incrementally to `.work/closeout/accepted-results.json`. It uses the immutable worktree
   `.work/closeout/qualified-road-final2` at 1f86687baaf7e6753addb9351b83f3561fd714f4.
   Do not edit that worktree while the runs are active. The earlier 17fb611 cohort is recorded
