@@ -38,3 +38,12 @@ Studio 在新的私有仓库保存快照；源目录没有被初始化提交或�
 - 开发入口与 Rust 1.97.1 可用。未运行全系列编译、EDA 回归、双 PDK 签核或 GUI 功能验证。
 
 本地原始输出位于 .work/bootstrap 和 .work/logs，未提交大型或机器相关产物。
+
+## 远端复现
+
+已从 GitHub 完成一次递归浅克隆，五个子模块均取到固定提交，doctor 通过，
+再次 init 不产生改动。该克隆耗时 36.292 秒，最大单个子进程 RSS 为 148,488 KiB，
+全程使用 2 GiB cgroup 上限。
+
+[开发入口 CI](https://github.com/lab-emi/RustEDA/actions/runs/40156966383) 已通过。
+它仅验证仓库编排辅助工具，不代表 EDA 或 GUI 验证通过。

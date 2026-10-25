@@ -64,3 +64,19 @@ Recorded results and outstanding work are updated here before handoff.
   pending convergence.
 - Original sibling HEADs, branches and tracked/untracked status were rechecked unchanged.
   All 271 original Studio file hashes match the independent snapshot.
+
+### Remote acceptance
+
+- https://github.com/lab-emi/RustEDA and https://github.com/lab-emi/RustEDA-Studio
+  were created private. All existing repository visibility and main branch heads are unchanged.
+- Required source commits are available on integration/rusteda-bootstrap-20261025 in
+  RustSys, RustSTA and RustROAD; Studio has its initial snapshot on main. The root main
+  branch was pushed only after checking child-commit availability.
+- A fresh recursive shallow clone from GitHub succeeded under a 2 GiB cgroup:
+  36.292 seconds end to end; measured maximum individual child RSS 148,488 KiB.
+  All five modules match their gitlinks; ./dev doctor succeeds; ./dev init is a no-op.
+- Development entrypoint CI passed on 270513a:
+  https://github.com/lab-emi/RustEDA/actions/runs/40156966383
+  This tests orchestration with synthetic repositories and does not certify EDA algorithms.
+- Next work: review/import original RustLane post-route changes; converge Studio's shared
+  layer; configure real PDK/tool identities and establish reviewed end-to-end integration gates.
