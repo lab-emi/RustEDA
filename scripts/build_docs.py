@@ -124,9 +124,14 @@ def build(stage, site):
             for file in docs:
                 rel = file.relative_to(repo/'docs').as_posix()
                 title = next((line.lstrip('# ').strip() for line in file.read_text().splitlines() if line.startswith('# ')), rel)
-                group = 'Reference' if rel.startswith('specs/') else 'Verification' if rel.startswith('verification/') else 'Guides'
-                groups.setdefault(group, []).append({title: prefix+'/'+rel})
-            entries.extend({group: pages} for group, pages in groups.items())
+                if rel.startswith('specs/'):
+                    section = file.parent.name.replace('-', ' ').title()
+                    groups.setdefault('Reference', {}).setdefault(section, []).append({title: prefix+'/'+rel})
+                else:
+                    group = 'Project' if rel.startswith('brand/') else 'Verification' if rel.startswith('verification/') else 'Interface research' if rel.startswith('research/') else 'Guides'
+                    groups.setdefault(group, []).append({title: prefix+'/'+rel})
+            for group, pages in groups.items():
+                entries.append({group: [{section: contents} for section, contents in pages.items()] if isinstance(pages, dict) else pages})
         module_nav.append({name.replace('-', ' '): entries})
     nav += [{'Modules': module_nav}, {'Evidence': [{'Benchmarks': 'benchmarks.md'}, {'Scope and qualification': 'verification.md'}]}, {'Project': [{'Architecture': 'shared-foundation.md'}, {'Visual identity': 'brand.md'}, {'Provenance': 'provenance.md'}]}]
     config = yaml.safe_load((ROOT/'docs/mkdocs.yml').read_text())
