@@ -35,6 +35,13 @@
 - 普通端点对照最大差值 0.786409 ps，仍使用 1 ps 门限。完整运行最大单进程峰值 520.2 MiB；整个并行组受 8 GiB RAM、2 GiB swap、7200 秒限制。
 - 原始回执和大制品保留在本地 `.work/closeout/qualified-road-final2/.work/runs/`。各基准的全部未执行范围继续明确标记。
 
+## 交付状态
+
+- 代码、报告与证据已推送到 RustEDA、RustROAD、RustSTA 的 `fix/claude-closeout` 分支，子仓 main 未改动。
+- [远端递归克隆验收](../../integration/evidence/closeout-remote.json)：六个 gitlink 均可获取，工作区干净，`doctor`/共享层检查通过，初始化无改动。
+- [根仓 CI](https://github.com/lab-emi/RustEDA/actions/runs/40165219950) 与 [模块 CI](https://github.com/lab-emi/RustROAD/actions/runs/40165215539) 均通过；完整物理验收仍以上面的本地固定环境证据为准。
+- 物理资格验证源码是 `1f86687`；后续 RustROAD `a6ea506` 仅添加结果文档与证据，运行实现未变。
+
 ## 仍未关闭或不在本轮资格范围内
 
 - OpenC910 独立 checker 的 4.1 ns 历史差异：迁移前删除了原始网表、SDC 与 checker 输出，已向用户询问备份路径。缺少复现数据，未声称修复或通过。

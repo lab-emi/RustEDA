@@ -720,5 +720,11 @@
     "Full GF180 latch timing coverage and >1 kOhm Ceff residual",
     "SERV/rv_core scale, density fill and physical-port/antenna policy",
     "Independent legal/foundry/engineering review"
-  ]
+  ],
+  "delivery": {
+    "branch": "fix/claude-closeout",
+    "road_documentation_commit": "a6ea5063fc39e1419b760901f1918328f73f065c",
+    "ruststa_commit": "dd8ade8ca622c97f3fc45c88446f9bb06a6ef9d6",
+    "remote_acceptance": "integration/evidence/closeout-remote.json"
+  }
 }

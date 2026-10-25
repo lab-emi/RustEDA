@@ -13,6 +13,9 @@
   clock loading was improved and reverified under the unchanged thresholds.
 - RustSTA now has an explicit tested SPEF topology safety boundary; OpenC910 raw case
   recovery, full latch timing, high-R Ceff, scale and independent human reviews remain open.
+- Remote recursive checkout at root 1473f61 reproduced all six pins and passed doctor/shared/no-op init;
+  receipt: integration/evidence/closeout-remote.json. Root and Road CI passed. Road documentation
+  commit a6ea506 changes only reports/HANDOFF after the qualified implementation 1f86687.
 - This completes the reproducible baseline closeout, not every research or signoff item.
   The next RustLane integration phase has not started. Original siblings and their WIP are intact.
 

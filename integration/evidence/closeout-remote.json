@@ -1,0 +1,116 @@
+{
+  "schema": "rusteda.closeout-remote.v1",
+  "status": "passed",
+  "validated_root_commit": "1473f61553c23d491446f3a4ad5f920ec5a3ade1",
+  "branch": "fix/claude-closeout",
+  "initial_recursive_clone": {
+    "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+    "rss_scope": "maximum_individual_child_rss_not_aggregate",
+    "wall_seconds": 39.240256,
+    "maximum_resident_set_size_kib": 146116,
+    "user_seconds": 1.951792,
+    "system_seconds": 0.6140329999999999,
+    "exit_code": 0
+  },
+  "final_update": {
+    "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+    "rss_scope": "maximum_individual_child_rss_not_aggregate",
+    "wall_seconds": 7.941716,
+    "maximum_resident_set_size_kib": 27408,
+    "user_seconds": 0.409155,
+    "system_seconds": 0.24245,
+    "exit_code": 0
+  },
+  "modules": [
+    {
+      "name": "RustEDA-Common",
+      "path": "modules/RustEDA-Common",
+      "expected": "7e78e705908a3475018ab39df94b94423e158a13",
+      "state": "pinned",
+      "head": "7e78e705908a3475018ab39df94b94423e158a13",
+      "dirty": false,
+      "branch": "(detached)"
+    },
+    {
+      "name": "RustEDA-Studio",
+      "path": "modules/RustEDA-Studio",
+      "expected": "084aeb453268fbfd3fe621eeb62e8588aa7ae597",
+      "state": "pinned",
+      "head": "084aeb453268fbfd3fe621eeb62e8588aa7ae597",
+      "dirty": false,
+      "branch": "(detached)"
+    },
+    {
+      "name": "RustLane",
+      "path": "modules/RustLane",
+      "expected": "6c4824aabc7d03fec82d550fa34506c4be430513",
+      "state": "pinned",
+      "head": "6c4824aabc7d03fec82d550fa34506c4be430513",
+      "dirty": false,
+      "branch": "(detached)"
+    },
+    {
+      "name": "RustROAD",
+      "path": "modules/RustROAD",
+      "expected": "a6ea5063fc39e1419b760901f1918328f73f065c",
+      "state": "pinned",
+      "head": "a6ea5063fc39e1419b760901f1918328f73f065c",
+      "dirty": false,
+      "branch": "(detached)"
+    },
+    {
+      "name": "RustSTA",
+      "path": "modules/RustSTA",
+      "expected": "dd8ade8ca622c97f3fc45c88446f9bb06a6ef9d6",
+      "state": "pinned",
+      "head": "dd8ade8ca622c97f3fc45c88446f9bb06a6ef9d6",
+      "dirty": false,
+      "branch": "(detached)"
+    },
+    {
+      "name": "RustSys",
+      "path": "modules/RustSys",
+      "expected": "6012cf66e333c0719ba44c13dda33746193e6406",
+      "state": "pinned",
+      "head": "6012cf66e333c0719ba44c13dda33746193e6406",
+      "dirty": false,
+      "branch": "(detached)"
+    }
+  ],
+  "shared": {
+    "ok": true,
+    "rustsys_ruststa_equal": true,
+    "verified_files": {
+      "RustSys": 36,
+      "RustSTA": 36,
+      "RustEDA-Studio": 36
+    },
+    "studio": {
+      "state": "converged",
+      "different_paths": 0,
+      "examples": []
+    },
+    "foundation": {
+      "revision": "7e78e705908a3475018ab39df94b94423e158a13",
+      "verified_files": 267,
+      "consumers": {
+        "RustSys": "7e78e705908a3475018ab39df94b94423e158a13",
+        "RustSTA": "7e78e705908a3475018ab39df94b94423e158a13",
+        "RustEDA-Studio": "7e78e705908a3475018ab39df94b94423e158a13"
+      },
+      "state": "pinned"
+    }
+  },
+  "initialization": "no changes required",
+  "eda_validation": "verified separately by integration/evidence/claude-closeout.json",
+  "ci": {
+    "root": {
+      "status": "passed",
+      "url": "https://github.com/lab-emi/RustEDA/actions/runs/40165219950"
+    },
+    "road": {
+      "status": "passed",
+      "url": "https://github.com/lab-emi/RustROAD/actions/runs/40165215539"
+    }
+  }
+}
