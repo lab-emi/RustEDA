@@ -114,7 +114,7 @@ def main():
         (dest/f'{slug}-logo.svg').write_text(svg(chip_svg(slug),256,256,name,subtitle))
         (dest/'rusteda-logo.svg').write_text(svg(chip_svg('rusteda'),256,256,'RustEDA','The RustEDA design feedback loop'))
         (dest/'favicon.svg').write_text(svg(chip_svg(slug),256,256,name,subtitle))
-        word=f'<g transform="scale(.25)">{chip_svg(slug)}</g><text x="80" y="44" font-family="DejaVu Sans,sans-serif" font-size="32" font-weight="700" fill="{PAPER}">{escape(name.replace("RustEDA-","RustEDA "))}</text>'
+        word=f'<rect width="440" height="64" rx="14" fill="{INK}"/><g transform="scale(.25)">{chip_svg(slug)}</g><text x="80" y="44" font-family="DejaVu Sans,sans-serif" font-size="32" font-weight="700" fill="{PAPER}">{escape(name.replace("RustEDA-","RustEDA "))}</text>'
         (dest/f'{slug}-wordmark.svg').write_text(svg(word,440,64,name,subtitle))
         static,frames=banner(name,slug,subtitle,flow)
         (dest/f'{slug}-banner.svg').write_text(static)
