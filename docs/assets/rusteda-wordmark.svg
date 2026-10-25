@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="440" height="64" viewBox="0 0 440 64" role="img" aria-labelledby="title desc"><title id="title">RustEDA</title><desc id="desc">Chip-design infrastructure for recursive self-improvement</desc><g transform="scale(.25)"><rect width="256" height="256" rx="54" fill="#101923"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="64" viewBox="0 0 440 64" role="img" aria-labelledby="title desc"><title id="title">RustEDA</title><desc id="desc">Chip-design infrastructure for recursive self-improvement</desc><rect width="440" height="64" rx="14" fill="#101923"/><g transform="scale(.25)"><rect width="256" height="256" rx="54" fill="#101923"/>
 <g fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
 <path d="M83 48H48V83M48 173V208H83" stroke="#EF8B52"/>
 <path d="M173 48H208V83M208 173V208H173" stroke="#57D6BE"/>
