@@ -110,8 +110,8 @@ def build(stage, site):
         result = {key: p for key, value in item.items() if (p := prune(value)) is not None}
         return result or None
 
-    nav = [{'Overview': 'index.md'}, {'Get started': [{'Build': 'development.md'}, {'Run a flow': 'flows.md'}, {'Modules': 'modules.md'}]}]
-    module_nav = []
+    nav = [{'Overview': 'index.md'}, {'Get started': [{'Build': 'development.md'}, {'Run a flow': 'flows.md'}]}]
+    module_nav = [{'Overview': 'modules.md'}]
     for name in MODULES:
         repo = ROOT/'modules'/name; prefix = 'modules/'+name.lower()
         source_config = repo/'docs/mkdocs.yml'
