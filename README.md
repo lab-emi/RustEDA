@@ -34,6 +34,7 @@ GitHub 的普通单仓 GITHUB_TOKEN 不会自动获得其他私有仓库的权�
 ./dev test RustLane
 ./dev check RustEDA-Studio --no-default-features
 ./dev build RustROAD --timeout 600
+./dev build RustLane RustROAD --release --memory-mib 4096
 ~~~
 
 已有本地仓库时，可用 ./dev init --from-local /path/to/parent 初始化缺失模块。
@@ -70,6 +71,30 @@ gitlink 是模块版本的唯一依据；.gitmodules 只保存地址和路径。
 根仓没有 Cargo workspace，不会改变各模块的 Cargo.lock、依赖和构建选项。
 RustLane 负责产品的运行时流程，本仓库负责开发与集成。
 
+## 联合 RTL-to-GDS 流程
+
+Linux 上使用现有的用户 systemd manager、Podman、固定版本的参考工具及双 PDK。
+`tools configure` 检查可执行文件、PDK 和容器身份，写入本机 `.work/integration/toolchain.json`；
+缺失或哈希不符就停止。可重复传入 `--tool NAME=/absolute/path` 指定已安装工具，
+例如 `--tool gnu_time=/absolute/path/to/time`。不会自动安装工具或下载 PDK。
+
+~~~bash
+./dev tools configure
+./dev tools verify
+./dev flow --workspace .work/my-counter init --base-rev empty --design counter --pdk sky130
+./dev flow --workspace .work/my-counter run --base-rev rev0
+./dev flow --workspace .work/my-counter report --summary-only
+./dev flow --workspace .work/my-counter run --base-rev rev2   # 校验后零工作复用
+~~~
+
+将 `--pdk` 换为 `gf180` 可使用 GF180 7T；每个配置使用独立工作区。
+`plan`、`doctor`、`report` 可在 worker 执行时查询已提交快照。
+完整流程包含 25 项门禁，保留 `deviation_declared`、两类 SPEF、三个角及未约束端点数量。
+
+运行被强制终止后，用 `recover --base-rev 当前版本` 清理该任务，再以返回的新版本执行
+`run --retry-failed --base-rev 新版本`。未确认清理完成时禁止自动重试；输入变化要求新建工作区。
+协议、验收结果和专用 CI 环境要求见 [阶段三记录](docs/phase3.md)。
+
 ## 当前范围
 
 - 五个模块接入并可从同一目录开发。
@@ -79,5 +104,6 @@ RustLane 负责产品的运行时流程，本仓库负责开发与集成。
 - PDK、参考工具、大型缓存与实验数据留在 Git 外，工具模板见 integration/tools.example.toml。
 - 根仓 CI 验证开发辅助脚本；不会将其结果称作 EDA 验证通过。
 - Claude 遗留工作的核查、收尾验证与仍待解决的事项见 [收尾记录](docs/closeout/STATUS.md)。
+- RustLane 联合流程由 `./dev flow` 驱动；完整物理 CI 需配置专用私有 runner，不能由根仓结构测试替代。
 
 License: Apache-2.0。各子模块继续遵循自己的 LICENSE 与 NOTICE。

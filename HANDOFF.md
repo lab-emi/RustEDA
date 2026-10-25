@@ -1,5 +1,17 @@
 # RustEDA integration handoff
 
+## 2026-10-25 — Phase 3 in progress
+
+- User explicitly requested starting Phase 3. Scope and upfront budgets: docs/phase3.md.
+- Root branch feat/phase3-flow; RustLane branch feat/rustroad-worker.
+- Original RustLane WIP is preserved without modifying the sibling in local archive branch
+  archive/postroute-wip-20261025 at 26bdfeab2426b2270f608b2ef27a9511a669cfdd.
+  The raw diff/file inventory is in .work/phase3/legacy-snapshot.json.
+- Use a daemonless external-worker request/receipt protocol for the containerized full flow.
+  RustLane's native supervisor intentionally disallows namespace creation, so do not weaken
+  that protection to launch Podman. Keep revision checks, explicit ownership and fail-closed
+  cleanup state. Use the qualified RustROAD protocol instead of stale WIP signoff assumptions.
+
 ## 2026-10-25 — Claude closeout qualification completed
 
 - Qualified all 16 baseline pairs: 15 ordinary passes and 1 explicit MPW deviation;

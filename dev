@@ -339,6 +339,8 @@ def guarded(chosen: list[Module], args: argparse.Namespace) -> dict:
         for module, before in zip(chosen, statuses):
             command = [str(binary), args.command]
             command += ["--all", "--", "--check"] if args.command == "fmt" else ["--workspace", "--locked"]
+            if getattr(args, "release", False) and args.command != "fmt":
+                command.append("--release")
             if args.no_default_features and args.command != "fmt":
                 command += ["--no-default-features"]
             environment = {
@@ -403,6 +405,19 @@ def emit(value: dict, as_json: bool):
 
 
 def main() -> int:
+    if len(sys.argv)>1 and sys.argv[1] in ("tools", "flow"):
+        try:
+            modules()  # Preserve superproject path safety for these entrypoints too.
+            if sys.argv[1] == "tools":
+                from integration.toolchain import main as entry
+            else:
+                from integration.rusteda_flow import main as entry
+            value=entry(sys.argv[2:],root=ROOT)
+            print(json.dumps(value,indent=2))
+            return 0 if value.get("ok") is True else 1
+        except (ValueError, KeyError, TypeError, OSError, subprocess.SubprocessError, DevError) as error:
+            print(json.dumps(dict(ok=False,code=getattr(error,"code","INTEGRATION_ERROR"),message=str(error))))
+            return 1
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("status", "init", "doctor", "shared", "fmt", "check", "build", "test"):
@@ -420,6 +435,10 @@ def main() -> int:
             item.add_argument("--jobs", type=int, default=2)
             item.add_argument("--test-threads", type=int, default=2)
             item.add_argument("--no-default-features", action="store_true")
+            if name != "fmt":
+                item.add_argument("--release", action="store_true")
+    sub.add_parser("tools", help="Configure and verify pinned integration tools")
+    sub.add_parser("flow", help="Run RustLane-managed RustEDA flows")
     args = parser.parse_args()
     try:
         inventory = modules()
