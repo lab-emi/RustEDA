@@ -1,0 +1,15 @@
+[submodule "modules/RustSys"]
+	path = modules/RustSys
+	url = git@github.com:lab-emi/RustSys.git
+[submodule "modules/RustSTA"]
+	path = modules/RustSTA
+	url = git@github.com:lab-emi/RustSTA.git
+[submodule "modules/RustROAD"]
+	path = modules/RustROAD
+	url = git@github.com:lab-emi/RustROAD.git
+[submodule "modules/RustLane"]
+	path = modules/RustLane
+	url = git@github.com:lab-emi/RustLane.git
+[submodule "modules/RustEDA-Studio"]
+	path = modules/RustEDA-Studio
+	url = git@github.com:lab-emi/RustEDA-Studio.git

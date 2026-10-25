@@ -1,0 +1,25 @@
+schema_version = 1
+status = "unchecked"
+
+[rust]
+channel = "1.97.1"
+
+[scope]
+pdks = ["sky130_fd_sc_hd", "gf180mcu_fd_sc_mcu7t5v0", "gf180mcu_fd_sc_mcu9t5v0"]
+corners = ["tt", "ss", "ff"]
+wire_model = "explicit-per-run"
+
+[tools.yosys]
+path = ""
+sha256 = ""
+status = "unconfigured"
+
+[tools.opensta]
+path = ""
+sha256 = ""
+status = "unconfigured"
+
+[tools.ngspice]
+path = ""
+sha256 = ""
+status = "unconfigured"
