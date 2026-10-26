@@ -30,7 +30,7 @@ jobs:
         run: |
           free -h
           ./dev doctor
-          ./dev build RustLane RustROAD --release --memory-mib 4096 --timeout 180 --json
+          ./dev build RustEDA RustROAD --no-default-features --release --memory-mib 4096 --timeout 180 --json
       - name: Verify preinstalled qualified tools, PDKs and OCI images
         shell: bash
         run: |

@@ -7,12 +7,6 @@
 [submodule "modules/RustROAD"]
 	path = modules/RustROAD
 	url = https://github.com/lab-emi/RustROAD.git
-[submodule "modules/RustLane"]
-	path = modules/RustLane
-	url = https://github.com/lab-emi/RustLane.git
-[submodule "modules/RustEDA-Studio"]
-	path = modules/RustEDA-Studio
-	url = https://github.com/lab-emi/RustEDA-Studio.git
 [submodule "modules/RustEDA-Common"]
 	path = modules/RustEDA-Common
 	url = https://github.com/lab-emi/RustEDA-Common.git

@@ -72,6 +72,10 @@ class Module:
     expected: str
 
     @property
+    def builtin(self) -> bool:
+        return self.relative == "apps"
+
+    @property
     def path(self) -> Path:
         return ROOT / self.relative
 
@@ -108,6 +112,15 @@ def modules() -> list[Module]:
     return sorted(result, key=lambda item: item.name)
 
 
+def applications() -> list[Module]:
+    if not (ROOT / "apps/Cargo.toml").is_file():
+        return []
+    if (ROOT / "apps").is_symlink():
+        raise DevError("UNSAFE_PATH", "apps must not be a symbolic link")
+    head = git("rev-parse", "HEAD").stdout.strip()
+    return [Module("RustEDA", "", "apps", "https://github.com/lab-emi/RustEDA.git", head)]
+
+
 def select(all_modules: list[Module], names: list[str]) -> list[Module]:
     if not names or names == ["all"]:
         return all_modules
@@ -119,6 +132,10 @@ def select(all_modules: list[Module], names: list[str]) -> list[Module]:
 
 def state(module: Module) -> dict:
     info = {"name": module.name, "path": module.relative, "expected": module.expected}
+    if module.builtin:
+        dirty = bool(git("status", "--porcelain=v1", "--untracked-files=normal", "--", "apps").stdout)
+        return {**info, "state": "dirty" if dirty else "pinned", "head": module.expected,
+                "dirty": dirty, "branch": git("branch", "--show-current").stdout.strip()}
     if not (module.path / ".git").exists():
         return {**info, "state": "uninitialized", "head": None, "dirty": False}
     top = git("rev-parse", "--show-toplevel", cwd=module.path).stdout.strip()
@@ -207,17 +224,19 @@ def hashes(module: Module) -> dict[str, str]:
 
 
 def shared(all_modules: list[Module], include_studio: bool = False) -> dict:
-    by_name = {m.name: m for m in all_modules}
+    by_name = {m.name: m for m in [*all_modules, *applications()]}
     inventories = {}
-    for name in ("RustSys", "RustSTA", "RustEDA-Studio"):
+    for name in ("RustSys", "RustSTA", "RustEDA"):
         if name not in by_name or state(by_name[name])["state"] == "uninitialized":
             raise DevError("UNINITIALIZED_MODULE", f"Initialize {name} before shared checks")
         inventories[name] = hashes(by_name[name])
     reference = inventories["RustSys"]
     sta_ok = reference == inventories["RustSTA"]
-    studio = inventories["RustEDA-Studio"]
+    studio = inventories["RustEDA"]
+    # Product command adapters belong to RustEDA; the shared engine/format contracts stay pinned.
     differences = sorted(p for p in reference.keys() | studio.keys()
-                         if reference.get(p) != studio.get(p))
+                         if not p.startswith("crates/apps/rusteda-cli/")
+                         and reference.get(p) != studio.get(p))
     result = {
         "ok": sta_ok and (not include_studio or not differences),
         "rustsys_ruststa_equal": sta_ok,
@@ -284,7 +303,7 @@ def cargo_binary() -> Path:
 
 
 def doctor(all_modules: list[Module]) -> dict:
-    states = [state(m) for m in all_modules]
+    states = [state(m) for m in [*all_modules, *applications()]]
     binary = cargo_binary()
     try:
         version = subprocess.run([str(binary), "--version"], cwd=ROOT,
@@ -341,8 +360,14 @@ def guarded(chosen: list[Module], args: argparse.Namespace) -> dict:
             command += ["--all", "--", "--check"] if args.command == "fmt" else ["--workspace", "--locked"]
             if getattr(args, "release", False) and args.command != "fmt":
                 command.append("--release")
+            if getattr(args, "all_features", False) and args.command != "fmt":
+                command.append("--all-features")
             if args.no_default_features and args.command != "fmt":
                 command += ["--no-default-features"]
+            if args.command == "clippy":
+                command += ["--all-targets", "--all-features", "--", "-D", "warnings"]
+            if args.command == "doc":
+                command += ["--no-deps"]
             environment = {
                 **os.environ, "PATH": str(binary.parent) + os.pathsep + os.environ.get("PATH", ""),
                 "CARGO_BUILD_JOBS": str(args.jobs), "RUST_TEST_THREADS": str(args.test_threads),
@@ -405,6 +430,12 @@ def emit(value: dict, as_json: bool):
 
 
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "library":
+        from integration.libraries import main as library_main
+        return library_main(sys.argv[2:])
+    if len(sys.argv) > 1 and sys.argv[1] == "sram":
+        from integration.sram import main as sram_main
+        return sram_main(sys.argv[2:])
     if len(sys.argv)>1 and sys.argv[1] in ("tools", "flow"):
         try:
             modules()  # Preserve superproject path safety for these entrypoints too.
@@ -420,33 +451,36 @@ def main() -> int:
             return 1
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    for name in ("status", "init", "doctor", "shared", "fmt", "check", "build", "test"):
+    for name in ("status", "init", "doctor", "shared", "fmt", "check", "build", "test", "clippy", "doc"):
         item = sub.add_parser(name)
         item.add_argument("--json", action="store_true")
-        if name in ("status", "init", "fmt", "check", "build", "test"):
+        if name in ("status", "init", "fmt", "check", "build", "test", "clippy", "doc"):
             item.add_argument("modules", nargs="*", help="Module names, or all")
         if name == "init":
             item.add_argument("--from-local", type=Path, help="Directory containing local source repositories")
         if name == "shared":
             item.add_argument("--include-studio", action="store_true")
-        if name in ("fmt", "check", "build", "test"):
+        if name in ("fmt", "check", "build", "test", "clippy", "doc"):
             item.add_argument("--timeout", type=int, default=180)
             item.add_argument("--memory-mib", type=int, default=8192)
             item.add_argument("--jobs", type=int, default=2)
             item.add_argument("--test-threads", type=int, default=2)
             item.add_argument("--no-default-features", action="store_true")
+            item.add_argument("--all-features", action="store_true")
             if name != "fmt":
                 item.add_argument("--release", action="store_true")
     sub.add_parser("tools", help="Configure and verify pinned integration tools")
-    sub.add_parser("flow", help="Run RustLane-managed RustEDA flows")
+    sub.add_parser("flow", help="Run RustEDA design flows")
+    sub.add_parser("library", help="Select a pinned standard-cell Liberty file")
+    sub.add_parser("sram", help="Locate installed SRAM macro collateral")
     args = parser.parse_args()
     try:
         inventory = modules()
         if args.command == "status":
-            states = [state(m) for m in select(inventory, args.modules)]
+            states = [state(m) for m in select([*inventory, *applications()], args.modules)]
             value = {"ok": all(s["state"] == "pinned" for s in states), "modules": states}
         elif args.command == "init":
-            value = initialize(select(inventory, args.modules), args.from_local)
+            value = initialize(select([*inventory, *applications()], args.modules), args.from_local)
         elif args.command == "doctor":
             value = doctor(inventory)
         elif args.command == "shared":
@@ -454,7 +488,7 @@ def main() -> int:
         else:
             if args.command in ("test", "build") and not args.modules:
                 raise DevError("SELECT_MODULES", "Select a module explicitly, or pass all")
-            value = guarded(select(inventory, args.modules), args)
+            value = guarded(select([*inventory, *applications()], args.modules), args)
         emit(value, args.json)
         return 0 if value["ok"] else 1
     except (DevError, OSError) as error:

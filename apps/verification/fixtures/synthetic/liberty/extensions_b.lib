@@ -1,0 +1,85 @@
+library (extensions_b) {
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1mA";
+  pulling_resistance_unit : "1kohm";
+  leakage_power_unit : "1nW";
+  capacitive_load_unit (1, pf);
+
+  nom_process : 1.0;
+  nom_temperature : 25.0;
+  nom_voltage : 1.8;
+
+  operating_conditions ("tt_025C_1v80") {
+    process : 1.0;
+    temperature : 25.0;
+    voltage : 1.8;
+    tree_type : "balanced_tree";
+  }
+  operating_conditions ("ff_n40C_1v95") {
+    process : 0.8;
+    temperature : -40.0;
+    voltage : 1.95;
+    tree_type : best_case_tree;
+  }
+  operating_conditions ("ss_100C_1v60") {
+    process : 1.2;
+    temperature : 100.0;
+    voltage : 1.6;
+    tree_type : worst_case_tree;
+  }
+  default_operating_conditions : "tt_025C_1v80";
+
+  wire_load ("Small") {
+    capacitance : 1.42e-05;
+    resistance : 0.0745;
+    area : 0.05;
+    slope : 8.3631;
+    fanout_length (1, 23.2746);
+    fanout_length (2, 32.1136);
+    fanout_length (4, 64.0974);
+  }
+  wire_load ("Medium") {
+    capacitance : 2.84e-05;
+    resistance : 0.149;
+    area : 0.10;
+    slope : 16.0;
+    fanout_length (1, 30.0);
+    fanout_length (3, 70.0);
+  }
+
+  wire_load_table ("wlt_std") {
+    fanout_length (1, 10.0);
+    fanout_length (2, 22.0);
+    fanout_capacitance (1, 0.001);
+    fanout_capacitance (2, 0.0025);
+    fanout_resistance (1, 0.05);
+    fanout_resistance (2, 0.12);
+    fanout_area (1, 0.5);
+    fanout_area (2, 1.1);
+  }
+
+  wire_load_selection ("sel_by_area") {
+    wire_load_from_area (0.0, 500.0, "Small");
+    wire_load_from_area (500.0, 5000.0, "Medium");
+  }
+
+  default_wire_load : "Small";
+  default_wire_load_mode : top;
+  default_wire_load_selection : "sel_by_area";
+  default_wire_load_area : 0.05;
+  default_wire_load_capacitance : 1.42e-05;
+  default_wire_load_resistance : 0.0745;
+
+  cell (BUF_1) {
+    area : 2.0;
+    pin (A) {
+      direction : input;
+      capacitance : 0.005;
+    }
+    pin (Y) {
+      direction : output;
+      function : "A";
+    }
+  }
+}

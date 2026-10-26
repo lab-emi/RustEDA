@@ -1,0 +1,13 @@
+RustEDA Studio
+Copyright 2026 RustEDA Studio contributors
+
+The shared crates of the RustEDA tools (crates/core/rusteda-core, crates/core/rusteda-workspace,
+crates/core/rusteda-compute, crates/formats/rusteda-formats and crates/apps/rusteda-cli), their
+specifications (docs/specs/core, workspace, compute, verilog, liberty, sdc and rusteda-cli) and
+the shared automation files that xtask/src/shared.rs lists:
+Copyright 2026 RustEDA contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party assets bundled in this repository are listed below together with their licenses.
+(none yet)

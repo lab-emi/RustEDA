@@ -60,7 +60,7 @@ equivalence status and all deviations. Timeout, missing tool, failed quality
 gate or exhausted memory is a non-completion, never a speedup number.
 
 No such OpenC910/SKY130 matched pair is currently recorded. RustSTA, RustROAD,
-RustLane and Studio have no comparable OpenC910 runtime rows to fill in.
+RustEDA flow and the workbench have no comparable OpenC910 runtime rows to fill in.
 
 ## Amdahl's law and agent iteration time
 

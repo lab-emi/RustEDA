@@ -9,16 +9,16 @@ cd RustEDA
 ```
 
 The development baseline is Git, Python 3.11+, Rust 1.97.1 and Linux native
-build dependencies. Module-specific requirements live under each module's guide.
+build dependencies. Component-specific requirements live under each guide.
 There is no root Cargo workspace. Shared implementation lives in RustEDA Common;
-products depend on an exact source revision.
+applications in `apps/` depend on an exact source revision.
 
 ```sh
 ./dev test RustEDA-Common
 ./dev fmt all
 ./dev check RustSys RustSTA
-./dev test RustLane
-./dev check RustEDA-Studio --no-default-features
+./dev test RustEDA --no-default-features
+./dev check RustEDA --no-default-features
 ./dev build RustROAD --release --timeout 600
 ```
 

@@ -1,0 +1,75 @@
+[workspace]
+resolver = "3"
+members = ["crates/*/*", "xtask"]
+default-members = ["crates/apps/rusteda-cli"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "Apache-2.0"
+publish = false
+authors = ["RustEDA contributors"]
+repository = "https://github.com/lab-emi/RustEDA"
+
+[workspace.dependencies]
+rusteda-core = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-workspace = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-compute = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-formats = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+rusteda-flow = { path = "crates/apps/rusteda-flow" }
+rusteda-studio = { path = "crates/apps/rusteda-studio", default-features = false }
+rusteda-cli = { path = "crates/apps/rusteda-cli" }
+rusteda-cli-shared = { package = "rusteda-cli-common", git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "c96ef1520ab08b40e48ed7643002b5c06ad13e07" }
+clap = { version = "=4.6.7", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "color", "suggestions"] }
+clap_complete = { version = "=4.6.11", default-features = false }
+# Terminal size for the progress line of the command line. `windows`: crossterm does not compile
+# on Windows without it (its dependencies are Windows-only).
+crossterm = { version = "=0.29.0", default-features = false, features = ["windows"] }
+serde = { version = "=1.0.228", features = ["derive"] }
+# float_roundtrip: the decimal text of a stored f64 parses back to the same value.
+serde_json = { version = "=1.0.149", features = ["float_roundtrip"] }
+thiserror = "=2.0.18"
+rayon = "=1.12.0"
+rustc-hash = "=2.1.2"
+# Plain-record views of the frozen netlist tables and the compute task interface.
+bytemuck = { version = "=1.25.2", features = ["derive"] }
+memmap2 = "=0.9.11"
+xxhash-rust = { version = "=0.8.19", default-features = false, features = ["xxh3"] }
+# The CUDA driver and NVRTC libraries are loaded at run time: builds need no CUDA toolkit.
+cudarc = { version = "=0.19.10", default-features = false, features = ["std", "driver", "nvrtc", "fallback-dynamic-loading", "cuda-version-from-build-system", "fallback-latest"] }
+# The workbench's user-interface framework (plan §6.1), used only by the `gui` feature of
+# `rusteda-studio` (an apps crate, Rule 1.3). The released 0.2.2 is the last version on
+# crates.io; the component library of the plan does not build against it in its current
+# release (docs/adr/0001-gui-toolkit.md), so the workbench uses the framework alone.
+gpui = "=0.2.2"
+# Held at 0.2.189 for the user-interface framework: 0.2.190 removed `ENOATTR` on Linux, which the
+# extended-attribute crate under the framework's HTTP client still reads (0.2.3). The studio's
+# `gui` feature names it only to keep this version (docs/adr/0001-gui-toolkit.md).
+libc = "=0.2.189"
+flate2 = { version = "=1.1.10", default-features = false, features = ["rust_backend"] }
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+print_stdout = "warn"
+too_many_arguments = "allow"
+module_inception = "allow"
+# Style preferences of this code base.
+collapsible_if = "allow"
+type_complexity = "allow"
+needless_range_loop = "allow"
+
+[profile.release]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.test]
+opt-level = 1

@@ -14,7 +14,7 @@ from urllib.parse import quote, unquote, urlsplit
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULES = ('RustSys', 'RustSTA', 'RustROAD', 'RustLane', 'RustEDA-Studio', 'RustEDA-Common')
+MODULES = ('RustSys', 'RustSTA', 'RustROAD', 'RustEDA-Common')
 MAX_FILES = 2500
 MAX_BYTES = 256 * 1024 * 1024
 SUFFIXES = {'.md', '.html', '.svg', '.gif', '.png', '.jpg', '.css', '.js', '.json', '.time', '.txt'}
@@ -30,7 +30,7 @@ def build(stage, site):
             shutil.rmtree(path)
         path.mkdir(parents=True)
     files = {}
-    roots = [(ROOT, '')] + [(ROOT/'modules'/name, 'modules/'+name.lower()) for name in MODULES]
+    roots = [(ROOT, ''), (ROOT/'apps', 'workbench')] + [(ROOT/'modules'/name, 'modules/'+name.lower()) for name in MODULES]
     total = 0
     for repo, prefix in roots:
         for src in sorted((repo/'docs').rglob('*')):
@@ -75,7 +75,9 @@ def build(stage, site):
                         relative = target.relative_to(repo)
                 if not target.exists():
                     raise ValueError(f'Broken source link: {source.relative_to(ROOT)} -> {value}')
-                name = 'RustEDA' if repo == ROOT else repo.name
+                name = 'RustEDA' if repo in (ROOT, ROOT/'apps') else repo.name
+                if repo == ROOT/'apps':
+                    relative = Path('apps')/relative
                 kind = 'tree' if target.is_dir() else 'blob'
                 return f'https://github.com/lab-emi/{name}/{kind}/{revisions[repo]}/{quote(relative.as_posix())}'+suffix
         raise ValueError(f'Link escapes the source tree: {source} -> {value}')
@@ -110,7 +112,7 @@ def build(stage, site):
         result = {key: p for key, value in item.items() if (p := prune(value)) is not None}
         return result or None
 
-    nav = [{'Overview': 'index.md'}, {'Get started': [{'Build': 'development.md'}, {'Run a flow': 'flows.md'}]}]
+    nav = [{'Overview': 'index.md'}, {'Get started': [{'Build': 'development.md'}, {'Run a flow': 'flows.md'}]}, {'Workbench': [{'Overview': 'workbench/index.md'}, {'Interface': 'workbench/specs/studio/cli.md'}, {'Architecture': 'application-integration.md'}]}]
     module_nav = [{'Overview': 'modules.md'}]
     for name in MODULES:
         repo = ROOT/'modules'/name; prefix = 'modules/'+name.lower()

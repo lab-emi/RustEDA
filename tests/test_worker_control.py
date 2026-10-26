@@ -79,8 +79,8 @@ class WorkerSafety(unittest.TestCase):
     def test_revision_conflicts_keep_the_structured_error_code(self):
         reply=json.dumps(dict(ok=False,error=dict(code="REVISION_CONFLICT",message="stale revision")))
         with mock.patch.object(rusteda_flow.subprocess,"run",return_value=subprocess.CompletedProcess([],1,reply,"")):
-            with self.assertRaises(rusteda_flow.LaneError) as raised:
-                rusteda_flow.lane("rustlane",self.root,["prepare","--base-rev","rev0"])
+            with self.assertRaises(rusteda_flow.FlowError) as raised:
+                rusteda_flow.flow_engine("rusteda",self.root,["prepare","--base-rev","rev0"])
         self.assertEqual(raised.exception.code,"REVISION_CONFLICT")
 
     def test_recovery_is_available_after_producer_dependencies_change(self):
@@ -89,7 +89,7 @@ class WorkerSafety(unittest.TestCase):
         manifest=self.root/"manifest.json";manifest.write_text("{}")
         record=dict(path=str(manifest),sha256=toolchain.digest(manifest))
         lock=dict(schema=toolchain.SCHEMA,status="ready",programs={
-            "rustlane":dict(path=str(lane),sha256=toolchain.digest(lane)),
+            "flow_driver":dict(path=str(lane),sha256=toolchain.digest(lane)),
             "producer":dict(path=str(producer),sha256=toolchain.digest(producer))},
             tool_manifest=record,signoff_manifest=record)
         producer.write_text("changed producer");manifest.write_text('{"changed":true}')

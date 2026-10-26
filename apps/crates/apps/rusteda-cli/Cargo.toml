@@ -1,0 +1,47 @@
+[package]
+name = "rusteda-cli"
+description = "The rusteda workspace command-line program"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+# A shared crate names its own authors, matching its copyright line (contract §8).
+authors = ["RustEDA contributors"]
+repository.workspace = true
+
+[lib]
+name = "rusteda_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rusteda"
+path = "src/main.rs"
+doc = false
+
+[features]
+default = ["gui"]
+gui = ["rusteda-studio/gui"]
+
+[dependencies]
+rusteda-flow.workspace = true
+rusteda-studio.workspace = true
+rusteda-cli-shared.workspace = true
+rusteda-core.workspace = true
+rusteda-formats.workspace = true
+rusteda-workspace.workspace = true
+clap.workspace = true
+clap_complete.workspace = true
+rayon.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libc.workspace = true
+
+[dev-dependencies]
+tempfile = "=3.27.0"
+flate2.workspace = true
+
+[lints]
+workspace = true

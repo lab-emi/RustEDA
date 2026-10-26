@@ -1,0 +1,450 @@
+{
+  "schema": "rusteda.application-integration.v1",
+  "status": "verified",
+  "scope": "repository integration, CLI compatibility and bounded application validation; no new routing",
+  "source_repositories": {
+    "RustLane": {
+      "remote_id": 1430568950,
+      "source_head": "cfd6884c2479154d546e38c1812bd791de524d76",
+      "issue_count": 0,
+      "release_count": 0,
+      "original_files": 55
+    },
+    "RustEDA-Studio": {
+      "remote_id": 1432783831,
+      "source_head": "9660f082b8bcc65e6bac0f0be4a9ec6e004418cc",
+      "issue_count": 0,
+      "release_count": 0,
+      "original_files": 136
+    }
+  },
+  "checks": {
+    "check": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "01caf75bbe8ec38d613c040194227b4e2f21660a",
+          "source_dirty": true,
+          "wall_seconds": 55.716,
+          "log": ".work/logs/RustEDA-check-8_znxmur.log",
+          "resource_usage": ".work/logs/RustEDA-check-8_znxmur.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 55.662017,
+            "maximum_resident_set_size_kib": 377544,
+            "user_seconds": 52.552114,
+            "system_seconds": 3.096772,
+            "exit_code": 0
+          }
+        }
+      ]
+    },
+    "tests": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "01caf75bbe8ec38d613c040194227b4e2f21660a",
+          "source_dirty": true,
+          "wall_seconds": 13.233,
+          "log": ".work/logs/RustEDA-test-rs5kd31z.log",
+          "resource_usage": ".work/logs/RustEDA-test-rs5kd31z.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 13.184202,
+            "maximum_resident_set_size_kib": 263880,
+            "user_seconds": 2.901462,
+            "system_seconds": 1.34951,
+            "exit_code": 0
+          },
+          "passed_tests": 169,
+          "ignored_tests": 8
+        }
+      ]
+    },
+    "clippy": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "01caf75bbe8ec38d613c040194227b4e2f21660a",
+          "source_dirty": true,
+          "wall_seconds": 365.16,
+          "log": ".work/logs/RustEDA-clippy-nrxwotu9.log",
+          "resource_usage": ".work/logs/RustEDA-clippy-nrxwotu9.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 365.115784,
+            "maximum_resident_set_size_kib": 1139384,
+            "user_seconds": 337.682638,
+            "system_seconds": 20.386019,
+            "exit_code": 0
+          }
+        }
+      ]
+    },
+    "gui-tests": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "b62ed02457eb365a9d206f6da611bfe377e09230",
+          "source_dirty": false,
+          "wall_seconds": 509.185,
+          "log": ".work/logs/RustEDA-test-ze2mtsxj.log",
+          "resource_usage": ".work/logs/RustEDA-test-ze2mtsxj.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 509.125811,
+            "maximum_resident_set_size_kib": 2855144,
+            "user_seconds": 955.685566,
+            "system_seconds": 43.566098,
+            "exit_code": 0
+          },
+          "passed_tests": 173,
+          "ignored_tests": 8
+        }
+      ]
+    },
+    "gui-runtime": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "b62ed02457eb365a9d206f6da611bfe377e09230",
+          "source_dirty": true,
+          "wall_seconds": 10.845,
+          "log": ".work/logs/RustEDA-test-17osw5yp.log",
+          "resource_usage": ".work/logs/RustEDA-test-17osw5yp.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 10.796331,
+            "maximum_resident_set_size_kib": 243548,
+            "user_seconds": 2.561247,
+            "system_seconds": 1.348313,
+            "exit_code": 0
+          },
+          "passed_tests": 173,
+          "ignored_tests": 8
+        }
+      ]
+    },
+    "doc": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "b62ed02457eb365a9d206f6da611bfe377e09230",
+          "source_dirty": false,
+          "wall_seconds": 1.746,
+          "log": ".work/logs/RustEDA-doc-g29ozksj.log",
+          "resource_usage": ".work/logs/RustEDA-doc-g29ozksj.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 1.692191,
+            "maximum_resident_set_size_kib": 459876,
+            "user_seconds": 1.409111,
+            "system_seconds": 0.329725,
+            "exit_code": 0
+          }
+        }
+      ]
+    },
+    "fmt": {
+      "ok": true,
+      "runs": [
+        {
+          "module": "RustEDA",
+          "exit_code": 0,
+          "source_head": "01caf75bbe8ec38d613c040194227b4e2f21660a",
+          "source_dirty": true,
+          "wall_seconds": 0.223,
+          "log": ".work/logs/RustEDA-fmt-xad1wen8.log",
+          "resource_usage": ".work/logs/RustEDA-fmt-xad1wen8.log.time",
+          "measurement": "python_rusage",
+          "guard": "cgroup",
+          "eda_validation": "unchecked",
+          "resources": {
+            "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+            "rss_scope": "maximum_individual_child_rss_not_aggregate",
+            "wall_seconds": 0.190758,
+            "maximum_resident_set_size_kib": 49700,
+            "user_seconds": 0.168873,
+            "system_seconds": 0.022224,
+            "exit_code": 0
+          }
+        }
+      ]
+    }
+  },
+  "shared_cli_compatibility": {
+    "ok": true,
+    "scope": "shared_cli_and_workspace_compatibility",
+    "commands_per_pdk": 10,
+    "pdks": [
+      "sky130",
+      "gf180"
+    ],
+    "normalization": [
+      "created_unix_ms",
+      "time_unix_ms",
+      "workspace path",
+      "executable path"
+    ],
+    "library_hashes": {
+      "sky130": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+      "gf180": "f9dee07cf158324934b0c59144d970a2e8313f43533ede6283ec3c136f82fe53"
+    },
+    "before_binary": "79b74bbc6b6dfbb9f17cf45a3d9ac38f092a50287026a8563d81c8f157ec8f5b",
+    "after_binary": "91d88e2d0f8e543af799dc43f7ec996acca23e0b45d09d666d59387217220ffb"
+  },
+  "shared_cli_resources": {
+    "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+    "rss_scope": "maximum_individual_child_rss_not_aggregate",
+    "wall_seconds": 2.168669,
+    "maximum_resident_set_size_kib": 124752,
+    "user_seconds": 1.076789,
+    "system_seconds": 0.367373,
+    "exit_code": 0
+  },
+  "documentation": {
+    "status": "passed",
+    "html_pages": 229,
+    "brand_families": 5,
+    "benchmark_ratios": {
+      "speedup": 20.549207733682223,
+      "area": 1.122376403522245,
+      "rss": 2.121481903745637
+    },
+    "eda_validation": "not_run"
+  },
+  "documentation_resources": {
+    "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+    "rss_scope": "maximum_individual_child_rss_not_aggregate",
+    "wall_seconds": 5.912525,
+    "maximum_resident_set_size_kib": 63816,
+    "user_seconds": 4.890041,
+    "system_seconds": 0.143447,
+    "exit_code": 0
+  },
+  "flow_initialization": {
+    "sky130": {
+      "ok": true,
+      "revision": "rev0"
+    },
+    "gf180": {
+      "ok": true,
+      "revision": "rev0"
+    }
+  },
+  "qualified_tools": {
+    "ok": true,
+    "status": "ready",
+    "configuration": ".work/app-integration/final-toolchain.json",
+    "errors": [],
+    "identity": "verified"
+  },
+  "routing_status": "stopped_by_user",
+  "eda_quality": "no_new_claim",
+  "archive_verification": {
+    "RustLane": {
+      "source_files_verified": 55,
+      "archive_bundle_verified": true,
+      "history_ancestor_of_rusteda": true
+    },
+    "RustEDA-Studio": {
+      "source_files_verified": 136,
+      "archive_bundle_verified": true,
+      "history_ancestor_of_rusteda": true
+    }
+  },
+  "fresh_clone": {
+    "doctor": {
+      "ok": true,
+      "scope": "development_bootstrap",
+      "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+      "modules": [
+        {
+          "name": "RustEDA-Common",
+          "path": "modules/RustEDA-Common",
+          "expected": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+          "state": "pinned",
+          "head": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+          "dirty": false,
+          "branch": "(detached)"
+        },
+        {
+          "name": "RustROAD",
+          "path": "modules/RustROAD",
+          "expected": "3639e2c117fd1d24f62e8420708ea0c883cdf872",
+          "state": "pinned",
+          "head": "3639e2c117fd1d24f62e8420708ea0c883cdf872",
+          "dirty": false,
+          "branch": "(detached)"
+        },
+        {
+          "name": "RustSTA",
+          "path": "modules/RustSTA",
+          "expected": "9cb94c1f068b397f0b72ab157796af65ecf44b31",
+          "state": "pinned",
+          "head": "9cb94c1f068b397f0b72ab157796af65ecf44b31",
+          "dirty": false,
+          "branch": "(detached)"
+        },
+        {
+          "name": "RustSys",
+          "path": "modules/RustSys",
+          "expected": "a43b932307937beac61a5228121d4230395fe844",
+          "state": "pinned",
+          "head": "a43b932307937beac61a5228121d4230395fe844",
+          "dirty": false,
+          "branch": "(detached)"
+        },
+        {
+          "name": "RustEDA",
+          "path": "apps",
+          "expected": "b62ed02457eb365a9d206f6da611bfe377e09230",
+          "state": "pinned",
+          "head": "b62ed02457eb365a9d206f6da611bfe377e09230",
+          "dirty": false,
+          "branch": "codex/integrated-rusteda-apps"
+        }
+      ],
+      "shared": {
+        "ok": true,
+        "rustsys_ruststa_equal": true,
+        "verified_files": {
+          "RustSys": 36,
+          "RustSTA": 36,
+          "RustEDA": 38
+        },
+        "studio": {
+          "state": "converged",
+          "different_paths": 0,
+          "examples": []
+        },
+        "foundation": {
+          "revision": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+          "verified_files": 267,
+          "consumers": {
+            "RustSys": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+            "RustSTA": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+            "RustEDA": "c96ef1520ab08b40e48ed7643002b5c06ad13e07"
+          },
+          "state": "pinned"
+        }
+      },
+      "eda_validation": "unchecked",
+      "warnings": []
+    },
+    "shared": {
+      "ok": true,
+      "rustsys_ruststa_equal": true,
+      "verified_files": {
+        "RustSys": 36,
+        "RustSTA": 36,
+        "RustEDA": 38
+      },
+      "studio": {
+        "state": "converged",
+        "different_paths": 0,
+        "examples": []
+      },
+      "foundation": {
+        "revision": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+        "verified_files": 267,
+        "consumers": {
+          "RustSys": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+          "RustSTA": "c96ef1520ab08b40e48ed7643002b5c06ad13e07",
+          "RustEDA": "c96ef1520ab08b40e48ed7643002b5c06ad13e07"
+        },
+        "state": "pinned"
+      }
+    },
+    "publication": {
+      "status": "passed",
+      "html_pages": 226,
+      "brand_families": 5,
+      "benchmark_ratios": {
+        "speedup": 20.549207733682223,
+        "area": 1.122376403522245,
+        "rss": 2.121481903745637
+      },
+      "eda_validation": "not_run"
+    }
+  },
+  "python_tests": {
+    "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+    "rss_scope": "maximum_individual_child_rss_not_aggregate",
+    "wall_seconds": 3.010149,
+    "maximum_resident_set_size_kib": 26488,
+    "user_seconds": 1.381847,
+    "system_seconds": 1.4333719999999999,
+    "exit_code": 0
+  },
+  "tcl": {
+    "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+    "rss_scope": "maximum_individual_child_rss_not_aggregate",
+    "wall_seconds": 0.032187,
+    "maximum_resident_set_size_kib": 17048,
+    "user_seconds": 0.004489,
+    "system_seconds": 0.0009739999999999999,
+    "exit_code": 0
+  },
+  "entrypoints": {
+    "sky130": {
+      "init_ok": true,
+      "revision": "rev0",
+      "report_ok": true,
+      "studio_print_ok": true,
+      "legacy_flow_report_equal": true,
+      "wall_seconds": {
+        "init": 4.623516620020382,
+        "report": 1.037865613005124
+      }
+    },
+    "gf180": {
+      "init_ok": true,
+      "revision": "rev0",
+      "report_ok": true,
+      "studio_print_ok": true,
+      "legacy_flow_report_equal": true,
+      "wall_seconds": {
+        "init": 4.126368641038425,
+        "report": 1.0250318940379657
+      }
+    }
+  },
+  "gui_memory_note": "gui-tests includes compiler RSS; gui-runtime measures the cached test run, below the 2 GiB test ceiling"
+}

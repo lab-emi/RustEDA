@@ -1,0 +1,34 @@
+[package]
+name = "rusteda-studio"
+description = "The RustEDA workbench: a live, read-only view of a workspace with its netlist hierarchy, critical paths, logic cones and RTL sources, sharing selections with the command line"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[features]
+default = ["gui"]
+# The GPUI front end (STUDIO-REQ-0160). Without it the crate is the headless model with the
+# `--print` mode of the command line.
+gui = ["dep:gpui", "dep:libc"]
+gui-tests = ["gui", "gpui/test-support"]
+
+[lib]
+name = "rusteda_studio"
+path = "src/lib.rs"
+
+[dependencies]
+rusteda-core.workspace = true
+rusteda-workspace.workspace = true
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+gpui = { workspace = true, optional = true }
+# Only to hold the version of a dependency of `gpui` (see the root manifest).
+libc = { workspace = true, optional = true }
+
+[lints]
+workspace = true

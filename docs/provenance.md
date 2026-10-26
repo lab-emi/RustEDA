@@ -2,7 +2,7 @@
 
 RustEDA's modules have separate source histories and licenses. The superproject's
 gitlinks identify the exact combination used by a checkout. The public release
-snapshots for RustROAD, RustLane and Studio record their prior source identities
+snapshots for RustROAD, RustEDA flow and Studio record their prior source identities
 under each module's `docs/provenance/source-publication.json`.
 
 Existing RustSys and RustSTA public histories remain available. The original

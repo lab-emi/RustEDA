@@ -1,0 +1,34 @@
+name: RustEDA applications
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: apps-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  headless:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: free -h
+      - run: ./dev fmt RustEDA --memory-mib 4096 --timeout 180
+      - run: ./dev shared
+      - run: ./dev test RustEDA --no-default-features --jobs 2 --memory-mib 4096 --timeout 900
+      - run: ./dev doc RustEDA --no-default-features --jobs 2 --memory-mib 4096 --timeout 600
+  workbench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: sudo apt-get update && sudo apt-get install -y libxkbcommon-x11-dev libx11-xcb-dev libxcb1-dev libfontconfig-dev libfreetype-dev libvulkan-dev
+      - run: free -h
+      - run: ./dev clippy RustEDA --jobs 2 --memory-mib 6144 --timeout 1500
+      - run: ./dev test RustEDA --all-features --jobs 2 --memory-mib 6144 --timeout 1500

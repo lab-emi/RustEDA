@@ -1,0 +1,178 @@
+{
+  "schema": "rustlane.research-provenance.v1",
+  "captured_at_utc": "2026-10-23T04:25:14.851681+00:00",
+  "research_scope": "Independent orchestration contract study; no reference EDA engine internals inspected or copied.",
+  "reference": {
+    "repository": "https://github.com/librelane/librelane",
+    "commit": "a09d248c49bd1f7170d41885936f63e4255b1fe5",
+    "declared_version": "3.0.16",
+    "license": "Apache-2.0",
+    "license_file": "License",
+    "license_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "git_status_porcelain": "",
+    "git_status_observation": "Separately observed clean using git status --porcelain before and after inventory; REA itself reports dirty:null.",
+    "submodules": [
+      {
+        "path": "test/designs",
+        "commit": "9b3bebe834ccd972a5b4f10d82c32354f9a6a1ca",
+        "initialized": false
+      },
+      {
+        "path": "test/steps/all",
+        "commit": "8626ef86424e219322314a553deab6c535957355",
+        "initialized": false
+      }
+    ]
+  },
+  "rea": {
+    "version": "6.7.0",
+    "operation": "import-reference-source",
+    "command": "npx -y rea-agents@6.7.0 import-reference-source /mnt/data2/cgao/git/RustLane/.work/reference/librelane --detail summary --outline-depth 1 --json",
+    "summary_file": "rea-librelane-summary.json",
+    "summary_sha256": "ec5dcdd65746057ef90abb7a52a25a94970ccb4e8b3ff556e2d82a13c41c5d40",
+    "manifest": {
+      "schema": "HistoricalSourceManifest",
+      "authority": "historical-reference",
+      "manifest_id": "hsm_a2187f0ed3e309ad5dd2543e50e4155c5f93e754a34d678f8b04614fd25dea7e",
+      "graph_sha256": "036733e97a3b06c4b40380b89e21fe9cda5c55542264953d5a5584b54b820f6e",
+      "root_sha256": "f689ddfbbf4d7205dc1b2f38f98758b2487f831932f21a78c6b8b8e24e3768e3",
+      "inventory_state": "partial",
+      "entry_count": 479,
+      "relationship_count": 0
+    },
+    "provenance": {
+      "importer": "rea-agents",
+      "importer_version": "6.7.0",
+      "caller": "rea-cli"
+    },
+    "vcs": {
+      "kind": "git",
+      "head": "a09d248c49bd1f7170d41885936f63e4255b1fe5",
+      "dirty": null
+    },
+    "npm_registry_dist_metadata": {
+      "shasum": "11f23ba377303a5c28b3162180cf2bf3f3643708",
+      "tarball": "https://registry.npmjs.org/rea-agents/-/rea-agents-6.7.0.tgz",
+      "fileCount": 1775,
+      "integrity": "sha512-yhIx2ioJYYT1C/tONfYeitC6LhnKmCh+ZwRUOgYuhSc733lGhkkt73zhug9WmLgxoMdKuqIYGCoBfD4fXkOhFw==",
+      "signatures": [
+        {
+          "sig": "MEUCIHfjVXgVvcA/R0R46DQc4pU5c25jTyUsOKRWQJn0wLlrAiEAq6dwgt6G1YGLjbijVJkZJv8O01xPJgQUwvsHt0zZbwo=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEUCICqYrwatVk9nUkweRYKIZHAXPVJyORdbdQvgFhvBtxQAAiEA/yg3AjoNhKvknQ/WWaetE1Jm1tzmIwQ9as5IPE3Luts="
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/rea-agents@6.7.0",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 28575703
+    },
+    "npm_registry_signature_verification": "not performed",
+    "semantic_analysis": "not performed; Python files are hashed and classified; relationship_count=0",
+    "runtime_analysis": "not performed",
+    "exit_code": 0
+  },
+  "resources": {
+    "host_available_ram_preflight": "48 GiB",
+    "estimate": "397 regular files / 11,994,940 bytes; source hashing and summary < 2 GiB RSS with one process family; no graph enumeration, PDK load, fixtures or EDA tools. The JSON provenance generator handles < 128 KiB, estimated < 32 MiB RSS.",
+    "cgroup_memory_max_bytes": 4294967296,
+    "cgroup_memory_swap_max_bytes": 0,
+    "node_max_old_space_size_mib": 1024,
+    "timeout_seconds": 180,
+    "timeout_kill_after_seconds": 10,
+    "actual_wall_seconds": 5.16,
+    "actual_maximum_resident_set_size_kib": 285428,
+    "measurement_scope": "time -v wrapping the full pinned npx import including package acquisition; not an EDA flow benchmark"
+  },
+  "sources": [
+    {
+      "path": "License",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/License"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "ebce703556f114fbfb2afeb0c7eb4aec61f80d6f4fd2dc400c3e03d9ed5a2aca",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/pyproject.toml"
+    },
+    {
+      "path": "Readme.md",
+      "sha256": "0d5d4634bac35ddaa8daf2eebe3405e91a9b6fd030fa2918362ac853a6cfc6d4",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/Readme.md"
+    },
+    {
+      "path": "docs/source/reference/architecture.md",
+      "sha256": "ad1b13960423619cfc69c01c62b7666822f5fe85e486ac84113552a11f060d67",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/reference/architecture.md"
+    },
+    {
+      "path": "docs/source/reference/configuration.md",
+      "sha256": "ff0ac2a33e430e4a6e9fedb4c7c0a46727683336c0f2f7474a7923d218991e5d",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/reference/configuration.md"
+    },
+    {
+      "path": "docs/source/getting_started/migrants/index.md",
+      "sha256": "45b2c8a8fbf6850d49c31e87e51e8378362d6bb8eb94fa2a88c6c38bd172e452",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/getting_started/migrants/index.md"
+    },
+    {
+      "path": "docs/source/getting_started/newcomers/index.md",
+      "sha256": "b8c75450dbeb9fb5b6a8da98bdb17ce94afa2043441b0451e111462811bd1f6e",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/getting_started/newcomers/index.md"
+    },
+    {
+      "path": "docs/source/usage/about_pdks.md",
+      "sha256": "9348ec29bf572ee230428fde922a34361761774e0e21baf5de9507aa04852423",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/usage/about_pdks.md"
+    },
+    {
+      "path": "docs/source/usage/timing_corners.md",
+      "sha256": "be8cddb442a192bfb680695c810c542554e826b43c5402532039bc38bdd6c107",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/usage/timing_corners.md"
+    },
+    {
+      "path": "docs/source/usage/writing_custom_steps.md",
+      "sha256": "204927ee29667e9015d1168c2f49f9eb32f1ddfb76327e0bb37706284802b219",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/usage/writing_custom_steps.md"
+    },
+    {
+      "path": "docs/source/usage/writing_custom_flows.md",
+      "sha256": "a1dacbc9d7f74e121a2323fe2be817806b6630699d6f28087a2ec38e93a4dab5",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/docs/source/usage/writing_custom_flows.md"
+    },
+    {
+      "path": "librelane/flows/classic.py",
+      "sha256": "db887038493b0b33def8f6317548c7a47ef292ca6fcdcfb43f5f4598a9a2caed",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/librelane/flows/classic.py"
+    },
+    {
+      "path": "librelane/flows/cli.py",
+      "sha256": "93511c85d3b1f06e145b46ec71bf1d49e4039c07cdbd5e32195eba71d94e3894",
+      "url": "https://github.com/librelane/librelane/blob/a09d248c49bd1f7170d41885936f63e4255b1fe5/librelane/flows/cli.py"
+    }
+  ],
+  "complete_local_receipts": [
+    ".work/research/clone.stdout",
+    ".work/research/clone.stderr",
+    ".work/research/clone-time.txt",
+    ".work/research/checkout.stdout",
+    ".work/research/checkout.stderr",
+    ".work/research/rea-librelane-summary.json",
+    ".work/research/rea.stderr",
+    ".work/research/rea-time.txt",
+    ".work/research/npm-dist.json"
+  ],
+  "limitations": [
+    "REA inventory_state is partial due to excluded .git metadata. Two gitlinks exist but their submodules were not initialized or inventoried.",
+    "The retained document is a genuine REA HistoricalSourceSummary, not a full HistoricalSourceGraph or a runtime Evidence record.",
+    "Source hashes authenticate captured inventory identity, not licensing of every dependency or execution behavior.",
+    "Only public LibreLane documentation and Apache-2.0 orchestration declarations were read; reference EDA engine implementation sources were not inspected.",
+    "No LibreLane toolchain, PDK, physical-design flow, GDS, DRC, LVS, CEC, STA accuracy or runtime equivalence was validated in this investigation."
+  ]
+}

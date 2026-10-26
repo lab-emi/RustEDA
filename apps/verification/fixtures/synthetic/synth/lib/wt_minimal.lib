@@ -1,0 +1,94 @@
+/* Synthetic library for tests. Values are invented. */
+library (wt_minimal) {
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  capacitive_load_unit (1, pf);
+  lu_table_template (wt_tbl) {
+    variable_1 : input_net_transition;
+    variable_2 : total_output_net_capacitance;
+    index_1 ("0.01, 0.1, 0.5");
+    index_2 ("0.001, 0.01, 0.05");
+  }
+  cell (wt_inv_x1) {
+    area : 1;
+    pin (A) { direction : input; capacitance : 0.0015; }
+    pin (Y) {
+      direction : output;
+      function : "!A";
+      timing () {
+        related_pin : "A";
+        cell_rise (wt_tbl) {
+          values ("0.01500, 0.05100, 0.21100", \
+                  "0.02400, 0.06000, 0.22000", \
+                  "0.06400, 0.10000, 0.26000");
+        }
+        cell_fall (wt_tbl) {
+          values ("0.01360, 0.04600, 0.19000", \
+                  "0.02260, 0.05500, 0.19900", \
+                  "0.06260, 0.09500, 0.23900");
+        }
+      }
+    }
+  }
+  cell (wt_nand2_x1) {
+    area : 1.25;
+    pin (A) { direction : input; capacitance : 0.0015; }
+    pin (B) { direction : input; capacitance : 0.0015; }
+    pin (Y) {
+      direction : output;
+      function : "!(A&B)";
+      timing () {
+        related_pin : "A";
+        cell_rise (wt_tbl) {
+          values ("0.02000, 0.06500, 0.26500", \
+                  "0.02900, 0.07400, 0.27400", \
+                  "0.06900, 0.11400, 0.31400");
+        }
+        cell_fall (wt_tbl) {
+          values ("0.01810, 0.05860, 0.23860", \
+                  "0.02710, 0.06760, 0.24760", \
+                  "0.06710, 0.10760, 0.28760");
+        }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise (wt_tbl) {
+          values ("0.02200, 0.06700, 0.26700", \
+                  "0.03100, 0.07600, 0.27600", \
+                  "0.07100, 0.11600, 0.31600");
+        }
+        cell_fall (wt_tbl) {
+          values ("0.02010, 0.06060, 0.24060", \
+                  "0.02910, 0.06960, 0.24960", \
+                  "0.06910, 0.10960, 0.28960");
+        }
+      }
+    }
+  }
+  cell (wt_dffr_x1) {
+    area : 6;
+    ff (IQ, IQN) { next_state : "D"; clocked_on : "CK"; clear : "!RN"; }
+    pin (D) { direction : input; capacitance : 0.0018; }
+    pin (CK) { direction : input; capacitance : 0.0018; clock : true; }
+    pin (RN) { direction : input; capacitance : 0.0018; }
+    pin (Q) {
+      direction : output;
+      function : "IQ";
+      timing () {
+        related_pin : "CK";
+        timing_type : rising_edge;
+        cell_rise (wt_tbl) {
+          values ("0.06400, 0.09100, 0.21100", \
+                  "0.07300, 0.10000, 0.22000", \
+                  "0.11300, 0.14000, 0.26000");
+        }
+        cell_fall (wt_tbl) {
+          values ("0.05900, 0.08600, 0.20600", \
+                  "0.06800, 0.09500, 0.21500", \
+                  "0.10800, 0.13500, 0.25500");
+        }
+      }
+    }
+  }
+}

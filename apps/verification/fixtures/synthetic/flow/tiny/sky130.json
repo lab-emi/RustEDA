@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "design_name": "top",
+  "pdk": "sky130_fd_sc_hd",
+  "verilog_files": ["top.v"],
+  "sdc_file": "top.sdc",
+  "libraries": [{"path": "sky130_tt.lib", "corner": "tt"}],
+  "synthesis_corner": "tt",
+  "flow": "synthesis_sta",
+  "limits": {"threads": 2, "memory_mib": 4096, "max_state_gib": 1, "max_paths": 8, "timeout_secs": 180}
+}

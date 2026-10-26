@@ -10,7 +10,7 @@ rusteda-cli 保留薄入口；请直接在共享库中修复实现，避免重�
 ./dev test RustEDA-Common
 ./dev test RustSys
 ./dev test RustSTA
-./dev test RustEDA-Studio --no-default-features
+./dev test RustEDA --no-default-features
 ./dev shared
 ~~~
 

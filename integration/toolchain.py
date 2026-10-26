@@ -55,10 +55,10 @@ def executable(value):
 def verify(lock, *, recovery=False):
     """Cheap pinned file check; the explicit tools-verify command also probes PDK/images."""
     if lock.get("schema") != SCHEMA or lock.get("status") != "ready":
-        raise ValueError("toolchain is not ready; run dev tools configure")
+        raise ValueError("toolchain is not ready; run ./rusteda tools configure")
     errors = []
     for name, spec in lock["programs"].items():
-        if recovery and name != "rustlane":
+        if recovery and name not in ("flow_driver", "rustlane"):
             continue
         p = executable(spec["path"])
         if p is None or digest(p) != spec["sha256"]:
@@ -90,7 +90,7 @@ def configure(root, args):
     manifest_path = project/"fixtures/flow/signoff-pinned.json"
     pins = read_json(pins_path)
     overrides = dict(value.split("=", 1) for value in args.tool)
-    allowed = set(pins["tools"]) | {"python", "rustlane", "rustroad", "podman"}
+    allowed = set(pins["tools"]) | {"python", "flow_driver", "rustroad", "podman"}
     if set(overrides)-allowed:
         raise ValueError("unknown tool override")
     programs, aliases, errors = {}, [], []
@@ -117,9 +117,9 @@ def configure(root, args):
             errors.append(f"{name}: existing alias differs; no existing file will be replaced")
     defaults = {
         "python":sys.executable,
-        "rustlane":str(root/(".work/target/RustLane/release/rustlane" if
-                             (root/".work/target/RustLane/release/rustlane").is_file() else
-                             ".work/target/RustLane/debug/rustlane")),
+        "flow_driver":str(root/(".work/target/RustEDA/release/rusteda" if
+                             (root/".work/target/RustEDA/release/rusteda").is_file() else
+                             ".work/target/RustEDA/debug/rusteda")),
         "rustroad":str(root/".work/target/RustROAD/release/rustroad"),
         "podman":shutil.which("podman"),
     }
@@ -143,7 +143,7 @@ def configure(root, args):
 
 def main(argv=None, root=None):
     root = Path(root or Path(__file__).resolve().parents[1])
-    p = argparse.ArgumentParser(description=__doc__)
+    p = argparse.ArgumentParser(prog="rusteda tools", description=__doc__)
     sub = p.add_subparsers(dest="action", required=True)
     conf = sub.add_parser("configure")
     conf.add_argument("--output", type=Path, default=root/".work/integration/toolchain.json")

@@ -79,10 +79,10 @@ def case(root,kind,podman,python,image):
 
 
 def root_flow_case(root, podman, tools):
-    """Exercise the real root CLI, registry, RustLane revisions and producer."""
+    """Exercise the real root CLI, registry, RustEDA flow revisions and producer."""
     W.require_idle(ROOT)
     workspace=root/"root-flow"
-    prefix=[str(ROOT/"dev"),"flow","--workspace",str(workspace),"--tools",str(tools)]
+    prefix=[str(ROOT/"rusteda"),"flow","--workspace",str(workspace),"--tools",str(tools)]
     def invoke(label,args):
         output=root/(label+".json");errors=root/(label+".stderr")
         with output.open("x") as out, errors.open("x") as err:

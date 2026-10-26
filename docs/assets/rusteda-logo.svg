@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc"><title id="title">RustEDA</title><desc id="desc">The RustEDA design feedback loop</desc><rect width="256" height="256" rx="54" fill="#101923"/>
-<g fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
-<path d="M83 48H48V83M48 173V208H83" stroke="#EF8B52"/>
-<path d="M173 48H208V83M208 173V208H173" stroke="#57D6BE"/>
-<g stroke="#F4F1E9"><polyline points="84,100 128,76 172,100 172,154 128,180 84,154 84,100"/><polyline points="84,100 128,126 172,100"/><polyline points="128,126 128,180"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc"><title id="title">RustEDA signal-forge mark</title><desc id="desc">A shared terminal and chip frame surrounding crossing copper and teal signals.</desc><rect width="256" height="256" rx="54" fill="#101923"/><g fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M79 50H50V79M50 177V206H79" stroke="#EF8B52"/><path d="M177 50H206V79M206 177V206H177" stroke="#57D6BE"/><path d="M69 102H104L152 154H188" stroke="#EF8B52"/><path d="M69 154H104L152 102H188" stroke="#57D6BE"/></g><circle cx="128" cy="128" r="12" fill="#F4F1E9"/></svg>

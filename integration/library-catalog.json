@@ -1,0 +1,191 @@
+{
+  "schema": "rusteda.library-catalog.v1",
+  "libraries": {
+    "sky130_fd_sc_hd": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "ff": {
+          "path": "libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__ff_n40C_1v95.lib",
+          "sha256": "fb61d91c55a7f85b1989e8149d040b13ba5e7f5478f5bf0c3c16c5da30720139"
+        },
+        "ss": {
+          "path": "libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__ss_100C_1v60.lib",
+          "sha256": "9b24f0db3967ac67b4cae1f74bb480fd47922d18d0ed577e3c121739b412c361"
+        },
+        "tt": {
+          "path": "libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+          "sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+        }
+      }
+    },
+    "sky130_fd_sc_hdll": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "ff": {
+          "path": "libs.ref/sky130_fd_sc_hdll/lib/sky130_fd_sc_hdll__ff_n40C_1v95.lib",
+          "sha256": "6ff2e94a7e19c200210a9075815b2d7672870233250116e4e909aa17151af193"
+        },
+        "ss": {
+          "path": "libs.ref/sky130_fd_sc_hdll/lib/sky130_fd_sc_hdll__ss_100C_1v60.lib",
+          "sha256": "4049abae2c25f90bd13b35515e45307a52baab396c860642a7cff748ca083920"
+        },
+        "tt": {
+          "path": "libs.ref/sky130_fd_sc_hdll/lib/sky130_fd_sc_hdll__tt_025C_1v80.lib",
+          "sha256": "b0f19af5f0e98e5159c962acd21dfa02a3be04244c3b653c55fbeeb51219571d"
+        }
+      }
+    },
+    "sky130_fd_sc_hs": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "ff": {
+          "path": "libs.ref/sky130_fd_sc_hs/lib/sky130_fd_sc_hs__ff_n40C_1v95.lib",
+          "sha256": "e14fc48e606a727d85547079076b510dcbaab5e649011a87649e2792907ffbb1"
+        },
+        "ss": {
+          "path": "libs.ref/sky130_fd_sc_hs/lib/sky130_fd_sc_hs__ss_100C_1v60.lib",
+          "sha256": "718284f36d18442e17aa16900a6b32ccda90ee8c2a54040e06e7a57b0850b43e"
+        },
+        "tt": {
+          "path": "libs.ref/sky130_fd_sc_hs/lib/sky130_fd_sc_hs__tt_025C_1v80.lib",
+          "sha256": "630cf02d9228a49aa2ab93b76a5ae7266fb920ac30746784dd025c4402ebb3d6"
+        }
+      }
+    },
+    "sky130_fd_sc_ms": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "ff": {
+          "path": "libs.ref/sky130_fd_sc_ms/lib/sky130_fd_sc_ms__ff_n40C_1v95.lib",
+          "sha256": "ffb033b225a33772b2bceba72f477d915a9b8fa8b5edf84176e514b6bd68fdf9"
+        },
+        "ss": {
+          "path": "libs.ref/sky130_fd_sc_ms/lib/sky130_fd_sc_ms__ss_100C_1v60.lib",
+          "sha256": "7a96fd0974d05cb13b5d47ff39e3d3224999a186998ba4f65b9a89ffce95807d"
+        },
+        "tt": {
+          "path": "libs.ref/sky130_fd_sc_ms/lib/sky130_fd_sc_ms__tt_025C_1v80.lib",
+          "sha256": "d182731373d8f3c74ec08ba7b5f6981a13950845f4b56c5fc0b4def6b2f410c0"
+        }
+      }
+    },
+    "sky130_fd_sc_ls": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "ff": {
+          "path": "libs.ref/sky130_fd_sc_ls/lib/sky130_fd_sc_ls__ff_n40C_1v95.lib",
+          "sha256": "ddd3eca6fe4efbb7532d2ad914a51c697bd28b5ecc2a43b82f5bc207a0028a75"
+        },
+        "ss": {
+          "path": "libs.ref/sky130_fd_sc_ls/lib/sky130_fd_sc_ls__ss_100C_1v60.lib",
+          "sha256": "6bff85d11933ed2b3e2d8f064bc637597cb41416630195d75dc7dd7b936ed750"
+        },
+        "tt": {
+          "path": "libs.ref/sky130_fd_sc_ls/lib/sky130_fd_sc_ls__tt_025C_1v80.lib",
+          "sha256": "b7a7acf4cb7a55a272679c0b7785c5f14ed45ffa620f13c7d323d16febdeff74"
+        }
+      }
+    },
+    "sky130_fd_sc_lp": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "ff": {
+          "path": "libs.ref/sky130_fd_sc_lp/lib/sky130_fd_sc_lp__ff_n40C_1v95.lib",
+          "sha256": "2ece2601c63bce6022f4ed146df605cf5a1748da9805835ab768216d1cfa84c5"
+        },
+        "ss": {
+          "path": "libs.ref/sky130_fd_sc_lp/lib/sky130_fd_sc_lp__ss_100C_1v60.lib",
+          "sha256": "b9a599ea35fc6cc3a400e888c6b1bd8b4e86667a5824ef73a9a4b48c7b12a798"
+        }
+      }
+    },
+    "sky130_fd_sc_hvl": {
+      "root": "sky130A",
+      "env": "RUSTEDA_SKY130_ROOT",
+      "corners": {
+        "tt": {
+          "path": "libs.ref/sky130_fd_sc_hvl/lib/sky130_fd_sc_hvl__tt_025C_3v30.lib",
+          "sha256": "fb1c43d5971efa70df79d7f16de69f8bbe3c7f0de0432baae4c43e7c72e251e9"
+        }
+      }
+    },
+    "gf180mcu_fd_sc_mcu7t5v0": {
+      "root": "gf180mcuD",
+      "env": "RUSTEDA_GF180_ROOT",
+      "corners": {
+        "tt": {
+          "path": "libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib",
+          "sha256": "f9dee07cf158324934b0c59144d970a2e8313f43533ede6283ec3c136f82fe53"
+        },
+        "ff": {
+          "path": "libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_n40C_3v60.lib",
+          "sha256": "a222740b574d0699c8a416400bd9746ecb8556bc87a515ab7fb80f911e2cd74b"
+        },
+        "ss": {
+          "path": "libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_3v00.lib",
+          "sha256": "5d2f37ba6f43e33aeba26dc1da55c96394a862eeec4148043f1d48bdf65ccea6"
+        }
+      }
+    },
+    "gf180mcu_fd_sc_mcu9t5v0": {
+      "root": "gf180mcuD",
+      "env": "RUSTEDA_GF180_ROOT",
+      "corners": {
+        "tt": {
+          "path": "libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__tt_025C_3v30.lib",
+          "sha256": "1157d0aa147dba75a214708197d7a046f970175d723cdec108025f6f06727c12"
+        },
+        "ff": {
+          "path": "libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ff_n40C_3v60.lib",
+          "sha256": "0b48b93d6800da325a2613ff6c0b998b230a1bbd28031f6da592e9ff30066602"
+        },
+        "ss": {
+          "path": "libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ss_125C_3v00.lib",
+          "sha256": "d83917f827021eadb159f6011905bf20de632533b2953abba89266a88c2b24af"
+        }
+      }
+    },
+    "sg13g2_stdcell": {
+      "root": "ihp-open-pdk",
+      "env": "RUSTEDA_IHP_ROOT",
+      "corners": {
+        "tt": {
+          "path": "ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib",
+          "sha256": "7677a8918689f452e80405ad16a83e744709342574f2aedcc507c2758986b396"
+        },
+        "ff": {
+          "path": "ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_fast_1p32V_m40C.lib",
+          "sha256": "f191a3132d0f2f59ca2721884cdb1d8360c8fbf3e0012056af62583dd69ae701"
+        },
+        "ss": {
+          "path": "ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_slow_1p08V_125C.lib",
+          "sha256": "1ac6a0301184b3a8aa1a4a01910967f624c8e869517777f529985f11f04588c3"
+        }
+      }
+    },
+    "ez130_8t": {
+      "root": "ez130_8t_v1p1",
+      "env": "RUSTEDA_EZ130_ROOT",
+      "corners": {
+        "tt": {
+          "path": "lib/ez130_8t_tt_1p20v_25c.lib",
+          "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c"
+        },
+        "ff": {
+          "path": "lib/ez130_8t_ff_1p32v_m40c.lib",
+          "sha256": "33184caa1834e96ee520c87f3ec80c68e8ab45e572350f7145f034dfb85695c9"
+        },
+        "ss": {
+          "path": "lib/ez130_8t_ss_1p08v_125c.lib",
+          "sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8"
+        }
+      }
+    }
+  }
+}

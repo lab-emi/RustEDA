@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Reproduce bounded full-flow acceptance through the public RustEDA entrypoint.
 
-No EDA oracle is implemented here: RustLane verifies the qualified RustROAD
+No EDA oracle is implemented here: RustEDA flow verifies the qualified RustROAD
 producer's independent tool receipts. Run under an OS memory/time guard. Each
 worker also owns its bounded scope and containers. Interrupted runs require
-`dev flow recover`; evidence and active reservations are never deleted here.
+`rusteda flow recover`; evidence and active reservations are never deleted here.
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def main():
         stdout, stderr = out/(label+".json"), out/(label+".stderr")
         started = time.monotonic()
         with stdout.open("xb") as output, stderr.open("xb") as errors:
-            process = subprocess.run([str(ROOT/"dev"), *arguments], cwd=ROOT,
+            process = subprocess.run([str(ROOT/"rusteda"), *arguments], cwd=ROOT,
                                      stdin=subprocess.DEVNULL, stdout=output, stderr=errors,
                                      timeout=4200)
         wall = time.monotonic()-started

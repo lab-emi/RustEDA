@@ -1,4 +1,4 @@
-"""RustEDA entrypoint for RustLane's persistent external-worker protocol."""
+"""RustEDA entrypoint for RustEDA's persistent external-worker protocol."""
 from __future__ import annotations
 
 import argparse
@@ -12,29 +12,29 @@ from . import worker_control
 from .toolchain import read_json, verify, write_json
 
 
-class LaneError(ValueError):
+class FlowError(ValueError):
     def __init__(self, error):
-        self.code = error.get("code", "RUSTLANE_ERROR")
+        self.code = error.get("code", "RUSTEDA_FLOW_ERROR")
         super().__init__(error.get("message", json.dumps(error)))
 
 
-def lane(program, workspace, arguments, require_ok=True):
-    command = [program,"--workspace",str(workspace),*arguments]
+def flow_engine(program, workspace, arguments, require_ok=True):
+    command = [program,"flow","--workspace",str(workspace),*arguments]
     r = subprocess.run(command,stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=180)
     if len(r.stdout)+len(r.stderr)>16*1024**2:
-        raise ValueError("RustLane response exceeds budget")
+        raise ValueError("RustEDA flow engine response exceeds budget")
     try:
         value=json.loads(r.stdout)
     except ValueError as error:
-        raise ValueError("RustLane returned no valid JSON: "+r.stderr[-1000:]) from error
+        raise ValueError("RustEDA flow engine returned no valid JSON: "+r.stderr[-1000:]) from error
     if require_ok and (r.returncode or value.get("ok") is not True):
-        raise LaneError(value.get("error") or value)
+        raise FlowError(value.get("error") or value)
     return value
 
 
 def main(argv=None, root=None):
     root=Path(root or Path(__file__).resolve().parents[1])
-    p=argparse.ArgumentParser(description=__doc__)
+    p=argparse.ArgumentParser(prog="rusteda flow", description=__doc__)
     p.add_argument("--workspace","-w",type=Path,required=True)
     p.add_argument("--tools",type=Path,default=root/".work/integration/toolchain.json")
     sub=p.add_subparsers(dest="action",required=True)
@@ -52,8 +52,11 @@ def main(argv=None, root=None):
         if name=="report":q.add_argument("--summary-only",action="store_true")
     a=p.parse_args(argv)
     # Recovery must be possible when producer tools, PDK files or manifests changed.
-    # The RustLane executable still must match the trusted local tool configuration.
-    lock=verify(read_json(a.tools),recovery=a.action=="recover");program=lock["programs"]["rustlane"]["path"]
+    # The RustEDA flow engine executable still must match the trusted local tool configuration.
+    lock=verify(read_json(a.tools),recovery=a.action=="recover")
+    if "flow_driver" not in lock["programs"]:
+        raise ValueError("toolchain predates integrated RustEDA; run ./rusteda tools configure")
+    program=lock["programs"]["flow_driver"]["path"]
     workspace=a.workspace.resolve()
     if a.action=="init":
         if a.base_rev!="empty":
@@ -76,9 +79,9 @@ def main(argv=None, root=None):
         if path.exists():
             if read_json(path)!=config:raise ValueError("existing configuration differs")
         else:write_json(path,config)
-        return lane(program,workspace,["init","--base-rev",a.base_rev,"--config",str(path)])
+        return flow_engine(program,workspace,["init","--base-rev",a.base_rev,"--config",str(path)])
     if a.action in ("report","plan","doctor"):
-        value=lane(program,workspace,[a.action,"--rev",a.rev],require_ok=False)
+        value=flow_engine(program,workspace,[a.action,"--rev",a.rev],require_ok=False)
         if a.action=="report" and a.summary_only:
             value.pop("inputs",None);value.pop("stages",None)
             if isinstance(value.get("summary"),dict):value["summary"].pop("qualification",None)
@@ -89,17 +92,17 @@ def main(argv=None, root=None):
             worker_control.require_idle(root)
             args=["prepare","--base-rev",a.base_rev]
             if a.retry_failed:args.append("--retry-failed")
-            prepared=lane(program,workspace,args)
+            prepared=flow_engine(program,workspace,args)
             if prepared["status"]=="cached":return prepared
             request_data=worker_control.request(prepared["request"],prepared["request_sha256"])
             worker_control.register(root,request_data,prepared["request"],prepared["request_sha256"])
             receipt=worker_control.execute(prepared["request"],prepared["request_sha256"])
             worker_control.close_registration(root,receipt)
-            return lane(program,workspace,["finish","--base-rev",prepared["new_rev"],"--receipt",str(receipt)],require_ok=False)
+            return flow_engine(program,workspace,["finish","--base-rev",prepared["new_rev"],"--receipt",str(receipt)],require_ok=False)
     worker_control.available()
-    active=lane(program,workspace,["worker","--rev",a.base_rev])
+    active=flow_engine(program,workspace,["worker","--rev",a.base_rev])
     with worker_control.scale_lock(root):
         worker_control.require_idle(root,workspace)
         receipt=worker_control.recover(active["request"],active["request_sha256"])
         worker_control.close_registration(root,receipt)
-        return lane(program,workspace,["finish","--base-rev",a.base_rev,"--receipt",str(receipt)],require_ok=False)
+        return flow_engine(program,workspace,["finish","--base-rev",a.base_rev,"--receipt",str(receipt)],require_ok=False)

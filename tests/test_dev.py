@@ -29,6 +29,14 @@ def fixture(base, names=("One", "Two"), shared=False):
     git(root, "config", "user.name", "RustEDA fixture")
     git(root, "config", "user.email", "fixture@example.invalid")
     for name in names:
+        if name == "RustEDA":
+            app = root / "apps"
+            (app / "verification").mkdir(parents=True)
+            (app / "Cargo.toml").write_text("[workspace]\n")
+            (app / "README").write_text("original\n")
+            sha = hashlib.sha256(b"original\n").hexdigest()
+            (app / "verification/shared.sha256").write_text(f"{sha}  README\n")
+            continue
         source = sources / name
         source.mkdir()
         git(source, "init", "--initial-branch=main")
@@ -140,7 +148,7 @@ class DevSafety(unittest.TestCase):
 
     def test_hash_mismatch_is_not_reported_as_pass(self):
         root, _ = fixture(self.base / "shared",
-                          ("RustSys", "RustSTA", "RustEDA-Studio"), shared=True)
+                          ("RustSys", "RustSTA", "RustEDA"), shared=True)
         code, value = self.dev("shared", root=root)
         self.assertEqual(code, 0, value)
         (root / "modules/RustSTA/README").write_text("changed\n")
@@ -149,12 +157,12 @@ class DevSafety(unittest.TestCase):
         self.assertEqual(value["code"], "SHARED_HASH_MISMATCH")
 
     def foundation_fixture(self):
-        names = ("RustEDA-Common", "RustSys", "RustSTA", "RustEDA-Studio")
+        names = ("RustEDA-Common", "RustSys", "RustSTA", "RustEDA")
         root, _ = fixture(self.base / "foundation", names, shared=True)
         revision = git(root / "modules/RustEDA-Common", "rev-parse", "HEAD")
         url = "https://github.com/lab-emi/RustEDA-Common.git"
         for name in names[1:]:
-            path = root / "modules" / name
+            path = root / "apps" if name == "RustEDA" else root / "modules" / name
             declarations = ["[workspace.dependencies]"]
             for package in ("rusteda-core", "rusteda-workspace", "rusteda-compute", "rusteda-formats"):
                 declarations.append(f'{package} = {{ git = "{url}", rev = "{revision}" }}')
@@ -189,7 +197,7 @@ class DevSafety(unittest.TestCase):
 
     def test_lockfile_must_resolve_the_canonical_revision(self):
         root = self.foundation_fixture()
-        path = root / "modules/RustEDA-Studio/Cargo.lock"
+        path = root / "apps/Cargo.lock"
         path.write_text('[[package]]\nname = "rusteda-core"\nversion = "0.1.0"\n')
         code, value = self.dev("shared", root=root)
         self.assertEqual(code, 1)

@@ -1,0 +1,144 @@
+library (ext_ad) {
+  comment : "Synthetic fixture exercising RS-LIB.A and RS-LIB.D constructs";
+  time_unit : "100ps";
+  pulling_resistance_unit : "100ohm";
+  voltage_unit : "1V";
+  current_unit : "1uA";
+  leakage_power_unit : "1pW";
+  capacitive_load_unit (10, ff);
+
+  default_input_pin_cap : 1.5;
+  default_output_pin_cap : 0.5;
+  default_inout_pin_cap : 2.0;
+  default_max_transition : 12.0;
+  default_max_capacitance : 50.0;
+  default_max_fanout : 8.0;
+  default_fanout_load : 1.0;
+
+  define (custom_tag, cell, string);
+  define_group (custom_bundle, cell);
+  define_cell_area (custom_area, float);
+
+  lu_table_template (t2) {
+    variable_1 : input_net_transition;
+    variable_2 : total_output_net_capacitance;
+    index_1 ("1.0, 2.0");
+    index_2 ("10.0, 20.0");
+  }
+  lu_table_template (t3) {
+    variable_1 : related_pin_transition;
+    variable_2 : constrained_pin_transition;
+    variable_3 : total_output_net_capacitance;
+    index_1 ("1.0, 3.0");
+    index_2 ("2.0, 4.0");
+    index_3 ("10.0, 30.0");
+  }
+  power_lut_template (p2) {
+    variable_1 : input_transition_time;
+    variable_2 : total_output_net_capacitance;
+    index_1 ("1.0, 2.0");
+    index_2 ("10.0, 20.0");
+  }
+
+  cell (ISO_BUF) {
+    area : 4.0;
+    cell_footprint : "iso_buf";
+    is_isolation_cell : true;
+    always_on : true;
+    dont_touch : true;
+    custom_tag : "iso";
+    custom_area : 4.0;
+    custom_bundle (b0) {}
+    pg_pin (VDD) { pg_type : primary_power; voltage_name : "VDD"; }
+    pg_pin (VDDB) { pg_type : backup_power; voltage_name : "VDDB"; }
+    pg_pin (VSS) { pg_type : primary_ground; voltage_name : "VSS"; }
+    pg_pin (VPW) { pg_type : pwell; voltage_name : "VPW"; }
+    pg_pin (VNW) { pg_type : nwell; voltage_name : "VNW"; }
+    pin (A) {
+      direction : input;
+      isolation_cell_data_pin : true;
+      related_power_pin : "VDD";
+      related_ground_pin : "VSS";
+    }
+    pin (EN) {
+      direction : input;
+      isolation_cell_enable_pin : true;
+      always_on : true;
+      capacitance : 2.5;
+      min_capacitance : 0.5;
+      related_power_pin : "VDDB";
+      related_ground_pin : "VSS";
+    }
+    pin (Y) {
+      direction : output;
+      function : "A & EN";
+      three_state : "!EN";
+      capacitance : 0.75;
+      min_capacitance : 1.0;
+      power_down_function : "!VDD + VSS";
+      related_power_pin : "VDD";
+      related_ground_pin : "VSS";
+      timing () {
+        related_pin : "A";
+        timing_sense : positive_unate;
+        timing_type : combinational;
+        cell_rise (t2) {
+          index_1 ("2.0, 4.0");
+          values ("1.0, 2.0", "3.0, 4.0");
+        }
+        cell_fall (t2) {
+          values ("1.5, 2.5", "3.5, 4.5");
+        }
+        rise_transition (t2) {
+          values ("0.5, 1.0", "1.5, 2.0");
+        }
+        fall_transition (t2) {
+          values ("0.6, 1.1", "1.6, 2.1");
+        }
+      }
+      timing () {
+        related_pin : "EN";
+        timing_sense : positive_unate;
+        timing_type : three_state_enable;
+        cell_rise (t3) {
+          index_3 ("5.0, 15.0");
+          values (
+            "1.0, 2.0", "3.0, 4.0",
+            "5.0, 6.0", "7.0, 8.0"
+          );
+        }
+      }
+    }
+  }
+
+  cell (LS_CELL) {
+    area : 6.0;
+    is_level_shifter : true;
+    level_shifter_type : LH;
+    switch_cell_type : fine_grain;
+    retention_cell : "ret_style_1";
+    antenna_diode_type : power_and_ground;
+    is_macro_cell : true;
+    pad_cell : true;
+    pg_pin (VDDL) { pg_type : internal_power; voltage_name : "VDDL"; }
+    pg_pin (VDDH) { pg_type : primary_power; voltage_name : "VDDH"; }
+    pg_pin (VSSL) { pg_type : internal_ground; voltage_name : "VSSL"; }
+    pg_pin (DNW) { pg_type : deepnwell; voltage_name : "VDDH"; }
+    pg_pin (DPW) { pg_type : deeppwell; voltage_name : "VSSL"; }
+    pin (D) {
+      direction : input;
+      level_shifter_data_pin : true;
+    }
+    pin (LSE) {
+      direction : input;
+      level_shifter_enable_pin : true;
+    }
+    pin (Z) {
+      direction : inout;
+      function : "D";
+    }
+    pin (INT) {
+      direction : internal;
+    }
+  }
+}

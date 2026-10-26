@@ -1,17 +1,17 @@
 # Run a design flow
 
-The integrated Linux flow uses RustLane's revision-bound external worker,
+The integrated Linux flow uses RustEDA's revision-bound external worker,
 RustSys, RustSTA and RustROAD. Configure the pinned tools, PDK libraries,
 verification decks and OCI images described by
 [`integration/tools.example.toml`](../integration/tools.example.toml).
 Podman and a user systemd manager are required for the qualified worker.
 
 ```sh
-./dev tools configure
-./dev tools verify
-./dev flow --workspace .work/counter init --base-rev empty --design counter --pdk sky130
-./dev flow --workspace .work/counter run --base-rev rev0
-./dev flow --workspace .work/counter report --summary-only
+./rusteda tools configure
+./rusteda tools verify
+./rusteda flow --workspace .work/counter init --base-rev empty --design counter --pdk sky130
+./rusteda flow --workspace .work/counter run --base-rev rev0
+./rusteda flow --workspace .work/counter report --summary-only
 ```
 
 Use `--pdk gf180` for the second baseline. Each design/PDK configuration gets its
@@ -36,5 +36,5 @@ incomplete checks are `unverified`.
 
 The [qualification summary](verification.md) covers small blocks on SKY130 HD
 and GF180 7T. It is not an OpenC910 performance or tapeout-signoff result.
-The [RustLane worker contract](../modules/RustLane/docs/rusteda-worker.md) and
+The [RustEDA flow worker contract](workbench/flow/rusteda-worker.md) and
 [RustROAD physical flow](../modules/RustROAD/docs/rtl2gds.md) document interfaces.

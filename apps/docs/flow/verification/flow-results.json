@@ -1,0 +1,636 @@
+{
+  "schema": "rustlane-flow-verification.v1",
+  "status": "passed",
+  "date_utc": "2026-10-23T04:47:37.255883+00:00",
+  "scope": "tiny sequential controller orchestration; native original PDK scopes plus explicit ideal-wire external calibration",
+  "limitation": "No physical-tool, DRC/LVS, SPEF or extracted-parasitic STA validation is claimed.",
+  "controller": {
+    "version": "rustlane 0.1.0",
+    "executable": "target/release/rustlane",
+    "sha256": "2ce1d10da1330e99092e4a83aebd46e8d8eb78f28a33133cfb6c748430c2b0e9"
+  },
+  "verification_sources": {
+    "scripts/verify_flow.py": "edfd9fd6b751bc8c43938ddfa2cf1e6c047560a171c3b04d4aab056a0b3bc2c0",
+    "scripts/verify_engines.py": "edb16fea7b01d17c731cababacaf60c7624c79cc80523e2c1ede0ded84b138d3"
+  },
+  "engines": {
+    "rustsys": {
+      "version": "rustsys 0.1.0 (runtimes: cpu, cuda)",
+      "entrypoint_sha256": "9c83124e7bcf1a9ced5675672f3587099afec796de3230679fbff638c0b09e50"
+    },
+    "rusteda": {
+      "version": "rusteda 0.1.0",
+      "entrypoint_sha256": "8fcf8e0eefa05e14c3b3d6ac367839f5ff95059f6d416e2e8fab0262667b2429"
+    },
+    "ruststa": {
+      "version": "ruststa 0.1.0 (backends: cpu)",
+      "entrypoint_sha256": "b1a8389c7684aaf8a8e05f89635fac5ed2ee15aa380c8f8d8c40b1780f08668d"
+    },
+    "yosys": {
+      "version": "Yosys 0.67 (git sha1 2d1509d1b, Release, GNU /usr/bin/c++ 13.3.0)",
+      "entrypoint_sha256": "acf8487fd4eb54a71043bf29c461a8f10511813155c2989e5eb1e045b874a6ad"
+    },
+    "opensta": {
+      "version": "3.1.0",
+      "entrypoint_sha256": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b"
+    }
+  },
+  "raw_evidence": {
+    "summary": ".work/engine-study/flow-final-v2/summary.json",
+    "summary_sha256": "54ef64cd6f918114eb42119edb7d36a78ef8a6aee88e8b78a753f7cd21125f7f",
+    "receipts": ".work/engine-study/flow-final-v2/receipts"
+  },
+  "resource_scope": {
+    "memory_mib": 2048,
+    "threads": 2,
+    "concurrent_native_children": 1,
+    "command_wall_seconds": 60,
+    "native_command_wall_seconds": 30,
+    "suite_wall_seconds": 180,
+    "memory_estimate": {
+      "objects": 128,
+      "arcs": 256,
+      "bytes_per_entry": 256,
+      "corners": 1,
+      "threads": 2,
+      "max_graph_tag_mib": 4,
+      "parsed_library_mib_upper_bound": 640,
+      "controller_snapshot_mib_upper_bound": 144,
+      "process_headroom_mib": 256,
+      "projection_controller_mib_upper_bound": 256,
+      "concurrent_native_children": 1,
+      "max_paths": 8,
+      "max_conflicts": 10000,
+      "all_paths_materialized": false
+    },
+    "largest_guarded_command_rss_kib": 119792,
+    "rss_measurement_status": "complete",
+    "measurement_note": "Measured process peaks, not aggregate concurrent process-family RSS. Native run recorded wall excludes final checkpoint; guarded command wall includes complete invocation.",
+    "suite": {
+      "receipt": ".work/engine-study/flow-final-v2-controller.time",
+      "sha256": "85dd9109fb00ea3c2d4abe21cf4e83eb67f59cf7de58b7915f480321070ce93f",
+      "elapsed_hms": "0:04.75",
+      "maximum_resident_set_size_kib": 119792,
+      "exit_code": 0
+    }
+  },
+  "flows": [
+    {
+      "case": "sky130",
+      "status": "passed",
+      "pdk": "sky130_fd_sc_hd",
+      "library_sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+      "revision": "rev7",
+      "executed_steps": 3,
+      "initial_cached_steps": 0,
+      "native_child_processes": 6,
+      "mapped_netlist": {
+        "sha256": "d9907b4f0a6d28aa7527baeff6ea4d4866f6f5994b30bb6c59dd48b661fecf1b",
+        "bytes": 220
+      },
+      "qor": {
+        "area": 47.5456,
+        "sequential_cells": 1,
+        "combinational_cells": 1,
+        "time_unit_ns": 1.0
+      },
+      "timing_scope": {
+        "backend": "cpu",
+        "clock_model": "ideal",
+        "corner": "tt",
+        "cppr": "off",
+        "delay_calculator": "nldm_lumped",
+        "drc_status": "unchecked",
+        "parasitics": "none",
+        "precision": "f64",
+        "wire_load": "Small",
+        "wire_model": "wireload_lumped"
+      },
+      "timing_completeness": {
+        "clock_domains": [
+          "core"
+        ],
+        "constrained_endpoints": 2,
+        "disabled_arcs": 0,
+        "unanalyzed_arcs": {
+          "min_pulse_width": 1
+        },
+        "unconstrained_by_reason": {},
+        "unconstrained_endpoints": 0,
+        "unconstrained_inputs": 0
+      },
+      "timing_metrics": {
+        "hold_violating_endpoints": 0,
+        "ths_ns": 0.0,
+        "tns_ns": 0.0,
+        "violating_endpoints": 0,
+        "whs_ns": 0.0,
+        "wns_ns": 0.0,
+        "worst_hold_slack_ns": 0.29727164669770473,
+        "worst_setup_slack_ns": 9.432276327887784
+      },
+      "timing_verification": {
+        "max_abs_difference_ns": 0.0,
+        "method": "full",
+        "methods": [
+          "full"
+        ],
+        "mismatches": [],
+        "slacks_compared": 4,
+        "tolerance_ns": 1e-06,
+        "verdict": "agree"
+      },
+      "diagnostics": [
+        {
+          "code": "T0015",
+          "help": null,
+          "location": null,
+          "message": "corner 'tt': 1 unanalyzed 'min_pulse_width' arc(s) across 1 instance(s)",
+          "severity": "warning"
+        }
+      ],
+      "measurement": {
+        "guarded_run_command_wall_seconds": 0.5493612160207704,
+        "recorded_run_wall_seconds": 0.544581983,
+        "summed_native_child_wall_seconds": 0.39729670100000003,
+        "recorded_controller_overhead_seconds": 0.14728528200000002,
+        "peak_direct_child_rss_kib": 66996
+      },
+      "direct_mapped_identity": {
+        "status": "passed",
+        "sha256": "d9907b4f0a6d28aa7527baeff6ea4d4866f6f5994b30bb6c59dd48b661fecf1b"
+      },
+      "resume": {
+        "status": "passed",
+        "executed_steps": 0,
+        "cached_steps": 3,
+        "checkpoint_and_artifact_identity": "unchanged",
+        "new_rev": "rev7"
+      },
+      "stale_base": {
+        "status": "passed",
+        "exit_code": 4,
+        "error": {
+          "code": "REVISION_CONFLICT",
+          "message": "expected rev0, HEAD is rev7"
+        },
+        "workspace_mutated": false
+      },
+      "input_identity": {
+        "status": "passed",
+        "scope": "deliberately modified captured RTL",
+        "exit_code": 1,
+        "error": {
+          "code": "ARTIFACT_CHANGED",
+          "message": "identity changed: /mnt/data2/cgao/git/RustLane/.work/engine-study/flow-final-v2/sky130_workspace/inputs/e5682e772e6a95dcb9f21419d4ae213e090ac6ae8a9e75e1d9eace721cc3685c.sv"
+        },
+        "checkpoint_mutated": false
+      },
+      "external_cec": {
+        "status": "passed",
+        "method": "Yosys equiv_simple -seq 2 -undef plus equiv_status -assert",
+        "controls": [
+          {
+            "control": "good",
+            "expected_result_observed": true,
+            "receipt": "sky130_yosys_good"
+          },
+          {
+            "control": "bad",
+            "expected_result_observed": true,
+            "receipt": "sky130_yosys_bad"
+          }
+        ],
+        "initial_state": "no reset sequence or initialization assumptions"
+      }
+    },
+    {
+      "case": "gf180",
+      "status": "passed",
+      "pdk": "gf180mcu_fd_sc_mcu7t5v0",
+      "library_sha256": "f9dee07cf158324934b0c59144d970a2e8313f43533ede6283ec3c136f82fe53",
+      "revision": "rev7",
+      "executed_steps": 3,
+      "initial_cached_steps": 0,
+      "native_child_processes": 6,
+      "mapped_netlist": {
+        "sha256": "b57b8187cb4cc44c8677bff9bcd9615d48506e85e6a2b50811f5bebe7659040a",
+        "bytes": 237
+      },
+      "qor": {
+        "area": 103.1744,
+        "sequential_cells": 1,
+        "combinational_cells": 1,
+        "time_unit_ns": 1.0
+      },
+      "timing_scope": {
+        "backend": "cpu",
+        "clock_model": "ideal",
+        "corner": "tt",
+        "cppr": "off",
+        "delay_calculator": "nldm_lumped",
+        "drc_status": "unchecked",
+        "parasitics": "none",
+        "precision": "f64",
+        "wire_load": null,
+        "wire_model": "ideal"
+      },
+      "timing_completeness": {
+        "clock_domains": [
+          "core"
+        ],
+        "constrained_endpoints": 2,
+        "disabled_arcs": 0,
+        "unanalyzed_arcs": {
+          "min_pulse_width": 2,
+          "minimum_period": 2
+        },
+        "unconstrained_by_reason": {},
+        "unconstrained_endpoints": 0,
+        "unconstrained_inputs": 0
+      },
+      "timing_metrics": {
+        "hold_violating_endpoints": 0,
+        "ths_ns": 0.0,
+        "tns_ns": 0.0,
+        "violating_endpoints": 0,
+        "whs_ns": 0.0,
+        "wns_ns": 0.0,
+        "worst_hold_slack_ns": 0.46655197380687974,
+        "worst_setup_slack_ns": 8.672568525727085
+      },
+      "timing_verification": {
+        "max_abs_difference_ns": 0.0,
+        "method": "full",
+        "methods": [
+          "full"
+        ],
+        "mismatches": [],
+        "slacks_compared": 4,
+        "tolerance_ns": 1e-06,
+        "verdict": "agree"
+      },
+      "diagnostics": [
+        {
+          "code": "T0015",
+          "help": null,
+          "location": null,
+          "message": "corner 'tt': 2 unanalyzed 'min_pulse_width' arc(s) across 1 instance(s)",
+          "severity": "warning"
+        },
+        {
+          "code": "T0015",
+          "help": null,
+          "location": null,
+          "message": "corner 'tt': 2 unanalyzed 'minimum_period' arc(s) across 1 instance(s)",
+          "severity": "warning"
+        }
+      ],
+      "measurement": {
+        "guarded_run_command_wall_seconds": 0.8380144070251845,
+        "recorded_run_wall_seconds": 0.832833709,
+        "summed_native_child_wall_seconds": 0.679125174,
+        "recorded_controller_overhead_seconds": 0.15370853499999992,
+        "peak_direct_child_rss_kib": 119792
+      },
+      "direct_mapped_identity": {
+        "status": "passed",
+        "sha256": "b57b8187cb4cc44c8677bff9bcd9615d48506e85e6a2b50811f5bebe7659040a"
+      },
+      "resume": {
+        "status": "passed",
+        "executed_steps": 0,
+        "cached_steps": 3,
+        "checkpoint_and_artifact_identity": "unchanged",
+        "new_rev": "rev7"
+      },
+      "stale_base": {
+        "status": "passed",
+        "exit_code": 4,
+        "error": {
+          "code": "REVISION_CONFLICT",
+          "message": "expected rev0, HEAD is rev7"
+        },
+        "workspace_mutated": false
+      },
+      "input_identity": {
+        "status": "passed",
+        "scope": "deliberately modified captured RTL",
+        "exit_code": 1,
+        "error": {
+          "code": "ARTIFACT_CHANGED",
+          "message": "identity changed: /mnt/data2/cgao/git/RustLane/.work/engine-study/flow-final-v2/gf180_workspace/inputs/e5682e772e6a95dcb9f21419d4ae213e090ac6ae8a9e75e1d9eace721cc3685c.sv"
+        },
+        "checkpoint_mutated": false
+      },
+      "external_cec": {
+        "status": "passed",
+        "method": "Yosys equiv_simple -seq 2 -undef plus equiv_status -assert",
+        "controls": [
+          {
+            "control": "good",
+            "expected_result_observed": true,
+            "receipt": "gf180_yosys_good"
+          },
+          {
+            "control": "bad",
+            "expected_result_observed": true,
+            "receipt": "gf180_yosys_bad"
+          }
+        ],
+        "initial_state": "no reset sequence or initialization assumptions"
+      },
+      "external_sta": {
+        "status": "passed",
+        "scope": "same_verification_only_ideal_library_on_both_engines",
+        "corner": "tt",
+        "wire_model": "ideal",
+        "clock_model": "ideal",
+        "parasitics": "none",
+        "unconstrained_endpoints": 0,
+        "tolerance_ns": 0.001,
+        "comparisons": [
+          {
+            "endpoint": "y",
+            "kind": "setup",
+            "ruststa_ns": 8.672568525727085,
+            "opensta_ns": 8.672568321228,
+            "absolute_difference_ns": 2.0449908433306518e-07
+          },
+          {
+            "endpoint": "y",
+            "kind": "hold",
+            "ruststa_ns": 1.1753221294810465,
+            "opensta_ns": 1.175322175026,
+            "absolute_difference_ns": 4.554495336428488e-08
+          },
+          {
+            "endpoint": "r0/D",
+            "kind": "setup",
+            "ruststa_ns": 8.767571962686944,
+            "opensta_ns": 8.76757144928,
+            "absolute_difference_ns": 5.134069436252275e-07
+          },
+          {
+            "endpoint": "r0/D",
+            "kind": "hold",
+            "ruststa_ns": 0.46655197380687974,
+            "opensta_ns": 0.466551929712,
+            "absolute_difference_ns": 4.409487974754711e-08
+          }
+        ],
+        "max_abs_difference_ns": 5.134069436252275e-07,
+        "warnings": [],
+        "receipt": "gf180_opensta"
+      }
+    },
+    {
+      "case": "sky130_ideal",
+      "status": "passed",
+      "pdk": "sky130_fd_sc_hd",
+      "library_sha256": "1c6372ecc8fe4ae03326de976c5c14cc2d68e44426526561d8b3c1cb77b434b1",
+      "revision": "rev7",
+      "executed_steps": 3,
+      "initial_cached_steps": 0,
+      "native_child_processes": 6,
+      "mapped_netlist": {
+        "sha256": "d9907b4f0a6d28aa7527baeff6ea4d4866f6f5994b30bb6c59dd48b661fecf1b",
+        "bytes": 220
+      },
+      "qor": {
+        "area": 47.5456,
+        "sequential_cells": 1,
+        "combinational_cells": 1,
+        "time_unit_ns": 1.0
+      },
+      "timing_scope": {
+        "backend": "cpu",
+        "clock_model": "ideal",
+        "corner": "tt",
+        "cppr": "off",
+        "delay_calculator": "nldm_lumped",
+        "drc_status": "unchecked",
+        "parasitics": "none",
+        "precision": "f64",
+        "wire_load": null,
+        "wire_model": "ideal"
+      },
+      "timing_completeness": {
+        "clock_domains": [
+          "core"
+        ],
+        "constrained_endpoints": 2,
+        "disabled_arcs": 0,
+        "unanalyzed_arcs": {
+          "min_pulse_width": 1
+        },
+        "unconstrained_by_reason": {},
+        "unconstrained_endpoints": 0,
+        "unconstrained_inputs": 0
+      },
+      "timing_metrics": {
+        "hold_violating_endpoints": 0,
+        "ths_ns": 0.0,
+        "tns_ns": 0.0,
+        "violating_endpoints": 0,
+        "whs_ns": 0.0,
+        "wns_ns": 0.0,
+        "worst_hold_slack_ns": 0.2962878686148402,
+        "worst_setup_slack_ns": 9.432276327887784
+      },
+      "timing_verification": {
+        "max_abs_difference_ns": 0.0,
+        "method": "full",
+        "methods": [
+          "full"
+        ],
+        "mismatches": [],
+        "slacks_compared": 4,
+        "tolerance_ns": 1e-06,
+        "verdict": "agree"
+      },
+      "diagnostics": [
+        {
+          "code": "T0015",
+          "help": null,
+          "location": null,
+          "message": "corner 'tt': 1 unanalyzed 'min_pulse_width' arc(s) across 1 instance(s)",
+          "severity": "warning"
+        }
+      ],
+      "measurement": {
+        "guarded_run_command_wall_seconds": 0.5418805169756524,
+        "recorded_run_wall_seconds": 0.536256733,
+        "summed_native_child_wall_seconds": 0.387207661,
+        "recorded_controller_overhead_seconds": 0.149049072,
+        "peak_direct_child_rss_kib": 66292
+      },
+      "external_sta": {
+        "status": "passed",
+        "scope": "same_verification_only_ideal_library_on_both_engines",
+        "corner": "tt",
+        "wire_model": "ideal",
+        "clock_model": "ideal",
+        "parasitics": "none",
+        "unconstrained_endpoints": 0,
+        "tolerance_ns": 0.001,
+        "comparisons": [
+          {
+            "endpoint": "y",
+            "kind": "setup",
+            "ruststa_ns": 9.432276327887784,
+            "opensta_ns": 9.432276725769,
+            "absolute_difference_ns": 3.9788121597439385e-07
+          },
+          {
+            "endpoint": "y",
+            "kind": "hold",
+            "ruststa_ns": 0.5406693679540548,
+            "opensta_ns": 0.540669381618,
+            "absolute_difference_ns": 1.3663945197528449e-08
+          },
+          {
+            "endpoint": "r0/D",
+            "kind": "setup",
+            "ruststa_ns": 9.518239907453928,
+            "opensta_ns": 9.51824092865,
+            "absolute_difference_ns": 1.0211960717043667e-06
+          },
+          {
+            "endpoint": "r0/D",
+            "kind": "hold",
+            "ruststa_ns": 0.2962878686148402,
+            "opensta_ns": 0.296287864447,
+            "absolute_difference_ns": 4.167840184088334e-09
+          }
+        ],
+        "max_abs_difference_ns": 1.0211960717043667e-06,
+        "warnings": [],
+        "receipt": "sky130_ideal_opensta"
+      },
+      "ideal_projection": {
+        "purpose": "verification_only_ideal_wires",
+        "original_sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+        "projected_sha256": "1c6372ecc8fe4ae03326de976c5c14cc2d68e44426526561d8b3c1cb77b434b1",
+        "cell_functions_and_nldm": "unchanged",
+        "production_library": "unmodified",
+        "removed_spans": 6
+      }
+    }
+  ],
+  "controls": {
+    "missing_tool": {
+      "status": "passed",
+      "exit_code": 1,
+      "rejected_at": "synthesis",
+      "controller_error": {
+        "code": "TOOL_UNAVAILABLE",
+        "message": "not an executable regular file: /mnt/data2/cgao/git/RustLane/.work/engine-study/flow-final-v2/deliberately_unavailable_rustsys"
+      },
+      "raw_diagnostics": [],
+      "summary": {
+        "analysis_scope": null,
+        "complete": false,
+        "completed_steps": 0,
+        "design_name": "lane_smoke",
+        "drc_status": "unchecked",
+        "equivalence_verdict": null,
+        "extracted_parasitic_sta": "unsupported",
+        "flow": "synthesis_sta",
+        "lvs_status": "unchecked",
+        "measurement_scope": "child RSS is the largest direct tool peak, not aggregate process-family memory; recorded wall time excludes final checkpoint",
+        "pdk": "sky130_fd_sc_hd",
+        "peak_direct_child_rss_kib": null,
+        "recorded_run_wall_seconds": 0.012335182,
+        "synthesis_provider": "RustSys",
+        "timing_completeness": null,
+        "timing_metrics": null,
+        "timing_provider": "RustSTA",
+        "timing_verification": null,
+        "total_steps": 3,
+        "unconstrained_endpoints": null
+      },
+      "raw_receipt": ".work/engine-study/flow-final-v2/receipts/missing_tool_run/stdout.txt"
+    },
+    "unsupported_sdc": {
+      "status": "passed",
+      "exit_code": 1,
+      "rejected_at": "sta_pre",
+      "controller_error": {
+        "code": "TOOL_EXECUTION_FAILED",
+        "message": "/mnt/data2/cgao/git/RustSTA/target/release/rusteda exited Some(1); timeout=false, log_limit=false; stderr=/mnt/data2/cgao/git/RustLane/.work/engine-study/flow-final-v2/unsupported_sdc_workspace/steps/sta_pre/attempt1/timing_import/stderr.log; upstream INPUT_REJECTED: /mnt/data2/cgao/git/RustLane/.work/engine-study/flow-final-v2/unsupported_sdc_workspace/inputs/07593d6307e6ca1e0e60eb2debf1c146361ead07b10436f0f850d69d9765c16a.sdc:7:1: [D0010] command 'set_propagated_clock' is not supported yet (Phase 2b)"
+      },
+      "raw_diagnostics": [
+        {
+          "severity": "error",
+          "code": "D0010",
+          "location": {
+            "file": "/mnt/data2/cgao/git/RustLane/.work/engine-study/flow-final-v2/unsupported_sdc_workspace/inputs/07593d6307e6ca1e0e60eb2debf1c146361ead07b10436f0f850d69d9765c16a.sdc",
+            "line": 7,
+            "col": 1
+          },
+          "message": "command 'set_propagated_clock' is not supported yet (Phase 2b)",
+          "help": null
+        }
+      ],
+      "summary": {
+        "analysis_scope": null,
+        "complete": false,
+        "completed_steps": 2,
+        "design_name": "lane_smoke",
+        "drc_status": "unchecked",
+        "equivalence_verdict": "equivalent",
+        "extracted_parasitic_sta": "unsupported",
+        "flow": "synthesis_sta",
+        "lvs_status": "unchecked",
+        "measurement_scope": "child RSS is the largest direct tool peak, not aggregate process-family memory; recorded wall time excludes final checkpoint",
+        "pdk": "sky130_fd_sc_hd",
+        "peak_direct_child_rss_kib": 66288,
+        "recorded_run_wall_seconds": 0.454509666,
+        "synthesis_provider": "RustSys",
+        "timing_completeness": null,
+        "timing_metrics": null,
+        "timing_provider": "RustSTA",
+        "timing_verification": null,
+        "total_steps": 3,
+        "unconstrained_endpoints": null
+      },
+      "raw_receipt": ".work/engine-study/flow-final-v2/receipts/unsupported_sdc_run/stdout.txt"
+    }
+  },
+  "separate_parent_qa": {
+    "qa-tests": {
+      "receipt": ".work/qa-tests.time",
+      "sha256": "c7727d377601bc76b22b18a1cc75a771003f2c31a9e5b60378d58fdbd1aec1c1",
+      "elapsed_hms": "0:02.36",
+      "maximum_resident_set_size_kib": 192048,
+      "exit_code": 0,
+      "passed": 22,
+      "ignored": 6,
+      "notes": "12 process tests + 10 workspace tests; five ignored process helper entrypoints exercised indirectly, and the ignored Tcl test selected separately below.",
+      "guards": {
+        "memory_max_gib": 16,
+        "swap_max_gib": 4,
+        "timeout_seconds": 180,
+        "cargo_build_jobs": 2,
+        "rust_test_threads": 2
+      }
+    },
+    "qa-tcl": {
+      "receipt": ".work/qa-tcl.time",
+      "sha256": "3f1b3950689bd87d2ea65a795d14a95eceff0bb26f3fa7ed4f9f422ee13cf93e",
+      "elapsed_hms": "0:00.04",
+      "maximum_resident_set_size_kib": 36640,
+      "exit_code": 0,
+      "passed": 1,
+      "ignored": 0
+    },
+    "release-build": {
+      "receipt": ".work/release-build.time",
+      "sha256": "13aa42812d6ad65e8df1fa9fc0f6f865cf686c7a8b75b33b141ecd1b9a6a97fd",
+      "elapsed_hms": "0:10.91",
+      "maximum_resident_set_size_kib": 278236,
+      "exit_code": 0
+    }
+  }
+}

@@ -21,7 +21,7 @@ guides the next iteration.
 
 <picture>
   <source media="(prefers-reduced-motion: reduce)" srcset="assets/rusteda-banner.svg">
-  <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200" height="360">
+  <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200">
 </picture>
 
 <div class="eda-metrics" markdown>
@@ -57,17 +57,17 @@ the measured boundary excludes proof and timing. [Results and limits](benchmarks
 
     [RustROAD →](modules/rustroad/index.md)
 
-- ![RustLane](modules/rustlane/assets/rustlane-logo.svg){ width="48" } **Run and recover**
+- ![RustEDA](assets/rusteda-logo.svg){ width="48" } **Run and recover**
 
     Bounded execution and verified checkpoints.
 
-    [RustLane →](modules/rustlane/index.md)
+    [Run a flow →](flows.md)
 
-- ![RustEDA Studio](modules/rusteda-studio/assets/rusteda-studio-logo.svg){ width="48" } **Inspect and act**
+- ![RustEDA workbench](assets/rusteda-logo.svg){ width="48" } **Inspect and act**
 
     Shared views, paths and revision-bound selections.
 
-    [RustEDA Studio →](modules/rusteda-studio/index.md)
+    [Open the workbench →](workbench/index.md)
 
 - ![RustEDA Common](modules/rusteda-common/assets/rusteda-common-logo.svg){ width="48" } **Share a foundation**
 
