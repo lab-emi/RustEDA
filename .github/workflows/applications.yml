@@ -5,6 +5,12 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# The rustup proxy may bootstrap the pinned compiler before cargo fetch starts.
+# Bound unpacking separately from the process virtual-address ceiling.
+env:
+  RUSTUP_IO_THREADS: '1'
+  RUSTUP_UNPACK_RAM: '268435456'
+
 concurrency:
   group: apps-${{ github.ref }}
   cancel-in-progress: true
@@ -24,21 +30,26 @@ jobs:
       - name: Fetch locked metadata dependencies
         working-directory: apps
         run: |
-          ulimit -v 1048576
-          timeout 180s cargo fetch --locked
+          ulimit -v 4194304
+          timeout 300s cargo fetch --locked
       - run: ./dev fmt RustEDA --memory-mib 4096 --timeout 180
       - run: ./dev shared
       - run: ./dev test RustEDA --no-default-features --jobs 2 --memory-mib 4096 --timeout 900
       - run: ./dev doc RustEDA --no-default-features --jobs 2 --memory-mib 4096 --timeout 600
       - name: Show bounded failure diagnostics
         if: failure()
-        run: tail -n 160 -v .work/logs/*.log .work/logs/*.time
+        shell: bash
+        run: |
+          shopt -s nullglob
+          logs=(.work/logs/*.log .work/logs/*.time)
+          if (( ${#logs[@]} )); then tail -n 160 -v "${logs[@]}"; fi
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: headless-diagnostics
           path: .work/logs/
           retention-days: 7
+          if-no-files-found: ignore
   workbench:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -55,16 +66,21 @@ jobs:
       - name: Fetch locked metadata dependencies
         working-directory: apps
         run: |
-          ulimit -v 1048576
-          timeout 180s cargo fetch --locked
+          ulimit -v 4194304
+          timeout 300s cargo fetch --locked
       - run: ./dev clippy RustEDA --jobs 2 --memory-mib 6144 --timeout 1500
       - run: ./dev test RustEDA --all-features --jobs 2 --memory-mib 6144 --timeout 1500
       - name: Show bounded failure diagnostics
         if: failure()
-        run: tail -n 160 -v .work/logs/*.log .work/logs/*.time
+        shell: bash
+        run: |
+          shopt -s nullglob
+          logs=(.work/logs/*.log .work/logs/*.time)
+          if (( ${#logs[@]} )); then tail -n 160 -v "${logs[@]}"; fi
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: workbench-diagnostics
           path: .work/logs/
           retention-days: 7
+          if-no-files-found: ignore

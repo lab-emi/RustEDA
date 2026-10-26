@@ -59,3 +59,7 @@ Application source checks query Cargo metadata offline, including optional and
 platform-specific packages. In a fresh CI cache, first run
 `(cd apps && cargo fetch --locked)`. This downloads the locked
 package inventory; the headless test job still builds with `--no-default-features`.
+
+CI also bounds rustup's first-install unpacking to 256 MiB and one I/O worker,
+separately from the 4 GiB address-space cap for dependency setup. See the
+[rustup environment reference](https://rust-lang.github.io/rustup/environment-variables.html).
