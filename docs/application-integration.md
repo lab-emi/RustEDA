@@ -43,3 +43,7 @@ Validation checks the native flow CLI, unchanged workspace revisions, shared pin
 workbench model tests, CLI contracts, negative controls and fresh source checkout.
 Physical qualification, when run, reuses the existing independent producer gates
 on SKY130 and GF180. Missing or unexecuted checks remain unverified.
+
+The standalone RustLane and RustEDA-Studio repositories were deleted on 2026-10-26
+after the published RustEDA revision passed a fresh recursive-clone check. Their
+published histories remain reachable in RustEDA. [Deletion receipt](../integration/evidence/application-repository-cleanup.json).

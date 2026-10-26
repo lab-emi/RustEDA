@@ -446,5 +446,63 @@
       }
     }
   },
-  "gui_memory_note": "gui-tests includes compiler RSS; gui-runtime measures the cached test run, below the 2 GiB test ceiling"
+  "gui_memory_note": "gui-tests includes compiler RSS; gui-runtime measures the cached test run, below the 2 GiB test ceiling",
+  "repository_cleanup": {
+    "date": "2026-10-26",
+    "rusteda_commit": "49cf33dff4d5f8cf451558693be68a6f26eb2889",
+    "repositories": {
+      "RustLane": {
+        "repository_id": 1430568950,
+        "source_commit": "cfd6884c2479154d546e38c1812bd791de524d76",
+        "history_available_in_rusteda": true,
+        "deleted": true,
+        "delete_http_status": 204,
+        "verification_http_status": 404
+      },
+      "RustEDA-Studio": {
+        "repository_id": 1432783831,
+        "source_commit": "9660f082b8bcc65e6bac0f0be4a9ec6e004418cc",
+        "history_available_in_rusteda": true,
+        "deleted": true,
+        "delete_http_status": 204,
+        "verification_http_status": 404
+      }
+    }
+  },
+  "published_verification": {
+    "source_commit": "49cf33dff4d5f8cf451558693be68a6f26eb2889",
+    "remote_recursive_clone": true,
+    "doctor": true,
+    "shared": true,
+    "documentation": {
+      "status": "passed",
+      "html_pages": 226,
+      "brand_families": 5,
+      "benchmark_ratios": {
+        "speedup": 20.549207733682223,
+        "area": 1.122376403522245,
+        "rss": 2.121481903745637
+      },
+      "eda_validation": "not_run"
+    },
+    "history": {
+      "RustLane": {
+        "commit": "cfd6884c2479154d546e38c1812bd791de524d76",
+        "available_in_rusteda": true
+      },
+      "RustEDA-Studio": {
+        "commit": "9660f082b8bcc65e6bac0f0be4a9ec6e004418cc",
+        "available_in_rusteda": true
+      }
+    },
+    "resources": {
+      "measurement": "resource.getrusage(RUSAGE_CHILDREN)",
+      "rss_scope": "maximum_individual_child_rss_not_aggregate",
+      "wall_seconds": 6.217876,
+      "maximum_resident_set_size_kib": 62048,
+      "user_seconds": 4.924829,
+      "system_seconds": 0.247141,
+      "exit_code": 0
+    }
+  }
 }
