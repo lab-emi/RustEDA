@@ -44,3 +44,18 @@ The build stages documentation under `.work/docs-source` and writes the complete
 static site to `.work/docs-site`. It does not run a server or modify module source.
 The root owns navigation, shared styling and deployment. Standalone module sites
 link back to the canonical RustEDA documentation.
+
+## Repository boundaries
+
+Run `python3 scripts/check_repository_boundaries.py` to audit tracked sources,
+documentation, CI and initialized submodules for references to the retired
+standalone repositories or checkout directories. The non-physical CI workflows
+run this check automatically. It streams files within explicit file/byte caps.
+Old verification records retain their original references and are protected by
+exact SHA-256 values; local crate names and compatibility schema identifiers
+remain valid. This check does not run EDA tools or routing.
+
+Application source checks query Cargo metadata offline, including optional and
+platform-specific packages. In a fresh CI cache, first run
+`(cd apps && cargo fetch --locked)`. This downloads the locked
+package inventory; the headless test job still builds with `--no-default-features`.

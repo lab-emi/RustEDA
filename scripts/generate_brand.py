@@ -87,27 +87,6 @@ def mark(slug: str) -> str:
                  f'<circle cx="148" cy="104" r="5.5" fill="{PAPER}"/>'
                  f'<circle cx="108" cy="152" r="5.5" fill="{PAPER}"/>'
                  f'<circle cx="189" cy="152" r="6.5" fill="{TEAL}"/>')
-    elif slug == "rustlane":
-        body += (f'<path d="M90 82H166M90 174H166" stroke="{PAPER}" stroke-width="8"/>'
-                 f'<path d="M67 128H94L128 102M94 128L128 154" stroke="{COPPER}" stroke-width="9"/>'
-                 f'<path d="M128 102L162 128H189M128 154L162 128" stroke="{TEAL}" stroke-width="9"/></g>'
-                 f'<circle cx="67" cy="128" r="6.5" fill="{COPPER}"/>'
-                 f'<circle cx="94" cy="128" r="6.5" fill="{PAPER}"/>'
-                 f'<circle cx="128" cy="102" r="6.5" fill="{PAPER}"/>'
-                 f'<circle cx="128" cy="154" r="6.5" fill="{PAPER}"/>'
-                 f'<circle cx="162" cy="128" r="6.5" fill="{PAPER}"/>'
-                 f'<circle cx="189" cy="128" r="6.5" fill="{TEAL}"/>')
-    elif slug == "rusteda-studio":
-        body += (f'<path d="M67 128H82" stroke="{COPPER}" stroke-width="10"/>'
-                 f'<rect x="82" y="84" width="92" height="88" rx="10" stroke="{PAPER}" stroke-width="8"/>'
-                 f'<path d="M82 108H174M110 108V172" stroke="{PAPER}" stroke-width="6"/>'
-                 f'<path d="M123 152L141 126L158 140" stroke="{TEAL}" stroke-width="8"/>'
-                 f'<path d="M174 128H189" stroke="{TEAL}" stroke-width="10"/></g>'
-                 f'<circle cx="67" cy="128" r="6.5" fill="{COPPER}"/>'
-                 f'<circle cx="123" cy="152" r="4.5" fill="{COPPER}"/>'
-                 f'<circle cx="141" cy="126" r="4.5" fill="{PAPER}"/>'
-                 f'<circle cx="158" cy="140" r="4.5" fill="{TEAL}"/>'
-                 f'<circle cx="189" cy="128" r="6.5" fill="{TEAL}"/>')
     elif slug == "rusteda-common":
         body += (f'<path d="M67 128H79" stroke="{COPPER}" stroke-width="10"/>'
                  f'<path d="M177 128H189" stroke="{TEAL}" stroke-width="10"/>'

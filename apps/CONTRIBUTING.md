@@ -1,7 +1,9 @@
-# Contributing to RustEDA Studio
+# Contributing to RustEDA applications
 
-RustEDA Studio is the workbench of RustEDA, a suite of electronic design automation tools in Rust
-that share their core crates and a disk workspace. This file holds the rules that every change
+This guide covers the RustEDA application workspace (`apps/`), including the
+integrated workbench and flow. Start with the
+[repository development guide](../docs/development.md). RustEDA provides
+EDA tools in Rust that share their core crates and a disk workspace. This file holds the rules that every change
 follows: the engineering rules of RustEDA, the rules of this repository, and the checks to run
 before sending a change. The follow-ups of the workbench are in the [scope](https://lab-emi.github.io/RustEDA/verification/).
 
@@ -244,7 +246,7 @@ manager, which the framework's X11 backend needs to start drawing.
 
 ## Checks before sending a change
 
-Run from the repository root:
+Run from `apps/`, the application workspace:
 
 ```bash
 cargo fmt --all --check

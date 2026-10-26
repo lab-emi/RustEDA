@@ -18,6 +18,10 @@ jobs:
         with:
           submodules: recursive
           persist-credentials: false
+      - name: Check repository boundaries
+        run: |
+          ulimit -v 524288
+          timeout 60s python3 scripts/check_repository_boundaries.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
