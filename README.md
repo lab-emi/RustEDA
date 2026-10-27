@@ -32,11 +32,11 @@ so agents and engineers can act on the same design state.
 ## Optimize the whole loop
 
 ```text
-          propose                   implement                 measure
-  Agent ───────────► RTL ─────────────────────────► GDS ─────────────────► Feedback
-    ▲                RustSys · RustSTA · RustROAD                         │
-    └────────────────────────── next iteration ───────────────────────────┘
-                         RustEDA flow + workbench
+          propose                         implement                        measure
+  Agent ───────────► RTL / Netlist ───────────────────────► GDS / Waveforms ────────► Feedback
+    ▲                RustSys · RustSTA · RustROAD · RustSpice                       │
+    └─────────────────────────────── next iteration ────────────────────────────────┘
+                               RustEDA flow + workbench
 ```
 
 If tools account for fraction `f` of an iteration, and their aggregate speedup
@@ -63,6 +63,7 @@ One warm-up and three measured runs; wall-time medians are shown.
 | **RustSys — synthesis + export** | Yosys + ABC | **68.79 s** | 1,413.58 s | **20.55×** | 10.90% less mapped cell area; both netlists have retained RTL equivalence certificates |
 | RustSTA — static timing | OpenSTA | Unverified | Unverified | — | No comparable OpenC910 timing-runtime result published |
 | RustROAD — physical implementation | OpenROAD | Unverified | Unverified | — | OpenC910 placement, routing and physical signoff unverified |
+| **RustSpice — circuit simulation** | Ngspice-47 (KLU) | **2.6×–7.6×** (1-run) / **6,284.9×** (adjoint) | Baseline | **2.6×–6,284.9×** | Max \|ΔV\| ≤ 3.31e-12 V across DC/Tran/Adjoint/PVT suites (see table below) |
 | RustEDA — flow execution | Yosys + OpenROAD flow | Unverified | Unverified | — | No matched OpenC910 flow comparison published |
 | RustEDA Studio — inspection | OpenROAD GUI | Unverified | Unverified | — | No matched interaction-latency or quality benchmark published |
 | RustEDA Common — shared foundation | No standalone equivalent | Not comparable | Not comparable | — | Included in engine time; not an additional flow stage |
@@ -91,19 +92,37 @@ is **unchecked** for this synthesis benchmark.
 [Recorded measurements](modules/RustSys/verification/benchmarks/open-hardware/results/2026-10-23-gf180-runtime-audit/README.md) ·
 [End-to-end measurement requirements](docs/benchmarks.md)
 
-## One product, four engine modules
+## RustSpice × Ngspice-47 (KLU) circuit simulation benchmarks
+
+Host: Linux x86_64 (32 hardware threads, AVX-512/AVX2 + NVIDIA GeForce RTX 4090 Laptop GPU).
+Reference baseline: `ngspice-47` compiled with the KLU direct sparse solver (`ngspice -b`).
+
+| Benchmark suite | Circuit scale | `ngspice` wall, ms ↓ | `ngspice` solver, ms ↓ | `RustSpice` total, ms ↓ | `RustSpice` solver, ms ↓ | Max \|ΔV\|, V ↓ | End-to-end speedup ↑ | Solver speedup ↑ |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| **5,000-Node Power Grid (DC OP)** | 10,000 Resistors, 5,002 MNA vars | 58.47 | 50.00 | **11.053** | **0.206** | `2.16e-45` | **5.3×** | **243.2×** |
+| **2,000-Node RC Line (500-Step Tran)** | 4,000 R/C elements, 500 time steps | 244.81 | 238.00 | **32.218** | **27.836** | `0.00e0` | **7.6×** | **8.6×** |
+| **64-Diode Nonlinear Array (DC Sweep)** | 64 Diodes + 128 Resistors, 201 pts | 8.71 | 5.00 | **2.898** | **2.664** | `2.15e-14` | **3.0×** | **1.9×** |
+| **100-Stage CMOS Inverter Chain (Tran)** | 200 NMOS/PMOS + 100 Caps, 400 steps | 42.14 | 39.00 | **16.265** | **15.857** | `3.31e-12` | **2.6×** | **2.5×** |
+| **200-Param Sensitivity (Adjoint vs. FD)** | 200 Resistor Gradients (1 Adjoint vs. 400 FD) | 2,167.17 | 800.00 | **0.345** | **0.081** | `1.50e-11` | **6,284.9×** | **9,867.0×** |
+| **128-Corner PVT Batch (Rayon Parallel)** | 128 Nonlinear 32-Diode Corners | 686.08 | 256.00 | **2.136** | **1.940** | `0.00e0` | **321.1×** | **131.9×** |
+
+[RustSpice benchmark report](modules/RustSpice/docs/benchmark_report.md) ·
+[RustSpice architecture](modules/RustSpice/docs/architecture.md)
+
+## One product, five engine modules
 
 | Module | Role | Documentation |
 | --- | --- | --- |
 | [RustSys](https://github.com/lab-emi/RustSys) | RTL synthesis, technology mapping and equivalence checks | [Synthesis](https://lab-emi.github.io/RustEDA/modules/rustsys/) |
 | [RustSTA](https://github.com/lab-emi/RustSTA) | Timing, constraints, parasitics and incremental analysis | [Timing](https://lab-emi.github.io/RustEDA/modules/ruststa/) |
 | [RustROAD](https://github.com/lab-emi/RustROAD) | Placement, clock trees, routing, extraction and GDS | [Physical design](https://lab-emi.github.io/RustEDA/modules/rustroad/) |
+| [RustSpice](https://github.com/lab-emi/RustSpice) | Differentiable SPICE circuit simulation and adjoint sensitivity | [Circuit simulation](https://lab-emi.github.io/RustEDA/modules/rustspice/) |
 | **RustEDA flow** (built in) | Bounded processes, checkpoints, recovery and flow execution | [Flows](https://lab-emi.github.io/RustEDA/flows/) |
 | **RustEDA workbench** (built in) | Hierarchy, critical paths, logic cones and shared selections | [Workbench](https://lab-emi.github.io/RustEDA/workbench/) |
 | [RustEDA Common](https://github.com/lab-emi/RustEDA-Common) | Shared models, formats, disk workspaces and compute kernels | [Foundation](https://lab-emi.github.io/RustEDA/modules/rusteda-common/) |
 
 RustEDA owns flow execution and the workbench directly in `apps/`, with one
-application workspace and lockfile. The four engine modules retain independent
+application workspace and lockfile. The five engine modules retain independent
 Git histories and exact pins. There is no root Cargo workspace.
 
 ## PDKs and standard-cell libraries
@@ -153,7 +172,7 @@ cd RustEDA
 ./dev doctor
 ./dev build RustEDA --no-default-features --memory-mib 4096
 ./rusteda --help
-./dev build RustSys RustSTA --release
+./dev build RustSys RustSTA RustSpice --release
 ```
 
 The `./dev` entrypoint serializes builds, limits memory and worker concurrency,

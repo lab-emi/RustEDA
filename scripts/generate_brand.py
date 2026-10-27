@@ -39,6 +39,7 @@ PRODUCTS = [
     ("RustSys", "rustsys", "RustSys", "From Verilog to standard cells."),
     ("RustSTA", "ruststa", "RustSTA", "From netlists to timing insight."),
     ("RustROAD", "rustroad", "RustROAD", "From netlists to routed layout."),
+    ("RustSpice", "rustspice", "RustSpice", "From netlists to waveforms and gradients."),
     ("RustEDA-Common", "rusteda-common", "RustEDA Common", "Shared IRs, formats, and compute."),
 ]
 
@@ -87,6 +88,14 @@ def mark(slug: str) -> str:
                  f'<circle cx="148" cy="104" r="5.5" fill="{PAPER}"/>'
                  f'<circle cx="108" cy="152" r="5.5" fill="{PAPER}"/>'
                  f'<circle cx="189" cy="152" r="6.5" fill="{TEAL}"/>')
+    elif slug == "rustspice":
+        body += (f'<path d="M67 128H86" stroke="{COPPER}" stroke-width="10"/>'
+                 f'<path d="M86 128C98 80 116 80 128 128C140 176 158 176 170 128" stroke="{PAPER}" stroke-width="10"/>'
+                 f'<path d="M86 144C102 104 120 104 136 138C150 164 162 152 170 128" stroke="{TEAL}" stroke-width="7"/>'
+                 f'<path d="M170 128H189" stroke="{TEAL}" stroke-width="10"/></g>'
+                 f'<circle cx="67" cy="128" r="6.5" fill="{COPPER}"/>'
+                 f'<circle cx="128" cy="128" r="5.5" fill="{PAPER}"/>'
+                 f'<circle cx="189" cy="128" r="6.5" fill="{TEAL}"/>')
     elif slug == "rusteda-common":
         body += (f'<path d="M67 128H79" stroke="{COPPER}" stroke-width="10"/>'
                  f'<path d="M177 128H189" stroke="{TEAL}" stroke-width="10"/>'
@@ -509,11 +518,84 @@ def banner_common(frame: int) -> str:
                "Standard EDA formats parse into generational arenas, memory-mapped workspace revisions and contiguous compute views.")
 
 
+def banner_rustspice(frame: int) -> str:
+    """RustSpice 8.4s loop: SPICE netlist & AD IR, SoA + Cranelift JIT LU + NR transient, waveforms & adjoint gradients."""
+    t = frame / FRAMES
+    stage = min(3, int(t * 4))
+    cards = [(32, 286, "01", "SPICE NETLIST & AD IR"),
+             (396, 410, "02", "SOA · JIT LU · NEWTON-RAPHSON"),
+             (884, 284, "03", "WAVEFORMS & GRADIENTS")]
+    body = base_canvas("rustspice", "RustSpice", "SPICE NETLIST  →  SOA & JIT LU  →  WAVEFORMS & ∂V/∂θ",
+                       "Differentiable circuit simulation.", cards)
+
+    deck = [("VDD vdd 0 DC 3.3", PAPER),
+            ("VIN in1 0 PULSE(0 3.3 0.2n)", COPPER),
+            ("MP1 out in1 vdd vdd PMOD", MUTED),
+            ("MN1 out in1 0   0   NMOD", MUTED),
+            ("CL1 out 0 20f", MUTED),
+            (".tran 5p 2n", TEAL),
+            (".adjoint V(out) d(W,R)", COPPER)]
+    revealed = min(len(deck), 2 + int(t * 28))
+    for i, (line, color) in enumerate(deck):
+        op = "1" if i < revealed else ".22"
+        body += text(48, 154 + i * 19, line, 12, color, mono=True, opacity=op)
+    body += text(48, 298, "Zero-copy lexer · #[spice_device] IR", 11, TEAL)
+    body += stage_arrows(t, [(329, 385, COPPER, 0.05), (817, 873, TEAL, 0.30)])
+
+    c1_stroke = COPPER if stage == 1 else (TEAL if stage >= 2 else BORDER)
+    body += f'<rect x="416" y="142" width="370" height="52" rx="7" fill="#0D161F" stroke="{c1_stroke}" stroke-width="1.8"/>'
+    body += text(428, 161, "DeviceSoaBuffer (64B) · CscGatherTable", 11, PAPER, weight=700, mono=True)
+    pills = [
+        (428, 76, "AVX-512"),
+        (512, 92, "Cranelift JIT"),
+        (612, 82, "Metal df64"),
+        (702, 74, "CUDA Tile"),
+    ]
+    for px, pw, pill in pills:
+        body += f'<rect x="{px}" y="168" width="{pw}" height="19" rx="4" fill="{INK}" stroke="{BORDER}"/>'
+        body += text(px + pw / 2, 181, pill, 9, TEAL if stage >= 1 else MUTED, mono=True, text_anchor="middle")
+
+    body += f'<rect x="416" y="204" width="370" height="74" rx="7" fill="#0D161F" stroke="{TEAL if stage >= 2 else BORDER}" stroke-width="1.8"/>'
+    for gy in (222, 241, 260):
+        body += wire(f"M426 {gy}H776", "#1F303D", 1)
+    body += wire("M430 260H488L500 220H620L632 260H770", COPPER, 2)
+    wave_active = t >= .22
+    w_col = TEAL if wave_active else BORDER
+    body += wire("M430 220H492C510 220 518 258 548 258H624C642 258 650 220 682 220H770", w_col, 2.5)
+    if wave_active:
+        prog = ((t - .22) * 2.2) % 1
+        wx = 430 + 340 * prog
+        wy = 258 if 0.22 <= prog <= 0.60 else 220
+        body += f'<circle cx="{wx:.1f}" cy="{wy:.1f}" r="8" fill="{TEAL}" opacity=".18"/>'
+        body += f'<circle cx="{wx:.1f}" cy="{wy:.1f}" r="3.5" fill="{TEAL}"/>'
+    body += text(432, 216, "V(in1)", 9, COPPER, mono=True)
+    body += text(736, 216, "V(out)", 9, TEAL, mono=True)
+
+    body += text(601, 302, ["LOWER SSA IR & AUTO-DIFF JACOBIAN", "GATHER CONFLICT-FREE SOA STAMPS", "FACTOR UNROLLED SPARSE LU / JIT", "SOLVE TRANSIENT & ADJOINT GRADIENTS"][stage],
+                 11, TEAL, weight=700, text_anchor="middle", letter_spacing="1")
+
+    body += text(903, 162, "V(t), ∂V/∂θ", 20, TEAL, weight=700, mono=True)
+    body += text(1149, 161, "f64 · DLPack", 12, COPPER, mono=True, text_anchor="end")
+    for i, (k, v, c) in enumerate([("analyses", ".op · .dc · .tran", PAPER),
+                                   ("solver", "Cranelift JIT LU", TEAL),
+                                   ("gradients", "1× Adjoint L^T U^T", COPPER),
+                                   ("bridge", "PyTorch / MLX DLPack", PAPER)]):
+        y = 190 + i * 24
+        body += text(904, y, k, 12, MUTED, mono=True)
+        body += text(1148, y, v, 12, c, mono=True, text_anchor="end")
+    body += text(904, 298, "Simulate → differentiate → size", 12, TEAL)
+    body += cli_bar("rustspice run examples/cmos_ring_oscillator.sp --backend cpu && rustspice adjoint net.sp --target-node out",
+                    "netlist → waveforms")
+    return svg(WIDTH, HEIGHT, body, "RustSpice: differentiable SPICE circuit simulation",
+               "SPICE netlists and device equations lower into SoA SIMD/GPU kernels and topology-specialized sparse solvers to produce transient waveforms and adjoint gradients.")
+
+
 BANNERS = {
     "rusteda": banner_rusteda,
     "rustsys": banner_rustsys,
     "ruststa": banner_ruststa,
     "rustroad": banner_rustroad,
+    "rustspice": banner_rustspice,
     "rusteda-common": banner_common,
 }
 
@@ -540,6 +622,8 @@ def raster(source: str, width: int = WIDTH, height: int = HEIGHT) -> Image.Image
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--static-only", action="store_true", help="Write SVG marks, wordmarks and static banners only")
+    parser.add_argument("--product", action="append", help="Render only selected product names or slugs")
+    parser.add_argument("--dest", type=Path, help="Override output assets directory when rendering a single product")
     args = parser.parse_args()
     if WIDTH * HEIGHT > MAX_PIXELS or not 1 <= FRAMES <= MAX_FRAMES:
         raise SystemExit("ASSET_BUDGET_EXCEEDED: configured dimensions or frames exceed hard caps")
@@ -550,9 +634,13 @@ def main() -> None:
                          "A shared terminal and chip frame surrounding crossing copper and teal signals.")
     suite_wordmark_svg = wordmark("rusteda", "RustEDA", "From RTL to verified silicon.")
 
+    selected = [
+        p for p in PRODUCTS
+        if not args.product or p[0] in args.product or p[1] in args.product
+    ]
     manifest = []
-    for name, slug, display, subtitle in PRODUCTS:
-        dest = (ROOT if name == "RustEDA" else ROOT / "modules" / name) / "docs" / "assets"
+    for name, slug, display, subtitle in selected:
+        dest = args.dest if (args.dest and len(selected) == 1) else ((ROOT if name == "RustEDA" else ROOT / "modules" / name) / "docs" / "assets")
         dest.mkdir(parents=True, exist_ok=True)
         logo_svg = svg(256, 256, mark(slug), f"{display} mark", subtitle)
         wmark_svg = wordmark(slug, display, subtitle)

@@ -14,7 +14,7 @@ from urllib.parse import quote, unquote, urlsplit
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULES = ('RustSys', 'RustSTA', 'RustROAD', 'RustEDA-Common')
+MODULES = ('RustSys', 'RustSTA', 'RustROAD', 'RustSpice', 'RustEDA-Common')
 MAX_FILES = 2500
 MAX_BYTES = 256 * 1024 * 1024
 SUFFIXES = {'.md', '.html', '.svg', '.gif', '.png', '.jpg', '.css', '.js', '.json', '.time', '.txt'}

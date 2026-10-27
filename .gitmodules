@@ -10,3 +10,6 @@
 [submodule "modules/RustEDA-Common"]
 	path = modules/RustEDA-Common
 	url = https://github.com/lab-emi/RustEDA-Common.git
+[submodule "modules/RustSpice"]
+	path = modules/RustSpice
+	url = https://github.com/lab-emi/RustSpice.git

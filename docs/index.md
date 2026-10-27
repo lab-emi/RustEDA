@@ -57,6 +57,12 @@ the measured boundary excludes proof and timing. [Results and limits](benchmarks
 
     [RustROAD →](modules/rustroad/index.md)
 
+- ![RustSpice](modules/rustspice/assets/rustspice-logo.svg){ width="48" } **Simulate circuits**
+
+    Differentiable SPICE waveforms and adjoint gradients.
+
+    [RustSpice →](modules/rustspice/index.md)
+
 - ![RustEDA](assets/rusteda-logo.svg){ width="48" } **Run and recover**
 
     Bounded execution and verified checkpoints.

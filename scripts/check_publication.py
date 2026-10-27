@@ -57,7 +57,7 @@ def main():
     for value in ratios.values(): assert f'{value:.2f}×' in readme
     assert '10.90%' in readme and 'Full RTL-to-GDS speedup: unverified' in readme
 
-    products=[('RustEDA',ROOT)]+[(name,ROOT/'modules'/name) for name in ('RustSys','RustSTA','RustROAD','RustEDA-Common')]
+    products=[('RustEDA',ROOT)]+[(name,ROOT/'modules'/name) for name in ('RustSys','RustSTA','RustROAD','RustSpice','RustEDA-Common')]
     logos=set()
     for name,repo in products:
         slug=name.lower();assets=repo/'docs/assets'
@@ -78,7 +78,7 @@ def main():
         assert 'AGENTS.md' in (repo/'.gitignore').read_text().splitlines()
         tracked=subprocess.check_output(['git','-C',str(repo),'ls-files','AGENTS.md','HANDOFF.md'],text=True)
         assert not tracked, (name,'private instructions remain tracked')
-    assert len(logos)==5
+    assert len(logos)==6
 
     html=sorted(SITE.rglob('*.html'));assert 7<=len(html)<=2500
     assert sum(p.stat().st_size for p in html)<256*1024*1024
@@ -97,7 +97,7 @@ def main():
             if not target.is_file() and not (target/'index.html').is_file():
                 errors.append(f'{p.relative_to(SITE)} -> {raw}')
     assert not errors, '\n'.join(errors[:30])
-    print(json.dumps({'status':'passed','html_pages':len(html),'brand_families':5,'benchmark_ratios':ratios,'eda_validation':'not_run'},indent=2))
+    print(json.dumps({'status':'passed','html_pages':len(html),'brand_families':6,'benchmark_ratios':ratios,'eda_validation':'not_run'},indent=2))
 
 
 if __name__=='__main__':main()

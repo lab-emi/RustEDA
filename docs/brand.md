@@ -1,7 +1,7 @@
 # One RustEDA family
 
 The chip frame belongs to the suite. Each module has a different symbol inside it,
-and all five marks use the same geometry, palette and spacing.
+and all six marks use the same geometry, palette and spacing.
 
 | Token | Value | Use |
 | --- | --- | --- |

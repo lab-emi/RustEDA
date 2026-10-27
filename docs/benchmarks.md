@@ -62,6 +62,24 @@ gate or exhausted memory is a non-completion, never a speedup number.
 No such OpenC910/SKY130 matched pair is currently recorded. RustSTA, RustROAD,
 RustEDA flow and the workbench have no comparable OpenC910 runtime rows to fill in.
 
+## Circuit simulation benchmarks (RustSpice vs Ngspice-47 KLU)
+
+Host: Linux x86_64 (32 hardware threads, AVX-512/AVX2 + NVIDIA GeForce RTX 4090 Laptop GPU).
+Reference baseline: `ngspice-47` compiled with the KLU direct sparse solver (`ngspice -b`).
+
+| Benchmark suite | Circuit scale | `ngspice` wall, ms ↓ | `ngspice` solver, ms ↓ | `RustSpice` total, ms ↓ | `RustSpice` solver, ms ↓ | Max \|ΔV\|, V ↓ | End-to-end speedup ↑ | Solver speedup ↑ |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| **5,000-Node Power Grid (DC OP)** | 10,000 Resistors, 5,002 MNA vars | 58.47 | 50.00 | **11.053** | **0.206** | `2.16e-45` | **5.3×** | **243.2×** |
+| **2,000-Node RC Line (500-Step Tran)** | 4,000 R/C elements, 500 time steps | 244.81 | 238.00 | **32.218** | **27.836** | `0.00e0` | **7.6×** | **8.6×** |
+| **64-Diode Nonlinear Array (DC Sweep)** | 64 Diodes + 128 Resistors, 201 pts | 8.71 | 5.00 | **2.898** | **2.664** | `2.15e-14` | **3.0×** | **1.9×** |
+| **100-Stage CMOS Inverter Chain (Tran)** | 200 NMOS/PMOS + 100 Caps, 400 steps | 42.14 | 39.00 | **16.265** | **15.857** | `3.31e-12` | **2.6×** | **2.5×** |
+| **200-Param Sensitivity (Adjoint vs. FD)** | 200 Resistor Gradients (1 Adjoint vs. 400 FD) | 2,167.17 | 800.00 | **0.345** | **0.081** | `1.50e-11` | **6,284.9×** | **9,867.0×** |
+| **128-Corner PVT Batch (Rayon Parallel)** | 128 Nonlinear 32-Diode Corners | 686.08 | 256.00 | **2.136** | **1.940** | `0.00e0` | **321.1×** | **131.9×** |
+
+See the [RustSpice benchmark report](../modules/RustSpice/docs/benchmark_report.md)
+and [RustSpice architecture guide](../modules/RustSpice/docs/architecture.md) for
+reproduction commands and solver methodology.
+
 ## Amdahl's law and agent iteration time
 
 For a measured tool-time fraction `f` and aggregate tool speedup `s`:
