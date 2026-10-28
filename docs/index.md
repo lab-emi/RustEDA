@@ -24,16 +24,18 @@ guides the next iteration.
   <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200">
 </picture>
 
-<div class="eda-metrics" markdown>
+## RustSys and RustSTA progress
 
-<div><strong>20.55×</strong><span>OpenC910 synthesis speedup</span></div>
-<div><strong>10.90%</strong><span>Less mapped cell area</span></div>
-<div><strong>Unverified</strong><span>OpenC910 RTL-to-GDS speedup</span></div>
+**2026-10-28 · Integrated source previews**
 
-</div>
+| Engine | Latest integrated capability | Evidence boundary |
+| --- | --- | --- |
+| [RustSys](modules/rustsys/development-status.md) | Five RISC-V designs across three libraries; bounded synthesis, mapping and revision-aware optimization | 30 benchmark netlists pass arbitrary-state RTL equivalence; synthesis time excludes proof and physical design. |
+| [RustSTA 0.4.3](modules/ruststa/development-status.md) | Propagated primary clocks, SPEF waveforms and non-tree RC networks | Dual-PDK reference/circuit checks and full/incremental consistency; extracted RC checker and pulse-width limits remain explicit. |
 
-RustSys vs Yosys + ABC on SKY130 HD, 16 host cores. Synthesis and export only;
-the measured boundary excludes proof and timing. [Results and limits](benchmarks.md).
+Real-SRAM synthesis and mixed-library/derated timing are under development for
+IHP Ibex. Full-chip physical closure remains unverified.
+[Read progress, evidence and limits →](engine-status.md)
 
 ## Build the feedback loop
 

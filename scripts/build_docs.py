@@ -135,7 +135,7 @@ def build(stage, site):
             for group, pages in groups.items():
                 entries.append({group: [{section: contents} for section, contents in pages.items()] if isinstance(pages, dict) else pages})
         module_nav.append({name.replace('-', ' '): entries})
-    nav += [{'Modules': module_nav}, {'Evidence': [{'Benchmarks': 'benchmarks.md'}, {'Scope and qualification': 'verification.md'}]}, {'Project': [{'Architecture': 'shared-foundation.md'}, {'Visual identity': 'brand.md'}, {'Provenance': 'provenance.md'}]}]
+    nav += [{'Modules': module_nav}, {'Evidence': [{'Engine progress': 'engine-status.md'}, {'Benchmarks': 'benchmarks.md'}, {'Scope and qualification': 'verification.md'}]}, {'Project': [{'Architecture': 'shared-foundation.md'}, {'Visual identity': 'brand.md'}, {'Provenance': 'provenance.md'}]}]
     config = yaml.safe_load((ROOT/'docs/mkdocs.yml').read_text())
     config.update(docs_dir=str(stage), site_dir=str(site), nav=nav)
     generated = ROOT/'.work/mkdocs-unified.yml';generated.write_text(yaml.safe_dump(config, sort_keys=False))

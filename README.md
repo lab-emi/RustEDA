@@ -29,6 +29,24 @@ Fast inference is only part of a fast iteration. RustEDA pairs native engines
 with revisioned disk workspaces, machine-readable results and explicit verification
 so agents and engineers can act on the same design state.
 
+## RustSys and RustSTA progress
+
+Updated **2026-10-28** for the engine revisions integrated by RustEDA.
+
+| Engine | Current integration | Verification and limits |
+| --- | --- | --- |
+| **RustSys** | Bounded synthesis and technology mapping; five RISC-V designs across Sky130 HD, GF180 7T and IHP/EZ130 8T; revision-aware timing optimization and shared RustEDA foundation | All 30 benchmark netlists pass arbitrary-state RTL equivalence. Synthesis timings exclude proof, STA and physical implementation. |
+| **RustSTA 0.4.3** | Multi-corner timing, propagated primary clocks, bounded SPEF import, effective-capacitance waveforms and extracted RC networks with resistor loops | Full/incremental and CPU/CUDA consistency checks, dual-PDK OpenSTA comparisons and independent circuit checks. Extracted RC is outside the independent checker's scope; reported pulse-width residuals remain explicit. |
+
+Real-SRAM preservation in synthesis and mixed-library/derated timing are under
+development for the IHP Ibex flow. They are not part of the pinned released
+capability set, and full-chip physical closure remains unverified. The standalone
+module `main` branches can lag the integration branches used here.
+
+[Progress, evidence and current limits](docs/engine-status.md) ·
+[RustSys development](https://lab-emi.github.io/RustEDA/modules/rustsys/development-status/) ·
+[RustSTA development](https://lab-emi.github.io/RustEDA/modules/ruststa/development-status/)
+
 ## Optimize the whole loop
 
 ```text

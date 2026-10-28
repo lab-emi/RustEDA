@@ -247,7 +247,7 @@ def banner_rustsys(frame: int) -> str:
 
 
 def banner_ruststa(frame: int) -> str:
-    """Original RustSTA 8.4s loop: design inputs, reconvergent timing DAG, path1 report."""
+    """RustSTA 8.4s loop: extracted design inputs, timing DAG, path1 report."""
     t = frame / FRAMES
     stage = min(3, int(t * 4))
     cards = [(32, 286, "01", "DESIGN INPUTS"),
@@ -256,12 +256,13 @@ def banner_ruststa(frame: int) -> str:
     body = base_canvas("ruststa", "RustSTA", "NETLIST  →  TIMING  →  CRITICAL PATH", "CLI first. Ready for agents.", cards)
     for i, (name, label) in enumerate([("gates.v", "gate-level netlist"),
                                        ("cells.lib", "Liberty timing tables"),
-                                       ("design.sdc", "clocks + constraints")]):
-        y = 158 + 47 * i
+                                       ("design.sdc", "clocks + constraints"),
+                                       ("routed.spef", "extracted RC network")]):
+        y = 151 + 36 * i
         color = COPPER if i == stage or stage >= 1 else MUTED
         body += wire(f"M52 {y-10}H65L72 {y-3}V{y+12}H52Z", color)
-        body += text(85, y, name, 16, PAPER, mono=True)
-        body += text(85, y + 18, label, 11, MUTED)
+        body += text(85, y, name, 15, PAPER, mono=True)
+        body += text(85, y + 16, label, 10, MUTED)
     body += text(51, 298, "Explicit files. Reproducible revisions.", 11, TEAL)
     body += stage_arrows(t, [(329, 385, COPPER, 0.0), (817, 873, TEAL, 0.25)])
 
@@ -292,7 +293,7 @@ def banner_ruststa(frame: int) -> str:
 
     body += text(903, 162, "path1", 23, TEAL, weight=700, mono=True)
     body += text(1149, 161, "setup", 12, COPPER, mono=True, text_anchor="end")
-    for i, (key, value) in enumerate([("corner", "default"), ("wire model", "ideal"),
+    for i, (key, value) in enumerate([("corner", "tt"), ("wire model", "spef_rc"),
                                       ("from", "r0/Q"), ("to", "r1/D")]):
         y = 190 + i * 24
         body += text(904, y, key, 12, MUTED, mono=True)
@@ -300,7 +301,7 @@ def banner_ruststa(frame: int) -> str:
     body += text(904, 298, "Trace → inspect → iterate", 12, TEAL)
     body += cli_bar("ruststa run --workspace ./ws --base-rev rev1 --max-paths 5 --format json", "netlist → insight")
     return svg(WIDTH, HEIGHT, body, "RustSTA: from netlists to timing insight",
-               "Netlist, Liberty and SDC inputs feed a reconvergent timing graph. Signals move along a "
+               "Netlist, Liberty, SDC and SPEF inputs feed a reconvergent timing graph. Signals move along a "
                "highlighted launch-to-capture path, then a revision-scoped path report identifies its endpoints.")
 
 

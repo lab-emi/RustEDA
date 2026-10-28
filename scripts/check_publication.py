@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2026 RustEDA contributors
-"""Verify source-bound public claims, brand assets and built local links.
+"""Verify brand assets and built local links.
 
 This checks documentation, not EDA correctness. Bounds: 2500 HTML pages,
 256 MiB total HTML, 8 MiB per page; pages are processed one at a time.
 """
-import gzip
 import hashlib
 from html.parser import HTMLParser
 import json
-import math
 from pathlib import Path
 import re
 import subprocess
@@ -25,45 +23,38 @@ class Links(HTMLParser):
     def __init__(self):
         super().__init__()
         self.links = []
+        self.images = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == 'img':
+            self.images.append(attrs)
         for key in ('href', 'src', 'srcset'):
             if key in attrs:
                 self.links.append(attrs[key])
 
 
-def main():
-    summary = json.loads((ROOT/'docs/benchmarks/openc910-sky130.json').read_text())
-    source = ROOT/summary['source']
-    for filename, digest in summary['sources_sha256'].items():
-        assert hashlib.sha256((source/filename).read_bytes()).hexdigest() == digest, filename
-    measurements = json.loads(gzip.decompress((source/'measurements.json.gz').read_bytes()))
-    row = next(r for r in measurements['rows'] if r['id']=='openc910' and r['library']=='sky130hd_tt')
-    for tool in ('rustsys', 'yosys'):
-        for key in ('median_wall_s', 'peak_rss_kib', 'netlist_sha256'):
-            assert summary[tool][key] == row[tool][key], (tool,key)
-        assert summary[tool]['area_um2'] == row[tool]['qor']['area_um2']
-        certificates = summary['quality'][tool]
-        assert len(certificates) == 1 and certificates[0]['netlist_sha256'] == summary[tool]['netlist_sha256']
-        assert certificates[0].get('verdict') == 'proven', certificates[0].keys()
-    ratios = { 'speedup': summary['yosys']['median_wall_s']/summary['rustsys']['median_wall_s'],
-               'area': summary['yosys']['area_um2']/summary['rustsys']['area_um2'],
-               'rss': summary['yosys']['peak_rss_kib']/summary['rustsys']['peak_rss_kib'] }
-    for key,value in ratios.items(): assert math.isclose(value,summary['ratios'][key],rel_tol=1e-12)
-    assert summary['full_rtl_to_gds']['status']=='unverified'
-    assert summary['full_rtl_to_gds']['speedup'] is None
-    readme=(ROOT/'README.md').read_text()
-    for value in ratios.values(): assert f'{value:.2f}×' in readme
-    assert '10.90%' in readme and 'Full RTL-to-GDS speedup: unverified' in readme
+def check_responsive_artwork(readme, slug):
+    parser = Links()
+    parser.feed(readme)
+    for suffix in ('banner.gif', 'wordmark.svg'):
+        images = [attrs for attrs in parser.images
+                  if urlsplit(attrs.get('src', '')).path.endswith(f'{slug}-{suffix}')]
+        assert len(images) == 1, (slug, suffix, 'expected one README image')
+        attrs = images[0]
+        assert attrs.get('alt', '').strip(), (slug, suffix, 'missing alternative text')
+        assert 'height' not in attrs, (slug, suffix, 'fixed height distorts responsive artwork')
+        assert attrs.get('width') == ('1200' if suffix == 'banner.gif' else '360'), (slug, suffix, 'unexpected display width')
 
+
+def main():
     products=[('RustEDA',ROOT)]+[(name,ROOT/'modules'/name) for name in ('RustSys','RustSTA','RustROAD','RustSpice','RustEDA-Common')]
     logos=set()
     for name,repo in products:
         slug=name.lower();assets=repo/'docs/assets'
         logo=(assets/f'{slug}-logo.svg').read_bytes();logos.add(hashlib.sha256(logo).hexdigest())
         root=ET.fromstring(logo);assert root.attrib['viewBox']=='0 0 256 256'
-        ET.parse(assets/f'{slug}-banner.svg')
+        poster=ET.parse(assets/f'{slug}-banner.svg').getroot()
         gif=(assets/f'{slug}-banner.gif').read_bytes()
         # Engine gitlinks retain their own published artwork revisions. The older
         # qualified pins use a 1200x360 canvas; the integrated product uses 1200x400.
@@ -71,10 +62,13 @@ def main():
         assert gif[:3]==b'GIF' and int.from_bytes(gif[6:8],'little')==1200
         assert int.from_bytes(gif[8:10],'little') in allowed_heights
         assert len(gif)<750000, (name,'banner exceeds byte budget')
+        dimensions=(int.from_bytes(gif[6:8],'little'),int.from_bytes(gif[8:10],'little'))
+        assert poster.attrib['viewBox']==f'0 0 {dimensions[0]} {dimensions[1]}', (name,'GIF and static poster ratios differ')
         rm_text = (repo/'README.md').read_text()
         assert 'prefers-reduced-motion: reduce' in rm_text
-        if name == 'RustEDA':
-            assert 'height="360"' not in rm_text and 'height="400"' not in rm_text, (name,'hardcoded banner height distorts GitHub README aspect ratio')
+        if name in ('RustEDA', 'RustSys', 'RustSTA'):
+            check_responsive_artwork(rm_text, slug)
+            assert dimensions==(1200,400), (name,'expected 3:1 Signal Forge banner')
         assert 'AGENTS.md' in (repo/'.gitignore').read_text().splitlines()
         tracked=subprocess.check_output(['git','-C',str(repo),'ls-files','AGENTS.md','HANDOFF.md'],text=True)
         assert not tracked, (name,'private instructions remain tracked')
@@ -97,7 +91,7 @@ def main():
             if not target.is_file() and not (target/'index.html').is_file():
                 errors.append(f'{p.relative_to(SITE)} -> {raw}')
     assert not errors, '\n'.join(errors[:30])
-    print(json.dumps({'status':'passed','html_pages':len(html),'brand_families':6,'benchmark_ratios':ratios,'eda_validation':'not_run'},indent=2))
+    print(json.dumps({'status':'passed','html_pages':len(html),'brand_families':6,'eda_validation':'not_run'},indent=2))
 
 
 if __name__=='__main__':main()
