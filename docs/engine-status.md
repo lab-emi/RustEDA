@@ -1,4 +1,4 @@
-# RustSys and RustSTA development
+# RustSys, RustSTA and RustSpice development
 
 Updated **2026-10-28**. This page describes the engine revisions integrated by
 RustEDA. The independent repositories' `main` branches can lag their integration
@@ -50,6 +50,31 @@ unconstrained endpoints alongside every timing result.
 
 [RustSTA progress and source evidence](../modules/RustSTA/docs/development-status.md) ·
 [Supported timing scope](../modules/RustSTA/docs/reference/scope.md)
+
+## RustSpice: adaptive transient, device physics and GPU batched DC
+
+The integrated `RustSpice` revision includes divided-difference LTE adaptive
+transient step control with `BE -> BE -> BDF-2 -> Trapezoidal` restarts at
+waveform breakpoints, a single short backward-Euler startup step at fast slope
+corners, quadratic Newton prediction and contraction-rate acceptance, strict
+SPICE netlist parsing (`.param`, `.func`, `.include`/`.lib`, `.temp`, `.ic`/`uic`),
+extended diode (`RS`, `BV`/`IBV`, `IKF`, `ISR`/`NR`, `TT`, graded `CJO`) and
+level-1 MOSFET (`UO`/`TOX`, `NSUB`/`GAMMA`/`PHI`, `LD`, `RD`/`RS`, bulk junctions,
+Meyer capacitances) models, linear `E`/`F`/`H` and `POLY(1)` `E`/`G` controlled
+sources, mutual inductance `K`, semiconductor `.model R`/`C`, and a single-launch
+FP64 `cuda-oxide` batched DC operating-point kernel for diode and level-1 MOSFET
+circuits.
+
+In the 951-case static differential suite against `ngspice-47`, `RustSpice`
+records **857 passes, 0 failures, 77 informational cases, 1 timing-only case and
+16 documented scope gaps** (4 MOS `LEVEL>=2` decks, 11 unsupported BJT/JFET/MESFET
+or behavioural device decks, and 1 `.if` directive deck). The GPU batched DC
+kernel is verified against its deterministic `solve_cpu_ref` twin and independent
+KCL residuals (`<= 5.89e-15` relative difference across 1,000 corners).
+
+[RustSpice overview](../modules/RustSpice/docs/index.md) ·
+[Benchmark report](../modules/RustSpice/docs/benchmark_report.md) ·
+[GPU batched DC report](../modules/RustSpice/docs/gpu_batch_report.md)
 
 ## Current IHP/SRAM work
 

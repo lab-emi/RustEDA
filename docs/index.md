@@ -24,7 +24,7 @@ guides the next iteration.
   <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200">
 </picture>
 
-## RustSys and RustSTA progress
+## RustSys, RustSTA and RustSpice progress
 
 **2026-10-28 · Integrated source previews**
 
@@ -32,6 +32,7 @@ guides the next iteration.
 | --- | --- | --- |
 | [RustSys](modules/rustsys/development-status.md) | Five RISC-V designs across three libraries; bounded synthesis, mapping and revision-aware optimization | 30 benchmark netlists pass arbitrary-state RTL equivalence; synthesis time excludes proof and physical design. |
 | [RustSTA 0.4.3](modules/ruststa/development-status.md) | Propagated primary clocks, SPEF waveforms and non-tree RC networks | Dual-PDK reference/circuit checks and full/incremental consistency; extracted RC checker and pulse-width limits remain explicit. |
+| [RustSpice](modules/rustspice/index.md) | Adaptive LTE `.tran`, extended diode/MOS1/controlled-source models and `cuda-oxide` FP64 batched DC | 951-case `ngspice-47` suite (`857` pass, `0` failing, `16` documented scope gaps); GPU batch kernel verified against `solve_cpu_ref` and KCL residuals. |
 
 Real-SRAM synthesis and mixed-library/derated timing are under development for
 IHP Ibex. Full-chip physical closure remains unverified.
