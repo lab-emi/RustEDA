@@ -267,8 +267,44 @@ def inherited_owner():
     swap = (root / "memory.swap.max").read_text().strip()
     if memory == "max" or not 1024 * MIB <= int(memory) <= 16384 * MIB or swap == "max":
         raise ValueError("inherited producer requires bounded memory and swap")
-    return dict(request_id=request, ownership_record=str(location), producer_manifest=producer, unit=unit, cgroup=group,
-                memory_max_bytes=int(memory), swap_max_bytes=int(swap))
+    result = dict(request_id=request, ownership_record=str(location), producer_manifest=producer, unit=unit, cgroup=group,
+                  memory_max_bytes=int(memory), swap_max_bytes=int(swap))
+    tag = os.environ.get('RUSTEDA_PARALLEL_STEP')
+    if tag is not None:
+        if not re.fullmatch('[A-Za-z0-9_-]{1,128}', tag):
+            raise ValueError('invalid inherited parallel step')
+        manifest = read_json(producer['path'], 2 * MIB)
+        matches = [entry['steps'][tag] for entry in manifest.get('parallel_groups', []) if tag in entry['steps']]
+        if len(matches) != 1:
+            raise ValueError('parallel lane must be bound to the pinned producer manifest')
+        allocation = manifest['scope']['cpu_affinity']
+        cpus = {allocation[slot] for slot in matches[0]['cpu_slots']}
+        if not cpus or os.sched_getaffinity(0) != cpus:
+            raise ValueError('parallel helper CPU lane differs from its pinned allocation')
+        result.update(parallel_step=tag, cpu_affinity=sorted(cpus))
+    return result
+
+
+def owned_pids(owner):
+    """LVS cleanup inventory within the hash-bound, disjoint parallel lane.
+
+    Serial producers retain the whole-cgroup inventory. During B4 concurrency,
+    sibling branches may spawn children after LVS starts; those must not become
+    false detached-LVS findings. Affinity is inherited across exec/setsid; the
+    outer controller still owns whole-cgroup KILL on every failed producer.
+    Inventory stays capped at 4096 PIDs, with no host-wide process scan.
+    """
+    pids = cgroup_pids(owner['cgroup'])
+    if 'parallel_step' not in owner:
+        return pids
+    cpus, result = set(owner['cpu_affinity']), set()
+    for pid in pids:
+        try:
+            if os.sched_getaffinity(pid) <= cpus:
+                result.add(pid)
+        except ProcessLookupError:
+            pass
+    return result
 
 
 def run_stage(job, name, command, output_path=None):
@@ -452,7 +488,7 @@ for the whole producer, including preceding steps, and is labelled as such.
     if owner != job["inherited_owner"]:
         raise ValueError("inherited producer ownership changed")
     group, output = owner["cgroup"], Path(job["output"])
-    before = cgroup_pids(group)
+    before = owned_pids(owner)
     tick = time.monotonic()
     deadline = tick + job["limits"]["deadline_seconds"]
     peak, timed_out, interrupted = None, False, False
@@ -493,7 +529,7 @@ for the whole producer, including preceding steps, and is labelled as such.
             process.wait(timeout=5)
         for signum, handler in previous_handlers.items():
             signal.signal(signum, handler)
-    remaining = sorted(cgroup_pids(group) - before)
+    remaining = sorted(owned_pids(owner) - before)
     result = dict(resource_mode="inherited_owned_worker", scope=owner["unit"], cgroup=group,
                   request_id=owner["request_id"], effective_memory_max_bytes=owner["memory_max_bytes"],
                   effective_swap_max_bytes=owner["swap_max_bytes"], command=worker_command,
@@ -503,6 +539,9 @@ for the whole producer, including preceding steps, and is labelled as such.
                   cgroup_memory_peak_bytes=peak,
                   peak_scope="inherited whole producer cgroup cumulative memory.peak, including preceding steps",
                   failure_cleanup="outer worker_control must KILL and verify its exact owned scope on failure")
+    if 'parallel_step' in owner:
+        result.update(pid_inventory_scope='pinned disjoint parallel CPU lane within the owned worker cgroup',
+                      cpu_affinity=owner['cpu_affinity'], parallel_step=owner['parallel_step'])
     save(output / "resource.json", result)
     return result
 

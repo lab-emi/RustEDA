@@ -51,6 +51,96 @@ MAX_STDOUT_ARTIFACT_BYTES = 1536 << 20
 CAPTURE_CHUNK = 64 << 10
 
 
+def signoff_parallel_group():
+    """Explicit B4 policy; existing recipes opt in and retain their commands.
+
+    Run16 RSS: main 1.82 GiB, antenna 2.16 GiB, LVS 1.51 GiB,
+    timing 0.48 GiB, OpenRCX 0.25 GiB. Reservations include headroom:
+    max(2304 + 2560 + 1024) = 5888 MiB, plus <128 MiB controller,
+    below the 7168 MiB scheduling cap and enclosing 8192 MiB cgroup.
+    <=8 nodes/28 edges, no path materialization; state is O(nodes + edges).
+    """
+    def command(dependencies, slots, memory):
+        return dict(depends_on=dependencies, cpu_slots=slots, memory_mib=memory)
+
+    return dict(max_parallel=3, max_memory_mib=7168, steps={
+        'be_rcx_inputs': dict(depends_on=[]),
+        'be_openrcx': command(['be_rcx_inputs'], [4, 5], 768),
+        'be_timing_inputs': dict(depends_on=['be_openrcx']),
+        'be_timing': command(['be_timing_inputs'], [4, 5], 1024),
+        'be_main': command([], [0, 1], 2304),
+        'be_antenna': command([], [2, 3], 2560),
+        'be_lvs_inputs': dict(depends_on=[]),
+        'be_lvs': command(['be_lvs_inputs', 'be_antenna'], [2, 3], 2048),
+    })
+
+
+def validate_parallel_groups(steps, groups, scope):
+    """Validate bounded, contiguous DAG regions before launching any command.
+
+    Dependencies must precede dependants in manifest order, which both guards
+    cycles and keeps --stop-after a true serial prefix. CPU slots index the
+    physical CPUs already verified by the worker; overlapping lanes serialize.
+    Memory reservations are summed for every live child, under the caller's
+    hard cgroup limit. This is admission control, not a per-process RSS claim.
+    """
+    if groups is None:
+        return {}
+    if not isinstance(groups, list) or not 1 <= len(groups) <= 8:
+        raise ValueError('parallel group count budget exceeded')
+    if not isinstance(steps, list) or not 1 <= len(steps) <= 128:
+        raise ValueError('parallel step count budget exceeded')
+    order = {}
+    for index, step in enumerate(steps):
+        tag = step.get('id')
+        if not isinstance(tag, str) or not re.fullmatch('[A-Za-z0-9_-]{1,128}', tag) or tag in order:
+            raise ValueError('invalid or duplicate parallel step handle')
+        order[tag] = index
+    memory, threads = scope.get('memory_mib'), scope.get('threads')
+    if type(memory) is not int or type(threads) is not int:
+        raise ValueError('parallel execution requires explicit memory/CPU allocation')
+    result, assigned = {}, set()
+    for group in groups:
+        if not isinstance(group, dict) or set(group) != {'max_parallel', 'max_memory_mib', 'steps'}:
+            raise ValueError('unknown parallel group field')
+        width, cap, nodes = group['max_parallel'], group['max_memory_mib'], group['steps']
+        if type(width) is not int or not 1 <= width <= 16 or type(cap) is not int or not 1 <= cap <= memory - 128:
+            raise ValueError('parallel CPU/memory scheduling cap exceeds allocation')
+        if not isinstance(nodes, dict) or not 1 <= len(nodes) <= 128 or not set(nodes) <= set(order):
+            raise ValueError('unknown or excessive parallel step')
+        indices = sorted(order[tag] for tag in nodes)
+        if indices != list(range(indices[0], indices[-1] + 1)) or assigned & set(nodes):
+            raise ValueError('parallel groups must be disjoint contiguous manifest regions')
+        assigned.update(nodes)
+        for tag, request in nodes.items():
+            step = steps[order[tag]]
+            if not isinstance(request, dict):
+                raise ValueError('invalid parallel resource request')
+            deps = request.get('depends_on')
+            if (not isinstance(deps, list) or len(deps) > 128
+                    or any(not isinstance(dep, str) for dep in deps) or len(set(deps)) != len(deps)
+                    or any(dep not in nodes or order[dep] >= order[tag] for dep in deps)):
+                raise ValueError('parallel dependencies must be unique earlier group steps (no cycles)')
+            if step['kind'] == 'render':
+                if set(request) != {'depends_on'} or set(step) != {'id', 'kind', 'destination', 'content'}:
+                    raise ValueError('invalid parallel render fields')
+                continue
+            if (step['kind'] != 'command' or set(request) != {'depends_on', 'cpu_slots', 'memory_mib'}
+                    or set(step) != {'id', 'kind', 'tool', 'arguments', 'timeout_s'}):
+                raise ValueError('parallel commands must be diagnostic-only bounded commands')
+            slots, reservation = request['cpu_slots'], request['memory_mib']
+            if (not isinstance(slots, list) or not slots or len(slots) > threads
+                    or any(type(slot) is not int or not 0 <= slot < threads for slot in slots)
+                    or len(set(slots)) != len(slots) or type(reservation) is not int or not 1 <= reservation <= cap):
+                raise ValueError('parallel CPU/memory request exceeds allocation')
+            if (not isinstance(step['arguments'], list) or not 1 <= len(step['arguments']) <= 256
+                    or any(not isinstance(arg, str) for arg in step['arguments'])
+                    or type(step['timeout_s']) is not int or not 1 <= step['timeout_s'] <= 86400):
+                raise ValueError('invalid parallel command arguments/deadline')
+        result[steps[indices[0]]['id']] = group
+    return result
+
+
 def stdout_artifact_format(step):
     """Pure allowlist over unexpanded, pinned-native command arguments.
 
@@ -312,7 +402,8 @@ def main():
             raise ValueError("IHP producer identity mismatch")
         required_fields = {"schema", "name", "pdk", "library", "corners", "files", "tools",
                            "scope", "steps", "gates", "artifacts"}
-        if set(manifest) not in (required_fields, required_fields | {"stdout_artifacts"}):
+        if (not required_fields <= set(manifest)
+                or set(manifest) - required_fields - {"stdout_artifacts", "parallel_groups"}):
             raise ValueError("unknown or missing producer manifest field")
         steps = manifest["steps"]
         if not 1 <= len(steps) <= 128 or len(manifest["artifacts"]) > 128:
@@ -345,6 +436,7 @@ def main():
             raise ValueError("invalid aggregate log byte budget")
         stdout_artifacts = manifest.get("stdout_artifacts")
         capture_policy = validate_stdout_artifacts(steps, stdout_artifacts, scope)
+        parallel_groups = validate_parallel_groups(steps, manifest.get('parallel_groups'), scope)
         if stdout_artifacts is not None:
             source, running = records.get("files:producer"), identity(Path(__file__))
             # The public flow executes an immutable captured copy of its driver.
@@ -414,9 +506,137 @@ def main():
         environment = dict(os.environ, CARGO_BUILD_JOBS="2", RUST_TEST_THREADS="2",
                            OMP_NUM_THREADS=str(threads), RAYON_NUM_THREADS=str(threads), OPENBLAS_NUM_THREADS="1",
                            TMPDIR=str(output / "tmp"))
+
+        def run_parallel(group):
+            """One foreground coordinator; <=16 live process groups, no daemon.
+
+            Ready tasks launch in manifest order with fixed nonoverlapping CPU
+            sets. Admission sums live memory reservations, and all live logs
+            share the original byte limit. No stdout-artifact exemption applies
+            in parallel regions. Receipts are stored in manifest order, never
+            completion order. The outer worker cgroup provides the hard RAM cap.
+            """
+            nonlocal nodes, log_bytes
+            pending = [step for step in steps if step['id'] in group['steps']]
+            order = {step['id']: index for index, step in enumerate(pending)}
+            running, completed, observed = {}, set(), {}
+
+            def checkpoint():
+                ordered = [observed[tag] for tag in sorted(observed, key=order.__getitem__)]
+                write_json(output / 'step-receipts.json', receipts + ordered)
+
+            def finish(tag, error=None):
+                nonlocal log_bytes
+                job = running.pop(tag)
+                # Kill leftover descendants even when the leader exited. Every
+                # group was created by this coordinator, so other sessions are
+                # never targeted. GNU time and all tool children inherit it.
+                try:
+                    os.killpg(job['process'].pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                code = job['process'].wait(timeout=10)
+                job['out'].close()
+                job['err'].close()
+                stdout_id = identity(job['log'].with_suffix('.stdout'))
+                stderr_id = identity(job['log'].with_suffix('.stderr'))
+                log_bytes += stdout_id['bytes'] + stderr_id['bytes']
+                receipt = dict(id=tag, kind='command', exit_code=code,
+                    wall_seconds=time.monotonic() - job['tick'], stdout=stdout_id, stderr=stderr_id,
+                    started_seconds=job['tick'] - started, cpu_affinity=job['cpus'],
+                    memory_reservation_mib=group['steps'][tag]['memory_mib'],
+                    depends_on=group['steps'][tag]['depends_on'])
+                if error is not None:
+                    receipt['capture_error'] = error
+                observed[tag] = receipt
+                if code == 0 and error is None:
+                    completed.add(tag)
+                checkpoint()
+                return code
+
+            try:
+                while pending or running:
+                    live_bytes = sum(job['log'].with_suffix(suffix).stat().st_size
+                        for job in running.values() for suffix in ('.stdout', '.stderr'))
+                    if log_bytes + live_bytes > log_budget:
+                        raise ValueError('aggregate log byte budget exceeded during parallel execution')
+                    for tag in list(running):
+                        job = running[tag]
+                        if job['process'].poll() is not None:
+                            code = finish(tag)
+                            if code:
+                                raise RuntimeError(f'step failed: {tag}, exit={code}')
+                        elif time.monotonic() - job['tick'] > job['seconds']:
+                            raise TimeoutError(f'step deadline exceeded: {tag}')
+                    for step in list(pending):
+                        tag, tick = step['id'], time.monotonic()
+                        request = group['steps'][tag]
+                        if not set(request['depends_on']) <= completed:
+                            continue
+                        if step['kind'] == 'render':
+                            nodes = 0
+                            write_json(output_path(step['destination']), render(step['content']))
+                            observed[tag] = dict(id=tag, kind='render', wall_seconds=time.monotonic() - tick)
+                            completed.add(tag)
+                            pending.remove(step)
+                            checkpoint()
+                            continue
+                        slots = set(request['cpu_slots'])
+                        occupied = {slot for other in running for slot in group['steps'][other]['cpu_slots']}
+                        memory = sum(group['steps'][other]['memory_mib'] for other in running)
+                        if (len(running) >= group['max_parallel'] or slots & occupied
+                                or memory + request['memory_mib'] > group['max_memory_mib']):
+                            continue
+                        selected = [cpus[slot] for slot in request['cpu_slots']]
+                        argv = [records['tools:' + step['tool']]['path'],
+                                *(expand(arg) for arg in step['arguments'])]
+                        log = output / 'logs' / tag
+                        command = [str(args.gnu_time), '-v', '-o', str(log.with_suffix('.time')), *argv]
+                        write_json(log.with_suffix('.command.json'), dict(argv=command, cwd=str(output),
+                            cpu_affinity=selected, memory_reservation_mib=request['memory_mib']))
+                        temp = output / 'tmp' / tag
+                        temp.mkdir()
+                        child_environment = dict(environment, OMP_NUM_THREADS=str(len(selected)),
+                            RAYON_NUM_THREADS=str(len(selected)), TMPDIR=str(temp), RUSTEDA_PARALLEL_STEP=tag)
+                        out, err = log.with_suffix('.stdout').open('xb'), log.with_suffix('.stderr').open('xb')
+                        try:
+                            # The coordinator is single-threaded. Set affinity
+                            # before exec so every descendant starts with the
+                            # same lane. The outer cgroup owns the hard cpuset.
+                            process = subprocess.Popen(command, cwd=output, env=child_environment,
+                                stdin=subprocess.DEVNULL, stdout=out, stderr=err, start_new_session=True,
+                                preexec_fn=lambda selected=selected: os.sched_setaffinity(0, selected))
+                        except BaseException:
+                            out.close()
+                            err.close()
+                            raise
+                        running[tag] = dict(process=process, log=log, out=out, err=err,
+                            cpus=selected, tick=tick, seconds=step['timeout_s'])
+                        pending.remove(step)
+                    if pending and not running:
+                        raise ValueError('parallel dependency/resource admission made no progress')
+                    if running:
+                        time.sleep(.05)
+                if log_bytes > log_budget:
+                    raise ValueError('aggregate log byte budget exceeded during parallel execution')
+            except BaseException as error:
+                for tag in list(running):
+                    finish(tag, 'parallel group cancelled: ' + str(error))
+                raise
+            finally:
+                receipts.extend(observed[tag] for tag in sorted(observed, key=order.__getitem__))
+                seen.update(observed)
+                write_json(output / 'step-receipts.json', receipts)
+
         try:
             for step in steps:
                 tag = step["id"]
+                group = parallel_groups.get(tag)
+                if group is not None and args.stop_after not in group['steps']:
+                    run_parallel(group)
+                    continue
+                if any(tag in entry['steps'] for entry in parallel_groups.values()) and tag in seen:
+                    continue
                 if not re.fullmatch("[a-zA-Z0-9_-]{1,128}", tag) or tag in seen:
                     raise ValueError("invalid or duplicate step handle")
                 seen.add(tag)
