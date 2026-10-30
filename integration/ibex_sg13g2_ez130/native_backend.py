@@ -108,6 +108,23 @@ def grouped_antenna(files):
     return policy
 
 
+
+def single_process_antenna(files):
+    """A pinned explicit policy selects the single-process lineage protocol."""
+    if 'antenna_session_policy' not in files:
+        return False
+    record = files['antenna_session_policy']
+    path = Path(record['path'])
+    require(record['bytes'] <= 65536 and identity(path) == record,
+            'antenna session policy changed or exceeds byte budget')
+    policy = read(path)
+    require(policy == dict(schema='rusteda.antenna-session-policy.v1',
+        execution_mode='single_native_process', actual_native_processes=1)
+        and type(policy['actual_native_processes']) is int,
+        'antenna session execution policy differs')
+    return True
+
+
 def build(config):
     required = {'schema', 'frontend_fragment', 'files', 'tools', 'pdk_root'}
     require(required <= set(config) and not set(config) - required - {'parallel_signoff'}
@@ -130,6 +147,9 @@ def build(config):
             target[key] = item
     require(len(files) <= 256 and len(tools) <= 32, 'aggregate input budget')
     antenna_grouping = grouped_antenna(files)
+    antenna_session = single_process_antenna(files)
+    require(not antenna_session or antenna_grouping is not None,
+            'antenna session requires the explicit grouped policy')
     contract = read(Path(files['contract']['path']))
     require(contract['common']['rc_calibration_rules'] == 'ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules'
             and files['rules_nom']['sha256'] == contract['common']['rc_calibration_sha256'],
@@ -223,10 +243,13 @@ def build(config):
             '--base-rev', 'empty'], 1860)
     if antenna_grouping is not None:
         render('antenna_verify_inputs', 'antenna-verification-inputs.json',
-               dict(schema='rusteda.antenna-v2-independent-verifier-inputs.v1',
+               dict(schema=('rusteda.antenna-v3-independent-verifier-inputs.v1' if antenna_session
+                        else 'rusteda.antenna-v2-independent-verifier-inputs.v1'),
                     lineage=output_id('backend/antenna-repair/lineage.json'),
                     tool={'$tool': 'rustroad'}, source_manifest=input_id('antenna_source_manifest'),
-                    design_workspace=road, evidence_kind='actual_native_artifacts'))
+                    design_workspace=road, evidence_kind='actual_native_artifacts',
+                    **({'controller_inputs': output_id('backend/antenna-inputs.json')}
+                       if antenna_session else {})))
         command('antenna_verify', 'python', ['{files:antenna_verifier}', '--inputs',
                 output + 'antenna-verification-inputs.json', '--workspace',
                 output + 'antenna-verification', '--base-rev', 'empty'], 180)

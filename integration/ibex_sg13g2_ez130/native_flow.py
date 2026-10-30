@@ -165,6 +165,23 @@ def grouped_antenna(files):
 
 
 
+
+def single_process_antenna(files):
+    """A pinned explicit policy selects the single-process lineage protocol."""
+    if 'antenna_session_policy' not in files:
+        return False
+    record = files['antenna_session_policy']
+    path = Path(record['path'])
+    require(record['bytes'] <= 65536 and identity(path) == record,
+            'antenna session policy changed or exceeds byte budget')
+    policy = read(path)
+    require(policy == dict(schema='rusteda.antenna-session-policy.v1',
+        execution_mode='single_native_process', actual_native_processes=1)
+        and type(policy['actual_native_processes']) is int,
+        'antenna session execution policy differs')
+    return True
+
+
 def assemble(backend, files, tools, logic_limits):
     """Pure bounded recipe construction; callers must verify all source records."""
     require(backend.get("schema") == "rusteda.native-backend-fragment.v1", "backend fragment schema")
@@ -178,6 +195,9 @@ def assemble(backend, files, tools, logic_limits):
         relative(value)
     steps = list(backend["steps"])
     antenna_grouping = grouped_antenna(files)
+    antenna_session = single_process_antenna(files)
+    require(not antenna_session or antenna_grouping is not None,
+            'antenna session requires the explicit grouped policy')
     require(1 <= len(steps) <= 124 and backend["outputs"]["stop_after"] == "be_macro_contract"
             and steps[-1]["id"] == "be_macro_contract", "expected the complete backend recipe prefix")
     allocated_threads = backend["scope"]["threads"]
@@ -264,10 +284,13 @@ def assemble(backend, files, tools, logic_limits):
         verify_inputs = by_name['be_antenna_verify_inputs']
         require(verify_inputs == dict(id='be_antenna_verify_inputs', kind='render',
             destination='backend/antenna-verification-inputs.json', content=dict(
-                schema='rusteda.antenna-v2-independent-verifier-inputs.v1',
+                schema=('rusteda.antenna-v3-independent-verifier-inputs.v1' if antenna_session
+                        else 'rusteda.antenna-v2-independent-verifier-inputs.v1'),
                 lineage={'$identity': 'backend/antenna-repair/lineage.json'}, tool={'$tool': 'rustroad'},
                 source_manifest={'$input': 'antenna_source_manifest'}, design_workspace=workspace,
-                evidence_kind='actual_native_artifacts')), 'v2 verifier input/source/scope differs')
+                evidence_kind='actual_native_artifacts',
+                **({'controller_inputs': {'$identity': 'backend/antenna-inputs.json'}}
+                   if antenna_session else {}))), 'v2/v3 verifier input/source/scope differs')
         require(by_name['be_antenna_verify'] == dict(id='be_antenna_verify', kind='command', tool='python',
             arguments=['{files:antenna_verifier}', '--inputs', '{output}/backend/antenna-verification-inputs.json',
                        '--workspace', '{output}/backend/antenna-verification', '--base-rev', 'empty'], timeout_s=180),

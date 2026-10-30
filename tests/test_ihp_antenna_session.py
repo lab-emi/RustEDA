@@ -103,6 +103,14 @@ class AntennaSessionProtocol(unittest.TestCase):
                 self.assertTrue(helper.single_process_antenna(files))
                 self.assertFalse(helper.single_process_antenna({}))
 
+    def test_freeze_rejects_a_source_symlink_before_resolving_it(self):
+        target = self.root / 'target.py'
+        target.write_text('protocol fixture; never executed\n')
+        link = self.root / 'link.py'
+        link.symlink_to(target)
+        with self.assertRaisesRegex(ValueError, 'must not be a symlink'):
+            freeze.identity(link)
+
     def test_policy_requires_exact_identity_semantics_and_integer_process_count(self):
         expected = json.loads((self.bundle / 'antenna-session-policy.json').read_text())
         mutations = [dict(expected, actual_native_processes=value) for value in (True, 1.0, 0, 2)]
