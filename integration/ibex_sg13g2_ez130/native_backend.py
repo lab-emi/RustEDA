@@ -109,8 +109,10 @@ def grouped_antenna(files):
 
 
 def build(config):
-    require(set(config) == {'schema', 'frontend_fragment', 'files', 'tools', 'pdk_root'}
+    required = {'schema', 'frontend_fragment', 'files', 'tools', 'pdk_root'}
+    require(required <= set(config) and not set(config) - required - {'parallel_signoff'}
             and config['schema'] == 'rusteda.native-backend-inputs.v1', 'backend config schema')
+    require(type(config.get('parallel_signoff', False)) is bool, 'parallel_signoff must be explicit boolean')
     record = config['frontend_fragment']
     require(identity(Path(record['path'])) == record, 'frontend recipe changed')
     front = read(Path(record['path']))
@@ -313,6 +315,13 @@ def build(config):
     prefix = dict(schema='rusteda.ihp-flow.v1', name='fresh native physical/signoff prefix',
                   pdk='ihp-sg13g2', library='ez130_8t', corners=['tt', 'ss'], files=files, tools=tools,
                   steps=steps, scope=front['scope'], gates={}, artifacts=artifacts, stdout_artifacts=stdout_artifacts)
+    if config.get('parallel_signoff', False):
+        require(front['scope']['threads'] >= 6 and front['scope'].get('memory_mib') == 8192,
+                'parallel signoff requires six physical CPUs and the matched 8192 MiB cgroup')
+        groups = [policy.signoff_parallel_group()]
+        policy.validate_parallel_groups(steps, groups, front['scope'])
+        fragment['parallel_groups'] = groups
+        prefix['parallel_groups'] = groups
     return fragment, prefix
 
 

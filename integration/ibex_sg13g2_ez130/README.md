@@ -144,6 +144,33 @@ longer clock-gate enable or clock-port net can cross it. A clock-only antenna re
 the complete original Ant.a..i deck on the final all-signal GDS is mandatory.
 Resumed LibreLane attempts and local route replays remain repair diagnostics.
 
+## Optional concurrent signoff
+
+Set `parallel_signoff: true` in a new `rusteda.native-backend-inputs.v1`
+configuration to emit the explicit B4 dependency group. Existing configurations
+remain serial. The sixteen-core frontend allocation supplies three disjoint
+two-core lanes: `be_main`, `be_antenna` followed by `be_lvs`, and `be_openrcx`
+followed by `be_timing`. Input templates render only after their dependencies;
+the group completes before macro/logic checks and qualification. Tool arguments,
+two-thread limits, foundry decks, constraints and qualification gates are retained.
+
+Admission sums each live command's memory reservation under a 7168 MiB group
+cap, within the existing hard 8192 MiB worker cgroup. The maximum simultaneous
+reservations are 2304 + 2560 + 1024 = 5888 MiB; the measured run16 estimate is
+about 4.5 GiB plus the coordinator. Runs hold the root `.work/scale.lock`.
+Per-command receipts record actual CPU IDs, memory reservations, dependencies
+and start/wall times. Receipt order follows the manifest. All concurrent stdout
+and stderr count toward the original global log limit. Failures cancel owned
+process groups; the foreground worker owner retains whole-cgroup cleanup.
+An internal `--stop-after` target still executes a serial prefix.
+
+`integration/verify_ihp_parallel_signoff.py` prepares a fresh serial/parallel
+replay from copied frozen physical artifacts. Pass `--execute`, six physical
+CPU IDs and the absolute root scale-lock path to run the pair under bounded
+scopes and GNU time. It compares complete independent reports, retaining raw
+FileIDs and recording the exact path/timestamp normalization. This replay
+does not replace a fresh sixteen-gate RTL-to-GDS run.
+
 ## Matched LibreLane reference
 
 `reference_flow.py` runs LibreLane 3.0.17 from the same RTL, SDC, contract,

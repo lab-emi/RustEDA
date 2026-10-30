@@ -329,10 +329,16 @@ def assemble(backend, files, tools, logic_limits):
         require(step["kind"] in {"render", "command"}, "unsupported recipe step kind")
     gates = {**reports, **{name: "backend/qualification/" + name + ".json" for name in sorted(DERIVED)}}
     require(set(gates) == INDEPENDENT | DERIVED and len(gates) == 16, "complete sixteen-gate set required")
-    return dict(schema="rusteda.ihp-flow.v1", name="ibex_sram_bench",
+    manifest = dict(schema="rusteda.ihp-flow.v1", name="ibex_sram_bench",
                 pdk="ihp-sg13g2", library="ez130_8t", corners=["tt", "ss"], files=files, tools=tools,
                 scope=backend["scope"], steps=steps, gates=gates, artifacts=artifacts,
                 stdout_artifacts=backend['stdout_artifacts'])
+    if 'parallel_groups' in backend:
+        require(backend['parallel_groups'] == [policy.signoff_parallel_group()],
+                'native signoff concurrency differs from the explicit B4 policy')
+        policy.validate_parallel_groups(steps, backend['parallel_groups'], backend['scope'])
+        manifest['parallel_groups'] = backend['parallel_groups']
+    return manifest
 
 
 def build(config, source_config):
