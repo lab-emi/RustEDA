@@ -24,16 +24,11 @@ guides the next iteration.
   <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200">
 </picture>
 
-<div class="eda-metrics" markdown>
+## Ibex SG13G2 / EZ130
 
-<div><strong>20.55×</strong><span>OpenC910 synthesis speedup</span></div>
-<div><strong>10.90%</strong><span>Less mapped cell area</span></div>
-<div><strong>Unverified</strong><span>OpenC910 RTL-to-GDS speedup</span></div>
+RustEDA completes Ibex RTL-to-GDS with EZ130 cells on IHP SG13G2 and **two real SRAM macros**. All 16 independent gates passed in one fresh public run, in 2,936.6 s. The matched LibreLane run failed foundry main DRC, so no end-to-end ratio is published.
 
-</div>
-
-RustSys vs Yosys + ABC on SKY130 HD, 16 host cores. Synthesis and export only;
-the measured boundary excludes proof and timing. [Results and limits](benchmarks.md).
+[Latest Ibex campaign →](benchmarks.md) · [Engine capabilities →](engine-status.md)
 
 ## Build the feedback loop
 
@@ -98,7 +93,7 @@ to the time that work consumes. Amdahl's law makes that limit explicit.
   <small>1 / ((1 − f) + f / s). This is a model, not a measured RustEDA result.</small>
 </div>
 
-[Read the measurement contract](benchmarks.md#a-matched-rtl-to-gds-comparison) ·
+[Read the measurement scope](benchmarks.md#measurement-scope) ·
 [Check current qualification](verification.md)
 
 </div>

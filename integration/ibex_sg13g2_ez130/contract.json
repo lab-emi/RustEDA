@@ -1,0 +1,127 @@
+{
+  "schema": "rusteda.ibex-sg13g2-ez130.contract.v1",
+  "design": "ibex_sram_bench",
+  "ibex_commit": "38c070939183cc10940b66c8e9e04eeca6b65470",
+  "ihp_commit": "5cccb161f7492697cfa52eb14dc03beb00bdca9e",
+  "ez130_release": "8T v1.1",
+  "signoff_offgrid_fix_commit": "a6a7e6ccf95b480f786039890b40670db6a54419",
+  "signoff_offgrid_file_sha256": "dc5eb236c1229efb48df98b256a1b3fd3b08cb793db021e4fee889756f292f1d",
+  "files": {
+    "ez130/lib/ez130_8t_tt_1p20v_25c.lib": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+    "ez130/lib/ez130_8t_ss_1p08v_125c.lib": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+    "ez130/lef/ez130_sg13g2_tech.lef": "375ae19dcb365d712b682ce366cef8b55c939990e52c152e2b52ebcb8e8c5f27",
+    "ez130/lef/ez130_8t.lef": "841070a0650462ac9d14ec042347d0c518f5c78bc55ccbb06c2d5b3f518f55d4",
+    "ez130/gds/ez130_8t.gds": "628767647a34b36a3710bf698387373183d84a43963cd0b722cf7a9e95441042",
+    "ez130/cdl/ez130_8t.cdl": "d65b17d5c209ad3fca60a451ffc2bb88aaf604656b518a09037f8feb5b50a542",
+    "ez130/verilog/ez130_8t.v": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12",
+    "ihp/libs.ref/sg13g2_sram/lef/RM_IHPSG13_1P_1024x32_c2_bm_bist.lef": "b345b6c44defa630a7266fb1ee878b153e4b22b88461aa8216d3883592c18db2",
+    "ihp/libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_1024x32_c2_bm_bist.gds": "4d1178811e3b83a8f6fc85f017fdd8d9b43629f785929ad60dbbaa2a763b96b1",
+    "ihp/libs.ref/sg13g2_sram/cdl/RM_IHPSG13_1P_1024x32_c2_bm_bist.cdl": "58561ee0e35e4b77191318aa5ac7924e64550d9ae797c9b6d3f35ff25b540302",
+    "ihp/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669",
+    "ihp/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C.lib": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+    "ihp/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_slow_1p08V_125C.lib": "34497364ed23734a929454b451ee9d209b16923e03b80cba258379069af1908c",
+    "ihp/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787",
+    "ihp/libs.tech/klayout/tech/drc/rule_decks/antenna.drc": "95f158afbdcfe1537488964d0545b7450a0c0d28a627cfb57f76e4628e7671f0",
+    "ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules": "ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905",
+    "ihp/libs.tech/librelane/config.tcl": "a970360717052c0b86a914c5996b7899bade7b774862f2be5eb2b59027ae0fee"
+  },
+  "common": {
+    "clock_period_ns": 100,
+    "early_derate": 1.0,
+    "late_derate": 1.0,
+    "sdc_sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+    "corners": [
+      "tt_1p20v_25c",
+      "ss_1p08v_125c"
+    ],
+    "rc_corner": "nominal",
+    "die_um": [
+      0,
+      0,
+      1100,
+      1000
+    ],
+    "core_um": [
+      20.16,
+      20.16,
+      1079.82,
+      977.76
+    ],
+    "site_um": [
+      0.42,
+      3.36
+    ],
+    "macro_halo_um": 10,
+    "macros": {
+      "u_imem": {
+        "cell": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+        "location_um": [
+          80,
+          631.3
+        ],
+        "orientation": "N"
+      },
+      "u_dmem": {
+        "cell": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+        "location_um": [
+          600,
+          631.3
+        ],
+        "orientation": "N"
+      }
+    },
+    "sdc_commands_sha256": "8b230fec1a3f3a9efb6126f5a1efad57ab3cdabaa4acae607c48ef9df585389f",
+    "diagnostic_sdc_sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+    "sdc_note": "Owner-authorized bring-up:100ns period; input arrival5..10ns, output min0/max5ns. TT/SS with nominal derates1.0,50ps uncertainty; explicit test-interface assumption, full setup/hold still checked.",
+    "cppr": "off",
+    "rc_resistance_model": "openrcx-pdk",
+    "rc_model_scope": "original pinned IHP default nominal IHP_rcx_patterns calibration, original EZ technology LEF cut resistance; one actual nominal SPEF with TT and SS Liberty views",
+    "fill_cells": [
+      "FILLER1",
+      "FILLER2",
+      "FILLER4",
+      "FILLER8",
+      "FILLER16"
+    ],
+    "decap_cells": [
+      "DECAP4",
+      "DECAP8",
+      "DECAP16",
+      "DECAP32"
+    ],
+    "tap_rule_max_distance_um": 20,
+    "librelane_tap_spacing_parameter_um": 15,
+    "signal_routing_layers": [
+      "Metal2",
+      "Metal3",
+      "Metal4",
+      "Metal5",
+      "TopMetal1",
+      "TopMetal2"
+    ],
+    "clock_routing_layers": [
+      "Metal2",
+      "Metal3",
+      "Metal4",
+      "Metal5",
+      "TopMetal1",
+      "TopMetal2"
+    ],
+    "pin_access_lower_layer": "Metal1",
+    "top_metal_use": "fixed_power_grid_and_legal_signal_routing",
+    "native_tap_max_gap_um": 15,
+    "pnr_constraint_policy": "LibreLane PNR wrapper sources the byte-exact common SDC then explicit CPPR-off; final independent signoff reads original common SDC with CPPR-off",
+    "antenna_signoff": "complete original foundry Ant.a..i on actual final GDS; separate from main DRC and LEF-based router estimates",
+    "rc_calibration_rules": "ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules",
+    "rc_calibration_sha256": "ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905",
+    "rc_calibration_basis": "IHP v0.3.0 PDK config.tcl lines126..138 selects IHP_rcx_patterns.rules by default; commented *.magic.rules are a separately retained alternative diagnostic, not the chosen default",
+    "io_delays_ns": {
+      "input_min": 5,
+      "input_max": 10,
+      "output_min": 0,
+      "output_max": 5
+    },
+    "clock_uncertainty_ns": 0.05,
+    "final_density_max_percent": 70
+  }
+}

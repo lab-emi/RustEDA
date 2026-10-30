@@ -64,10 +64,14 @@ pub fn tag(pdk: &Pdk) -> Result<&'static str> {
         Pdk::Sky130 => Ok("sky130"),
         Pdk::Gf180Seven => Ok("gf180"),
         Pdk::Gf180Nine => Err(bad("the qualified RustROAD flow covers GF180 7T, not 9T")),
+        Pdk::IhpEz130 => Ok("ihp"),
     }
 }
 
 pub fn validate_config(config: &Config) -> Result<()> {
+    if config.pdk == Pdk::IhpEz130 {
+        return crate::ihp::validate_config(config);
+    }
     tag(&config.pdk)?;
     if config.road.is_none()
         || !config.verilog_files.is_empty()
@@ -178,6 +182,9 @@ fn project_file(project: &Path, value: &Value) -> Result<PathBuf> {
 /// Capture scripts, fixture definitions, pinned host tools and selected PDK data.
 /// The producer reads its original tree, whose bytes and captured copies are both checked.
 pub fn input_paths(config: &Config) -> Result<Vec<PathBuf>> {
+    if config.pdk == Pdk::IhpEz130 {
+        return crate::ihp::input_paths(config);
+    }
     let road = config
         .road
         .as_ref()
@@ -259,6 +266,9 @@ fn empty_array(value: &Value) -> bool {
 
 /// Only the qualified producer's complete gate, never an exit code or a single DRC count.
 pub fn ingest(state: &State, output: &Path, result: &mut StageResult) -> Result<Value> {
+    if state.config.pdk == Pdk::IhpEz130 {
+        return crate::ihp::ingest(state, output, result);
+    }
     let path = output.join("summary.json");
     let summary = read_json(&path, MAX_SUMMARY)?;
     let pdk_tag = tag(&state.config.pdk)?;
@@ -532,7 +542,7 @@ pub fn validate_cached(state: &State) -> Result<()> {
     ingest(state, path, &mut StageResult::default()).map(|_| ())
 }
 
-fn capture_bound(
+pub(crate) fn capture_bound(
     state: &State,
     output: &Path,
     kind: &str,

@@ -1,0 +1,14 @@
+{
+  "schema": "rusteda.final-density-policy.v1",
+  "max_percent": 70,
+  "evaluation_stage": "after_final_signal_routing_and_all_cts_hold_drv_antenna_ecos",
+  "include": "all final functional, CTS, ECO and tap cells; real SRAM area separately reported",
+  "exclude": "only explicitly configured gap-filler/decap masters",
+  "scope": "final global placement utilization; local50um density is diagnostic, not an owner-requested hard limit",
+  "required_artifacts": [
+    "final_DEF",
+    "final_GDS",
+    "qualified_final_placement"
+  ],
+  "status": "pending_final_layout"
+}

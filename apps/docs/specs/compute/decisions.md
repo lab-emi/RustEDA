@@ -14,14 +14,10 @@ implementation that is always built and authoritative, and native GPU implementa
 Linux, later Metal on Apple Silicon) that are checked for consistency with it. Upper crates never
 import a GPU binding. The first tool versions offloaded the arrival propagation of a timing engine
 to GPUs with kernels in a cross-platform GPU language on two runtimes, then with CUDA C kernels
-launched by the engine itself. Local measurements on the lab GPU gave the following figures:
-- a prototype of this task in `f64` agreed bit for bit with its CPU backend on 53 design runs and
-  96 random problems, with per-tag transitions and clip windows (semantics that the task has since
-  replaced, so the identity has to be established again);
-- on a 1.74M-node graph, propagation alone took 17 ms on the CPU backend, 5.12 ms resident on
-  the GPU in `f64` and 2.24 ms in `f32`;
-- end to end, one corner was no faster on the GPU (1.238 s against 1.255 s at 501k cells), the
-  CUDA context alone costing 135 to 231 ms per process.
+launched by the engine itself. Local measurements on the lab GPU showed that a resident `f64`
+prototype agreed bit for bit with its CPU backend, that propagation alone was several times faster
+on the GPU, and that one corner end to end was no faster because CUDA context creation dominated.
+These measurements motivated the decisions below; they are not current benchmarks.
 
 ## Decisions
 

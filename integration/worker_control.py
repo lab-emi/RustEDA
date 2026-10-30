@@ -77,6 +77,11 @@ def request(path, expected):
             or not 1<=r["timeout_seconds"]<=86400 or not 8192<=r["memory_mib"]<=16384
             or not 1024<=r["max_log_bytes"]<=64*1024**2):
         raise ValueError("invalid bounded worker request")
+    cpus = r.get("cpu_affinity")
+    if "cpu_affinity" in r and (not isinstance(cpus, list) or not 1 <= len(cpus) <= 16
+            or any(type(cpu) is not int or not 0 <= cpu < 4096 for cpu in cpus)
+            or len(set(cpus)) != len(cpus)):
+        raise ValueError("invalid bounded worker CPU allocation")
     return r
 
 
@@ -92,16 +97,35 @@ def cleanup(r):
     details = dict(schema="rusteda.worker-cleanup.v1", request_id=r["request_id"], unit=unit, errors=[], removed=[])
     description = "RustEDA worker "+r["request_id"]
     try:
-        probe = command(["systemctl","--user","show",unit,"--property=LoadState,ActiveState,Description"])
+        probe = command(["systemctl","--user","show",unit,"--property=LoadState,ActiveState,Description,ControlGroup"])
         fields = dict(line.split("=",1) for line in probe.stdout.splitlines() if "=" in line)
         if fields.get("LoadState") is None:
             raise ValueError("cannot determine worker unit ownership/state")
         if fields.get("ActiveState") not in (None,"inactive","failed"):
             if fields.get("Description") != description:
                 raise ValueError("worker unit ownership differs; refusing to stop it")
-            stop = command(["systemctl","--user","stop",unit],timeout=20)
-            if stop.returncode:
-                raise ValueError("worker scope did not stop: "+stop.stderr[-500:])
+            group=fields.get("ControlGroup", "")
+            if group.startswith("/") and ".." not in Path(group).parts:
+                location=Path("/sys/fs/cgroup")/group.lstrip("/")
+                observed={}
+                for file,key in (("memory.peak","memory_peak_bytes"),("memory.swap.peak","swap_peak_bytes")):
+                    try:
+                        observed[key]=int((location/file).read_text().strip())
+                    except (OSError,ValueError):
+                        observed[key]=None
+                details["cgroup_before_cleanup"]=observed
+            # Native AppImage tools may detach and ignore TERM during C++ work.
+            # This is the exact, ownership-checked request scope; kill every
+            # member before attesting that recovery is complete.
+            stop = command(["systemctl","--user","kill","--kill-whom=all","--signal=KILL",unit])
+            deadline=time.monotonic()+10
+            while True:
+                after=command(["systemctl","--user","is-active",unit])
+                if after.stdout.strip() in ("inactive","failed","unknown"):
+                    break
+                if time.monotonic()>=deadline:
+                    raise ValueError("owned worker scope survived KILL: "+stop.stderr[-500:])
+                time.sleep(.1)
         after = command(["systemctl","--user","is-active",unit])
         if after.stdout.strip() not in ("inactive","failed","unknown"):
             raise ValueError("worker unit is active or its state is unknown")
@@ -183,10 +207,17 @@ def execute(path, expected):
         raise ValueError("worker logs already exist; recover the request instead of executing it again")
     environment = dict(os.environ, **r["environment"])
     environment["PATH"] = str(Path(r["podman"]).parent)+os.pathsep+environment.get("PATH","")
+    cpus = r.get("cpu_affinity")
+    if cpus is not None and not set(cpus).issubset(os.sched_getaffinity(0)):
+        raise ValueError("worker CPU allocation is unavailable on this host")
     argv = ["systemd-run","--user","--scope","--quiet","--unit",r["unit"],
             "--description","RustEDA worker "+r["request_id"],
-            "-p",f"MemoryMax={r['memory_mib']}M","-p","MemorySwapMax=2048M",
-            r["program"],*r["arguments"]]
+            "-p",f"MemoryMax={r['memory_mib']}M","-p","MemorySwapMax=2048M"]
+    if cpus is not None:
+        # A child may widen sched_setaffinity again. The cgroup cpuset keeps the
+        # allocation in force for detached native tool processes as well.
+        argv.extend(["-p", "AllowedCPUs=" + ",".join(map(str, cpus))])
+    argv.extend([r["program"],*r["arguments"]])
     cancelled=False
     def cancel(_signum,_frame):
         nonlocal cancelled

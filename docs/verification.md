@@ -25,12 +25,13 @@ No endpoint-parity tolerance is silently relaxed.
 
 The [flow integration receipt](../integration/evidence/phase3.json) records fresh
 counter/SKY130, counter/GF180 and fifo/SKY130 runs, cache verification and worker
-recovery. Their full initialization-plus-run times were 109.273 s, 151.883 s and
-237.357 s. These are single-flow qualification observations without matched
-competitor measurements; they do not yield a comparative speedup.
+recovery. They qualify the application protocol; they are not benchmarks. The only
+published benchmark is the [Ibex SG13G2/EZ130 campaign](benchmarks.md).
 
 ## Known limits
 
+- The Ibex SG13G2/EZ130 result is one completed run of one design. It does not
+  qualify other designs, SRAM configurations or the IHP `sg13g2_stdcell` library.
 - OpenC910 placement, routing, GDS and end-to-end performance are unverified.
 - The original failing OpenC910 independent timing-checker case is unavailable
   for reproduction; it has not been reclassified as passing.
