@@ -171,6 +171,15 @@ scopes and GNU time. It compares complete independent reports, retaining raw
 FileIDs and recording the exact path/timestamp normalization. This replay
 does not replace a fresh sixteen-gate RTL-to-GDS run.
 
+The first pair measured 690.861 s serial and 347.049 s parallel, with all five
+signoff commands passing. The strict comparator retained a mismatch in KLayout's
+extra internal `.lvsdb`; a fresh serial replay also differs from published run16
+there. `audit_ihp_parallel_reports.py` verifies all bound raw timing reports and
+complete independent report fields, retaining the unresolved database identity
+explicitly. See the [B4 handoff](../../docs/handoffs/2026-10-30-parallel-signoff.md)
+for raw roots, resource measurements, the unverified internal graph comparison
+and source-freeze guidance.
+
 ## Matched LibreLane reference
 
 `reference_flow.py` runs LibreLane 3.0.17 from the same RTL, SDC, contract,
