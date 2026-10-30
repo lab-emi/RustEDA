@@ -221,15 +221,28 @@ def main():
                            'raw SHA roots replaced only after their complete normalized bytes compare equal'])
         producer.write_json(output / 'result.json', result)
         if args.execute:
-            with args.scale_lock.open('a') as scale:
-                fcntl.flock(scale, fcntl.LOCK_EX)
-                result['samples'] = {mode: execute(output, mode, manifest) for mode in ('serial', 'parallel')}
-            result['reports'] = compare(output)
-            result['status'] = 'signoff_reports_match'
+            result.update(status='running', samples={})
+            producer.write_json(output / 'result.json', result)
+            try:
+                with args.scale_lock.open('a') as scale:
+                    fcntl.flock(scale, fcntl.LOCK_EX)
+                    for mode in ('serial', 'parallel'):
+                        result['active_sample'] = mode
+                        producer.write_json(output / 'result.json', result)
+                        result['samples'][mode] = execute(output, mode, manifest)
+                        producer.write_json(output / 'result.json', result)
+                result['reports'] = compare(output)
+                result.update(status='signoff_reports_match', active_sample=None)
+            except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
+                result.update(status='failed', error=str(error))
+                producer.write_json(output / 'result.json', result)
+                print(json.dumps(dict(status='failed', result=str(output / 'result.json'))))
+                return 1
             producer.write_json(output / 'result.json', result)
         (output / 'HEAD').write_text('rev1\n')
         print(json.dumps(dict(status=result['status'], result=str(output / 'result.json'))))
+        return 0
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

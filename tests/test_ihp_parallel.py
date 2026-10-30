@@ -119,6 +119,22 @@ class ParallelSignoffProtocol(unittest.TestCase):
         self.assertEqual(summary['status'], 'failed')
         self.assertIn('exit=7', summary['error'])
 
+    def test_failed_dependency_never_launches_its_dependent(self):
+        self.group['steps']['second']['depends_on'] = ['first']
+        self.data['steps'][0] = self.command('first', 'raise SystemExit(7)')
+        result = self.run_worker()
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertFalse((self.output / 'second.start').exists())
+        self.assertFalse((self.output / 'control.json').exists())
+
+    def test_deadline_cancels_parallel_children_and_blocks_following_steps(self):
+        self.data['steps'][0] = self.command('first', 'import time; time.sleep(5)')
+        self.data['steps'][0]['timeout_s'] = 1
+        result = self.run_worker()
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn('step deadline exceeded: first', (self.output / 'summary.json').read_text())
+        self.assertFalse((self.output / 'control.json').exists())
+
     def test_aggregate_log_budget_counts_simultaneous_and_fast_exit_streams(self):
         self.data['scope']['max_log_bytes'] = 1024
         for index, tag in enumerate(('first', 'second')):
