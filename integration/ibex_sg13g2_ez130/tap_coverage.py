@@ -17,7 +17,8 @@ coverage, not a fabricated foundry finding. No sampling-only pass is possible.
 
 Fixture estimate: <2GiB based on merged source geometry (eight source regions),
 derived domains/dopants, target/tie/intersection temporaries and the reader;
-measured baseline peak0.9GiB. Hierarchy state<18MiB, anchors/bins<96MiB, one
+measured baseline peak0.9GiB. Aggregated hierarchy state<128MiB (including
+dictionary growth), anchors/bins<96MiB, one
 worker. Caps are not a generic admission proof for native Boolean intermediates:
 they allocate before output inspection. Caller MUST supply4GiB/1GiB and600s
 guards and GNU peak RSS; native allocation/time failure means unverified.
@@ -54,6 +55,15 @@ class Budget:
     def charge(self, name, count=1):
         value = self.used.get(name, 0) + count
         if value > self.limits[name]:
+            raise CoverageLimit('COVERAGE_BUDGET:' + name)
+        self.used[name] = value
+
+    def charge_hierarchy_record(self):
+        # Raw scans and expanded occurrences are different bounded quantities;
+        # keep both counters instead of overwriting one with the other.
+        name = 'hierarchy_instance_records'
+        value = self.used.get(name, 0) + 1
+        if value > self.limits['instance_visits']:
             raise CoverageLimit('COVERAGE_BUDGET:' + name)
         self.used[name] = value
 
@@ -123,28 +133,43 @@ def identity(path, cap=64 << 20):
 
 
 def hierarchy(layout, top, excluded, budget):
+    """Count occurrences using bounded distinct dependencies, not raw-edge lists.
+
+    Every raw instance is inspected under the existing instance_visits ceiling.
+    hierarchy_edges caps stored parent/child pairs; duplicate multiplicities add
+    exactly. Geometry traversal still visits the original native hierarchy.
+    """
     cells, edges, indegree = {}, {}, {}
     for cell in layout.each_cell():
         budget.charge('cells')
         key = cell.cell_index()
-        cells[key], edges[key], indegree[key] = cell, [], 0
+        cells[key], edges[key], indegree[key] = cell, {}, 0
+    # Each of at most instance_visits raw records contributes at most that many
+    # occurrences. This permits unreachable aggregate edges larger than a
+    # reachable occurrence cap while bounding their integer representation.
+    multiplicity_bound = budget.limits['instance_visits'] ** 2
     for key, cell in cells.items():
         for instance in cell.each_inst():
-            budget.charge('hierarchy_edges')
+            budget.charge_hierarchy_record()
             if instance.is_complex():
                 raise ValueError('COVERAGE_COMPLEX_TRANSFORM_UNSUPPORTED')
             child = instance.cell_index
             multiplicity = instance.na * instance.nb if instance.is_regular_array() else 1
             if child not in cells or not 1 <= multiplicity <= budget.limits['instance_visits']:
                 raise ValueError('INVALID_COVERAGE_HIERARCHY')
-            edges[key].append((child, multiplicity))
-            indegree[child] += 1
+            previous = edges[key].get(child, 0)
+            if previous > multiplicity_bound - multiplicity:
+                raise CoverageLimit('COVERAGE_BUDGET:hierarchy_multiplicity')
+            if not previous:
+                budget.charge('hierarchy_edges')
+                indegree[child] += 1
+            edges[key][child] = previous + multiplicity
     ready = deque(key for key, degree in indegree.items() if degree == 0)
     order = []
     while ready:
         key = ready.popleft()
         order.append(key)
-        for child, _ in edges[key]:
+        for child in edges[key]:
             indegree[child] -= 1
             if not indegree[child]:
                 ready.append(child)
@@ -152,17 +177,19 @@ def hierarchy(layout, top, excluded, budget):
         raise ValueError('CYCLIC_COVERAGE_HIERARCHY')
     full, selected = {top.cell_index(): 1}, {top.cell_index(): 1}
     for key in order:
-        for child, multiplier in edges[key]:
+        for child, multiplier in edges[key].items():
             for counts, stop in ((full, False), (selected, key in excluded)):
                 if not stop and counts.get(key, 0):
-                    value = counts.get(child, 0) + counts[key] * multiplier
-                    if value > budget.limits['instance_visits']:
+                    existing = counts.get(child, 0)
+                    if multiplier > (budget.limits['instance_visits'] - existing) // counts[key]:
                         raise CoverageLimit('COVERAGE_BUDGET:instance_visits')
-                    counts[child] = value
+                    counts[child] = existing + counts[key] * multiplier
     total = sum(full.values())
     if total > budget.limits['instance_visits']:
         raise CoverageLimit('COVERAGE_BUDGET:instance_visits')
     budget.used['instance_visits'] = total
+    budget.used.setdefault('hierarchy_instance_records', 0)
+    budget.used.setdefault('hierarchy_edges', 0)
     return cells, full, selected
 
 
@@ -328,6 +355,10 @@ def run(config_path):
             raise ValueError('COVERAGE_SOURCE_CHANGED')
         report.update(schema='rusteda.tap-coverage-result.v1', gds=gds, config=config_id,
                       checker=source, limits=budget.limits, work=budget.used,
+                      hierarchy_budget_scope=dict(
+                          hierarchy_edges='distinct_stored_parent_child_dependencies',
+                          hierarchy_instance_records_limit=budget.limits['instance_visits'],
+                          instance_visits='expanded_full_hierarchy_occurrences'),
                       excluded_cells=config['excluded_cells'], scope='nonexcluded_diffusion_contact_targets_full_well_domains',
                       excluded_macro_content_status='unchecked_requires_separate_macro_contract_and_full_lvs',
                       geometry_scope='rectilinear_polygons_unit_orthogonal_transforms_no_paths',
