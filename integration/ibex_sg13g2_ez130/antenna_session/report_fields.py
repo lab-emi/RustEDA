@@ -11,6 +11,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
+
+
+_CONTAINER_TOKENS = re.compile(rb'[\[\]{}"]')
+_VALUE_TOKENS = re.compile(rb'[\[\]{}",]')
+_STRING_TOKENS = re.compile(rb'["\\\x00-\x1f]')
 
 
 def prefix_fields(path, selected, max_bytes=65536):
@@ -77,6 +83,64 @@ def fields(path, selected, max_bytes=256 << 20, max_field_bytes=16 << 20, max_se
             while value in (9, 10, 13, 32):
                 value = byte()
             return value
+
+        def scan_value(keep):
+            """Scan spans in C; retain only bounded selected field bytes.
+
+            Every bracket and string escape still crosses the original state
+            machine. Ordinary spans need no Python byte-by-byte dispatch. The
+            buffer stays at 64 KiB, including for a skipped geometry array.
+            """
+            nonlocal chunk, offset, total
+            raw = bytearray()
+            stack, quoted, escaped = [], False, False
+            while True:
+                done = False
+                if offset == len(chunk):
+                    chunk, offset = stream.read(65536), 0
+                    if not chunk:
+                        raise ValueError('REPORT_TRUNCATED')
+                if quoted and escaped:
+                    end, token = offset + 1, chunk[offset]
+                    if token < 32:
+                        raise ValueError('REPORT_STRING_CONTROL')
+                    escaped = False
+                else:
+                    pattern = _STRING_TOKENS if quoted else (
+                        _CONTAINER_TOKENS if stack else _VALUE_TOKENS)
+                    match = pattern.search(chunk, offset)
+                    end = len(chunk) if match is None else match.end()
+                    token = None if match is None else chunk[match.start()]
+                    if not quoted and not stack and token in (44, 125):
+                        # Leave the top-level delimiter for the object reader.
+                        end -= 1
+                        done = True
+                    elif quoted:
+                        if token is not None and token < 32:
+                            raise ValueError('REPORT_STRING_CONTROL')
+                        if token == 34:
+                            quoted = False
+                        elif token == 92:
+                            escaped = True
+                    elif token == 34:
+                        quoted = True
+                    elif token in (91, 123):
+                        stack.append(token)
+                        if len(stack) > 64:
+                            raise ValueError('REPORT_DEPTH_BUDGET')
+                    elif token in (93, 125):
+                        if not stack or stack.pop() != (91 if token == 93 else 123):
+                            raise ValueError('REPORT_UNBALANCED_VALUE')
+                total += end - offset
+                if total > max_bytes:
+                    raise ValueError('REPORT_BYTE_BUDGET')
+                if keep:
+                    if len(raw) + end - offset > max_field_bytes:
+                        raise ValueError('REPORT_FIELD_BYTE_BUDGET')
+                    raw.extend(chunk[offset:end])
+                offset = end
+                if done:
+                    return raw
         if nonspace() != 123:
             raise ValueError('REPORT_OBJECT_REQUIRED')
         first, keys = True, set()
@@ -111,37 +175,9 @@ def fields(path, selected, max_bytes=256 << 20, max_field_bytes=16 << 20, max_se
             if value is None or value in (44, 125):
                 raise ValueError('REPORT_MISSING_VALUE')
             keep = key in selected
-            raw = bytearray()
-            stack, quoted, escaped = [], False, False
-            while True:
-                if keep:
-                    raw.append(value)
-                    if len(raw) > max_field_bytes:
-                        raise ValueError('REPORT_FIELD_BYTE_BUDGET')
-                if quoted:
-                    if value < 32:
-                        raise ValueError('REPORT_STRING_CONTROL')
-                    if not escaped and value == 34:
-                        quoted = False
-                    escaped = not escaped and value == 92
-                elif value == 34:
-                    quoted = True
-                elif value in (91, 123):
-                    stack.append(value)
-                    if len(stack) > 64:
-                        raise ValueError('REPORT_DEPTH_BUDGET')
-                elif value in (93, 125):
-                    if not stack or stack.pop() != (91 if value == 93 else 123):
-                        raise ValueError('REPORT_UNBALANCED_VALUE')
-                following = byte()
-                if following is None:
-                    raise ValueError('REPORT_TRUNCATED')
-                if not quoted and not stack and following in (44, 125):
-                    # Put back one structural delimiter in the small read buffer.
-                    offset -= 1
-                    total -= 1
-                    break
-                value = following
+            offset -= 1
+            total -= 1
+            raw = scan_value(keep)
             if keep:
                 captured += len(raw)
                 if captured > max_selected_bytes:
