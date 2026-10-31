@@ -65,8 +65,15 @@ with growth caps. Existing pinned XML parsing remains<=64MiB,250k nodes,
 depth64 and4096 categories; new category names retain the original4096-byte
 limit. No new geometry/graph/path materialization is introduced. The joint
 metadata phase precedes large DEF placement checks; only compact FileIDs and
-two command receipts survive it. Actual pinned-recipe peak estimate<=448MiB,
+two command receipts survive it. Actual pinned-recipe peak estimate<=456MiB,
 unchanged qualifier512MiB AS guard; record actual timed RSS before acceptance.
+
+The joint qualifier independently inventories original and rendered routing
+JSON (16,384 nodes/pending,depth32,<=8MiB added scratch), before comparing the
+writer audit. Only one known replay/path writer is admitted, with the exact
+private target. Equality outside the declared path alone is insufficient:
+an undeclared foreign output_path could otherwise hide identically in both
+JSON inputs. The original source-only candidate's failing negative is retained.
 
 ## Required validation after the source-only hold
 
