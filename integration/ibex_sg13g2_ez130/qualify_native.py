@@ -745,6 +745,44 @@ def tap_raw_zero(record, rule, root, helper):
     return categories
 
 
+def tap_routing_inventory(value, root, template):
+    """Independently inventory every possible path writer, not an audit claim.
+
+    Same T1 frontend admission:16,384 nodes/pending,depth32,one replay writer.
+    <=8MiB additional estimated pending state; admit before every append.
+    """
+    allowed = {('limits', 'replay', 'path'), ('track_router', 'limits', 'replay', 'path')}
+    pending, nodes, writers = [((), value, 0)], 0, []
+    while pending:
+        trail, current_value, depth = pending.pop()
+        nodes += 1
+        require(nodes <= 16384 and depth <= 32, 'joint routing writer work/depth budget')
+        if isinstance(current_value, dict):
+            children = current_value.items()
+        elif isinstance(current_value, list):
+            children = enumerate(current_value)
+        else:
+            children = ()
+            if trail and (trail[-1] == 'path' or trail[-1].endswith(('_path', '_file', '_directory'))):
+                require(trail in allowed and isinstance(current_value, str) and current_value,
+                        'unknown joint routing writer field')
+                if template:
+                    require(current_value == '{output}/backend/route-budget-error.json',
+                            'foreign joint routing writer template')
+                else:
+                    target = Path(current_value)
+                    require(target.is_absolute() and target.resolve() == root / 'backend/route-budget-error.json'
+                            and target.resolve().is_relative_to(root), 'foreign joint routing writer target')
+                require(not writers, 'joint routing writer inventory must have exactly one writer')
+                writers.append(dict(field='/'.join(trail), path=current_value))
+        for key, child in children:
+            require(nodes + len(pending) < 16384 and depth < 32,
+                    'joint routing writer pending/depth budget')
+            pending.append((trail + (str(key),), child, depth + 1))
+    require(len(writers) == 1, 'joint routing writer inventory must have exactly one writer')
+    return writers
+
+
 def tap_producer_proof(context, artifacts, c, inputs, helper):
     """Exact serial recipe plus real producer receipts, not matching dicts alone."""
     files, tools = context['files'], context['tools']
@@ -865,7 +903,9 @@ def verify_tap_checks(context, native, artifacts, reports, current, helper):
     original_routing = tap_read(files['routing']['path'], 1 << 20)
     rendered_routing = tap_read(routing_path, 1 << 20)
     writers = routing_audit.get('writers')
-    require(isinstance(writers, list) and len(writers) == 1, 'routing writer inventory differs')
+    tap_routing_inventory(original_routing, root, True)
+    require(isinstance(writers, list) and writers == tap_routing_inventory(rendered_routing, root, False),
+            'routing writer inventory differs from actual complete JSON')
     for writer in writers:
         require(set(writer) == {'field', 'path'}
                 and writer['field'] in {'limits/replay/path', 'track_router/limits/replay/path'},
