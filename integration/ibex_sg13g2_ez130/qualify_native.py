@@ -25,6 +25,7 @@ from pathlib import Path
 import re
 import resource
 import sys
+import types
 
 
 DERIVED = {'inputs_frozen', 'macros', 'placement', 'cts', 'power_connectivity',
@@ -543,11 +544,12 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
         scope='independently verified grouped native metadata; complete original foundry antenna gate remains separate')
 
 
-def postroute_lineage(result, root, route, cts, tools):
+def postroute_lineage(result, root, route, cts, tools, foundry_first=False):
     """Bind the post-route runner: trial = the be_route revision of the frontend
     final workspace; final = a file-for-file trial copy (route/CTS records stay
     the trial's) or an ECO rebuild whose own CTS/route records replace them."""
-    require(result['schema'] == 'rusteda.native-postroute-result.v1'
+    require(result['schema'] == ('rusteda.native-postroute-reuse-result.v1' if foundry_first
+            else 'rusteda.native-postroute-result.v1')
             and result['status'] in {'clean', 'repaired', 'residual_violations', 'round_budget_exhausted'}
             and result['final_revision'] == 'rev4' and result['tools']['rustroad'] == tools['rustroad']
             and result['trial']['revision'] == route['revision'] == 'rev4'
@@ -663,11 +665,38 @@ def final_density(context, def_path):
     return result
 
 
+def foundry_first_review(context, native, artifacts, route, inspect, cts):
+    files = context['files']
+    record = files['foundry_first_verifier']
+    require(identity(Path(record['path'])) == record, 'foundry-first verifier source changed')
+    namespace = 'rusteda_foundry_review_' + files['foundry_first_sources']['sha256']
+    require(not any(namespace + suffix in sys.modules for suffix in ('', '.runner', '.protocol', '.verify')),
+            'foundry-first review namespace conflict')
+    package = types.ModuleType(namespace)
+    package.__path__ = [str(Path(record['path']).parent)]
+    sys.modules[namespace] = package
+    spec = importlib.util.spec_from_file_location(namespace + '.verify', record['path'])
+    require(spec is not None and spec.loader is not None, 'foundry verifier loader')
+    helper = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = helper
+    try:
+        spec.loader.exec_module(helper)
+        result = helper.qualification_review(context, native, artifacts, route, inspect, cts)
+    finally:
+        for suffix in ('.verify', '.runner', '.protocol', ''):
+            sys.modules.pop(namespace + suffix, None)
+    require(identity(Path(record['path'])) == record, 'foundry-first verifier changed during qualification')
+    return result
+
+
 def qualify(context, output):
     require(set(context) == {'schema', 'run_root', 'files', 'tools', 'artifacts', 'reports',
                              'native_reports', 'controls'}, 'qualification context fields')
-    require(context['schema'] in {'rusteda.native-qualification-inputs.v1', 'rusteda.native-qualification-inputs.v2'}, 'qualification schema')
-    v2 = context['schema'] == 'rusteda.native-qualification-inputs.v2'
+    require(context['schema'] in {'rusteda.native-qualification-inputs.v1', 'rusteda.native-qualification-inputs.v2',
+            'rusteda.native-foundry-first-qualification-inputs.v1'}, 'qualification schema')
+    foundry_first = context['schema'] == 'rusteda.native-foundry-first-qualification-inputs.v1'
+    v2 = context['schema'] == 'rusteda.native-qualification-inputs.v2' or foundry_first
+    require(foundry_first == ('foundry_first_policy' in context['files']), 'foundry policy/schema mismatch')
     require(v2 == ('antenna_group_policy' in context['files'])
             and (v2 or not V2_FILES & set(context['files'])), 'qualification version/policy mismatch')
     root = Path(context['run_root']).resolve(strict=True)
@@ -747,24 +776,29 @@ def qualify(context, output):
                 'post-route evidence must use the producer output path')
     if v2:
         native_names.add('antenna_verification')
-        require(context['native_reports']['antenna_lineage'] == 'backend/antenna-repair/lineage.json'
-                and context['native_reports']['antenna_verification'] == 'backend/antenna-verification/result.json',
-                'v2 evidence must use the current producer output paths')
+        require(context['native_reports']['antenna_lineage'] == ('backend/foundry-first/decision/result.json'
+                    if foundry_first else 'backend/antenna-repair/lineage.json')
+                and context['native_reports']['antenna_verification'] == ('backend/foundry-verification/result.json'
+                    if foundry_first else 'backend/antenna-verification/result.json'),
+                'v2/explicit foundry evidence must use the current producer output paths')
     require(set(context['native_reports']) == native_names, 'native evidence set')
     native = {name: (metadata_prefix(current(path), {'schema', 'status', 'scope', 'route_scope',
                 'workspace', 'tool', 'initial_revision', 'final_revision', 'initial', 'final', 'workspace_head'}, file_cap=16 << 20)
-                if v2 and name == 'antenna_lineage' else read(current(path), 1 << 20)
+                if v2 and not foundry_first and name == 'antenna_lineage' else read(current(path), 1 << 20)
                 if v2 and name == 'antenna_verification' else read(current(path)))
               for name, path in context['native_reports'].items()}
     route, inspect, cts = native['route'], native['inspect'], native['cts']
     postroute = None
     if 'postroute' in native:
-        route, cts, postroute = postroute_lineage(native['postroute'], root, route, cts, context['tools'])
+        route, cts, postroute = postroute_lineage(native['postroute'], root, route, cts, context['tools'], foundry_first)
     require(inspect['stage'] == 'placed'
             and route['routing_status'] == inspect['routing_status'] == 'signal_geometry_checked'
             and natural(inspect['routed_nets']) and inspect['routed_nets'] > 0,
             'all-net native route not established')
-    if v2:
+    extract_execution = None
+    if foundry_first:
+        lineage, actual_extracted, extract_execution = foundry_first_review(context, native, artifacts, route, inspect, cts)
+    elif v2:
         lineage = antenna_lineage_v2(native['antenna_lineage'], native['antenna_verification'],
             root, route, inspect, cts, context['files'], context['tools'],
             current(context['native_reports']['antenna_lineage']))
@@ -775,11 +809,14 @@ def qualify(context, output):
             and inspect['clock_topology_status'] == 'routed_geometry_checked'
             and cts['clock_buffers'] == inspect['clock_buffers'] and inspect['clock_buffers'] > 0,
             'single-CTS topology/routed evidence differs')
-    extracted, external = native['native_extraction'], native['openrcx_extraction']
+    extracted, external = (actual_extracted if foundry_first else native['native_extraction']), native['openrcx_extraction']
     require(extracted['schema'] == 'rustroad.extract.v1' and extracted['status'] == 'ok'
             and extracted['design'] == 'ibex_sram_bench'
             and extracted['workspace_revision'] == inspect['revision']
-            and extracted['output'] == artifacts['spef_native_nom']
+            and (extracted['output'] == artifacts['spef_native_nom'] or foundry_first
+                 and extract_execution['mode'] == 'artifact_reuse'
+                 and extracted['output']['sha256'] == artifacts['spef_native_nom']['sha256']
+                 and extracted['output']['bytes'] == artifacts['spef_native_nom']['bytes'])
             and extracted['scope']['corner'] == 'nom'
             and extracted['unannotated_signal_nets'] == [],
             'native extraction belongs to another/partially routed design')
@@ -841,6 +878,12 @@ def qualify(context, output):
                         [('native', 'spef_native_nom'), ('openrcx', 'spef_openrcx_nom')]},
                         scope='separate native/OpenRCX extraction; full active annotation checked by both timing engines'),
         controls=dict(**common, qualification=identity(controls_path)))
+    if foundry_first:
+        derived['routing']['basis'] = ('native all-signal route; independently verified unchanged revision or actual legacy repair; '
+            'complete original foundry/LVS and RC annotation obligations retained')
+        derived['extraction']['native_execution'] = extract_execution
+        derived['extraction']['scope'] = ('actual current-run native extraction or proven identical-whole-input artifact reuse; '
+            'independent OpenRCX extraction; full active annotation checked by both timing engines')
     require(set(derived) == DERIVED, 'internal derived gate set')
     for name, report in derived.items():
         write(output / (name + '.json'), report)

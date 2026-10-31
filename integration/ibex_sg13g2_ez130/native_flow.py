@@ -35,6 +35,7 @@ from pathlib import Path
 import re
 import resource
 import sys
+import types
 
 
 FILES = {"logic_runner", "flow_qualifier", "component_controls", "macro_bb", "tb",
@@ -361,6 +362,33 @@ def assemble(backend, files, tools, logic_limits):
                 'native signoff concurrency differs from the explicit B4 policy')
         policy.validate_parallel_groups(steps, backend['parallel_groups'], backend['scope'])
         manifest['parallel_groups'] = backend['parallel_groups']
+    if 'foundry_first_policy' in files:
+        record = files.get('foundry_first_runner')
+        require(record is not None and identity(Path(record['path'])) == record,
+                'explicit foundry-first runner pin required')
+        bundle = Path(record['path']).parent
+        namespace = 'rusteda_foundry_' + files['foundry_first_sources']['sha256']
+        require(not any(namespace + suffix in sys.modules for suffix in ('', '.runner', '.protocol', '.verify')),
+                'foundry-first module namespace conflict')
+        package = types.ModuleType(namespace)
+        package.__path__ = [str(bundle)]
+        sys.modules[namespace] = package
+        spec = importlib.util.spec_from_file_location(namespace + '.runner', record['path'])
+        require(spec is not None and spec.loader is not None, 'foundry-first runner loader')
+        helper = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = helper
+        try:
+            spec.loader.exec_module(helper)
+            manifest = helper.compose(manifest)
+        finally:
+            for suffix in ('.verify', '.runner', '.protocol', ''):
+                sys.modules.pop(namespace + suffix, None)
+        require(identity(Path(record['path'])) == record, 'foundry-first source changed during composition')
+        policy.validate_parallel_groups(manifest['steps'], manifest['parallel_groups'], manifest['scope'])
+        policy.validate_stdout_artifacts(manifest['steps'], manifest['stdout_artifacts'], manifest['scope'])
+    else:
+        require(not any(name.startswith('foundry_first_') for name in files),
+                'foundry-first sources require an explicit policy')
     return manifest
 
 

@@ -40,6 +40,8 @@ import resource
 import shutil
 import subprocess
 import sys
+import stat
+import types
 import time
 
 SCHEMA = 'rusteda.native-postroute-inputs.v1'
@@ -70,7 +72,37 @@ def identity(path):
 def read(path, cap=64 << 20):
     path = Path(path)
     require(path.stat().st_size <= cap, 'input byte budget: ' + str(path))
-    return json.loads(path.read_text())
+    with path.open('rb') as stream:
+        raw = stream.read(cap + 1)
+    require(len(raw) <= cap, 'input byte budget: ' + str(path))
+    return json.loads(raw)
+
+
+def pinned_protocol(item):
+    """Bootstrap only verified bounded source bytes, with no second import read."""
+    require(isinstance(item, dict) and set(item) == {'path', 'sha256', 'bytes'}
+            and isinstance(item['path'], str) and Path(item['path']).is_absolute()
+            and type(item['bytes']) is int and 0 <= item['bytes'] <= 1 << 20
+            and isinstance(item['sha256'], str) and re.fullmatch('[0-9a-f]{64}', item['sha256']),
+            'foundry protocol source pin schema')
+    path = Path(item['path'])
+    require('..' not in path.parts, 'foundry protocol source traversal')
+    current = Path(path.anchor)
+    for component in path.parts[1:]:
+        current /= component
+        require(not stat.S_ISLNK(current.lstat().st_mode), 'foundry protocol source symlink')
+    before = path.stat()
+    require(stat.S_ISREG(before.st_mode) and before.st_size == item['bytes'], 'foundry protocol source byte budget')
+    with path.open('rb') as stream:
+        raw = stream.read(item['bytes'] + 1)
+    require(len(raw) == item['bytes'] and hashlib.sha256(raw).hexdigest() == item['sha256']
+            and tuple(getattr(path.stat(), key) for key in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns'))
+            == tuple(getattr(before, key) for key in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns')),
+            'foundry protocol source changed')
+    module = types.ModuleType('foundry_pinned_protocol')
+    module.__file__ = str(path)
+    exec(compile(raw, str(path), 'exec'), module.__dict__)
+    return module
 
 
 def save(path, value):
@@ -199,11 +231,15 @@ def netlist_instances(path):
 
 
 class Runner:
-    def __init__(self, inputs_path, out):
+    def __init__(self, inputs_path, out, allow_reuse=False):
         self.c = read(inputs_path, 4 << 20)
         c = self.c
-        require(c.get('schema') == SCHEMA and set(c) == {'schema', 'top', 'trial', 'final_workspace', 'prects_netlist',
-                'recipe', 'profiles', 'timing', 'tools', 'policy', 'limits'}, 'post-route input schema')
+        self.reuse = c.get('schema') == 'rusteda.native-postroute-reuse-inputs.v1'
+        require(not self.reuse or allow_reuse, 'explicit --foundry-first required')
+        expected = {'schema', 'top', 'trial', 'final_workspace', 'prects_netlist',
+                    'recipe', 'profiles', 'timing', 'tools', 'policy', 'limits'}
+        require(c.get('schema') == ('rusteda.native-postroute-reuse-inputs.v1' if self.reuse else SCHEMA)
+                and set(c) == expected | ({'foundry_first'} if self.reuse else set()), 'post-route input schema')
         p = c['policy']
         require(0.5 <= p['near_limit_ratio'] <= 1 and 0.3 <= p['target_ratio'] < p['near_limit_ratio']
                 and 1 <= p['max_rounds'] <= MAX_ROUNDS and 0 <= p['max_resizes'] <= MAX_RESIZES, 'post-route policy budget')
@@ -220,6 +256,28 @@ class Runner:
         self.commands = []
         self.final = Path(c['final_workspace'])
         require(not self.final.exists() and self.final.parent == out.resolve(), 'final workspace must be fresh, inside the runner')
+        self.extract_inputs = []
+        if self.reuse:
+            pins = c['foundry_first']
+            require(set(pins) == {'protocol', 'policy', 'cell_gds', 'layer_map', 'drc_profile', 'cell_lef', 'run_root'}, 'foundry-first capture source pins')
+            self.protocol = pinned_protocol(pins['protocol'])
+            for role, item in pins.items():
+                if role != 'run_root':
+                    self.protocol.record(item, 64 << 20 if role == 'cell_gds' else 16 << 20 if role == 'cell_lef' else 2 << 20)
+            self.protocol.validate_policy(self.protocol.read(pins['policy']['path']))
+            effective = self.out / 'effective-inputs'
+            effective.mkdir()
+            args = c['recipe']['extract']
+            require(args.count('--rc-profile') == 1, 'one effective extraction profile required')
+            index = args.index('--rc-profile') + 1
+            self.frozen_rc = self.protocol.freeze_file(args[index], effective / 'rc-profile.json', self.out, 16 << 20)
+            args[index] = self.frozen_rc['effective']['path']
+            self.frozen_exports = {
+                role: self.protocol.freeze_file(self.protocol.record(pins[role], 64 << 20),
+                    effective / filename, self.out, 64 << 20)
+                for role, filename in [('cell_gds', 'cells.gds'), ('layer_map', 'layer-map.json'), ('cell_lef', 'cells.lef')]}
+            self.frozen_foundry = self.protocol.freeze_profile(pins['drc_profile'], effective / 'foundry', self.out)
+
 
     def remaining(self):
         left = self.c['limits']['deadline_seconds'] - (time.monotonic() - self.started)
@@ -243,7 +301,41 @@ class Runner:
         return log / (name + '.stdout')
 
     def road(self, name, workspace, args, cap=256 << 20):
-        return self.run(name, [self.c['tools']['rustroad']['path'], '--workspace', workspace, *args], cap)
+        argv = [self.c['tools']['rustroad']['path'], '--workspace', workspace, *args]
+        if not getattr(self, 'reuse', False) or 'extract' not in args:
+            return self.run(name, argv, cap)
+        protocol = self.protocol
+        ran = False
+        try:
+            with protocol.shared(workspace) as locked:
+                before = protocol.snapshot_locked(locked)
+                environment = protocol.extraction_environment(self.c['limits']['threads'])
+                protocol.extraction_request([str(a) for a in argv], self.c['tools']['rustroad'])
+                argument_profile = protocol.argument_profile([str(a) for a in argv], self.c['tools']['rustroad'])
+                protocol.immutable(self.frozen_rc['effective'], self.out, 16 << 20)
+                output = self.run(name, argv, cap)
+                ran = True
+                require(protocol.snapshot_locked(locked) == before, 'extraction changed full revision inputs')
+                raw = protocol.read(output)
+                require(raw['schema'] == 'rustroad.extract.v1' and raw['status'] == 'ok'
+                        and raw['workspace_revision'] == before['revision']
+                        and raw['rc_profile'] == self.frozen_rc['effective'], 'actual extraction report binding')
+                spef = protocol.record(raw['output'], 256 << 20)
+                require(str(spef) == str(Path(args[args.index('--out') + 1]).resolve()), 'actual SPEF output path')
+                capture = dict(schema='rusteda.actual-full-extract-inputs.v1', status='captured',
+                    source_workspace=str(locked), snapshot=before, tool=self.c['tools']['rustroad'],
+                    profile=self.frozen_rc['effective'], environment=environment, argument_profile=argument_profile,
+                    command=self.commands[-1], raw_report=protocol.identity(output, 2 << 20), output=raw['output'])
+        except protocol.Miss as error:
+            require(not ran, 'extraction snapshot changed to unsupported inputs')
+            output = self.run(name, argv, cap)
+            capture = dict(schema='rusteda.full-extract-inputs-miss.v1', status='cache_miss',
+                           reason=str(error), command=self.commands[-1])
+        require(len(self.extract_inputs) < 4, 'extraction capture count budget')
+        path = self.out / (name + '-full-inputs.json')
+        protocol.write_new(path, capture)
+        self.extract_inputs.append(protocol.identity(path, 2 << 20))
+        return output
 
     def physical_models(self, netlist, root):
         lef = Path(self.c['profiles']['cell_lef']).read_text()
@@ -458,8 +550,16 @@ class Runner:
                       unverified=['signoff_timing', 'openrcx_timing', 'drc', 'lvs', 'antenna'],
                       resources=dict(wall_seconds=round(time.monotonic() - self.started, 3),
                                      peak_child_rss_kib=resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss))
+        if self.reuse:
+            result.update(schema='rusteda.native-postroute-reuse-result.v1',
+                          extract_inputs=self.extract_inputs, effective_rc=self.frozen_rc,
+                          effective_exports=self.frozen_exports, effective_foundry=self.frozen_foundry,
+                          capture_policy=self.c['foundry_first'])
         save(self.out / 'result.json', result)
-        print(json.dumps({k: result[k] for k in ('schema', 'status', 'final_workspace', 'final_revision', 'resized')}))
+        summary = {k: result[k] for k in ('schema', 'status', 'final_workspace', 'final_revision', 'resized')}
+        if self.reuse:
+            summary.update(input_manifest=self.inputs, result=self.protocol.identity(self.out / 'result.json', 2 << 20))
+        print(json.dumps(summary))
 
 
 def main():
@@ -467,11 +567,19 @@ def main():
     ap.add_argument('--inputs', required=True, type=Path)
     ap.add_argument('--workspace', required=True, type=Path)
     ap.add_argument('--base-rev', required=True)
+    ap.add_argument('--foundry-first', action='store_true', help='explicit new full-input proof protocol')
     a = ap.parse_args()
+    if a.foundry_first:
+        probe = read(a.inputs, 4 << 20)
+        require(probe.get('schema') == 'rusteda.native-postroute-reuse-inputs.v1', 'new post-route schema required')
+        pin = probe['foundry_first']['protocol']
+        module = pinned_protocol(pin)
+        module.real_path(a.inputs)
+        a.workspace = module.private_path(a.workspace, probe['foundry_first']['run_root'], create_parents=True)
     require(a.base_rev == 'empty' and not a.workspace.exists(), 'post-route workspace must be fresh (--base-rev empty)')
     a.workspace.mkdir(parents=True)
     try:
-        Runner(a.inputs, a.workspace.resolve()).execute()
+        Runner(a.inputs, a.workspace.resolve(), allow_reuse=a.foundry_first).execute()
     except (Failure, subprocess.TimeoutExpired, OSError, ValueError, KeyError) as e:
         save(a.workspace / 'result.json', dict(schema='rusteda.native-postroute-result.v1', status='error',
              error=f'{type(e).__name__}: {e}'))
