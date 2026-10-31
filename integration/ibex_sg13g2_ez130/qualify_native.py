@@ -26,6 +26,7 @@ import re
 import resource
 import sys
 import types
+from decimal import Decimal
 
 
 DERIVED = {'inputs_frozen', 'macros', 'placement', 'cts', 'power_connectivity',
@@ -34,6 +35,25 @@ REPORTS = {'drc', 'antenna', 'lvs', 'timing', 'timing_accuracy',
            'synthesis_equivalence', 'final_equivalence', 'simulation'}
 CONTRACT_SHA256 = 'a58f53feb169724d987f774c3143083eee373806df251eb4164ca1ec82566ed8'
 CONTRACT_BYTES = 5666
+TAP_CONTRACT_SHA256 = '96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282'
+TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v1'
+TAP_ROLES = {'tap_coverage_worker', 'tap_coverage_runner', 'tap_latchup_runner',
+             'tap_latchup_common', 'tap_latchup_deck', 'tap_guard', 'tap_policy'}
+TAP_POLICY = dict(schema='rusteda.private-staggered-tap-policy.v1',
+    native_max_clear_gap_dbu=30000, nominal_phase_dbu=15000,
+    foundry_diffusion_tie_max_um=20, execution='serial_after_original_signoff_group',
+    certificate_scope='NAME_excluded_SRAM_targets_full_well_domains',
+    original_sixteen_gates='unchanged_required')
+TAP_LIMITS = dict(cells=16384, hierarchy_edges=250000, instance_visits=4000000,
+    input_shapes=2000000, vertices=8000000, shape_visits=8000000,
+    vertex_visits=32000000, domains=4096, anchors=250000, bin_entries=1000000,
+    candidates=4096, boxes=16000000, distance_checks=200000000, pending=64, depth=32)
+TAP_PATHS = dict(latchup='backend/latchup/summary.json',
+    coverage_config='backend/tap-coverage-inputs.json',
+    coverage_controller='backend/tap-coverage/controller.json',
+    coverage_report='backend/tap-coverage/summary.json',
+    routing_audit='frontend/physical/routing-writer-audit.json')
+TAP_WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
 RC_RULE_KEY = 'ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules'
 RC_RULE_SHA256 = 'ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905'
 V2_FILES = {'antenna_group_policy', 'antenna_legacy', 'antenna_verifier', 'antenna_source_manifest'}
@@ -145,10 +165,10 @@ def rc_profile_sources(profile, files):
     return sources
 
 
-def calibration_evidence(files, root, extracted, external):
+def calibration_evidence(files, root, extracted, external, joint_tap=False):
     contract_id = files['contract']
     require(contract_id == identity(Path(contract_id['path']))
-            and contract_id['sha256'] == CONTRACT_SHA256
+            and contract_id['sha256'] == (TAP_CONTRACT_SHA256 if joint_tap else CONTRACT_SHA256)
             and contract_id['bytes'] == CONTRACT_BYTES, 'common native contract differs')
     contract = read(Path(contract_id['path']), 1 << 20)
     require(contract['schema'] == 'rusteda.ibex-sg13g2-ez130.contract.v1'
@@ -665,7 +685,340 @@ def final_density(context, def_path):
     return result
 
 
-def foundry_first_review(context, native, artifacts, route, inspect, cts):
+def tap_identity(path, cap=4 << 30):
+    """Bound growth through EOF as well as before/after source metadata."""
+    path = Path(path).resolve(strict=True)
+    before = path.stat()
+    require(path.is_file() and before.st_size <= cap, 'joint file byte/type budget')
+    digest, total = hashlib.sha256(), 0
+    with path.open('rb') as stream:
+        while chunk := stream.read(min(65536, cap - total + 1)):
+            total += len(chunk)
+            require(total <= cap, 'joint file grew beyond byte budget')
+            digest.update(chunk)
+    after = path.stat()
+    require(total == before.st_size == after.st_size
+            and (before.st_dev, before.st_ino, before.st_mtime_ns) ==
+                (after.st_dev, after.st_ino, after.st_mtime_ns), 'joint file changed during identity')
+    return dict(path=str(path), sha256=digest.hexdigest(), bytes=total)
+
+
+def tap_read(path, cap=4 << 20):
+    record = tap_identity(path, cap)
+    with Path(record['path']).open('rb') as stream:
+        raw = stream.read(cap + 1)
+    require(len(raw) == record['bytes'] <= cap
+            and hashlib.sha256(raw).hexdigest() == record['sha256']
+            and tap_identity(path, cap) == record, 'joint JSON changed/grown')
+    def unique(items):
+        result = {}
+        for key, value in items:
+            require(key not in result, 'duplicate joint metadata key')
+            result[key] = value
+        return result
+    def constant(_value):
+        raise ValueError('nonfinite joint metadata')
+    result = json.loads(raw, object_pairs_hook=unique, parse_constant=constant)
+    pending, nodes = [(result, 0)], 0
+    while pending:
+        value, depth = pending.pop()
+        nodes += 1
+        require(nodes <= 65536 and depth <= 32, 'joint JSON node/depth budget')
+        children = value.values() if isinstance(value, dict) else value if isinstance(value, list) else ()
+        for child in children:
+            require(nodes + len(pending) < 65536, 'joint JSON pending budget')
+            pending.append((child, depth + 1))
+    return result
+
+
+def tap_raw_zero(record, rule, root, helper):
+    path = Path(record['path']).resolve(strict=True)
+    require(path.is_relative_to(root) and tap_identity(path, 64 << 20) == record,
+            'joint raw foundry current-run identity differs')
+    # Reuse only the already pinned C7 metadata parser: <=64MiB/250k nodes,
+    # depth64/categories4096, DTD/entity rejection; no geometry/deck decoding.
+    categories, count = helper.xml_scope(path)
+    require(count == 0 and categories and rule in categories
+            and all(len(name.encode()) <= 4096 for name in categories)
+            and tap_identity(path, 64 << 20) == record,
+            'joint raw foundry finding or required category absent')
+    return categories
+
+
+def tap_producer_proof(context, artifacts, c, inputs, helper):
+    """Exact serial recipe plus real producer receipts, not matching dicts alone."""
+    files, tools = context['files'], context['tools']
+    root = Path(context['run_root'])
+    manifest, groups = helper.producer_manifest(c)
+    require(len(manifest['steps']) == 128 and len(groups) == 6
+            and set(manifest['gates']) == DERIVED | REPORTS
+            and manifest['artifacts'] == context['artifacts']
+            and type(manifest['scope']['threads']) is int and manifest['scope']['threads'] == 16
+            and type(manifest['scope']['memory_mib']) is int and manifest['scope']['memory_mib'] == 8192,
+            'joint proof requires128 steps/original16 gates/six groups/scope')
+    require(all(manifest['files'].get(role) == files[role] for role in
+            TAP_ROLES | {'flow_qualifier', 'contract', 'physical', 'routing'})
+            and all(manifest['tools'].get(role) == tools[role] for role in ('python', 'appimage', 'gnu_time')),
+            'joint context differs from actual producer source/tool pins')
+    b4 = dict(max_parallel=3, max_memory_mib=7168, steps={
+        'be_rcx_inputs': dict(depends_on=[]),
+        'be_openrcx': dict(depends_on=['be_rcx_inputs'], cpu_slots=[4, 5], memory_mib=768),
+        'be_timing_inputs': dict(depends_on=['be_openrcx']),
+        'be_timing': dict(depends_on=['be_timing_inputs'], cpu_slots=[4, 5], memory_mib=1024),
+        'be_main': dict(depends_on=[], cpu_slots=[0, 1], memory_mib=2304),
+        'be_antenna': dict(depends_on=[], cpu_slots=[2, 3], memory_mib=2560),
+        'be_lvs_inputs': dict(depends_on=[]),
+        'be_lvs': dict(depends_on=['be_lvs_inputs', 'be_antenna'], cpu_slots=[2, 3], memory_mib=2048)})
+    require(b4 in groups and not any(tag.startswith('nf_tap_') for group in groups for tag in group['steps']),
+            'joint extras must remain serial after the unchanged original B4 group')
+    final_gds = '{output}/' + context['artifacts']['gds']
+    expected = [dict(id='nf_tap_latchup', kind='command', tool='python', timeout_s=900,
+        arguments=['{files:tap_guard}', '{files:tap_latchup_runner}', '--gds', final_gds,
+            '--profile', '{output}/backend/postroute/effective-inputs/foundry/provenance.json',
+            '--tool', '{tools:appimage}', '--top', 'ibex_sram_bench', '--workspace',
+            '{output}/backend/latchup', '--base-rev', 'empty']),
+        dict(id='nf_tap_coverage_inputs', kind='render', destination=TAP_PATHS['coverage_config'],
+            content=dict(schema='rusteda.tap-coverage.v1', gds={'$identity': context['artifacts']['gds']},
+                workspace='{output}/backend/tap-coverage', base_revision='empty', top='ibex_sram_bench',
+                excluded_cells={'RM_IHPSG13_1P_1024x32_c2_bm_bist': 2}, limits=TAP_LIMITS)),
+        dict(id='nf_tap_coverage', kind='command', tool='python', timeout_s=600,
+            arguments=['{files:tap_guard}', '{files:tap_coverage_runner}', '--config',
+                '{output}/backend/tap-coverage-inputs.json', '--workspace',
+                '{output}/backend/tap-coverage', '--base-rev', 'empty', '--tool',
+                '{tools:appimage}', '--tool-sha256', tools['appimage']['sha256'],
+                '--tool-bytes', str(tools['appimage']['bytes'])])]
+    steps = manifest['steps']
+    order = {step['id']: i for i, step in enumerate(steps)}
+    begin = order['be_macro_contract'] + 1
+    require(steps[begin:begin + 3] == expected and order['nf_logic_inputs'] == begin + 3
+            and all(order[tag] < order['be_macro_contract'] for group in groups for tag in group['steps'])
+            and {tag for tag in order if tag.startswith('nf_tap_')} == {step['id'] for step in expected},
+            'joint actual producer recipe/order differs')
+    prefix = [tools['python']['path'], files['tap_guard']['path']]
+    commands = {
+        'nf_tap_latchup': [*prefix, files['tap_latchup_runner']['path'], '--gds', artifacts['gds']['path'],
+            '--profile', str(root / 'backend/postroute/effective-inputs/foundry/provenance.json'),
+            '--tool', tools['appimage']['path'], '--top', 'ibex_sram_bench', '--workspace',
+            str(root / 'backend/latchup'), '--base-rev', 'empty'],
+        'nf_tap_coverage': [*prefix, files['tap_coverage_runner']['path'], '--config',
+            str(root / TAP_PATHS['coverage_config']), '--workspace', str(root / 'backend/tap-coverage'),
+            '--base-rev', 'empty', '--tool', tools['appimage']['path'], '--tool-sha256',
+            tools['appimage']['sha256'], '--tool-bytes', str(tools['appimage']['bytes'])]}
+    rows = {tag: helper.producer_command(c, inputs, tag, argv) for tag, argv in commands.items()}
+    return dict(ownership=helper.p.identity(root.parent / 'ownership/native.json'),
+                commands={tag: dict(receipt=row,
+                    command=helper.p.identity(root / 'logs' / (tag + '.command.json')))
+                    for tag, row in rows.items()})
+
+
+def verify_tap_checks(context, native, artifacts, reports, current, helper):
+    """Metadata composition only; all physical verdicts come from pinned tools."""
+    files, tools = context['files'], context['tools']
+    root = Path(context['run_root']).resolve(strict=True)
+    required_roles = TAP_ROLES
+    require({name for name in files if name.startswith('tap_')} == required_roles,
+            'explicit complete joint helper/dependency/policy pins required')
+    for name in required_roles:
+        cap = 256 << 20 if name == 'tap_latchup_deck' else 65536 if name == 'tap_policy' else 1 << 20
+        require(tap_identity(files[name]['path'], cap) == files[name], 'joint source/policy changed: ' + name)
+    require(files['tap_latchup_common'] == files['drc_runner'],
+            'joint maximal common wrapper differs from original DRC wrapper')
+    require(tap_identity(__file__, 1 << 20) == files['flow_qualifier'], 'running joint qualifier source differs')
+    policy = tap_read(files['tap_policy']['path'], 65536)
+    require(policy == TAP_POLICY and all(type(policy[k]) is int for k in
+            ('native_max_clear_gap_dbu', 'nominal_phase_dbu', 'foundry_diffusion_tie_max_um')),
+            'explicit joint tap policy differs')
+    worker = files['tap_coverage_worker']
+    require((worker['sha256'], worker['bytes']) == TAP_WORKER,
+            'joint proof requires the independently frozen hierarchy-fixed checker')
+    for runner_role, sibling_role, runner_name, sibling_name in (
+            ('tap_coverage_runner', 'tap_coverage_worker', 'tap_coverage_runner.py', 'tap_coverage.py'),
+            ('tap_latchup_runner', 'tap_latchup_common', 'signoff_latchup.py', 'signoff_drc.py')):
+        runner = Path(files[runner_role]['path']).resolve(strict=True)
+        require(runner.name == runner_name and Path(files[sibling_role]['path']).resolve(strict=True)
+                == runner.with_name(sibling_name), 'joint imported sibling source differs')
+    contract = tap_read(files['contract']['path'])['common']
+    require(type(contract['native_tap_max_gap_um']) is int and contract['native_tap_max_gap_um'] == 30
+            and type(contract['tap_rule_max_distance_um']) is int and contract['tap_rule_max_distance_um'] == 20,
+            'native30um policy/foundry20um rule conflated')
+    physical = tap_read(files['physical']['path'])['tap']
+    require(type(physical['max_gap']) is int and physical['max_gap'] == 30000
+            and physical.get('pattern') == dict(kind='staggered', phase=15000)
+            and type(physical['pattern']['phase']) is int, 'explicit native pattern differs')
+    expected_paths = TAP_PATHS
+    require(context['tap_checks'] == expected_paths, 'private current-run tap evidence paths differ')
+    paths = {name: current(path) for name, path in expected_paths.items()}
+    ids = {name: tap_identity(path, 4 << 20) for name, path in paths.items()}
+    require(sum(record['bytes'] for record in ids.values()) <= 8 << 20,
+            'joint simultaneous evidence JSON byte budget')
+    data = {name: tap_read(path) for name, path in paths.items()}
+    latchup, config, controller, certificate = [data[key] for key in
+        ('latchup', 'coverage_config', 'coverage_controller', 'coverage_report')]
+    routing_audit = data['routing_audit']
+    routing_path = current('frontend/physical/routing.json')
+    require(routing_audit.get('schema') == 'rusteda.private-routing-writer-audit.v1'
+            and routing_audit.get('status') == 'passed'
+            and routing_audit.get('run_root') == str(root)
+            and routing_audit.get('template_mode') is False
+            and routing_audit.get('config') == tap_identity(routing_path, 1 << 20),
+            'rendered routing writer audit missing/stale')
+    original_routing = tap_read(files['routing']['path'], 1 << 20)
+    rendered_routing = tap_read(routing_path, 1 << 20)
+    writers = routing_audit.get('writers')
+    require(isinstance(writers, list) and len(writers) == 1, 'routing writer inventory differs')
+    for writer in writers:
+        require(set(writer) == {'field', 'path'}
+                and writer['field'] in {'limits/replay/path', 'track_router/limits/replay/path'},
+                'unknown routing writer in audit')
+        target = Path(writer['path'])
+        require(target.is_absolute() and target.resolve().is_relative_to(root)
+                and target.resolve() == root / 'backend/route-budget-error.json',
+                'rendered routing writer escapes fresh output')
+        current_value, original_value = rendered_routing, original_routing
+        parts = writer['field'].split('/')
+        for part in parts[:-1]:
+            current_value, original_value = current_value[part], original_value[part]
+        require(current_value[parts[-1]] == writer['path']
+                and original_value[parts[-1]] == '{output}/backend/route-budget-error.json',
+                'routing writer materialization is not declared containment-only change')
+        current_value[parts[-1]] = original_value[parts[-1]]
+    require(rendered_routing == original_routing,
+            'rendered routing algorithm knobs changed outside the containment ledger')
+    gds, tool = artifacts['gds'], tools['appimage']
+    require(tap_identity(gds['path'], 64 << 20) == gds
+            and tap_identity(tool['path'], 2 << 30) == tool, 'joint final GDS/tool budget or identity')
+    # The full C7 review has already validated the producer, selected postroute
+    # round, whole RC/snapshot closure and typed final-GDS table proof. Preserve
+    # its raw early report paths. Only the new T1 witnesses must be fresh final
+    # GDS executions, using the SAME immutable effective foundry inventory.
+    inputs = root / 'backend/foundry-first/inputs.json'
+    c, post = helper.runner.configuration(inputs)
+    require(post == native['postroute'], 'joint postroute result differs from C7 authority')
+    effective = post['effective_foundry']
+    profile_path = current('backend/postroute/effective-inputs/foundry/provenance.json')
+    require(effective['schema'] == 'rusteda.immutable-foundry-profile.v1'
+            and effective['source'] == files['drc_profile']
+            and effective['effective'] == tap_identity(profile_path, 2 << 20),
+            'joint maximal profile does not bind the C7 immutable profile')
+    deck_path = profile_path.parent / 'klayout/tech/drc/rule_decks/sg13g2_maximal.drc'
+    deck_id = tap_identity(deck_path, 256 << 20)
+    rows = [row for row in effective['files'] if row['effective']['path'] == str(deck_path)]
+    require(len(rows) == 1 and rows[0]['source'] == files['tap_latchup_deck']
+            and rows[0]['effective'] == deck_id
+            and all(deck_id[k] == files['tap_latchup_deck'][k] for k in ('sha256', 'bytes')),
+            'joint maximal effective deck is not the exact pinned source copy')
+    helper.runner.effective(c, post)
+    execution = tap_producer_proof(context, artifacts, c, inputs, helper)
+
+    require(latchup.get('schema') == 'rusteda.foundry-latchup-result.v1'
+            and latchup.get('status') == 'passed' and latchup.get('complete') is True
+            and type(latchup.get('violations')) is int and latchup['violations'] == 0
+            and type(latchup.get('engine_exit_code')) is int and latchup['engine_exit_code'] == 0
+            and latchup.get('required_rule_categories') == ['LU.a']
+            and latchup.get('scope') == 'complete_foundry_maximal_additional_to_original_main'
+            and latchup.get('original_main_status') == 'unchecked_required_separately',
+            'extra unchanged maximal LU.a not semantically passed')
+    require(latchup['gds'] == gds and latchup['tool'] == tool
+            and latchup['profile'] == effective['effective']
+            and latchup['deck'] == deck_id
+            and latchup['runner'] == files['tap_latchup_runner']
+            and latchup['common_runner'] == files['tap_latchup_common'],
+            'latchup GDS/tool/dependency/profile binding differs')
+    require(latchup.get('findings') == {}, 'nonzero/unchecked maximal findings')
+    latchup_command_path = paths['latchup'].parent / 'command.json'
+    expected_latchup_command = [tool['path'], 'klayout', '-b', '-r', deck_id['path']]
+    for value in ('threads=2', 'run_mode=deep', 'topcell=ibex_sram_bench', 'input=' + gds['path'],
+                  'report=' + str(paths['latchup'].parent / 'drc.lyrdb'),
+                  'log=' + str(paths['latchup'].parent / 'deck.log')):
+        expected_latchup_command.extend(['-rd', value])
+    require(tap_read(latchup_command_path) == expected_latchup_command,
+            'maximal command differs from unchanged complete deck execution')
+    require(Path(latchup['raw_report']['path']) == paths['latchup'].parent / 'drc.lyrdb',
+            'maximal raw report is not the expected fresh output')
+    categories = tap_raw_zero(latchup['raw_report'], 'LU.a', root, helper)
+    require(latchup['categories'] == categories, 'maximal category inventory differs from raw report')
+    main = reports['drc']
+    require(main['status'] == 'passed' and main['complete'] is True
+            and type(main['violations']) is int and main['violations'] == 0,
+            'original complete main deck not passed')
+    main_categories = tap_raw_zero(main['raw_report'], 'LU.b', root, helper)
+    require(config == dict(schema='rusteda.tap-coverage.v1', gds=gds,
+            workspace=str(paths['coverage_report'].parent), base_revision='empty', top='ibex_sram_bench',
+            excluded_cells={'RM_IHPSG13_1P_1024x32_c2_bm_bist': 2}, limits=TAP_LIMITS),
+            'coverage actual config/GDS/scope differs')
+    require(controller.get('schema') == 'rusteda.tap-coverage-controller.v1'
+            and controller.get('status') == 'passed' and type(controller.get('exit_code')) is int
+            and controller['exit_code'] == 0 and controller['tool'] == tool
+            and controller['worker'] == files['tap_coverage_worker']
+            and controller['controller'] == files['tap_coverage_runner']
+            and controller['config'] == ids['coverage_config']
+            and controller['report'] == ids['coverage_report'], 'coverage controller binding/status differs')
+    require(controller['command'] == [tool['path'], 'klayout', '-b', '-r',
+            files['tap_coverage_worker']['path'], '-rd', 'config=' + ids['coverage_config']['path']],
+            'coverage command is not the bound worker/config/tool')
+    require(certificate.get('schema') == 'rusteda.tap-coverage-result.v1'
+            and certificate.get('status') == 'passed' and certificate['gds'] == gds
+            and certificate['checker'] == files['tap_coverage_worker']
+            and certificate['config'] == ids['coverage_config']
+            and certificate.get('geometry_scope') == 'rectilinear_polygons_unit_orthogonal_transforms_no_paths'
+            and certificate.get('criterion') == 'conservative_complete_box_L1_contacted_tie_certificate'
+            and certificate.get('scope') == 'nonexcluded_diffusion_contact_targets_full_well_domains'
+            and certificate.get('excluded_macro_content_status') == 'unchecked_requires_separate_macro_contract_and_full_lvs'
+            and certificate.get('full_foundry_latchup_status') == 'unchecked'
+            and certificate['excluded_cells'] == config['excluded_cells']
+            and set(certificate.get('rules', {})) == {'LU.a', 'LU.b'},
+            'coverage certificate status/exact admission/scope differs')
+    require(certificate['limits'] == TAP_LIMITS
+            and all(type(v) is int for v in certificate['limits'].values())
+            and certificate.get('hierarchy_budget_scope') == dict(
+                hierarchy_edges='distinct_stored_parent_child_dependencies',
+                hierarchy_instance_records_limit=TAP_LIMITS['instance_visits'],
+                instance_visits='expanded_full_hierarchy_occurrences'),
+            'coverage must retain original caps and corrected honest hierarchy accounting')
+    work_limits = {**TAP_LIMITS, 'hierarchy_instance_records': TAP_LIMITS['instance_visits']}
+    require(isinstance(certificate.get('work'), dict) and set(certificate['work']) <= set(work_limits)
+            and all(type(value) is int and 0 <= value <= work_limits[name]
+                    for name, value in certificate['work'].items()), 'coverage work telemetry differs')
+    for rule in ('LU.a', 'LU.b'):
+        row = certificate['rules'][rule]
+        require(row.get('status') == 'passed' and row.get('uncertified_boxes') == []
+                and all(type(row.get(k)) is int and row[k] > 0 for k in
+                        ('domains', 'target_polygons', 'tie_points')), 'nonvacuous coverage missing: ' + rule)
+    require(type(certificate.get('max_distance_dbu')) is int
+            and certificate['max_distance_dbu'] > 0
+            and Decimal(certificate['dbu_um']).is_finite()
+            and Decimal(certificate['dbu_um']) > 0
+            and Decimal(certificate['dbu_um']) * certificate['max_distance_dbu'] == Decimal(20),
+            'certificate distance is not the hard20um foundry rule')
+    heads = {}
+    for name in ('latchup', 'coverage_report'):
+        head = paths[name].parent / 'HEAD'
+        record = tap_identity(head, 128)
+        with head.open('rb') as stream:
+            raw = stream.read(129)
+        require(raw == b'rev1\n' and tap_identity(head, 128) == record,
+                'joint extra workspace HEAD is not the actual completed empty-base child')
+        heads[name] = record
+    # Original device-level LVS and macro contract remain separately mandatory
+    # in the original qualifier before any derived gate can be emitted.
+    require(reports['lvs']['macro_devices_verified'] is True,
+            'name-excluded macro content obligation still requires complete device LVS')
+    return dict(status='passed', policy=files['tap_policy'], final_gds=gds,
+                source_pins={name: files[name] for name in sorted(required_roles)}, tool=tool,
+                actual_producer=execution, effective_profile=effective['effective'],
+                completed_workspaces=heads,
+                source_profile=files['drc_profile'], effective_deck=deck_id, source_deck=files['tap_latchup_deck'],
+                reports=ids, maximal_raw_report=latchup['raw_report'], original_main_raw_report=main['raw_report'],
+                maximal_command=tap_identity(latchup_command_path, 1 << 20),
+                routing_template=files['routing'], rendered_routing=tap_identity(routing_path, 1 << 20),
+                routing_writer_audit=ids['routing_audit'],
+                required_maximal_category='LU.a', required_original_main_category='LU.b',
+                maximal_category_count=len(categories), main_category_count=len(main_categories),
+                certificate_scope=certificate['scope'], excluded_macro_content_status=certificate['excluded_macro_content_status'],
+                macro_obligation='separate original macro contract and complete device LVS required and retained')
+
+
+def foundry_first_review(context, native, artifacts, route, inspect, cts, reports=None, current=None):
     files = context['files']
     record = files['foundry_first_verifier']
     require(identity(Path(record['path'])) == record, 'foundry-first verifier source changed')
@@ -682,6 +1035,10 @@ def foundry_first_review(context, native, artifacts, route, inspect, cts):
     try:
         spec.loader.exec_module(helper)
         result = helper.qualification_review(context, native, artifacts, route, inspect, cts)
+        if context['schema'] == TAP_SCHEMA:
+            # This is reached only after the complete unchanged C7 typed proof.
+            # The loaded verifier/protocol/runner are already source-bundle pinned.
+            result = (*result, verify_tap_checks(context, native, artifacts, reports, current, helper))
     finally:
         for suffix in ('.verify', '.runner', '.protocol', ''):
             sys.modules.pop(namespace + suffix, None)
@@ -690,11 +1047,15 @@ def foundry_first_review(context, native, artifacts, route, inspect, cts):
 
 
 def qualify(context, output):
+    joint_tap = context.get('schema') == TAP_SCHEMA
     require(set(context) == {'schema', 'run_root', 'files', 'tools', 'artifacts', 'reports',
-                             'native_reports', 'controls'}, 'qualification context fields')
+                             'native_reports', 'controls'} | ({'tap_checks'} if joint_tap else set()),
+            'qualification context fields')
     require(context['schema'] in {'rusteda.native-qualification-inputs.v1', 'rusteda.native-qualification-inputs.v2',
-            'rusteda.native-foundry-first-qualification-inputs.v1'}, 'qualification schema')
-    foundry_first = context['schema'] == 'rusteda.native-foundry-first-qualification-inputs.v1'
+            'rusteda.native-foundry-first-qualification-inputs.v1', TAP_SCHEMA}, 'qualification schema')
+    foundry_first = context['schema'] == 'rusteda.native-foundry-first-qualification-inputs.v1' or joint_tap
+    require(({name for name in context['files'] if name.startswith('tap_')} == TAP_ROLES if joint_tap
+             else not any(name.startswith('tap_') for name in context['files'])), 'joint tap policy/schema mismatch')
     v2 = context['schema'] == 'rusteda.native-qualification-inputs.v2' or foundry_first
     require(foundry_first == ('foundry_first_policy' in context['files']), 'foundry policy/schema mismatch')
     require(v2 == ('antenna_group_policy' in context['files'])
@@ -796,8 +1157,13 @@ def qualify(context, output):
             and natural(inspect['routed_nets']) and inspect['routed_nets'] > 0,
             'all-net native route not established')
     extract_execution = None
+    tap_checks = None
     if foundry_first:
-        lineage, actual_extracted, extract_execution = foundry_first_review(context, native, artifacts, route, inspect, cts)
+        reviewed = foundry_first_review(context, native, artifacts, route, inspect, cts, reports, current)
+        if joint_tap:
+            lineage, actual_extracted, extract_execution, tap_checks = reviewed
+        else:
+            lineage, actual_extracted, extract_execution = reviewed
     elif v2:
         lineage = antenna_lineage_v2(native['antenna_lineage'], native['antenna_verification'],
             root, route, inspect, cts, context['files'], context['tools'],
@@ -825,7 +1191,7 @@ def qualify(context, output):
             and external['source'] == 'openrcx'
             and external['spef'] == artifacts['spef_openrcx_nom']
             and external['files']['def'] == artifacts['def'], 'OpenRCX source DEF or SPEF differs')
-    calibration = calibration_evidence(context['files'], root, extracted, external)
+    calibration = calibration_evidence(context['files'], root, extracted, external, joint_tap)
     macro = native['macro_contract']
     require(macro['status'] == 'passed' and macro['macro_count'] == 2
             and macro['instances'] == ['u_dmem', 'u_imem'] and macro['errors'] == [], 'macro interface failed')
@@ -884,6 +1250,8 @@ def qualify(context, output):
         derived['extraction']['native_execution'] = extract_execution
         derived['extraction']['scope'] = ('actual current-run native extraction or proven identical-whole-input artifact reuse; '
             'independent OpenRCX extraction; full active annotation checked by both timing engines')
+    if joint_tap:
+        derived['controls']['tap_checks'] = tap_checks
     require(set(derived) == DERIVED, 'internal derived gate set')
     for name, report in derived.items():
         write(output / (name + '.json'), report)
@@ -893,6 +1261,8 @@ def qualify(context, output):
                   native_reports=native_dependencies,
                   derived_gates={name: identity(output / (name + '.json')) for name in derived},
                   benchmark='unverified')
+    if joint_tap:
+        result['tap_checks'] = tap_checks
     write(output / 'result.json', result)
     return result
 
