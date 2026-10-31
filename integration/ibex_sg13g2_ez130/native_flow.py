@@ -53,6 +53,88 @@ DERIVED = {"inputs_frozen", "macros", "placement", "cts", "power_connectivity", 
 INDEPENDENT = {"drc", "antenna", "lvs", "timing", "timing_accuracy", "synthesis_equivalence", "final_equivalence", "simulation"}
 CASES = {"rtl_mutation", "macro_byte_mask", "sram_width", "sram_layer", "sram_short", "power_open",
          "welltap_missing", "offgrid_metal", "antenna_unit", "stale_evidence", "bounded_work", "sky130_sta", "gf180mcu_sta"}
+TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v1'
+TAP_ROLES = {'tap_coverage_worker', 'tap_coverage_runner', 'tap_latchup_runner',
+             'tap_latchup_common', 'tap_latchup_deck', 'tap_guard', 'tap_policy'}
+TAP_POLICY = dict(schema='rusteda.private-staggered-tap-policy.v1',
+    native_max_clear_gap_dbu=30000, nominal_phase_dbu=15000,
+    foundry_diffusion_tie_max_um=20, execution='serial_after_original_signoff_group',
+    certificate_scope='NAME_excluded_SRAM_targets_full_well_domains',
+    original_sixteen_gates='unchanged_required')
+TAP_LIMITS = dict(cells=16384, hierarchy_edges=250000, instance_visits=4000000,
+    input_shapes=2000000, vertices=8000000, shape_visits=8000000,
+    vertex_visits=32000000, domains=4096, anchors=250000, bin_entries=1000000,
+    candidates=4096, boxes=16000000, distance_checks=200000000, pending=64, depth=32)
+TAP_PATHS = dict(latchup='backend/latchup/summary.json',
+    coverage_config='backend/tap-coverage-inputs.json',
+    coverage_controller='backend/tap-coverage/controller.json',
+    coverage_report='backend/tap-coverage/summary.json',
+    routing_audit='frontend/physical/routing-writer-audit.json')
+# First-party hierarchy-budget correction root0c630b5; not the failed T1 worker.
+TAP_WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
+TAP_CONTRACT = ('96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282', 5666)
+
+
+def joint_tap(files):
+    """Only both complete policies opt in; never infer T1 from a report name."""
+    present = {name for name in files if name.startswith('tap_')}
+    if not present:
+        return False
+    require(present == TAP_ROLES and 'foundry_first_policy' in files,
+            'joint tap proof requires both explicit complete source/policy sets')
+    for role in sorted(TAP_ROLES):
+        require(files[role]['bytes'] <= (256 << 20 if role == 'tap_latchup_deck'
+                else 65536 if role == 'tap_policy' else 1 << 20), 'joint source byte budget')
+        verify_record(files[role])
+    require(files['tap_latchup_common'] == files['drc_runner'],
+            'joint maximal must use the same pinned original DRC common wrapper')
+    policy = read(Path(files['tap_policy']['path']), 65536)
+    require(policy == TAP_POLICY and all(type(policy[k]) is int for k in
+            ('native_max_clear_gap_dbu', 'nominal_phase_dbu', 'foundry_diffusion_tie_max_um')),
+            'joint tap policy differs from the unchanged T1 policy')
+    worker = files['tap_coverage_worker']
+    require((worker['sha256'], worker['bytes']) == TAP_WORKER,
+            'joint proof requires the independently frozen hierarchy-fixed coverage worker')
+    contract = files['contract']
+    require((contract['sha256'], contract['bytes']) == TAP_CONTRACT,
+            'joint proof requires the exact original T1 contract')
+    common = read(Path(contract['path']), 1 << 20)['common']
+    physical = read(Path(files['physical']['path']), 1 << 20)['tap']
+    require(type(common['native_tap_max_gap_um']) is int and common['native_tap_max_gap_um'] == 30
+            and type(common['tap_rule_max_distance_um']) is int and common['tap_rule_max_distance_um'] == 20
+            and type(physical['max_gap']) is int and physical['max_gap'] == 30000
+            and physical.get('pattern') == dict(kind='staggered', phase=15000)
+            and type(physical['pattern']['phase']) is int,
+            'joint native30um/staggered15um must remain distinct from the hard20um rule')
+    for runner_role, sibling_role, runner_name, sibling_name in (
+            ('tap_coverage_runner', 'tap_coverage_worker', 'tap_coverage_runner.py', 'tap_coverage.py'),
+            ('tap_latchup_runner', 'tap_latchup_common', 'signoff_latchup.py', 'signoff_drc.py')):
+        runner = Path(files[runner_role]['path']).resolve(strict=True)
+        require(runner.name == runner_name
+                and Path(files[sibling_role]['path']).resolve(strict=True) == runner.with_name(sibling_name),
+                'joint tap imported sibling must be pinned in the same helper directory')
+    return True
+
+
+def joint_tap_steps(files, tools, artifacts):
+    """Three serial steps, no new group, revision assumption or resource cap."""
+    appimage = tools['appimage']
+    final_gds = '{output}/' + relative(artifacts['gds'])
+    return [dict(id='nf_tap_latchup', kind='command', tool='python', timeout_s=900,
+        arguments=['{files:tap_guard}', '{files:tap_latchup_runner}', '--gds', final_gds,
+            '--profile', '{output}/backend/postroute/effective-inputs/foundry/provenance.json',
+            '--tool', '{tools:appimage}', '--top', 'ibex_sram_bench', '--workspace',
+            '{output}/backend/latchup', '--base-rev', 'empty']),
+        dict(id='nf_tap_coverage_inputs', kind='render', destination=TAP_PATHS['coverage_config'],
+            content=dict(schema='rusteda.tap-coverage.v1', gds={'$identity': artifacts['gds']},
+                workspace='{output}/backend/tap-coverage', base_revision='empty', top='ibex_sram_bench',
+                excluded_cells={'RM_IHPSG13_1P_1024x32_c2_bm_bist': 2}, limits=dict(TAP_LIMITS))),
+        dict(id='nf_tap_coverage', kind='command', tool='python', timeout_s=600,
+            arguments=['{files:tap_guard}', '{files:tap_coverage_runner}', '--config',
+                '{output}/backend/tap-coverage-inputs.json', '--workspace',
+                '{output}/backend/tap-coverage', '--base-rev', 'empty', '--tool',
+                '{tools:appimage}', '--tool-sha256', appimage['sha256'],
+                '--tool-bytes', str(appimage['bytes'])])]
 
 
 def require(value, message):
@@ -197,6 +279,7 @@ def assemble(backend, files, tools, logic_limits):
     steps = list(backend["steps"])
     antenna_grouping = grouped_antenna(files)
     antenna_session = single_process_antenna(files)
+    tap = joint_tap(files)
     require(not antenna_session or antenna_grouping is not None,
             'antenna session requires the explicit grouped policy')
     require(1 <= len(steps) <= 124 and backend["outputs"]["stop_after"] == "be_macro_contract"
@@ -206,6 +289,9 @@ def assemble(backend, files, tools, logic_limits):
             "matched two- or sixteen-CPU producer allocation required")
     require(type(backend["scope"].get("memory_mib")) is int and backend["scope"]["memory_mib"] == 8192,
             "explicit matched 8192 MiB producer allocation required")
+    require(not tap or allocated_threads == 16 and antenna_session
+            and backend.get('parallel_groups') == [policy.signoff_parallel_group()],
+            'joint proof requires the original sixteen-CPU session/B4 allocation')
     require("max_memory_bytes" not in backend["scope"] or
             type(backend["scope"]["max_memory_bytes"]) is int and backend["scope"]["max_memory_bytes"] == 8192 << 20,
             "conflicting producer memory byte/MiB allocation")
@@ -320,6 +406,10 @@ def assemble(backend, files, tools, logic_limits):
                        macro_bb=files["macro_bb"]["sha256"], tb=files["tb"]["sha256"],
                        synthesis_netlist={"$sha256": artifacts["netlist_synth"]},
                        final_netlist={"$sha256": artifacts["netlist_final"]}))
+    if tap:
+        # The backend prefix includes the complete original B4 region and
+        # macro contract. These commands do not join the early precheck group.
+        steps.extend(joint_tap_steps(files, tools, artifacts))
     steps.append(dict(id="nf_logic_inputs", kind="render", destination="backend/logic-inputs.json", content=content))
     steps.append(dict(id="nf_logic", kind="command", tool="python",
                       arguments=[input_path("logic_runner"), "--inputs", "{output}/backend/logic-inputs.json",
@@ -343,6 +433,10 @@ def assemble(backend, files, tools, logic_limits):
         context['native_reports']['antenna_verification'] = 'backend/antenna-verification/result.json'
     if "be_postroute" in order:
         context['native_reports']['postroute'] = 'backend/postroute/result.json'
+    if tap:
+        require('be_postroute' in order, 'joint proof requires actual postroute authority')
+        context['schema'] = TAP_SCHEMA
+        context['tap_checks'] = dict(TAP_PATHS)
     steps.append(dict(id="nf_qualification_inputs", kind="render", destination="backend/qualification-inputs.json", content=context))
     steps.append(dict(id="nf_qualify", kind="command", tool="python",
                       arguments=[input_path("flow_qualifier"), "--inputs", "{output}/backend/qualification-inputs.json",
@@ -389,6 +483,9 @@ def assemble(backend, files, tools, logic_limits):
     else:
         require(not any(name.startswith('foundry_first_') for name in files),
                 'foundry-first sources require an explicit policy')
+    if tap:
+        require(len(manifest['steps']) == 128 and len(manifest['parallel_groups']) == 6,
+                'joint proof must retain125+3 steps and the original six groups')
     return manifest
 
 

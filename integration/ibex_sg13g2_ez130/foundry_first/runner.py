@@ -122,7 +122,23 @@ def compose(manifest):
     by['be_extract'].update(tool='python', arguments=['{files:foundry_first_runner}', 'extract',
         '--inputs', cfg, '--workspace', '{output}/backend/foundry-extraction', '--base-rev', 'empty'])
     context = by['nf_qualification_inputs']['content']
-    context['schema'] = 'rusteda.native-foundry-first-qualification-inputs.v1'
+    joint = context['schema'] == 'rusteda.native-foundry-first-tap-qualification-inputs.v1'
+    p.need(joint == ('tap_policy' in files)
+           and joint == ('tap_checks' in context), 'FOUNDRY_FIRST_JOINT_SCHEMA_POLICY')
+    if joint:
+        p.need({role for role in files if role.startswith('tap_')} == {
+            'tap_coverage_worker', 'tap_coverage_runner', 'tap_latchup_runner',
+            'tap_latchup_common', 'tap_latchup_deck', 'tap_guard', 'tap_policy'}
+            and context['tap_checks'] == dict(latchup='backend/latchup/summary.json',
+                coverage_config='backend/tap-coverage-inputs.json',
+                coverage_controller='backend/tap-coverage/controller.json',
+                coverage_report='backend/tap-coverage/summary.json',
+                routing_audit='frontend/physical/routing-writer-audit.json'),
+            'FOUNDRY_FIRST_JOINT_CONTEXT_INCOMPLETE')
+    else:
+        p.need(not any(role.startswith('tap_') for role in files), 'FOUNDRY_FIRST_JOINT_POLICY_REQUIRED')
+    if not joint:
+        context['schema'] = 'rusteda.native-foundry-first-qualification-inputs.v1'
     context['native_reports']['antenna_lineage'] = 'backend/foundry-first/decision/result.json'
     context['native_reports']['antenna_verification'] = 'backend/foundry-verification/result.json'
     result = []
