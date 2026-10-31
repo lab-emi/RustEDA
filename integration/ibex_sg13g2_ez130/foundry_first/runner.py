@@ -122,7 +122,7 @@ def compose(manifest):
     by['be_extract'].update(tool='python', arguments=['{files:foundry_first_runner}', 'extract',
         '--inputs', cfg, '--workspace', '{output}/backend/foundry-extraction', '--base-rev', 'empty'])
     context = by['nf_qualification_inputs']['content']
-    joint = context['schema'] == 'rusteda.native-foundry-first-tap-qualification-inputs.v1'
+    joint = context['schema'] == 'rusteda.native-foundry-first-tap-qualification-inputs.v2'
     p.need(joint == ('tap_policy' in files)
            and joint == ('tap_checks' in context), 'FOUNDRY_FIRST_JOINT_SCHEMA_POLICY')
     if joint:
@@ -133,7 +133,9 @@ def compose(manifest):
                 coverage_config='backend/tap-coverage-inputs.json',
                 coverage_controller='backend/tap-coverage/controller.json',
                 coverage_report='backend/tap-coverage/summary.json',
-                routing_audit='frontend/physical/routing-writer-audit.json'),
+                routing_audit='frontend/physical/routing-writer-audit.json',
+                latchup_execution='backend/latchup-execution/result.json',
+                coverage_execution='backend/tap-coverage-execution/result.json'),
             'FOUNDRY_FIRST_JOINT_CONTEXT_INCOMPLETE')
     else:
         p.need(not any(role.startswith('tap_') for role in files), 'FOUNDRY_FIRST_JOINT_POLICY_REQUIRED')
