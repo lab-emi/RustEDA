@@ -4,7 +4,7 @@ This source is a future validation candidate. It does not qualify a physical
 run, a new engine, or the old failed T1 run. The standalone/default serializers
 and all original sixteen gate obligations remain mandatory.
 
-The explicit schema is `rusteda.native-foundry-first-tap-qualification-inputs.v1`.
+The explicit schema is `rusteda.native-foundry-first-tap-qualification-inputs.v2`.
 It has the exact C7 context plus `tap_checks`. Both complete source/policy sets
 are required. Unknown `tap_` roles, a partial policy, the legacy T1-only schema,
 or a C7 schema carrying T1 evidence are rejected. The new qualifier contains its
@@ -55,6 +55,39 @@ private route-budget writer and disabled inherited rule dump. It must bind the
 selected qualified T1 engine and13 actual component cases; both extraction
 argv must retain explicit global threads16 and workers16/batch8/scratch32.
 Canonical default frontend admission is not altered here.
+
+## Actual typed output authority (v2 only)
+
+The existing `tap_guard` file role must now name `tap_capture.py`. The old
+resource-only guard remains unchanged as historical source; it cannot satisfy
+jointv2. No fallback admits the weaker unintegrated jointv1 context.
+
+The capture wrapper reads the actual ownership-bound manifest, pins its own
+source and every executed source/tool, and checks exact ordered selected argv.
+It snapshots actual GDS/profile/deck or coverage config/GDS before spawning the
+unchanged checker as one real Python child. Source/tool/input identities are
+checked afterward. It records complete summary/rawXML/command or full coverage
+controller/certificate/HEAD FileIDs, plus actual child PID/exit/logs. It infers
+no native process count. The result file is written and hashed; actual producer
+stdout carries a small typed envelope with that complete result FileID. The
+qualifier validates the full result/input/output closure and compares this
+exact envelope with the actual captured producer stdout. Re-signing later
+reports or even whitespace-only changing result.json cannot reuse old stdout.
+
+The actual serial config-render row has only id/kind/wall_seconds. Its exact
+shape/order/finite wall are checked; no nonexistent render FileID is invented.
+The capture's actual pre/post config FileID plus the independently expected
+rendered config and final GDS close the input binding instead.
+
+The new parent estimate is128MiB for the reviewed recipe with explicit256MiB
+AS soft limit (hard ceiling remains4GiB). Only its child restores the original
+4GiB AS. Original900/600s outer command deadlines are unchanged. Prehash/parse/
+spawn/log transfer/posthash consume that absolute deadline; the child receives
+only remaining time less10s reserve, and exhausted admission refuses spawn.
+All state stays in the original product cgroup. Additional parent and child
+cost is included by the existing whole-command GNUtime/producer receipt.
+New JSON readers reject exponent overflow as well as NaN/Infinity; legacy
+readers are outside this change.
 
 ## State and work bounds
 

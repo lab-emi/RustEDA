@@ -21,6 +21,7 @@ import fcntl
 import hashlib
 import importlib.util
 import json
+import math
 from pathlib import Path
 import re
 import resource
@@ -36,7 +37,7 @@ REPORTS = {'drc', 'antenna', 'lvs', 'timing', 'timing_accuracy',
 CONTRACT_SHA256 = 'a58f53feb169724d987f774c3143083eee373806df251eb4164ca1ec82566ed8'
 CONTRACT_BYTES = 5666
 TAP_CONTRACT_SHA256 = '96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282'
-TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v1'
+TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v2'
 TAP_ROLES = {'tap_coverage_worker', 'tap_coverage_runner', 'tap_latchup_runner',
              'tap_latchup_common', 'tap_latchup_deck', 'tap_guard', 'tap_policy'}
 TAP_POLICY = dict(schema='rusteda.private-staggered-tap-policy.v1',
@@ -52,7 +53,9 @@ TAP_PATHS = dict(latchup='backend/latchup/summary.json',
     coverage_config='backend/tap-coverage-inputs.json',
     coverage_controller='backend/tap-coverage/controller.json',
     coverage_report='backend/tap-coverage/summary.json',
-    routing_audit='frontend/physical/routing-writer-audit.json')
+    routing_audit='frontend/physical/routing-writer-audit.json',
+    latchup_execution='backend/latchup-execution/result.json',
+    coverage_execution='backend/tap-coverage-execution/result.json')
 TAP_WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
 RC_RULE_KEY = 'ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules'
 RC_RULE_SHA256 = 'ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905'
@@ -718,7 +721,11 @@ def tap_read(path, cap=4 << 20):
         return result
     def constant(_value):
         raise ValueError('nonfinite joint metadata')
-    result = json.loads(raw, object_pairs_hook=unique, parse_constant=constant)
+    def finite_float(value):
+        result = float(value)
+        require(math.isfinite(result), 'nonfinite joint metadata')
+        return result
+    result = json.loads(raw, object_pairs_hook=unique, parse_float=finite_float, parse_constant=constant)
     pending, nodes = [(result, 0)], 0
     while pending:
         value, depth = pending.pop()
@@ -783,6 +790,79 @@ def tap_routing_inventory(value, root, template):
     return writers
 
 
+def tap_execution_proof(context, artifacts, tag, argv, manifest_id, helper):
+    """Pin full actual checker output to the actual producer stdout emission."""
+    root, files, tools = Path(context['run_root']), context['files'], context['tools']
+    latchup = tag == 'nf_tap_latchup'
+    capture = root / ('backend/latchup-execution' if latchup else 'backend/tap-coverage-execution')
+    work = root / ('backend/latchup' if latchup else 'backend/tap-coverage')
+    path = capture / 'result.json'
+    result_id = tap_identity(path, 65536)
+    result = tap_read(path, 65536)
+    expected_fields = {'schema', 'status', 'producer_step', 'input_manifest', 'ownership',
+        'source_pins', 'tools', 'inputs', 'outputs', 'child', 'actual_python_children',
+        'actual_native_processes', 'native_process_count_scope', 'wall_seconds',
+        'command_deadline_seconds', 'cleanup_reserve_seconds'}
+    require(set(result) == expected_fields and result['schema'] == 'rusteda.joint-tap-execution.v1'
+            and result['status'] == 'captured_passed_requires_joint_qualification'
+            and result['producer_step'] == tag and result['input_manifest'] == manifest_id
+            and result['ownership'] == tap_identity(root.parent / 'ownership/native.json', 65536),
+            'actual joint execution receipt schema/ownership differs')
+    source_pins = dict(guard=files['tap_guard'], runner=files[
+        'tap_latchup_runner' if latchup else 'tap_coverage_runner'])
+    source_pins['common' if latchup else 'worker'] = files[
+        'tap_latchup_common' if latchup else 'tap_coverage_worker']
+    require(result['source_pins'] == source_pins and result['tools'] == {
+            name: tools[name] for name in ('python', 'appimage')}, 'actual joint executable pins differ')
+    actual_inputs = dict(gds=artifacts['gds'])
+    if latchup:
+        profile = root / 'backend/postroute/effective-inputs/foundry/provenance.json'
+        actual_inputs.update(profile=tap_identity(profile, 2 << 20),
+            deck=tap_identity(profile.parent / 'klayout/tech/drc/rule_decks/sg13g2_maximal.drc', 256 << 20))
+    else:
+        actual_inputs['config'] = tap_identity(root / TAP_PATHS['coverage_config'], 1 << 20)
+    outputs = dict(summary=tap_identity(work / 'summary.json', 4 << 20), head=tap_identity(work / 'HEAD', 128))
+    if latchup:
+        outputs.update(raw_report=tap_identity(work / 'drc.lyrdb', 64 << 20),
+                       command=tap_identity(work / 'command.json', 65536))
+    else:
+        outputs['controller'] = tap_identity(work / 'controller.json', 4 << 20)
+    require(result['inputs'] == actual_inputs and result['outputs'] == outputs,
+            'actual joint complete input/output artifact identity differs')
+    for head in (work / 'HEAD', capture / 'HEAD'):
+        require(tap_identity(head, 128)['bytes'] == 5 and head.read_bytes() == b'rev1\n',
+                'actual joint checker/capture completion HEAD differs')
+    child = result['child']
+    require(set(child) == {'argv', 'pid', 'exit_code', 'wall_seconds', 'available_seconds', 'stdout', 'stderr'}
+            and child['argv'] == [argv[0], *argv[2:]]
+            and type(child['pid']) is int and child['pid'] > 0
+            and type(child['exit_code']) is int and child['exit_code'] == 0
+            and type(result['actual_python_children']) is int and result['actual_python_children'] == 1
+            and result['actual_native_processes'] is None
+            and result['native_process_count_scope'] ==
+                'not inferred; exact existing checker/controller command is separately bound',
+            'actual joint child command/exit/count telemetry differs')
+    seconds = 900 if latchup else 600
+    require(type(result['command_deadline_seconds']) is int and result['command_deadline_seconds'] == seconds
+            and type(result['cleanup_reserve_seconds']) is int and result['cleanup_reserve_seconds'] == 10
+            and type(child['available_seconds']) in (int, float) and math.isfinite(child['available_seconds'])
+            and 0 < child['available_seconds'] <= seconds - 10,
+            'actual joint execution deadline differs')
+    for value in (result['wall_seconds'], child['wall_seconds']):
+        require(type(value) in (int, float) and math.isfinite(value) and value >= 0,
+                'actual joint execution nonfinite/negative wall')
+    require(child['wall_seconds'] <= result['wall_seconds'] <= seconds,
+            'actual joint whole-command/child timing differs')
+    for name in ('stdout', 'stderr'):
+        require(child[name] == tap_identity(capture / (name + '.log'), 16 << 20),
+                'actual joint child capture differs')
+    require(sum(child[name]['bytes'] for name in ('stdout', 'stderr')) <= 16 << 20,
+            'actual joint child aggregate log budget')
+    require(tap_identity(path, 65536) == result_id, 'actual joint typed result changed during review')
+    return result, dict(schema='rusteda.joint-tap-emission.v1', status=result['status'],
+                        producer_step=tag, execution_result=result_id)
+
+
 def tap_producer_proof(context, artifacts, c, inputs, helper):
     """Exact serial recipe plus real producer receipts, not matching dicts alone."""
     files, tools = context['files'], context['tools']
@@ -842,11 +922,25 @@ def tap_producer_proof(context, artifacts, c, inputs, helper):
             str(root / TAP_PATHS['coverage_config']), '--workspace', str(root / 'backend/tap-coverage'),
             '--base-rev', 'empty', '--tool', tools['appimage']['path'], '--tool-sha256',
             tools['appimage']['sha256'], '--tool-bytes', str(tools['appimage']['bytes'])]}
-    rows = {tag: helper.producer_command(c, inputs, tag, argv) for tag, argv in commands.items()}
+    native = helper.p.read(root.parent / 'ownership/native.json')
+    emissions = {tag: tap_execution_proof(context, artifacts, tag, argv, native['manifest'], helper)
+                 for tag, argv in commands.items()}
+    rows = {tag: helper.producer_command(c, inputs, tag, argv, emissions[tag][1]) for tag, argv in commands.items()}
+    receipts = helper.p.read(root / 'step-receipts.json')
+    require(isinstance(receipts, list) and len(receipts) <= 128, 'actual joint render receipt budget')
+    render = [row for row in receipts if row['id'] == 'nf_tap_coverage_inputs']
+    require(len(render) == 1 and set(render[0]) == {'id', 'kind', 'wall_seconds'}
+            and render[0]['kind'] == 'render' and type(render[0]['wall_seconds']) in (int, float)
+            and math.isfinite(render[0]['wall_seconds']) and render[0]['wall_seconds'] >= 0,
+            'actual joint config render receipt differs')
+    actual_order = [row['id'] for row in receipts]
+    require(actual_order.index('nf_tap_latchup') < actual_order.index('nf_tap_coverage_inputs')
+            < actual_order.index('nf_tap_coverage'), 'actual joint config render order differs')
     return dict(ownership=helper.p.identity(root.parent / 'ownership/native.json'),
                 commands={tag: dict(receipt=row,
-                    command=helper.p.identity(root / 'logs' / (tag + '.command.json')))
-                    for tag, row in rows.items()})
+                    command=helper.p.identity(root / 'logs' / (tag + '.command.json')),
+                    execution=emissions[tag][1]['execution_result'])
+                    for tag, row in rows.items()}, coverage_render=render[0])
 
 
 def verify_tap_checks(context, native, artifacts, reports, current, helper):
@@ -861,6 +955,8 @@ def verify_tap_checks(context, native, artifacts, reports, current, helper):
         require(tap_identity(files[name]['path'], cap) == files[name], 'joint source/policy changed: ' + name)
     require(files['tap_latchup_common'] == files['drc_runner'],
             'joint maximal common wrapper differs from original DRC wrapper')
+    require(Path(files['tap_guard']['path']).name == 'tap_capture.py',
+            'joint v2 requires the typed capture wrapper')
     require(tap_identity(__file__, 1 << 20) == files['flow_qualifier'], 'running joint qualifier source differs')
     policy = tap_read(files['tap_policy']['path'], 65536)
     require(policy == TAP_POLICY and all(type(policy[k]) is int for k in

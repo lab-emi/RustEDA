@@ -43,7 +43,7 @@ class JointProofMetadata(unittest.TestCase):
             flow.joint_tap({name: {} for name in flow.TAP_ROLES})
 
     def test_integer_policy_is_strict_not_python_numeric_equality(self):
-        marker = dict(path='/not-opened', sha256='a' * 64, bytes=1)
+        marker = dict(path='/not-opened/tap_capture.py', sha256='a' * 64, bytes=1)
         files = {name: marker for name in flow.TAP_ROLES | {'foundry_first_policy', 'drc_runner'}}
         for key in ('native_max_clear_gap_dbu', 'nominal_phase_dbu', 'foundry_diffusion_tie_max_um'):
             policy = copy.deepcopy(flow.TAP_POLICY)
@@ -94,7 +94,8 @@ class JointProofMetadata(unittest.TestCase):
     def test_new_json_reader_rejects_duplicate_nonfinite_depth_and_size(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'metadata.json'
-            for value in ('{"x":0,"x":1}', '{"x":NaN}', '[' * 34 + '0' + ']' * 34):
+            for value in ('{"x":0,"x":1}', '{"x":NaN}', '{"x":1e999}', '{"x":-1e999}',
+                          '[' * 34 + '0' + ']' * 34):
                 path.write_text(value)
                 with self.subTest(value=value[:24]), self.assertRaises(ValueError):
                     q.tap_read(path)

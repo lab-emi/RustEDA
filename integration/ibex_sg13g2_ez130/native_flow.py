@@ -53,7 +53,7 @@ DERIVED = {"inputs_frozen", "macros", "placement", "cts", "power_connectivity", 
 INDEPENDENT = {"drc", "antenna", "lvs", "timing", "timing_accuracy", "synthesis_equivalence", "final_equivalence", "simulation"}
 CASES = {"rtl_mutation", "macro_byte_mask", "sram_width", "sram_layer", "sram_short", "power_open",
          "welltap_missing", "offgrid_metal", "antenna_unit", "stale_evidence", "bounded_work", "sky130_sta", "gf180mcu_sta"}
-TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v1'
+TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v2'
 TAP_ROLES = {'tap_coverage_worker', 'tap_coverage_runner', 'tap_latchup_runner',
              'tap_latchup_common', 'tap_latchup_deck', 'tap_guard', 'tap_policy'}
 TAP_POLICY = dict(schema='rusteda.private-staggered-tap-policy.v1',
@@ -69,7 +69,9 @@ TAP_PATHS = dict(latchup='backend/latchup/summary.json',
     coverage_config='backend/tap-coverage-inputs.json',
     coverage_controller='backend/tap-coverage/controller.json',
     coverage_report='backend/tap-coverage/summary.json',
-    routing_audit='frontend/physical/routing-writer-audit.json')
+    routing_audit='frontend/physical/routing-writer-audit.json',
+    latchup_execution='backend/latchup-execution/result.json',
+    coverage_execution='backend/tap-coverage-execution/result.json')
 # First-party hierarchy-budget correction root0c630b5; not the failed T1 worker.
 TAP_WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
 TAP_CONTRACT = ('96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282', 5666)
@@ -88,6 +90,8 @@ def joint_tap(files):
         verify_record(files[role])
     require(files['tap_latchup_common'] == files['drc_runner'],
             'joint maximal must use the same pinned original DRC common wrapper')
+    require(Path(files['tap_guard']['path']).name == 'tap_capture.py',
+            'joint v2 requires the typed capture wrapper')
     policy = read(Path(files['tap_policy']['path']), 65536)
     require(policy == TAP_POLICY and all(type(policy[k]) is int for k in
             ('native_max_clear_gap_dbu', 'nominal_phase_dbu', 'foundry_diffusion_tie_max_um')),

@@ -177,7 +177,7 @@ class JointAdmission(unittest.TestCase):
         self.assertEqual((worker['sha256'], worker['bytes']), flow.TAP_WORKER,
                          'explicit first-party hierarchy-fixed test source required')
         self.files['drc_runner'] = self.files['tap_latchup_common']
-        self.files['tap_guard'] = p.identity(Path(flow.__file__).with_name('tap_guard.py'))
+        self.files['tap_guard'] = p.identity(Path(flow.__file__).with_name('tap_capture.py'))
         for role, data in [('tap_policy', flow.TAP_POLICY),
                            ('physical', dict(tap=dict(max_gap=30000, pattern=dict(kind='staggered', phase=15000))))]:
             path = folder / (role + '.json')
@@ -297,7 +297,7 @@ class JointAdmission(unittest.TestCase):
         root = self.root / 'output'
         root.mkdir()
         (root.parent / 'ownership').mkdir()
-        (root.parent / 'ownership/native.json').write_text('{}')
+        (root.parent / 'ownership/native.json').write_text('{"manifest":{"static_metadata_fixture":true}}')
         (root / 'logs').mkdir()
         for tag in ('nf_tap_latchup', 'nf_tap_coverage'):
             (root / 'logs' / (tag + '.command.json')).write_text('{}')
@@ -306,16 +306,34 @@ class JointAdmission(unittest.TestCase):
         artifacts = dict(gds=dict(path=str(root / manifest['artifacts']['gds'])))
         helper = types.SimpleNamespace(producer_manifest=lambda c: (manifest, manifest['parallel_groups']),
             producer_command=lambda *a: dict(metadata_control_only=True), p=p)
+        receipts = [dict(id='nf_tap_latchup', kind='command'),
+                    dict(id='nf_tap_coverage_inputs', kind='render', wall_seconds=0.01),
+                    dict(id='nf_tap_coverage', kind='command')]
+        (root / 'step-receipts.json').write_text(json.dumps(receipts))
+        for relative in (q.TAP_PATHS['latchup_execution'], q.TAP_PATHS['coverage_execution']):
+            target = root / relative; target.parent.mkdir(parents=True); target.write_text('{}')
         # Producer receipt authenticity is exercised separately by the actual
         # two-CPU serial tests; this callback tests 16-CPU recipe admission only.
-        q.tap_producer_proof(context, artifacts, {}, None, helper)
+        with mock.patch.object(q, 'tap_execution_proof', return_value=({},dict(
+                static_fixture_only=True,execution_result=dict(static_fixture_only=True)))):
+            q.tap_producer_proof(context, artifacts, {}, None, helper)
         original = copy.deepcopy(manifest)
         for mutate in [lambda m: m['scope'].update(threads=True),
                        lambda m: m['scope'].update(memory_mib=8193),
                        lambda m: next(s for s in m['steps'] if s['id'] == 'nf_tap_latchup')['arguments'].append('unknown'),
                        lambda m: m['files'].update(tap_guard=self.f.old.marker)]:
             manifest.clear(); manifest.update(copy.deepcopy(original)); mutate(manifest)
-            with self.assertRaises(ValueError):
+            with self.assertRaises(ValueError), mock.patch.object(q, 'tap_execution_proof', return_value=({},{})):
+                q.tap_producer_proof(context, artifacts, {}, None, helper)
+        manifest.clear(); manifest.update(copy.deepcopy(original))
+        for mutation in (lambda rows: rows[1].update(wall_seconds=True),
+                         lambda rows: rows[1].update(wall_seconds=float('inf')),
+                         lambda rows: rows[1].update(artifact={'invented': True}),
+                         lambda rows: rows.pop(1), lambda rows: rows.reverse()):
+            changed = copy.deepcopy(receipts); mutation(changed)
+            (root / 'step-receipts.json').write_text(json.dumps(changed))
+            with self.assertRaises(ValueError), mock.patch.object(q, 'tap_execution_proof', return_value=({},dict(
+                    static_fixture_only=True,execution_result=dict(static_fixture_only=True)))):
                 q.tap_producer_proof(context, artifacts, {}, None, helper)
 
     def routing_context(self):
