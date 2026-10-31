@@ -8,7 +8,10 @@ EDA verdict. Bounded XML scope/count verification never decodes geometry.
 import argparse
 import fcntl
 import json
+import math
+import os
 from pathlib import Path
+import re
 import resource
 import sys
 import xml.etree.ElementTree as ET
@@ -97,8 +100,131 @@ def raw_foundry(raw_id, c, post, table, gds):
     return raw
 
 
+def producer_groups(manifest):
+    """Validate bounded scheduling metadata without executing producer source.
+
+    <=128 vertices/16384 earlier-dependency checks, <=8 disjoint contiguous
+    regions; no path enumeration or dynamic module imports. This independent
+    check binds telemetry to the actual recipe, not to a hardcoded lane shape.
+    """
+    scope, steps = manifest['scope'], manifest['steps']
+    cpus = scope.get('cpu_affinity')
+    p.need(type(scope.get('threads')) is int and 1 <= scope['threads'] <= 16
+           and type(scope.get('memory_mib')) is int and scope['memory_mib'] > 128
+           and isinstance(cpus, list) and len(cpus) == scope['threads'] == len(set(cpus))
+           and all(type(cpu) is int and cpu >= 0 for cpu in cpus), 'PRODUCER_CPU_ALLOCATION')
+    p.need(isinstance(steps, list) and 1 <= len(steps) <= 128, 'PRODUCER_STEP_BUDGET')
+    order = {}
+    for index, step in enumerate(steps):
+        tag = step['id']
+        p.need(isinstance(tag, str) and re.fullmatch('[A-Za-z0-9_-]{1,128}', tag)
+               and tag not in order, 'PRODUCER_STEP_ID')
+        order[tag] = index
+    groups = manifest.get('parallel_groups')
+    if groups is None:
+        return []
+    p.need(isinstance(groups, list) and 1 <= len(groups) <= 8, 'PRODUCER_GROUP_BUDGET')
+    assigned = set()
+    for group in groups:
+        p.need(set(group) == {'max_parallel', 'max_memory_mib', 'steps'}
+               and type(group['max_parallel']) is int and 1 <= group['max_parallel'] <= 16
+               and type(group['max_memory_mib']) is int
+               and 1 <= group['max_memory_mib'] <= scope['memory_mib'] - 128,
+               'PRODUCER_GROUP_LIMIT')
+        jobs = group['steps']
+        p.need(isinstance(jobs, dict) and 1 <= len(jobs) <= 128
+               and set(jobs) <= set(order) and not assigned & set(jobs), 'PRODUCER_GROUP_JOBS')
+        indices = sorted(order[tag] for tag in jobs)
+        p.need(indices == list(range(indices[0], indices[-1] + 1)), 'PRODUCER_GROUP_REGION')
+        assigned.update(jobs)
+        for tag, job in jobs.items():
+            step = steps[order[tag]]
+            deps = job['depends_on']
+            p.need(isinstance(deps, list) and len(deps) <= 128
+                   and all(isinstance(dep, str) for dep in deps) and len(set(deps)) == len(deps)
+                   and all(dep in jobs and order[dep] < order[tag] for dep in deps), 'PRODUCER_GROUP_DEPENDENCY')
+            if step['kind'] == 'render':
+                p.need(set(job) == {'depends_on'}
+                       and set(step) == {'id', 'kind', 'destination', 'content'}, 'PRODUCER_RENDER_JOB')
+                continue
+            p.need(step['kind'] == 'command' and set(job) == {'depends_on', 'cpu_slots', 'memory_mib'}
+                   and set(step) == {'id', 'kind', 'tool', 'arguments', 'timeout_s'}
+                   and isinstance(step['arguments'], list) and 1 <= len(step['arguments']) <= 256
+                   and all(isinstance(arg, str) and len(arg.encode()) <= 65536 and '\x00' not in arg
+                           for arg in step['arguments'])
+                   and type(step['timeout_s']) is int and 1 <= step['timeout_s'] <= 86400,
+                   'PRODUCER_COMMAND_JOB')
+            slots = job['cpu_slots']
+            p.need(isinstance(slots, list) and 1 <= len(slots) <= scope['threads']
+                   and all(type(slot) is int and 0 <= slot < scope['threads'] for slot in slots)
+                   and len(set(slots)) == len(slots) and type(job['memory_mib']) is int
+                   and 1 <= job['memory_mib'] <= group['max_memory_mib'], 'PRODUCER_JOB_RESOURCE')
+    return groups
+
+
+def producer_manifest(c):
+    """Read the worker-owned recipe and verify the pinned producer identity.
+
+    The producer writes this ownership record before executing any steps. Its
+    manifest FileID binds the job/lane metadata, while the config binds producer
+    bytes. Producer code is hashed only, never imported/compiled/executed here.
+    """
+    root = Path(c['run_root'])
+    owner = root.parent / 'ownership'
+    request = os.environ.get('RUSTEDA_WORKER_ID', '')
+    p.need(re.fullmatch('[0-9a-f]{64}', request) is not None
+           and os.environ.get('RUSTEDA_OWNERSHIP') == str(owner), 'PRODUCER_OWNERSHIP_REQUIRED')
+    native = p.read(owner / 'native.json')
+    p.need(set(native) == {'request_id', 'implementation', 'manifest'}
+           and native['request_id'] == request and native['implementation'] == 'native',
+           'PRODUCER_OWNERSHIP_CHANGED')
+    manifest = p.read(p.record(native['manifest'], 2 << 20))
+    source = c['files']['producer']
+    p.record(source, 1 << 20)
+    p.need(manifest['schema'] == 'rusteda.ihp-flow.v1'
+           and manifest['files']['producer'] == source and manifest['scope'] == c['scope']
+           and all(manifest['files'].get(k) == v for k, v in c['files'].items())
+           and all(manifest['tools'].get(k) == v for k, v in c['tools'].items()),
+           'PRODUCER_MANIFEST_CHANGED')
+    return manifest, producer_groups(manifest)
+
+
 def producer_command(c, inputs, tag, core_argv, expected_value=None):
     root = Path(c['run_root'])
+    manifest, groups = producer_manifest(c)
+    steps = [value for value in manifest['steps'] if value['id'] == tag]
+    p.need(len(steps) == 1 and steps[0]['kind'] == 'command'
+           and set(steps[0]) == {'id', 'kind', 'tool', 'arguments', 'timeout_s'}
+           and isinstance(steps[0]['arguments'], list) and 1 <= len(steps[0]['arguments']) <= 256
+           and type(steps[0]['timeout_s']) is int and 1 <= steps[0]['timeout_s'] <= 86400,
+           'PRODUCER_RECIPE_COMMAND')
+    step = steps[0]
+    argument_bytes = 0
+
+    def expand(value):
+        nonlocal argument_bytes
+        p.need(isinstance(value, str) and len(value.encode()) <= 65536, 'PRODUCER_ARGUMENT_BUDGET')
+        pieces, size, start = [], 0, 0
+        def append(piece):
+            nonlocal size
+            p.need(isinstance(piece, str) and len(piece) <= 65536, 'PRODUCER_ARGUMENT_BUDGET')
+            size += len(piece.encode())
+            p.need(size <= 65536 and argument_bytes + size <= 1 << 20, 'PRODUCER_ARGUMENT_TOTAL')
+            pieces.append(piece)
+        for match in re.finditer(r'\{output\}|\{threads\}|\{(files|tools):([A-Za-z0-9_-]+)\}', value):
+            append(value[start:match.start()])
+            token = match[0]
+            append(str(root) if token == '{output}' else str(c['scope']['threads']) if token == '{threads}'
+                   else manifest['files' if match[1] == 'files' else 'tools'][match[2]]['path'])
+            start = match.end()
+        append(value[start:])
+        argument_bytes += size
+        expanded = ''.join(pieces)
+        p.need(re.search(r'\{(?:files|tools):', expanded) is None, 'PRODUCER_ARGUMENT_UNRESOLVED')
+        return expanded
+
+    selected_argv = [expand(manifest['tools'][step['tool']]['path']), *map(expand, step['arguments'])]
+    p.need(selected_argv == core_argv, 'PRODUCER_RECIPE_ARGV_CHANGED')
     receipts = p.read(root / 'step-receipts.json')
     p.need(isinstance(receipts, list) and len(receipts) <= 128, 'PRODUCER_RECEIPT_BUDGET')
     rows = {}
@@ -109,10 +235,32 @@ def producer_command(c, inputs, tag, core_argv, expected_value=None):
            'PRODUCER_EXECUTION_MISSING')
     integer(rows[tag]['exit_code'], 0)
     row = rows[tag]
+    wall = row.get('wall_seconds')
+    p.need(type(wall) in (int, float) and math.isfinite(wall) and wall >= 0, 'PRODUCER_RECEIPT_WALL')
     command_path = root / 'logs' / (tag + '.command.json')
     actual = p.read(command_path)
     expected = [c['tools']['gnu_time']['path'], '-v', '-o', str(root / 'logs' / (tag + '.time')), *core_argv]
-    p.need(actual == dict(argv=expected, cwd=str(root)), 'PRODUCER_COMMAND_CHANGED')
+    expected_command = dict(argv=expected, cwd=str(root))
+    keys = {'id', 'kind', 'exit_code', 'wall_seconds', 'stdout', 'stderr'}
+    jobs = [group['steps'][tag] for group in groups if tag in group['steps']]
+    p.need(len(jobs) <= 1, 'PRODUCER_SCHEDULER_DUPLICATE')
+    if jobs:
+        job = jobs[0]
+        cpus = [manifest['scope']['cpu_affinity'][slot] for slot in job['cpu_slots']]
+        expected_command.update(cpu_affinity=cpus, memory_reservation_mib=job['memory_mib'])
+        keys |= {'started_seconds', 'cpu_affinity', 'memory_reservation_mib', 'depends_on'}
+        p.need(row.get('cpu_affinity') == cpus
+               and all(type(cpu) is int for cpu in row.get('cpu_affinity', []))
+               and type(row.get('memory_reservation_mib')) is int
+               and row['memory_reservation_mib'] == job['memory_mib']
+               and row.get('depends_on') == job['depends_on'], 'PRODUCER_RECEIPT_SCHEDULER_CHANGED')
+        start = row.get('started_seconds')
+        p.need(type(start) in (int, float) and math.isfinite(start) and start >= 0,
+               'PRODUCER_RECEIPT_START')
+    p.need(set(row) == keys, 'PRODUCER_RECEIPT_FIELDS')
+    p.need(actual == expected_command and set(actual) == set(expected_command)
+           and (not jobs or type(actual['memory_reservation_mib']) is int
+                and all(type(cpu) is int for cpu in actual['cpu_affinity'])), 'PRODUCER_COMMAND_CHANGED')
     stdout = p.record(row['stdout'], 2 << 20)
     p.record(row['stderr'], 64 << 20)
     p.need(stdout == root / 'logs' / (tag + '.stdout'), 'PRODUCER_STDOUT_PATH')

@@ -11,6 +11,7 @@ from pathlib import Path
 import unittest
 from unittest import mock
 
+from integration.ibex_sg13g2_ez130 import producer
 from integration.ibex_sg13g2_ez130.foundry_first import protocol as p, runner, verify
 from tests import test_foundry_first_protocol as foundation
 
@@ -233,21 +234,31 @@ class FoundryExecution(unittest.TestCase):
     def actual_postroute_receipt(self):
         # Metadata-only fixture, never an execution/EDA pass. The helper under
         # test must bind the full input/result to these exact capture bytes.
+        actual_root = self.root / 'output'
+        actual_root.mkdir()
+        self.c['run_root'] = str(actual_root)
+        source = actual_root / 'backend/postroute-inputs.json'
+        source.parent.mkdir()
+        p.write_new(source, p.read(self.source))
+        self.source = source
+        self.post['input_manifest'] = p.identity(source)
         driver = self.root / 'postroute-driver-fixture'
         driver.write_text('unexecuted fixture')
         self.c['files']['postroute_runner'] = p.identity(driver)
         self.c['tools']['gnu_time'] = dict(path='/unexecuted/gnu-time')
+        self.c['files']['producer'] = p.identity(producer.__file__)
+        self.c['scope'].update(memory_mib=8192, cpu_affinity=list(range(16)))
         self.post.update(schema='rusteda.native-postroute-reuse-result.v1', status='clean',
             final_workspace=str(self.ws), final_revision='rev4', resized=[],
             policy_source=p.identity(driver), capture_policy={})
-        target = self.root / 'backend/postroute'
+        target = actual_root / 'backend/postroute'
         target.mkdir()
         result = target / 'result.json'
         p.write_new(result, self.post)
         self.c['postroute_result'] = p.identity(result)
         summary = {key: self.post[key] for key in ('schema', 'status', 'final_workspace', 'final_revision', 'resized')}
         summary.update(input_manifest=self.post['input_manifest'], result=self.c['postroute_result'])
-        logs = self.root / 'logs'
+        logs = actual_root / 'logs'
         logs.mkdir()
         stdout, stderr = logs / 'be_postroute.stdout', logs / 'be_postroute.stderr'
         p.write_new(stdout, summary)
@@ -255,10 +266,23 @@ class FoundryExecution(unittest.TestCase):
         argv = ['/unexecuted/gnu-time', '-v', '-o', str(logs / 'be_postroute.time'),
             self.c['tools']['python']['path'], str(driver), '--inputs', str(self.source),
             '--workspace', str(target), '--base-rev', 'empty', '--foundry-first']
-        p.write_new(logs / 'be_postroute.command.json', dict(argv=argv, cwd=str(self.root)))
+        p.write_new(logs / 'be_postroute.command.json', dict(argv=argv, cwd=str(actual_root),
+            cpu_affinity=list(range(16)), memory_reservation_mib=7168))
         receipts = [dict(id='be_postroute_inputs', kind='render'),
-            dict(id='be_postroute', kind='command', exit_code=0, stdout=p.identity(stdout), stderr=p.identity(stderr))]
-        p.write_new(self.root / 'step-receipts.json', receipts)
+            dict(id='be_postroute', kind='command', exit_code=0, wall_seconds=0.01,
+                stdout=p.identity(stdout), stderr=p.identity(stderr), started_seconds=0.0,
+                cpu_affinity=list(range(16)), memory_reservation_mib=7168, depends_on=[])]
+        p.write_new(actual_root / 'step-receipts.json', receipts)
+        recipe = self.root / 'actual-manifest.json'
+        p.write_new(recipe, dict(schema='rusteda.ihp-flow.v1', files=self.c['files'],
+            tools=self.c['tools'], scope=self.c['scope'],
+            steps=[dict(id='be_postroute', kind='command', tool='python', arguments=argv[5:], timeout_s=60)],
+            parallel_groups=[dict(max_parallel=1, max_memory_mib=7168,
+                steps=dict(be_postroute=dict(depends_on=[], cpu_slots=list(range(16)), memory_mib=7168)))]))
+        owner = self.root / 'ownership'
+        owner.mkdir()
+        p.write_new(owner / 'native.json', dict(request_id='a' * 64, implementation='native', manifest=p.identity(recipe)))
+        os.environ.update(RUSTEDA_WORKER_ID='a' * 64, RUSTEDA_OWNERSHIP=str(owner))
         return stdout, receipts
 
     def test_full_postroute_input_and_result_require_actual_producer_stdout_binding(self):
@@ -273,8 +297,9 @@ class FoundryExecution(unittest.TestCase):
         stdout.unlink()
         p.write_new(stdout, changed)
         receipts[-1]['stdout'] = p.identity(stdout)
-        (self.root / 'step-receipts.json').unlink()
-        p.write_new(self.root / 'step-receipts.json', receipts)
+        receipt_path = Path(self.c['run_root']) / 'step-receipts.json'
+        receipt_path.unlink()
+        p.write_new(receipt_path, receipts)
         with self.assertRaisesRegex(ValueError, 'STDOUT_SUBSTITUTION'):
             verify.postroute_authority(self.c, self.post)
 
