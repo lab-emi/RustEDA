@@ -1,0 +1,169 @@
+{
+  "status": "proven",
+  "complete": true,
+  "original_rtl_sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+  "rtl_sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+  "netlist_sha256": "0cc1704499268b63f9f42080cf60c17986fd48f4167d8a8bd481d564a221d561",
+  "scope": {
+    "reference": "original RTL independent interpreter and external ABC",
+    "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+    "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+    "reset_assumptions": [],
+    "case_assumptions": [],
+    "input_assumptions": [],
+    "macro_scope": "all functional SRAM interface bits, opaque across the memory boundary",
+    "wire_model": "none",
+    "corner": "logic",
+    "four_state_refinement": "unverified"
+  },
+  "manifest": {
+    "all_gate_initial_states_covered": true,
+    "all_rtl_inputs_and_states_quantified": true,
+    "case_assumptions": [],
+    "comparison": "each obligation compares (reference & guard) with (implementation & guard); guards are original clock/reset event semantics",
+    "format": "binary-aiger-combinational",
+    "gate_state_elements": 1998,
+    "initial_state_choices": [],
+    "input_variables_file": "input-variables.u32le",
+    "max_and_nodes": 64000000,
+    "max_outputs": 8000000,
+    "method": "independent-rtl-event-obligations-v1",
+    "obligation_kinds": {
+      "async-clear": 1998,
+      "async-preset": 1998,
+      "clock": 1997,
+      "data": 1,
+      "enable": 1,
+      "next-state": 1997,
+      "output": 384
+    },
+    "observations": [],
+    "output_bits": 384,
+    "primary_input_bits": 116,
+    "proof_status": "not_run",
+    "proposed_state_bindings": 0,
+    "reset_assumptions": [],
+    "rtl_state_bits": 2023,
+    "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+    "schema": 1,
+    "sides": [
+      {
+        "and_nodes": 51959,
+        "bytes": 217454,
+        "file": "gold.aig",
+        "inputs": 2139,
+        "outputs": 8376
+      },
+      {
+        "and_nodes": 37602,
+        "bytes": 158848,
+        "file": "gate.aig",
+        "inputs": 2139,
+        "outputs": 8376
+      }
+    ],
+    "state_discovery_limits": {
+      "max_candidates": 4194304,
+      "max_definitions": 64000000,
+      "max_evaluation_work": 16000000000,
+      "max_rounds": 32,
+      "max_sketch_bytes": 1073741824,
+      "max_support_entries": 64000000
+    },
+    "state_pairs": 1998,
+    "state_relation": "one-to-one, named or proposed, parity checked; every original event/output obligation requires external CEC",
+    "state_relation_file": "state-relation.jsonl",
+    "state_relation_records": 1998
+  },
+  "verified": {
+    "relation": {
+      "state_relation_sha256": "6d03bc52bb422a9db0000f6a8f309121f68988811b191f4f3b7f810abadcd431",
+      "input_variables_sha256": "eed3cb180f8d8890d3ae4e2ec5379b5da28860bddd36e45ec2e0d7b65e8b3424"
+    },
+    "aiger": {
+      "gold.aig": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/obligations/gold.aig",
+        "sha256": "c191238e1ae36eeb0245b86e132b492f11e3f968fa8f2293c81cbdb67fe46889",
+        "bytes": 217454
+      },
+      "gate.aig": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/obligations/gate.aig",
+        "sha256": "a1c4c38a87a0f462c59041331990d8137361681ca06a950d7ae4283801294270",
+        "bytes": 158848
+      }
+    },
+    "obligation_count": 8376
+  },
+  "fresh_original_cut": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/original-cut.v",
+    "sha256": "ccf0b5a2cc34b51de84fa304be73671382440b3bd56b573b996d0db406435678",
+    "bytes": 442532
+  },
+  "abc_verdict": "Networks are equivalent.",
+  "physical_models": {
+    "physical_only_models": {
+      "masters": [
+        "FILLER1",
+        "FILLER16",
+        "FILLER2",
+        "FILLER4",
+        "FILLER8",
+        "WELLTAP"
+      ],
+      "basis": "original LEF every pin POWER/GROUND; absent from original TT/SS Liberty; all logical instances disconnected",
+      "functional_models_replaced": false
+    }
+  },
+  "stages": [
+    {
+      "name": "structural",
+      "exit_code": 0,
+      "wall_seconds": 0.917044433997944,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/structural.log",
+        "sha256": "3b29df70a30b4fd92a7a7d7d976005b36455e6b5f835bcdeb53cdddd1df124b6",
+        "bytes": 758
+      }
+    },
+    {
+      "name": "cut",
+      "exit_code": 0,
+      "wall_seconds": 1.0683863239828497,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/cut.log",
+        "sha256": "2b9f57941076cb182e1063827fb45fb76d34ca9c703edec35be399606a7afbe6",
+        "bytes": 14326
+      }
+    },
+    {
+      "name": "macros",
+      "exit_code": 0,
+      "wall_seconds": 0.16556702100206167,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/macros.log",
+        "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+        "bytes": 262
+      }
+    },
+    {
+      "name": "export",
+      "exit_code": 0,
+      "wall_seconds": 0.7671190990367904,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/export.log",
+        "sha256": "aa9a866e5e498205e0927bc4b399c26bb750a71c60055c6e1e322a69527c621d",
+        "bytes": 185
+      }
+    },
+    {
+      "name": "abc",
+      "exit_code": 0,
+      "wall_seconds": 3.2722618160769343,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis/abc.log",
+        "sha256": "b526174ecb80e5ab09de473d0b5bf3611e305c7621029aa906b9d36a305b75c6",
+        "bytes": 338
+      }
+    }
+  ]
+}

@@ -1,0 +1,518 @@
+{
+  "schema": "rusteda.ibex-sg13g2-ez130.benchmark.v1",
+  "date": "2026-10-30",
+  "status": "reference_incomplete",
+  "qualification_status": "native_passed_reference_failed",
+  "summary": "RustEDA completed raw SystemVerilog to GDS with all 16 independent gates in one fresh public run. The matched LibreLane run closed timing but failed complete foundry main DRC (1 M2.b); its post-stop diagnostic antenna check also fails. No end-to-end speedup or memory ratio is defined.",
+  "design": {
+    "family": "Ibex",
+    "top": "ibex_sram_bench",
+    "rtl_source": "lowRISC Ibex v2.1.0, default RV32IMC",
+    "rtl_commit": "38c070939183cc10940b66c8e9e04eeca6b65470",
+    "rtl_sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+    "testbench_sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+    "sram_instances_required": 2,
+    "sram_instances": [
+      "u_imem",
+      "u_dmem"
+    ],
+    "sram_macro": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+    "sram_views_sha256": {
+      "ram_tt": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+      "ram_ss": "34497364ed23734a929454b451ee9d209b16923e03b80cba258379069af1908c",
+      "ram_lef": "b345b6c44defa630a7266fb1ee878b153e4b22b88461aa8216d3883592c18db2",
+      "ram_gds": "4d1178811e3b83a8f6fc85f017fdd8d9b43629f785929ad60dbbaa2a763b96b1"
+    }
+  },
+  "technology": {
+    "process": "IHP SG13G2",
+    "pdk_commit": "5cccb161f7492697cfa52eb14dc03beb00bdca9e",
+    "standard_cell_library": "EZ130 8T v1.1",
+    "corners": [
+      "tt",
+      "ss"
+    ],
+    "corner_definitions": {
+      "tt": "1.20 V / 25 C",
+      "ss": "1.08 V / 125 C"
+    },
+    "rc_corner": "nominal",
+    "library_sha256": {
+      "std_tt": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+      "std_ss": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+      "std_lef": "841070a0650462ac9d14ec042347d0c518f5c78bc55ccbb06c2d5b3f518f55d4",
+      "tech_lef": "375ae19dcb365d712b682ce366cef8b55c939990e52c152e2b52ebcb8e8c5f27",
+      "std_gds": "628767647a34b36a3710bf698387373183d84a43963cd0b722cf7a9e95441042"
+    },
+    "constraints_sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+    "contract_sha256": "a58f53feb169724d987f774c3143083eee373806df251eb4164ca1ec82566ed8",
+    "physical_policy_sha256": "5fe299cf038ec8666b3bc28d91a21edc74d1cb01c5d3a2c78e0dee2ab7bb51c1",
+    "density_policy_sha256": "d60468d677dcfd67df28c6a811295099bf9b7133c195830b8e749e5770ac4099",
+    "floorplan": {
+      "die_um": [
+        0,
+        0,
+        1100,
+        1000
+      ],
+      "core_um": [
+        20.16,
+        20.16,
+        1079.82,
+        977.76
+      ],
+      "macros": {
+        "u_imem": {
+          "cell": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+          "location_um": [
+            80,
+            631.3
+          ],
+          "orientation": "N"
+        },
+        "u_dmem": {
+          "cell": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+          "location_um": [
+            600,
+            631.3
+          ],
+          "orientation": "N"
+        }
+      },
+      "macro_halo_um": 10
+    }
+  },
+  "comparison": {
+    "contenders": [
+      "RustEDA",
+      "LibreLane"
+    ],
+    "contract_status": "matched",
+    "same_rtl": true,
+    "same_macros": true,
+    "same_constraints": true,
+    "same_floorplan": true,
+    "same_signoff": true,
+    "same_host_resources": true,
+    "shared_file_ids": [
+      "contract",
+      "density_policy",
+      "drc_profile",
+      "lvs_deck",
+      "physical",
+      "ram_lef",
+      "ram_ss",
+      "ram_tt",
+      "rtl",
+      "sdc",
+      "std_lef",
+      "std_ss",
+      "std_tt",
+      "tb",
+      "tech_lef"
+    ],
+    "shared_signoff": "same KLayout foundry main/antenna decks and profile, same device LVS deck, same vendor-model simulation, same CEC checker, same final-density checker, same OpenRCX + OpenSTA timing runner",
+    "flow_specific": {
+      "RustEDA": "rustsys/ruststa/rustroad/rusteda executables named below; native placement, CTS, routing, extraction, ECO and streamout; routing policy aba6ee1d96bd923d",
+      "LibreLane": "LibreLane 3.0.17 (OpenROAD dcf36133, Yosys 0.62, OpenSTA 3.1.0) with a RustEDA-authored bounded repair loop around its public steps: global-route DRV ECO rounds, routed-timing ECO rounds (max 6), clock protection and removal/re-insertion of antenna diodes that detailed routing left open. LibreLane environment set to the contract: CLOCK_UNCERTAINTY_CONSTRAINT 0.05, TIME_DERATING_CONSTRAINT 0, IO_DELAY_CONSTRAINT 10."
+    },
+    "host": {
+      "cpu": "13th Gen Intel Core i9-13900HX",
+      "allocated_cpus": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "threads": 16,
+      "memory_max_gib": 8,
+      "swap_max_gib": 2,
+      "isolation": "systemd cgroup v2 scope per flow"
+    }
+  },
+  "measurement_scope": {
+    "primary": "raw_sv_to_all_gates_elapsed_seconds",
+    "start": "frozen raw SystemVerilog, before parsing, elaboration and preparation",
+    "end": "GDS plus every required gate and report complete",
+    "prepare_in_primary_timer": true,
+    "preparation_subtraction_allowed": false,
+    "excluded_symmetrically": "tool/PDK installation, source acquisition, harness source copies",
+    "samples_per_flow": 1,
+    "repetition": "not performed: the reference did not complete, so no ratio could be formed"
+  },
+  "implementations": {
+    "RustEDA": {
+      "status": "completed",
+      "eligible": true,
+      "required_gate_count": 16,
+      "gates_passed": 16,
+      "gates": {
+        "drc": "passed",
+        "antenna": "passed",
+        "lvs": "passed",
+        "timing": "passed",
+        "timing_accuracy": "passed",
+        "synthesis_equivalence": "proven",
+        "final_equivalence": "proven",
+        "simulation": "passed",
+        "controls": "passed",
+        "cts": "passed",
+        "extraction": "passed",
+        "inputs_frozen": "passed",
+        "macros": "passed",
+        "placement": "passed",
+        "power_connectivity": "passed",
+        "routing": "passed"
+      },
+      "entrypoint": "./rusteda flow (pdk ihp_sg13g2_ez130)",
+      "executables_sha256": {
+        "rustsys": "e6cf0c7787fe5e7f4f1b7879f088554f6a665296fc9b5f3a2263bdb2f0a604d5",
+        "ruststa": "b17c092b2e180ea286c433fb0f979f30ffe749f6ccff3f948e3c957c227e024c",
+        "rustroad": "0889b3707446b6687474d0aa8d5d19762195c4e9b16237a12305f600306a3704",
+        "rusteda": "af6b7ade0cd9dc7a1e9204af85fb9db2a2f34b6bc92b3e65fcf0c3934d15ac0f"
+      },
+      "engine_commits": {
+        "RustROAD": "f93d026 (engine fix 0813571)"
+      },
+      "samples": [
+        {
+          "run": "run16",
+          "raw_sv_to_all_gates_elapsed_seconds": 2936.6,
+          "prepare_elapsed_seconds": 12.7,
+          "implementation_and_signoff_elapsed_seconds": 2923.9,
+          "peak_rss_kib": 2268284,
+          "peak_rss_gib": 2.163,
+          "peak_rss_scope": "maximum reaped single worker/tool process RSS",
+          "cgroup_memory_peak_bytes": 8589934592,
+          "cgroup_scope": "aggregate process family incl. page cache; equals the 8 GiB limit (cache-bound, not a footprint)",
+          "environment": {
+            "RUSTROAD_ROUTE_TRACE": "1 (diagnostic route trace was enabled; its I/O is inside the timer)"
+          }
+        }
+      ],
+      "qor": {
+        "standard_cell_area_um2": 233909.222,
+        "macro_area_um2": 280365.389,
+        "core_area_um2": 1014730.416,
+        "die_area_um2": 1100000,
+        "final_nonfiller_utilization_percent": 33.2521,
+        "macro_inclusive_core_utilization_percent": 50.6809,
+        "filler_decap_area_um2": 466442.525,
+        "density_limit_percent": 70,
+        "routed_signal_wirelength_um": 1678598.6,
+        "vias": 301859,
+        "timing": {
+          "source": "independent nominal OpenRCX extraction of the final layout, OpenSTA",
+          "corners": {
+            "tt": {
+              "setup_ws_ns": 49.2935,
+              "hold_ws_ns": 0.13618,
+              "violations": 0,
+              "unconstrained_endpoints": 156,
+              "active_unconstrained_endpoints": 0
+            },
+            "ss": {
+              "setup_ws_ns": 48.8772,
+              "hold_ws_ns": 0.26062,
+              "violations": 0,
+              "unconstrained_endpoints": 156,
+              "active_unconstrained_endpoints": 0
+            }
+          }
+        }
+      },
+      "timing_native_spef": {
+        "source": "RustROAD extraction, RustSTA",
+        "corners": {
+          "tt": {
+            "setup_ws_ns": 49.279,
+            "hold_ws_ns": 0.14414,
+            "violations": 0,
+            "unconstrained_endpoints": 156,
+            "active_unconstrained_endpoints": 0
+          },
+          "ss": {
+            "setup_ws_ns": 48.854,
+            "hold_ws_ns": 0.26778,
+            "violations": 0,
+            "unconstrained_endpoints": 156,
+            "active_unconstrained_endpoints": 0
+          }
+        }
+      },
+      "timing_parity_max_abs_ps": 0.806,
+      "timing_parity_limit_ps": 1.0,
+      "signoff": {
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": "passed",
+        "final_equivalence": "proven"
+      },
+      "artifacts": {
+        "gds": "d6c0e8421488e7a4dfc729de60a01ada1673350a8415d6e5ecf08e2c85b740ea",
+        "def": "84ecfede963d3710f1bf2a5e0b8abc615e2c329e7ae048b1d7fd68d1eb0d7542",
+        "netlist_final": "d7826d8628bbd63a21d9e961a55ab259f5672747ad76018f113a0f6ec211906e"
+      },
+      "summary_sha256": "66fcabee62fde1310b03d202894e4d62967bb895e8950c311c10d7e14a9b1dc3"
+    },
+    "LibreLane": {
+      "status": "failed",
+      "eligible": false,
+      "required_gate_count": 13,
+      "failed_gate": "drc",
+      "failure": {
+        "gate": "drc",
+        "scope": "complete_foundry_main",
+        "violations": 1,
+        "categories": {
+          "'M2.b'": 1
+        },
+        "samples": {
+          "'M2.b'": [
+            {
+              "cell": "ibex_sram_bench",
+              "values": [
+                "edge-pair: (806.51,149.62;806.51,149.675)|(806.5,149.665;806.5,149.62)"
+              ]
+            }
+          ]
+        }
+      },
+      "failure_analysis": "M2.b edge pair at a Via1/Via2 stack on net _08009_. The detailed-router log reports \"[WARNING DRT-0349] LEF58_ENCLOSURE with no CUTCLASS is not supported\" for Via1/Via2 among other cut layers, so this enclosure is not enforced during routing. No waiver is applied.",
+      "gates_in_timed_flow": {
+        "routing": "passed",
+        "extraction": "passed",
+        "timing": "passed",
+        "drc": "failed",
+        "antenna": "not_run",
+        "lvs": "not_run",
+        "simulation": "not_run",
+        "synthesis_equivalence": "not_run",
+        "final_equivalence": "not_run",
+        "final_density": "not_run",
+        "qualification": "not_reached"
+      },
+      "executables_sha256": {
+        "appimage": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+        "yosys": "de10c3ee405ea4bc4b887041b215ee16a517a87dddc420cc6574b20b113d6327",
+        "opensta": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b"
+      },
+      "samples": [
+        {
+          "run": "reference-run16f",
+          "elapsed_seconds_until_stop": 2790.0,
+          "elapsed_scope": "raw SV through the failed main-DRC command; antenna/LVS/simulation/equivalence/qualification not run in the timed flow",
+          "prepare_elapsed_seconds": 1.6,
+          "peak_rss_kib": 3078380,
+          "peak_rss_gib": 2.936,
+          "peak_rss_scope": "GNU time maximum RSS of the largest single process in the producer tree",
+          "cgroup_memory_peak_bytes": 8379011072,
+          "cgroup_scope": "aggregate process family incl. page cache"
+        }
+      ],
+      "qor": {
+        "standard_cell_area_um2": 222522.25,
+        "macro_area_um2": 280365.389,
+        "core_area_um2": 1014730.416,
+        "die_area_um2": 1100000,
+        "final_nonfiller_utilization_percent": 31.6334,
+        "macro_inclusive_core_utilization_percent": 49.5587,
+        "filler_decap_area_um2": 448082.813,
+        "density_limit_percent": 70,
+        "routed_signal_wirelength_um": 1077762.0,
+        "vias": 130286,
+        "timing": {
+          "source": "independent nominal OpenRCX re-extraction of the final layout, OpenSTA",
+          "corners": {
+            "tt": {
+              "setup_ws_ns": 48.4768,
+              "hold_ws_ns": 0.15814,
+              "violations": 0,
+              "unconstrained_endpoints": 156,
+              "active_unconstrained_endpoints": 0
+            },
+            "ss": {
+              "setup_ws_ns": 47.6398,
+              "hold_ws_ns": 0.29066,
+              "violations": 0,
+              "unconstrained_endpoints": 156,
+              "active_unconstrained_endpoints": 0
+            }
+          }
+        }
+      },
+      "diagnostics_after_failure": {
+        "scope": "same producer signoff inputs replayed on the same final layout after the run stopped; diagnostic only, never qualification",
+        "antenna": {
+          "status": "failed",
+          "violations": 12,
+          "detail": "Ant.b on Metal2..TopMetal2 at two gates of net prog_addr_i[3] (top-level input, no diode)"
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "simulation": {
+          "status": "passed"
+        },
+        "synthesis_equivalence": {
+          "status": "unverified",
+          "detail": "checker cannot name-match 431 implementation states (renamed registers); not evidence of non-equivalence"
+        },
+        "final_equivalence": {
+          "status": "unverified",
+          "detail": "same checker limitation"
+        },
+        "final_density": {
+          "status": "passed",
+          "detail": "reference_density.py with the shared policy"
+        }
+      },
+      "artifacts": {
+        "gds": "840c4ca34874d03521dd134d86436aa0dbe0f0417de34967142064576728a2d8",
+        "def_": "4e9e75fef497b286a564ec2d12415f858f40c4cf0ef2128451152b0857182832"
+      },
+      "attempts": [
+        {
+          "id": "a",
+          "run": "reference-run16",
+          "result": "harness defect",
+          "detail": "repair scripts hard-coded routing layers Metal2-Metal5; detailed routing rejected TopMetal guides (DRT-0155) after 8 min"
+        },
+        {
+          "id": "b",
+          "run": "reference-run16b",
+          "result": "harness defect",
+          "detail": "OpenSTA rejected a top-level port in the shared timing runner query (get_nets -of_objects); fixed by name lookup"
+        },
+        {
+          "id": "c",
+          "run": "prepared-run16c",
+          "result": "not launched",
+          "detail": "preparation invalidated by a pinned-file edit; restored and re-prepared"
+        },
+        {
+          "id": "d",
+          "run": "reference-run16d",
+          "result": "harness defect",
+          "detail": "same port query in the reference ECO driver binding; fixed"
+        },
+        {
+          "id": "e",
+          "run": "reference-run16e",
+          "result": "failed: 4-round repair budget exhausted after 2,360.8 s",
+          "detail": "timing converged, but each round detailed routing left 15-18 inserted antenna diodes unconnected. Fix: remove them and re-insert with repair_antennas, compact diode names (a gap made repair_antennas crash), allow 6 rounds"
+        },
+        {
+          "id": "f",
+          "run": "reference-run16f",
+          "result": "failed: main DRC 1 M2.b",
+          "detail": "timing and diodes closed after 5 detailed rounds; this is the published sample"
+        }
+      ]
+    }
+  },
+  "ratios": {
+    "end_to_end_speedup": null,
+    "peak_rss_ratio": null,
+    "aggregate_memory_ratio": null,
+    "wirelength_ratio": null,
+    "standard_cell_area_ratio": null,
+    "eligibility": "defined only for two completed, eligible flows under the same contract; LibreLane did not complete"
+  },
+  "metrics": {
+    "RustEDA": {
+      "end_to_end_seconds": 2936.6,
+      "peak_rss_kib": 2268284,
+      "cell_area_um2": 233909.222,
+      "drc_status": "passed",
+      "lvs_status": "passed",
+      "antenna_status": "passed",
+      "equivalence_status": "proven",
+      "comparative_speedup": null
+    },
+    "LibreLane": {
+      "end_to_end_seconds": null,
+      "elapsed_seconds_until_stop": 2790.0,
+      "peak_rss_kib": 3078380,
+      "cell_area_um2": 222522.25,
+      "drc_status": "failed",
+      "lvs_status": "unchecked",
+      "antenna_status": "unchecked",
+      "equivalence_status": "unchecked",
+      "comparative_speedup": null
+    }
+  },
+  "wirelength_scope": "regular NETS only; SPECIALNETS excluded; Manhattan segment lengths between consecutive path points; RECT patches and VIRTUAL jumps excluded; per-layer split not computed",
+  "evidence": {
+    "note": "local evidence under .work/ (not published); hashes bind this receipt to it",
+    "native_summary": {
+      "path": ".work/ibex-sg13g2-bringup-20261028/run16/public-workspace/steps/rtl2gds/attempt1/output/summary.json",
+      "sha256": "66fcabee62fde1310b03d202894e4d62967bb895e8950c311c10d7e14a9b1dc3"
+    },
+    "reference_recipe": {
+      "path": ".work/ibex-closure-a2a-20261029/reference-benchmark/prepared-run16f/inputs.json",
+      "sha256": "392938864ddaeec28bb5bd97de5a9af1c1385ff926259c7769cb67d6e4bca086"
+    },
+    "reference_overlay": {
+      "path": ".work/ibex-closure-a2a-20261029/reference-benchmark/prepared-run16f/source-overlay.diff",
+      "sha256": "c071d02ccbe8cfe3e117a1954169096b4d33f9a4f9ba09bae3bec117626877a6"
+    },
+    "reference_receipt": {
+      "path": ".work/ibex-closure-a2a-20261029/reference-benchmark/reference-run16f/resource-receipt.json",
+      "sha256": "a8b6a6c008d6263fcc3f6b3b550901cc33d4aef496446ebbc155c97b801e4b60"
+    },
+    "reference_drc": {
+      "path": ".work/ibex-closure-a2a-20261029/reference-benchmark/reference-run16f/signoff-drc/summary.json",
+      "sha256": "05426a0dc01a16e6f8277ba86ffbe8115f5510b6c683fbeeda7cb61c7b12bad0"
+    },
+    "reference_diagnostics": {
+      "path": ".work/ibex-closure-a2a-20261029/reference-benchmark/reference-run16f-diagnostics/diagnostics.json",
+      "sha256": "d719724a30c17a33c36de367535c440bd2109f1e5ecf1dc0114ae818d002e156"
+    },
+    "reference_density": {
+      "path": ".work/ibex-closure-a2a-20261029/a2a16/reference-density.json",
+      "sha256": "429c49caa955f4e89910dde51e5a8fe96a3bae5e053929d28c9a741e6806aa6f"
+    },
+    "measurement": {
+      "path": ".work/ibex-closure-a2a-20261029/a2a16/a2a-measurement.json",
+      "sha256": "88e2960d57483fc1a3dea80b9984aec4d1d644b62d9d59fb4e1778015785c7aa"
+    },
+    "tools": {
+      "prepare_reference.py": "6fe5b7c24dc57d356a30c78c2b6d7bbf185006045b4f07a460e46ed66376d7e5",
+      "launch_reference.py": "e62b861fe1cb2474094f10326c67cad7b547ce9a83edf4d3ad52c006d117bd64",
+      "compute_a2a.py": "4032110c5b6638e954dc631a03777e9ba52d582950894e19b134ba8410293391",
+      "reference_diagnostics.py": "3aa2cd222d5ce52bb727ff5eafdcbd223b7f5fc15387094916fdeb8516485212",
+      "reference_density.py": "fe020783e7b9eb569ed32e89184432a1b0d8b4afcc0e3afa13e0f1416981a8a8",
+      "wl.py": "6732abf14b21b5c1c4635d12151e262b7ced7f8cdd997c36a9af83969b76f168",
+      "publish_receipt.py": "4c3c715a1befc09f3985bd1486dfcd780d68a18412cee1517792d40a5dc1a1ab"
+    }
+  },
+  "module_scope": {
+    "RustEDA": "orchestration, checkpoints and end-to-end accounting",
+    "RustSys": "RTL synthesis, macro preservation and equivalence",
+    "RustSTA": "constraints, extracted timing and independent comparisons",
+    "RustROAD": "floorplan, placement, CTS, routing, extraction and streamout",
+    "RustEDA-Common": "shared models, formats, disk workspaces and compute; included transitively",
+    "RustSpice": "not timed in the RTL-to-GDS main flow; no Ibex performance or speedup claim"
+  },
+  "publication_rule": "Only complete independently checked runs with frozen matching inputs may populate comparative ratios. Failed runs are preserved and reported. Missing or unverified values remain null or unchecked, never zero.",
+  "historical_policy": "Supersedes older public performance tables. Historical immutable qualification receipts and regression oracles remain preserved; they are not current benchmark results."
+}

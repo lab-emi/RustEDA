@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "complete": true,
+  "final_netlist_sha256": "1a4d1152bd87fb0b4ab3ad716bed665d659ce73d532c1f356d58f7d31360c4ca",
+  "netlist_sha256": "1a4d1152bd87fb0b4ab3ad716bed665d659ce73d532c1f356d58f7d31360c4ca",
+  "original_rtl_sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+  "scope": "original EZ130 + original IHP SRAM vendor models; two banks, byte masks, boundary addresses and Ibex stores 42/43; bounded 200us",
+  "simulator": {
+    "path": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/iverilog",
+    "sha256": "741198a48165c282135ccae6a4ffcefcf90cf10389d7cb812d9d1138a6168879",
+    "bytes": 158080
+  },
+  "runtime": {
+    "path": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/vvp",
+    "sha256": "30023e25fe200abb41dad782ed934704ffe15868d9e4c0aa52c1fa01a475259c",
+    "bytes": 9624528
+  },
+  "testbench": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/prepare/tb.sv",
+    "sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+    "bytes": 2550
+  },
+  "log": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/logic/vendor-simulation/simulate.log",
+    "sha256": "18418c4d634170476c70e23a71c7f1e81acc62a60ee65f9eb2cdd44f029e76ef",
+    "bytes": 212
+  }
+}

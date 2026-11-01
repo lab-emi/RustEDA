@@ -24,19 +24,16 @@ guides the next iteration.
   <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200">
 </picture>
 
-## RustSys, RustSTA and RustSpice progress
+## Ibex SG13G2 / EZ130
 
-**2026-10-28 · Integrated source previews**
+The latest two recorded native runs complete **129/129 steps and all 16 gates
+in 472.2 s and 472.6 s**, using EZ130 cells and **two real IHP SRAM macros**.
+SRAM-preserving synthesis, mixed-library timing, spacing-aware placement and a
+pinned early signoff schedule are now captured in the development sources.
+The older matched LibreLane run failed foundry main DRC; no cross-tool ratio
+is published for these newer native-only measurements.
 
-| Engine | Latest integrated capability | Evidence boundary |
-| --- | --- | --- |
-| [RustSys](modules/rustsys/development-status.md) | Five RISC-V designs across three libraries; bounded synthesis, mapping and revision-aware optimization | 30 benchmark netlists pass arbitrary-state RTL equivalence; synthesis time excludes proof and physical design. |
-| [RustSTA 0.4.3](modules/ruststa/development-status.md) | Propagated primary clocks, SPEF waveforms and non-tree RC networks | Dual-PDK reference/circuit checks and full/incremental consistency; extracted RC checker and pulse-width limits remain explicit. |
-| [RustSpice](modules/rustspice/index.md) | Adaptive LTE `.tran`, extended diode/MOS1/controlled-source models and `cuda-oxide` FP64 batched DC | 951-case `ngspice-47` suite (`857` pass, `0` failing, `16` documented scope gaps); GPU batch kernel verified against `solve_cpu_ref` and KCL residuals. |
-
-Real-SRAM synthesis and mixed-library/derated timing are under development for
-IHP Ibex. Full-chip physical closure remains unverified.
-[Read progress, evidence and limits →](engine-status.md)
+[Latest Ibex campaign →](benchmarks.md) · [Engine capabilities →](engine-status.md)
 
 ## Build the feedback loop
 
@@ -101,7 +98,7 @@ to the time that work consumes. Amdahl's law makes that limit explicit.
   <small>1 / ((1 − f) + f / s). This is a model, not a measured RustEDA result.</small>
 </div>
 
-[Read the measurement contract](benchmarks.md#a-matched-rtl-to-gds-comparison) ·
+[Read the measurement scope](benchmarks.md#measurement-scope) ·
 [Check current qualification](verification.md)
 
 </div>

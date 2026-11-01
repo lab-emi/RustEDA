@@ -29,7 +29,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p .work/bootstrap
-          ulimit -v 524288
+          free -h
+          # Typed-capture controls verify a 4 GiB child address-space contract.
+          # Their tiny fixtures use <192 MiB RSS; the parent must permit that limit.
+          ulimit -v 4194304
           timeout --signal=TERM --kill-after=5s 90s \
             python3 scripts/measure.py --output .work/bootstrap/infra-tests.json -- \
             python3 -m unittest discover -s tests -v

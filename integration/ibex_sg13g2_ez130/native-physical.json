@@ -1,0 +1,103 @@
+{
+  "power_net": "VPWR",
+  "ground_net": "VGND",
+  "power_pin": "VDD",
+  "ground_pin": "VSS",
+  "body_power_pins": [
+    "VDD!",
+    "VDDARRAY!"
+  ],
+  "body_ground_pins": [
+    "VSS!"
+  ],
+  "rail_layer": "Metal1",
+  "strap_layer": "TopMetal1",
+  "via": "Via1_XX_so",
+  "io_layer": "Metal3",
+  "tie_high": {
+    "cell": "TIEHI",
+    "pin": "Y"
+  },
+  "tie_low": {
+    "cell": "TIELO",
+    "pin": "Y"
+  },
+  "filler_cells": [
+    "DECAP32",
+    "DECAP16",
+    "DECAP8",
+    "DECAP4",
+    "FILLER16",
+    "FILLER8",
+    "FILLER4",
+    "FILLER2",
+    "FILLER1"
+  ],
+  "alternating_rows": true,
+  "io_width": 300,
+  "io_spacing": 840,
+  "strap_width": 2200,
+  "strap_spacing": 1000,
+  "max_added_cells": 250000,
+  "max_tie_fanout": 1,
+  "cell_spacing_sites": 7,
+  "tap": {
+    "cell": "WELLTAP",
+    "max_gap": 15000,
+    "well_layer": "NWell",
+    "substrate_layer": "PSub",
+    "body_view": "gds"
+  },
+  "macro_supply": {
+    "collection_layer": "Metal5",
+    "pin_layer": "Metal4",
+    "pin_via": "Via4_XX_so",
+    "via_stack": [
+      "TopVia1EWNS"
+    ],
+    "wire_width": 1000
+  },
+  "placer": {
+    "retarget_isolated": true,
+    "new_cells_first": true,
+    "local_detail": true
+  },
+  "clock": {
+    "port": "clk_i",
+    "root_net": "n4072",
+    "cell": "BUFX4",
+    "level_cells": [
+      "BUFX4",
+      "BUFX8",
+      "BUFX16"
+    ],
+    "input_pin": "A",
+    "output_pin": "Y",
+    "sink_pin": "CK",
+    "max_fanout": 8,
+    "max_buffers": 4096,
+    "max_work": 1000000,
+    "clustering": "hilbert",
+    "regroup_prefixes": [
+      "native_fanout_",
+      "native_reset_"
+    ],
+    "root_at_driver": true
+  },
+  "io_min_area": true,
+  "rail_via_stack": [
+    "Via1_XX_so",
+    "Via2_XX_so",
+    "Via3_XX_so",
+    "Via4_XX_so",
+    "TopVia1EWNS"
+  ],
+  "placement_blockages": [
+    {
+      "lx": 506640,
+      "ly": 621300,
+      "ux": 590000,
+      "uy": 977760
+    }
+  ]
+}

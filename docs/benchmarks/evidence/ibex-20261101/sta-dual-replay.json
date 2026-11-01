@@ -1,0 +1,209 @@
+{
+ "schema": "rusteda.ruststa-dual-pdk-differential.v1",
+ "flow": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/sta-agent/bin/b17c092b2e180ea286c433fb0f979f30ffe749f6ccff3f948e3c957c227e024c/ruststa",
+ "candidate": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/sta/bin/3fbf36a981d5a7be2db2bfb83386b0df90e93e211e0951ffb9bdd57d019064f1/ruststa",
+ "rows": [
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "elf": "flow",
+   "threads": 1,
+   "wall_seconds": 0.241,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "elf": "flow",
+   "threads": 2,
+   "wall_seconds": 0.243,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "elf": "flow",
+   "threads": 8,
+   "wall_seconds": 0.233,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "elf": "candidate",
+   "threads": 1,
+   "wall_seconds": 0.247,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "elf": "candidate",
+   "threads": 2,
+   "wall_seconds": 0.252,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "elf": "candidate",
+   "threads": 8,
+   "wall_seconds": 0.249,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-gf180",
+   "pdk": "gf180",
+   "files": [
+    "constraints.rbin",
+    "limits.rbin",
+    "netlist.rbin",
+    "parasitics.rbin",
+    "sta.rbin"
+   ],
+   "sta_rbin": "c40cecfb58f481ec",
+   "different": {}
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "elf": "flow",
+   "threads": 1,
+   "wall_seconds": 0.191,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "elf": "flow",
+   "threads": 2,
+   "wall_seconds": 0.192,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "elf": "flow",
+   "threads": 8,
+   "wall_seconds": 0.193,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "elf": "candidate",
+   "threads": 1,
+   "wall_seconds": 0.181,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "elf": "candidate",
+   "threads": 2,
+   "wall_seconds": 0.21,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "elf": "candidate",
+   "threads": 8,
+   "wall_seconds": 0.194,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "counter-sky130",
+   "pdk": "sky130",
+   "files": [
+    "constraints.rbin",
+    "limits.rbin",
+    "netlist.rbin",
+    "parasitics.rbin",
+    "sta.rbin"
+   ],
+   "sta_rbin": "e81de70660978de9",
+   "different": {}
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "elf": "flow",
+   "threads": 1,
+   "wall_seconds": 0.264,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "elf": "flow",
+   "threads": 2,
+   "wall_seconds": 0.258,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "elf": "flow",
+   "threads": 8,
+   "wall_seconds": 0.267,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "elf": "candidate",
+   "threads": 1,
+   "wall_seconds": 0.264,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "elf": "candidate",
+   "threads": 2,
+   "wall_seconds": 0.237,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "elf": "candidate",
+   "threads": 8,
+   "wall_seconds": 0.261,
+   "status": null,
+   "scope": "spef_rc"
+  },
+  {
+   "case": "fifo-sky130",
+   "pdk": "sky130",
+   "files": [
+    "constraints.rbin",
+    "limits.rbin",
+    "netlist.rbin",
+    "parasitics.rbin",
+    "sta.rbin"
+   ],
+   "sta_rbin": "a8e58ae62e1b1341",
+   "different": {}
+  }
+ ],
+ "all_identical": true
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "rusteda.tap-coverage.v1",
+  "gds": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/ibex_sram_bench.gds",
+    "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+    "bytes": 28120726
+  },
+  "workspace": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage",
+  "base_revision": "empty",
+  "top": "ibex_sram_bench",
+  "excluded_cells": {
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": 2
+  },
+  "limits": {
+    "cells": 16384,
+    "hierarchy_edges": 250000,
+    "instance_visits": 4000000,
+    "input_shapes": 2000000,
+    "vertices": 8000000,
+    "shape_visits": 8000000,
+    "vertex_visits": 32000000,
+    "domains": 4096,
+    "anchors": 250000,
+    "bin_entries": 1000000,
+    "candidates": 4096,
+    "boxes": 16000000,
+    "distance_checks": 200000000,
+    "pending": 64,
+    "depth": 32
+  }
+}

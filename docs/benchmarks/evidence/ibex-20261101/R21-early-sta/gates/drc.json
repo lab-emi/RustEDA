@@ -1,0 +1,39 @@
+{
+  "schema": "rusteda.foundry-bound-result.v1",
+  "mode": "same_immutable_gds",
+  "input_manifest": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-first/inputs.json",
+    "sha256": "73991f041422f6baf901652800360550da82984585f3378b1c0376155d257dc7",
+    "bytes": 9110
+  },
+  "table": "main",
+  "final_gds": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/ibex_sram_bench.gds",
+    "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+    "bytes": 28120726
+  },
+  "raw_summary": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-first/pre-main/raw/summary.json",
+    "sha256": "78506217c84e753f0f348c2e6779a170afc5cf9543b9744bbd8ce3be4865b647",
+    "bytes": 1306
+  },
+  "actual_foundry_processes": 0,
+  "command": null,
+  "status": "passed",
+  "complete": true,
+  "violations": 0,
+  "gds": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-first/initial.gds",
+    "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+    "bytes": 28120726
+  },
+  "deck_sha256": "0620b737538af7c86dfb7c6ca0ba3a38f8410b0d51412978ca977ea3df3fb693",
+  "disabled_rules": [
+    "recommended"
+  ],
+  "raw_report": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-first/pre-main/raw/drc.lyrdb",
+    "sha256": "1b8fb42910df3689a6e2bb9d13882bf332b0b6f5f14f2536c09ee90c8bc9f25f",
+    "bytes": 111055
+  }
+}

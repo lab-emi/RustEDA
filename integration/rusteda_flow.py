@@ -9,7 +9,7 @@ import re
 import subprocess
 
 from . import worker_control
-from .toolchain import read_json, verify, write_json
+from .toolchain import digest, read_json, verify, write_json
 
 
 class FlowError(ValueError):
@@ -40,8 +40,10 @@ def main(argv=None, root=None):
     sub=p.add_subparsers(dest="action",required=True)
     init=sub.add_parser("init")
     init.add_argument("--base-rev",required=True)
-    init.add_argument("--design",required=True)
-    init.add_argument("--pdk",choices=("sky130","gf180"),required=True)
+    selection=init.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--design")
+    selection.add_argument("--config",type=Path,help="Explicit pinned native IHP flow configuration")
+    init.add_argument("--pdk",choices=("sky130","gf180","ihp"))
     run=sub.add_parser("run")
     run.add_argument("--base-rev",required=True)
     run.add_argument("--retry-failed",action="store_true")
@@ -53,14 +55,36 @@ def main(argv=None, root=None):
     a=p.parse_args(argv)
     # Recovery must be possible when producer tools, PDK files or manifests changed.
     # The RustEDA flow engine executable still must match the trusted local tool configuration.
-    lock=verify(read_json(a.tools),recovery=a.action=="recover")
+    raw_lock=read_json(a.tools)
+    lock=verify(raw_lock,recovery=True)
     if "flow_driver" not in lock["programs"]:
         raise ValueError("toolchain predates integrated RustEDA; run ./rusteda tools configure")
     program=lock["programs"]["flow_driver"]["path"]
     workspace=a.workspace.resolve()
+    native_ihp=a.action=="init" and (a.config is not None or a.pdk=="ihp")
+    if a.action not in ("init","recover"):
+        revision=getattr(a,"rev",getattr(a,"base_rev","HEAD"))
+        preview=flow_engine(program,workspace,["plan","--rev",revision],require_ok=False)
+        native_ihp=preview.get("pdk")=="ihp_sg13g2_ez130"
+    if not native_ihp and a.action!="recover":
+        verify(raw_lock)
     if a.action=="init":
         if a.base_rev!="empty":
             return dict(ok=False,error=dict(code="REVISION_CONFLICT",message="init requires --base-rev empty"))
+        if a.config is not None or a.pdk=="ihp":
+            if a.config is not None:
+                if a.pdk is not None:raise ValueError("--config contains its PDK; omit --pdk")
+                configuration=a.config.resolve()
+            else:
+                spec=lock.get("ihp_profiles",{}).get(a.design)
+                if spec is None:raise ValueError("no pinned IHP profile for this design; use --config")
+                configuration=Path(spec["path"])
+                if digest(configuration)!=spec["sha256"]:raise ValueError("IHP profile identity changed")
+            config=read_json(configuration)
+            if config.get("pdk") not in ("ihp_sg13g2_ez130","ihp-sg13g2") or config.get("flow")!="rusteda":
+                raise ValueError("--config requires the native IHP/EZ130 worker contract")
+            return flow_engine(program,workspace,["init","--base-rev",a.base_rev,"--config",str(configuration)])
+        if a.pdk is None:raise ValueError("--design requires --pdk")
         if not re.fullmatch(r"[a-zA-Z0-9_-]{1,128}",a.design):
             raise ValueError("design must be a safe manifest name")
         project=Path(lock["project"]);manifest=project/"fixtures/designs"/(a.design+".json")

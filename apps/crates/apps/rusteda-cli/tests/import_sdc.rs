@@ -285,7 +285,7 @@ fn d_code_error_exits_1_with_location_and_stale_base_exits_4() {
     let bad_sdc = root.join("bad.sdc");
     fs::write(
         &bad_sdc,
-        "create_clock -name clk -period 10.0 [get_ports clk]\nset_timing_derate -early 0.95\n",
+        "create_clock -name clk -period 10.0 [get_ports clk]\nset_timing_derate -early -cell_check 0.95\n",
     )
     .unwrap();
     let bad_s = bad_sdc.to_str().unwrap();

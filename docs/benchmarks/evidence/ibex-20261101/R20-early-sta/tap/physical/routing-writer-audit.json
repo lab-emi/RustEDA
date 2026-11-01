@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.private-routing-writer-audit.v1",
+  "status": "passed",
+  "run_root": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run",
+  "template_mode": false,
+  "writers": [
+    {
+      "field": "limits/replay/path",
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/route-budget-error.json"
+    }
+  ],
+  "scope": "containment only; algorithm parameters unchanged",
+  "config": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/frontend/physical/routing.json",
+    "sha256": "782c3d50d926ee6f00d535642e024a2cc82653a8a9e18a11c2c0b586480a218e",
+    "bytes": 3616
+  }
+}

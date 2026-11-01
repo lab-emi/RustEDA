@@ -1,0 +1,121 @@
+{
+  "schema": "rusteda.joint-tap-execution.v1",
+  "status": "captured_passed_requires_joint_qualification",
+  "producer_step": "nf_tap_latchup",
+  "input_manifest": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/recipe/manifest.json",
+    "sha256": "cf7dd1374b0057fc1063d141a09616f85860846c98f1a4b1aea85ad4b4c385af",
+    "bytes": 89570
+  },
+  "ownership": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/ownership/native.json",
+    "sha256": "6b9f5228965689bded125df858d746b3119184c04dcd80b48008e538c04caf1c",
+    "bytes": 344
+  },
+  "source_pins": {
+    "guard": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/helpers/early2/tap_capture.py",
+      "sha256": "740a7621f238faa3e34060e9084dbd09e40d96deb4b0040acbd42527b83a7444",
+      "bytes": 14206
+    },
+    "runner": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/signoff_latchup.py",
+      "sha256": "8f58167b322b27c7563467b76c19a9086f49610fff259dfe0a92bc6fcc574e88",
+      "bytes": 6451
+    },
+    "common": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/signoff_drc.py",
+      "sha256": "2a8ab18b9496de005d14561432ed4aa51d67f777520906ba05f99eb89c72370d",
+      "bytes": 6389
+    }
+  },
+  "tools": {
+    "python": {
+      "path": "/usr/bin/python3.14",
+      "sha256": "44fdcdf23cd94aece60aec10b92b15a0e1cf4561e710985eaa53b362a03db48e",
+      "bytes": 14424
+    },
+    "appimage": {
+      "path": "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "sha256": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+      "bytes": 1398049312
+    }
+  },
+  "inputs": {
+    "gds": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-early.gds",
+      "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+      "bytes": 28120726
+    },
+    "profile": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/official-signoff/provenance.json",
+      "sha256": "1f78e017ccfa8afb9146d2cf1951842f5688d7af96976dd83312ee98e6c6c732",
+      "bytes": 157113
+    },
+    "deck": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/official-signoff/klayout/tech/drc/rule_decks/sg13g2_maximal.drc",
+      "sha256": "9516612355c2d96aaffd15281727816b52cda43beffbcc54df42488aaac812db",
+      "bytes": 151424
+    }
+  },
+  "outputs": {
+    "summary": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/summary.json",
+      "sha256": "bd20d086da9cca49983a3c1ccdbe3be90468accb43df4f5adcc62b263c4b5352",
+      "bytes": 6160
+    },
+    "head": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/HEAD",
+      "sha256": "04ba8965e2c86e1c96c4fa037d255cc541b3a511dee31764425cf38689131724",
+      "bytes": 5
+    },
+    "raw_report": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/drc.lyrdb",
+      "sha256": "2c7437f620d0012b1f83144622224aa0ab9211c8e5fb02b7f792a8b1b7aec10f",
+      "bytes": 46912
+    },
+    "command": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/command.json",
+      "sha256": "871de58917e25371e05fdff3b39cb4d22cba7e90558bc900918684d260b402dd",
+      "bytes": 664
+    }
+  },
+  "child": {
+    "argv": [
+      "/usr/bin/python3.14",
+      "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/signoff_latchup.py",
+      "--gds",
+      "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-early.gds",
+      "--profile",
+      "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/official-signoff/provenance.json",
+      "--tool",
+      "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "--top",
+      "ibex_sram_bench",
+      "--workspace",
+      "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup",
+      "--base-rev",
+      "empty"
+    ],
+    "pid": 1570781,
+    "exit_code": 0,
+    "wall_seconds": 348.87197389197536,
+    "available_seconds": 888.5622761780396,
+    "stdout": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup-execution/stdout.log",
+      "sha256": "abaed7f1244e8d640a4e131b12cd7c77bddc5ec2dc3385cdab55b049baad9e1e",
+      "bytes": 139
+    },
+    "stderr": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup-execution/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "actual_python_children": 1,
+  "actual_native_processes": null,
+  "command_deadline_seconds": 900,
+  "cleanup_reserve_seconds": 10,
+  "native_process_count_scope": "not inferred; exact existing checker/controller command is separately bound",
+  "wall_seconds": 351.0185795800062
+}

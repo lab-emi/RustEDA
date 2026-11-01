@@ -21,3 +21,13 @@ owns `rusteda-core`, `rusteda-workspace`, `rusteda-formats`, `rusteda-compute` a
 `rusteda-cli-common`; no shared implementation is duplicated into the applications.
 
 [Flow guide](flows.md) · [Workbench](workbench/index.md) · [Integration details](application-integration.md)
+
+## Current development
+
+The 2026-11-01 publication includes the qualified IHP/SRAM source bases, parallel
+RC preparation, spacing-aware placement and bounded physical-flow helpers.
+Each engine README and development-status page records its supported scope.
+The G1 CPU/CUDA crossing session is published separately as experimental work;
+GPU-integrated RTL-to-GDS remains unchecked.
+
+[All engine updates](engine-status.md) · [Measured native runs](benchmarks.md)

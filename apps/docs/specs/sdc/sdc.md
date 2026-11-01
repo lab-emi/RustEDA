@@ -311,3 +311,11 @@ interpreted typed commands with one object collection, preserved by `CONSTR v1`.
 This supersedes their Phase 2a D0010 classification in SDC-REQ-0034. The consumer
 resolves clock collections and reports unsupported object/source/network features
 explicitly; it must not silently use an ideal network for selected physical clocks.
+
+
+**SDC-REQ-0071** `set_timing_derate -early|-late <factor>` is interpreted and
+preserved in CONSTR v1, superseding its Phase 2a D0010 classification. Factors must
+be finite and positive. Global cell/net delay factors are supported; object,
+transition, clock/data-only, cell-check, static/dynamic and increment qualifiers
+remain explicit D0010 errors. The timing consumer must apply the selected factor
+to clock and data delays while retaining unscaled slews and timing checks.

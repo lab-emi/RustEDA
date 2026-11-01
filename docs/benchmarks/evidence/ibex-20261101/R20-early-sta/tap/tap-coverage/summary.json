@@ -1,0 +1,125 @@
+{
+  "status": "passed",
+  "rules": {
+    "LU.a": {
+      "status": "passed",
+      "domains": 251,
+      "target_polygons": 48740,
+      "tie_points": 23610,
+      "uncertified_boxes": [],
+      "domain_inventory": {
+        "polygons": 583,
+        "vertices": 9620
+      }
+    },
+    "LU.b": {
+      "status": "passed",
+      "domains": 1,
+      "target_polygons": 71121,
+      "tie_points": 23610,
+      "uncertified_boxes": [],
+      "domain_inventory": {
+        "polygons": 9,
+        "vertices": 9624
+      }
+    }
+  },
+  "dbu_um": "0.001",
+  "max_distance_dbu": 20000,
+  "layers": {
+    "active": {
+      "polygons": 135601,
+      "vertices": 616506
+    },
+    "psd": {
+      "polygons": 8121,
+      "vertices": 101804
+    },
+    "nsd": {
+      "polygons": 0,
+      "vertices": 0
+    },
+    "nsd_block": {
+      "polygons": 0,
+      "vertices": 0
+    },
+    "nwell": {
+      "polygons": 583,
+      "vertices": 9620
+    },
+    "pwell_block": {
+      "polygons": 0,
+      "vertices": 0
+    },
+    "pwell_draw": {
+      "polygons": 0,
+      "vertices": 0
+    },
+    "contact": {
+      "polygons": 1384635,
+      "vertices": 5538540
+    }
+  },
+  "schema": "rusteda.tap-coverage-result.v1",
+  "gds": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/ibex_sram_bench.gds",
+    "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+    "bytes": 28120726
+  },
+  "config": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/tap-coverage-inputs.json",
+    "sha256": "a35ac56121799ee61eb7e4b85752bd380cd909a3ea8d08ba1a892ac7c5598dcc",
+    "bytes": 919
+  },
+  "checker": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage.py",
+    "sha256": "98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47",
+    "bytes": 18682
+  },
+  "limits": {
+    "cells": 16384,
+    "hierarchy_edges": 250000,
+    "instance_visits": 4000000,
+    "input_shapes": 2000000,
+    "vertices": 8000000,
+    "shape_visits": 8000000,
+    "vertex_visits": 32000000,
+    "domains": 4096,
+    "anchors": 250000,
+    "bin_entries": 1000000,
+    "candidates": 4096,
+    "boxes": 16000000,
+    "distance_checks": 200000000,
+    "pending": 64,
+    "depth": 32
+  },
+  "work": {
+    "cells": 245,
+    "hierarchy_instance_records": 248043,
+    "hierarchy_edges": 358,
+    "instance_visits": 1289784,
+    "input_shapes": 1824082,
+    "vertices": 7462734,
+    "shape_visits": 1816474,
+    "vertex_visits": 7028140,
+    "domains": 592,
+    "anchors": 47220,
+    "bin_entries": 47220,
+    "boxes": 119861,
+    "distance_checks": 8369755
+  },
+  "hierarchy_budget_scope": {
+    "hierarchy_edges": "distinct_stored_parent_child_dependencies",
+    "hierarchy_instance_records_limit": 4000000,
+    "instance_visits": "expanded_full_hierarchy_occurrences"
+  },
+  "excluded_cells": {
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": 2
+  },
+  "scope": "nonexcluded_diffusion_contact_targets_full_well_domains",
+  "excluded_macro_content_status": "unchecked_requires_separate_macro_contract_and_full_lvs",
+  "geometry_scope": "rectilinear_polygons_unit_orthogonal_transforms_no_paths",
+  "criterion": "conservative_complete_box_L1_contacted_tie_certificate",
+  "full_foundry_latchup_status": "unchecked",
+  "wall_seconds": 31.44918192795012
+}

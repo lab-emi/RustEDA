@@ -47,7 +47,86 @@ def check_responsive_artwork(readme, slug):
         assert attrs.get('width') == ('1200' if suffix == 'banner.gif' else '360'), (slug, suffix, 'unexpected display width')
 
 
+def check_current_benchmark():
+    """Check publication identity without asserting EDA correctness."""
+    receipt_path = ROOT/'docs/benchmarks/ibex-sg13g2-ez130.json'
+    assert receipt_path.stat().st_size <= 65536, 'benchmark receipt exceeds byte cap'
+    receipt = json.loads(receipt_path.read_text())
+    assert receipt['design']['family'] == 'Ibex'
+    assert receipt['design']['sram_instances_required'] == 2
+    assert receipt['technology']['process'] == 'IHP SG13G2'
+    assert receipt['technology']['standard_cell_library'].startswith('EZ130')
+    if receipt['status'] == 'pending':
+        assert receipt['qualification_status'] == 'unverified'
+        for key, value in receipt['metrics'].items():
+            assert value is None or value in ('unchecked', 'unverified'), (key, value)
+    else:
+        # A comparative ratio needs two completed, eligible flows; a failed flow
+        # keeps its measured values but never an end-to-end time.
+        rows = receipt['implementations']
+        assert sorted(rows) == sorted(receipt['comparison']['contenders']) == sorted(receipt['metrics'])
+        for name, row in rows.items():
+            if row['status'] == 'completed':
+                assert row['eligible'] is True and row['gates_passed'] == row['required_gate_count'], name
+                assert len(row['gates']) == row['required_gate_count'], name
+                assert all(verdict in ('passed', 'proven') for verdict in row['gates'].values()), name
+            else:
+                assert row['eligible'] is False, name
+                assert receipt['metrics'][name]['end_to_end_seconds'] is None, name
+        if not all(row['status'] == 'completed' for row in rows.values()):
+            for key, value in receipt['ratios'].items():
+                assert key == 'eligibility' or value is None, (key, value)
+            assert all(row['comparative_speedup'] is None for row in receipt['metrics'].values())
+    retired_markers = ('<!-- open-hardware-benchmark:start -->',
+                       '<!-- benchmark-16-core:start -->',
+                       '<!-- benchmark-full-matrix:start -->',
+                       '<!-- gf180-audit:start -->',
+                       '<!-- rustspice-ngspice-benchmark:start -->')
+    for repo in (ROOT, ROOT/'modules/RustSys', ROOT/'modules/RustSpice'):
+        for path in (repo/'README.md', repo/'docs/index.md'):
+            text = path.read_text()
+            assert all(marker not in text for marker in retired_markers), path
+
+
+def check_development_results():
+    """Verify retained measurement files and publication scope, without running EDA."""
+    path = ROOT/'docs/benchmarks/ibex-sg13g2-ez130-development.json'
+    assert path.stat().st_size <= 65536, 'development receipt exceeds byte cap'
+    receipt = json.loads(path.read_text())
+    assert receipt['schema'] == 'rusteda.native-development-results.v1'
+    assert receipt['comparative_speedup'] is None
+    assert receipt['comparative_memory_ratio'] is None
+    inventory = receipt['evidence_inventory']
+    assert 1 <= len(inventory) <= 128, 'evidence file budget'
+    total = 0
+    for record in inventory:
+        source = (ROOT/'docs'/record['path']).resolve()
+        assert source.is_relative_to(ROOT/'docs/benchmarks/evidence')
+        assert source.stat().st_size == record['bytes'] <= 2*1024*1024
+        total += record['bytes']
+        assert total <= 8*1024*1024, 'evidence byte budget'
+        assert hashlib.sha256(source.read_bytes()).hexdigest() == record['sha256'], source
+    rows = receipt['measurements']
+    assert len(rows) == 2
+    for row in rows:
+        summary = json.loads((ROOT/'docs'/row['summary']['path']).read_text())
+        metrics = json.loads((ROOT/'docs'/row['metrics']['path']).read_text())
+        steps = json.loads((ROOT/'docs'/row['receipts']['path']).read_text())
+        assert summary['status'] == row['status'] == 'completed'
+        assert not summary['failed_items'] and not summary['unverified_items']
+        assert len(summary['gates']) == len(row['gates']) == row['required_gate_count'] == 16
+        assert len(steps) == row['steps_completed'] == 129
+        assert all(s.get('exit_code', 0) == 0 and not s.get('capture_error') for s in steps)
+        assert metrics['elapsed_seconds'] == row['elapsed_seconds'] > 0
+        assert metrics['peak_rss_kib'] == row['peak_reaped_process_rss_kib'] > 0
+        assert metrics['cgroup'] == row['cgroup']
+    for name in ('gds', 'def', 'netlist_final', 'netlist_powered_final', 'spef_native_nom'):
+        assert rows[0]['artifacts'][name] == rows[1]['artifacts'][name], name
+
+
 def main():
+    check_current_benchmark()
+    check_development_results()
     products=[('RustEDA',ROOT)]+[(name,ROOT/'modules'/name) for name in ('RustSys','RustSTA','RustROAD','RustSpice','RustEDA-Common')]
     logos=set()
     for name,repo in products:

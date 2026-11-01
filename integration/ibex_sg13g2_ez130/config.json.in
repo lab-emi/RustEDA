@@ -1,0 +1,120 @@
+{
+  "DESIGN_NAME": "ibex_sram_bench",
+  "VERILOG_FILES": [
+    "@WORKSPACE@/rtl/design.v"
+  ],
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100.0,
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [
+    0,
+    0,
+    1100,
+    1000
+  ],
+  "CORE_AREA": [
+    20.16,
+    20.16,
+    1079.82,
+    977.76
+  ],
+  "FP_CORE_UTIL": 40,
+  "PL_TARGET_DENSITY_PCT": 45,
+  "STA_CORNERS": [
+    "nom_typ_1p20V_25C",
+    "nom_slow_1p08V_125C"
+  ],
+  "DEFAULT_CORNER": "nom_typ_1p20V_25C",
+  "MACROS": {
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": {
+      "gds": [
+        "@WORKSPACE@/pdk/ihp-sg13g2/libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_1024x32_c2_bm_bist.gds"
+      ],
+      "lef": [
+        "@WORKSPACE@/pdk/ihp-sg13g2/libs.ref/sg13g2_sram/lef/RM_IHPSG13_1P_1024x32_c2_bm_bist.lef"
+      ],
+      "lib": {
+        "*_typ_1p20V_25C": [
+          "@WORKSPACE@/pdk/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C.lib"
+        ],
+        "*_slow_1p08V_125C": [
+          "@WORKSPACE@/pdk/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_slow_1p08V_125C.lib"
+        ]
+      },
+      "instances": {
+        "u_imem": {
+          "location": [
+            80,
+            631.3
+          ],
+          "orientation": "N"
+        },
+        "u_dmem": {
+          "location": [
+            600,
+            631.3
+          ],
+          "orientation": "N"
+        }
+      },
+      "spice": [
+        "@WORKSPACE@/pdk/ihp-sg13g2/libs.ref/sg13g2_sram/cdl/RM_IHPSG13_1P_1024x32_c2_bm_bist.cdl"
+      ]
+    }
+  },
+  "PDN_MACRO_CONNECTIONS": [
+    "u_imem VPWR VGND VDD! VSS!",
+    "u_imem VPWR VGND VDDARRAY! VSS!",
+    "u_dmem VPWR VGND VDD! VSS!",
+    "u_dmem VPWR VGND VDDARRAY! VSS!"
+  ],
+  "RUN_LINTER": true,
+  "LINTER_ERROR_ON_LATCH": false,
+  "PNR_SDC_FILE": "@WORKSPACE@/pnr.sdc",
+  "SIGNOFF_SDC_FILE": "@WORKSPACE@/constraints.sdc",
+  "STA_EXTRA_CORNER_TCL_FILE": "@WORKSPACE@/cppr_off.tcl",
+  "PDN_CFG": "@WORKSPACE@/pdn.tcl",
+  "DRT_THREADS": 16,
+  "DRT_OPT_ITERS": 64,
+  "DRT_SAVE_SNAPSHOTS": false,
+  "DRT_SAVE_DRC_REPORT_ITERS": 8,
+  "GPL_CELL_PADDING": 2,
+  "DPL_CELL_PADDING": 2,
+  "DIODE_PADDING": 2,
+  "RUN_HEURISTIC_DIODE_INSERTION": false,
+  "GRT_ANTENNA_REPAIR_ITERS": 6,
+  "GRT_ANTENNA_REPAIR_MARGIN": 50,
+  "DRT_ANTENNA_REPAIR_ITERS": 4,
+  "DRT_ANTENNA_REPAIR_MARGIN": 50,
+  "RUN_POST_GRT_RESIZER_TIMING": true,
+  "RUN_POST_GRT_DESIGN_REPAIR": false,
+  "GRT_RESIZER_SETUP_SLACK_MARGIN": 1.0,
+  "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.2,
+  "GRT_RESIZER_SETUP_REPAIR_TNS_PCT": 100,
+  "FP_TAPCELL_DIST": 15,
+  "MAX_SLEW_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "MAX_CAP_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "CTS_SINK_CLUSTERING_SIZE": 8,
+  "PL_MAX_DISPLACEMENT_X": 1100,
+  "PL_MAX_DISPLACEMENT_Y": 400,
+  "RT_MIN_LAYER": "Metal2",
+  "RT_MAX_LAYER": "TopMetal2",
+  "RT_CLOCK_MIN_LAYER": "Metal2",
+  "RT_CLOCK_MAX_LAYER": "TopMetal2",
+  "KLAYOUT_DRC_THREADS": 2,
+  "KLAYOUT_XOR_THREADS": 2,
+  "FP_MACRO_HORIZONTAL_HALO": 10,
+  "FP_MACRO_VERTICAL_HALO": 10,
+  "FP_OBSTRUCTIONS": [
+    [
+      506.64,
+      621.3,
+      590.0,
+      977.76
+    ]
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "rusteda.source-qa.v1",
+  "status": "passed",
+  "scope": "source/build/test/lint quality and bit-identity against the replaced ELF; not whole-flow qualification",
+  "tools": {
+    "ruststa": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/sta/bin/3fbf36a981d5a7be2db2bfb83386b0df90e93e211e0951ffb9bdd57d019064f1/ruststa",
+      "sha256": "3fbf36a981d5a7be2db2bfb83386b0df90e93e211e0951ffb9bdd57d019064f1",
+      "bytes": 63950416
+    },
+    "rusteda": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/sta-agent/bin/af6b7ade0cd9dc7a1e9204af85fb9db2a2f34b6bc92b3e65fcf0c3934d15ac0f/rusteda",
+      "sha256": "af6b7ade0cd9dc7a1e9204af85fb9db2a2f34b6bc92b3e65fcf0c3934d15ac0f",
+      "bytes": 32413504
+    },
+    "replaced_ruststa": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/sta-agent/bin/b17c092b2e180ea286c433fb0f979f30ffe749f6ccff3f948e3c957c227e024c/ruststa",
+      "sha256": "b17c092b2e180ea286c433fb0f979f30ffe749f6ccff3f948e3c957c227e024c",
+      "bytes": 63576416
+    }
+  },
+  "source": {
+    "base_worktree": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/Sta",
+    "common_worktree": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/Common",
+    "patch": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/candidates/rc-prepare-parallel.patch",
+      "sha256": "81a1f1146729890c3b0845b615c81be5e2483da7c35d87fbd943c53ad2224138",
+      "bytes": 14220
+    },
+    "base_committed": false
+  },
+  "tests": {
+    "regular": {
+      "passed": 259,
+      "failed": 0,
+      "ignored": 17,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/sta/test.log",
+        "sha256": "90064f42ccc958f47f05f233e16ed15513b5b2401ef875ca8b877dfb11930d4e",
+        "bytes": 30161
+      }
+    },
+    "real_pdk_campaigns": {
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/sta/test-pdk2.log",
+        "sha256": "3a86f17542eec815fa6dde5575881136ea04598b4696e5d4c8e44eceea37604b",
+        "bytes": 14839
+      }
+    }
+  },
+  "clippy": "clean on ruststa --all-targets",
+  "outputs_identical_to_replaced": {
+    "dual_pdk": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/sta/replay/dual-final.json",
+      "sha256": "70d59a0d96f1c6765536d2b003444855a9390b2bb482a3ee5f30589ba2068e99",
+      "bytes": 3978
+    },
+    "ibex_frontend_steps": [
+      "fe_temporary_run",
+      "fe_repair_run",
+      "fe_final_run"
+    ]
+  },
+  "unchecked": [
+    "gpu_matches_cpu_on_corpus_and_tristate",
+    "gpu_matches_cpu_on_latches_and_clocks",
+    "ngspice_forward_sensitivity_and_lumped_regime",
+    "ngspice_resistor_loops_match_nodal_solution",
+    "scale",
+    "scale_500k_and_1m_mapped_queries_under_25ms"
+  ]
+}

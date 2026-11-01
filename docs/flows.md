@@ -35,6 +35,6 @@ corners, wire model, unconstrained endpoint counts and declared deviations.
 incomplete checks are `unverified`.
 
 The [qualification summary](verification.md) covers small blocks on SKY130 HD
-and GF180 7T. It is not an OpenC910 performance or tapeout-signoff result.
+and GF180 7T. It is not a full-chip performance or tapeout-signoff result.
 The [RustEDA flow worker contract](workbench/flow/rusteda-worker.md) and
 [RustROAD physical flow](../modules/RustROAD/docs/rtl2gds.md) document interfaces.
