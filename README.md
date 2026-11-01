@@ -1,3 +1,19 @@
+# RustEDA tool suite
+
+| Tool · repository | Function |
+| --- | --- |
+| [RustEDA CLI](https://github.com/lab-emi/RustEDA) | Unified commands for design workspaces, libraries and engine tools. |
+| [RustEDA flow](https://github.com/lab-emi/RustEDA) | RTL-to-GDS flow execution, checkpoints and recovery. |
+| [RustEDA workbench (Studio)](https://github.com/lab-emi/RustEDA) | Design hierarchy, critical paths, logic cones and shared selections. |
+| [RustSys](https://github.com/lab-emi/RustSys) | RTL synthesis, technology mapping and equivalence checks. |
+| [RustSTA](https://github.com/lab-emi/RustSTA) | Static timing, constraints, parasitics and incremental analysis. |
+| [RustROAD](https://github.com/lab-emi/RustROAD) | Placement, clock trees, routing, extraction and GDS. |
+| [RustSpice](https://github.com/lab-emi/RustSpice) | Differentiable SPICE circuit simulation and adjoint sensitivity. |
+| [RustEDA Common](https://github.com/lab-emi/RustEDA-Common) | Shared design models, format parsers, disk workspaces and compute kernels. |
+
+CLI, flow and workbench live in this repository under `apps/`. The five engine
+modules have independent repositories and exact source pins.
+
 <p align="center">
   <img src="docs/assets/rusteda-wordmark.svg" alt="RustEDA — From RTL to verified silicon" width="360">
 </p>
@@ -70,22 +86,6 @@ RTL-to-GDS or faster agent iterations.
 ## One benchmark campaign
 
 The [Ibex SG13G2/EZ130 campaign](docs/benchmarks.md) is the single public performance source for RustEDA and its modules. Module pages link to its [machine-readable receipt](docs/benchmarks/ibex-sg13g2-ez130.json). RustSpice is not timed in the RTL-to-GDS main flow and has no Ibex speedup claim.
-
-## One product, five engine modules
-
-| Module | Role | Documentation |
-| --- | --- | --- |
-| [RustSys](https://github.com/lab-emi/RustSys) | RTL synthesis, technology mapping and equivalence checks | [Synthesis](https://lab-emi.github.io/RustEDA/modules/rustsys/) |
-| [RustSTA](https://github.com/lab-emi/RustSTA) | Timing, constraints, parasitics and incremental analysis | [Timing](https://lab-emi.github.io/RustEDA/modules/ruststa/) |
-| [RustROAD](https://github.com/lab-emi/RustROAD) | Placement, clock trees, routing, extraction and GDS | [Physical design](https://lab-emi.github.io/RustEDA/modules/rustroad/) |
-| [RustSpice](https://github.com/lab-emi/RustSpice) | Differentiable SPICE circuit simulation and adjoint sensitivity | [Circuit simulation](https://lab-emi.github.io/RustEDA/modules/rustspice/) |
-| **RustEDA flow** (built in) | Bounded processes, checkpoints, recovery and flow execution | [Flows](https://lab-emi.github.io/RustEDA/flows/) |
-| **RustEDA workbench** (built in) | Hierarchy, critical paths, logic cones and shared selections | [Workbench](https://lab-emi.github.io/RustEDA/workbench/) |
-| [RustEDA Common](https://github.com/lab-emi/RustEDA-Common) | Shared models, formats, disk workspaces and compute kernels | [Foundation](https://lab-emi.github.io/RustEDA/modules/rusteda-common/) |
-
-RustEDA owns flow execution and the workbench directly in `apps/`, with one
-application workspace and lockfile. The five engine modules retain independent
-Git histories and exact pins. There is no root Cargo workspace.
 
 ## PDKs and standard-cell libraries
 
