@@ -1,0 +1,169 @@
+{
+  "status": "proven",
+  "complete": true,
+  "original_rtl_sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+  "rtl_sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+  "netlist_sha256": "1a4d1152bd87fb0b4ab3ad716bed665d659ce73d532c1f356d58f7d31360c4ca",
+  "scope": {
+    "reference": "original RTL independent interpreter and external ABC",
+    "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+    "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+    "reset_assumptions": [],
+    "case_assumptions": [],
+    "input_assumptions": [],
+    "macro_scope": "all functional SRAM interface bits, opaque across the memory boundary",
+    "wire_model": "none",
+    "corner": "logic",
+    "four_state_refinement": "unverified"
+  },
+  "manifest": {
+    "all_gate_initial_states_covered": true,
+    "all_rtl_inputs_and_states_quantified": true,
+    "case_assumptions": [],
+    "comparison": "each obligation compares (reference & guard) with (implementation & guard); guards are original clock/reset event semantics",
+    "format": "binary-aiger-combinational",
+    "gate_state_elements": 1998,
+    "initial_state_choices": [],
+    "input_variables_file": "input-variables.u32le",
+    "max_and_nodes": 64000000,
+    "max_outputs": 8000000,
+    "method": "independent-rtl-event-obligations-v1",
+    "obligation_kinds": {
+      "async-clear": 1998,
+      "async-preset": 1998,
+      "clock": 1997,
+      "data": 1,
+      "enable": 1,
+      "next-state": 1997,
+      "output": 384
+    },
+    "observations": [],
+    "output_bits": 384,
+    "primary_input_bits": 116,
+    "proof_status": "not_run",
+    "proposed_state_bindings": 0,
+    "reset_assumptions": [],
+    "rtl_state_bits": 2023,
+    "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+    "schema": 1,
+    "sides": [
+      {
+        "and_nodes": 51959,
+        "bytes": 217454,
+        "file": "gold.aig",
+        "inputs": 2139,
+        "outputs": 8376
+      },
+      {
+        "and_nodes": 37602,
+        "bytes": 158848,
+        "file": "gate.aig",
+        "inputs": 2139,
+        "outputs": 8376
+      }
+    ],
+    "state_discovery_limits": {
+      "max_candidates": 4194304,
+      "max_definitions": 64000000,
+      "max_evaluation_work": 16000000000,
+      "max_rounds": 32,
+      "max_sketch_bytes": 1073741824,
+      "max_support_entries": 64000000
+    },
+    "state_pairs": 1998,
+    "state_relation": "one-to-one, named or proposed, parity checked; every original event/output obligation requires external CEC",
+    "state_relation_file": "state-relation.jsonl",
+    "state_relation_records": 1998
+  },
+  "verified": {
+    "relation": {
+      "state_relation_sha256": "ebdf34f25b0d76f9c5a86df3d12475bae965bb9a2450c63a01f716af4fdef7fb",
+      "input_variables_sha256": "eed3cb180f8d8890d3ae4e2ec5379b5da28860bddd36e45ec2e0d7b65e8b3424"
+    },
+    "aiger": {
+      "gold.aig": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/obligations/gold.aig",
+        "sha256": "c191238e1ae36eeb0245b86e132b492f11e3f968fa8f2293c81cbdb67fe46889",
+        "bytes": 217454
+      },
+      "gate.aig": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/obligations/gate.aig",
+        "sha256": "a1c4c38a87a0f462c59041331990d8137361681ca06a950d7ae4283801294270",
+        "bytes": 158848
+      }
+    },
+    "obligation_count": 8376
+  },
+  "fresh_original_cut": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/original-cut.v",
+    "sha256": "ccf0b5a2cc34b51de84fa304be73671382440b3bd56b573b996d0db406435678",
+    "bytes": 442532
+  },
+  "abc_verdict": "Networks are equivalent.",
+  "physical_models": {
+    "physical_only_models": {
+      "masters": [
+        "FILLER1",
+        "FILLER16",
+        "FILLER2",
+        "FILLER4",
+        "FILLER8",
+        "WELLTAP"
+      ],
+      "basis": "original LEF every pin POWER/GROUND; absent from original TT/SS Liberty; all logical instances disconnected",
+      "functional_models_replaced": false
+    }
+  },
+  "stages": [
+    {
+      "name": "structural",
+      "exit_code": 0,
+      "wall_seconds": 1.117610931978561,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/structural.log",
+        "sha256": "df08a1e6135202ec1f0a115061db9e4793be20020134f853c7219088dccfe023",
+        "bytes": 764
+      }
+    },
+    {
+      "name": "cut",
+      "exit_code": 0,
+      "wall_seconds": 1.2683749650605023,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/cut.log",
+        "sha256": "5d21ba8cd66071b7b3f7ec3f6f8d05d3783c876894b539cdb7a960202cb4df0e",
+        "bytes": 14467
+      }
+    },
+    {
+      "name": "macros",
+      "exit_code": 0,
+      "wall_seconds": 0.21625493792816997,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/macros.log",
+        "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+        "bytes": 262
+      }
+    },
+    {
+      "name": "export",
+      "exit_code": 0,
+      "wall_seconds": 1.168688936973922,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/export.log",
+        "sha256": "4b634f7e6f449bd143eca1e37f35360ab962c089a66a387d13c85158c5263c56",
+        "bytes": 185
+      }
+    },
+    {
+      "name": "abc",
+      "exit_code": 0,
+      "wall_seconds": 3.271503573982045,
+      "log": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final/abc.log",
+        "sha256": "6c6258ed1f8ce1eb6de776e3b029514bf8241fcdae6ad7baeab6f3612328d176",
+        "bytes": 330
+      }
+    }
+  ]
+}

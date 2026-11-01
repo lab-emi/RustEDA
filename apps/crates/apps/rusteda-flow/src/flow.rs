@@ -304,14 +304,41 @@ pub(crate) fn summary(state: &State) -> Value {
     if state.config.flow == FlowKind::Rusteda {
         let result = state.stages.first().and_then(|s| s.result.as_ref());
         let gate = result.map(|r| &r.evidence["gate"]);
-        return json!({"design_name":state.config.design_name,"pdk":state.config.pdk,"flow":state.config.flow,
+        let mut value = json!({"design_name":state.config.design_name,"pdk":state.config.pdk,"flow":state.config.flow,
             "complete":state.stages.iter().all(|s|s.status==StageStatus::Passed),
             "completed_steps":state.stages.iter().filter(|s|s.status==StageStatus::Passed).count(),"total_steps":state.stages.len(),
             "qualification_status":gate.and_then(|g|g.get("qualification_status")).unwrap_or(&Value::Null),
             "qualification_scope":gate.and_then(|g|g.get("scope")).unwrap_or(&Value::Null),
             "declared_deviations":gate.and_then(|g|g.get("declared_deviations")).unwrap_or(&Value::Null),
-            "qualification":gate,"drc_status":gate.and_then(|g|g.pointer("/statuses/drc_magic/status")).unwrap_or(&Value::Null),"lvs_status":gate.and_then(|g|g.pointer("/statuses/lvs_netgen/status")).unwrap_or(&Value::Null),"timing_metrics":gate.and_then(|g|g.pointer("/timing_sources/native/metrics")),"analysis_scope":gate.and_then(|g|g.pointer("/timing_sources/native/scope")),"unconstrained_endpoints":gate.and_then(|g|g.pointer("/timing_sources/native/completeness/unconstrained_endpoints")),"recorded_run_wall_seconds":state.manifest.total_wall_seconds,
+            "qualification":gate,"drc_status":gate.and_then(|g|g.get("drc_status").or_else(||g.pointer("/statuses/drc_magic/status"))).unwrap_or(&Value::Null),"lvs_status":gate.and_then(|g|g.get("lvs_status").or_else(||g.pointer("/statuses/lvs_netgen/status"))).unwrap_or(&Value::Null),"timing_metrics":gate.and_then(|g|g.pointer("/timing_sources/native/metrics")),"analysis_scope":gate.and_then(|g|g.pointer("/timing_sources/native/scope")),"unconstrained_endpoints":gate.and_then(|g|g.pointer("/timing_sources/native/completeness/unconstrained_endpoints")),"recorded_run_wall_seconds":state.manifest.total_wall_seconds,
             "measurement_scope":"external worker receipt; maximum observed individual worker/tool/container RSS, not aggregate family RSS"});
+        if state.config.pdk == crate::config::Pdk::IhpEz130 {
+            for key in ["qualification_status", "drc_status", "lvs_status"] {
+                if value[key].is_null() {
+                    value[key] = json!("unchecked");
+                }
+            }
+            value["resources"] = gate
+                .and_then(|g| g.get("resources"))
+                .cloned()
+                .unwrap_or_default();
+            if let Some(rows) = gate
+                .and_then(|g| g.pointer("/timing_sources/native/metrics"))
+                .and_then(Value::as_object)
+            {
+                value["unconstrained_endpoints"] = Value::Object(
+                    rows.iter()
+                        .map(|(corner, row)| {
+                            (corner.clone(), row["unconstrained_endpoints"].clone())
+                        })
+                        .collect(),
+                );
+            }
+            value["measurement_scope"] = json!(
+                "worker wall time excludes controller initialization and final checkpoint; maximum reaped process RSS and whole cgroup peak are reported separately"
+            );
+        }
+        return value;
     }
     let timing = state
         .stages

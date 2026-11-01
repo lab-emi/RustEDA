@@ -1,0 +1,120 @@
+{
+  "schema": "rusteda.early-maximal-negative-controls.v1",
+  "run": "R20-early-sta",
+  "results": [
+    {
+      "case": "baseline_unmodified",
+      "expected": "passed",
+      "exit_code": 0,
+      "outcome": "passed",
+      "correct": true,
+      "error": ""
+    },
+    {
+      "case": "decision_repaired",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"early schedule exports before the decision; a repaired layout must rerun the serial schedule\"}"
+    },
+    {
+      "case": "group_differs",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"overlap-all region differs from its exact dependency proof\"}"
+    },
+    {
+      "case": "wrong_schedule_policy",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"joint proof requires128 steps/original16 gates/six groups/scope\"}"
+    },
+    {
+      "case": "early_gds_byte_differs",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"overlap maximal GDS differs from the final GDS; rerun the serial schedule\"}"
+    },
+    {
+      "case": "final_gds_byte_differs",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"physical evidence belongs to another/incomplete GDS: drc\"}"
+    },
+    {
+      "case": "export_claims_mutation",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"FILE_ID_CHANGED\"}"
+    },
+    {
+      "case": "export_stdout_other_output",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"FILE_ID_CHANGED\"}"
+    },
+    {
+      "case": "maximal_report_changed",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"actual joint complete input/output artifact identity differs\"}"
+    },
+    {
+      "case": "maximal_summary_other_profile",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"actual joint complete input/output artifact identity differs\"}"
+    },
+    {
+      "case": "maximal_status_failed",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"actual joint complete input/output artifact identity differs\"}"
+    },
+    {
+      "case": "lvs_report_changed",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"independent gate not passed: lvs\"}"
+    },
+    {
+      "case": "receipt_reordered",
+      "expected": "rejected",
+      "exit_code": 2,
+      "outcome": "rejected",
+      "correct": true,
+      "error": "{\"status\": \"failed\", \"error\": \"actual joint config render order differs\"}"
+    },
+    {
+      "case": "baseline_after_restore",
+      "expected": "passed",
+      "exit_code": 0,
+      "outcome": "passed",
+      "correct": true,
+      "error": ""
+    }
+  ],
+  "baseline_result_repeatable": true,
+  "all_correct": true
+}

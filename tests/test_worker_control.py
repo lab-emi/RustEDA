@@ -34,6 +34,15 @@ class WorkerSafety(unittest.TestCase):
         value["unit"]="unrelated.service";toolchain.write_json(path,value)
         with self.assertRaises(ValueError):worker_control.request(path,toolchain.digest(path))
 
+    def test_explicit_cpu_allocation_rejects_invalid_and_duplicate_indices(self):
+        path,value=self.request()
+        for cpus in ([0, 2],):
+            value["cpu_affinity"]=cpus;toolchain.write_json(path,value)
+            self.assertEqual(worker_control.request(path,toolchain.digest(path))["cpu_affinity"],cpus)
+        for cpus in (None, [], [0, 0], [True], [-1], [4096], list(range(17)), "0,2"):
+            value["cpu_affinity"]=cpus;toolchain.write_json(path,value)
+            with self.assertRaises(ValueError):worker_control.request(path,toolchain.digest(path))
+
     def test_unknown_unit_ownership_never_stops_it(self):
         _,r=self.request();calls=[]
         def command(args,timeout=10):
@@ -44,6 +53,7 @@ class WorkerSafety(unittest.TestCase):
         with mock.patch.object(worker_control,"command",command):result=worker_control.cleanup(r)
         self.assertFalse(result["verified"])
         self.assertFalse(any("stop" in c for c in calls))
+        self.assertFalse(any("kill" in c for c in calls))
         self.assertTrue(all(r["unit"]+".scope" in c for c in calls if c[0]=="systemctl"))
 
     def test_cleanup_requires_matching_container_label(self):

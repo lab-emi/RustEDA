@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.rc-estimate-policy.v1",
+  "r_ohm_per_um": 3.3,
+  "c_pf_per_um": 0.00019,
+  "detour": 1.25,
+  "max_segment_um": 50,
+  "limits": {
+    "max_nets": 200000,
+    "max_pins_per_net": 4096,
+    "max_nodes": 2000000
+  },
+  "evidence": "run09b routed Metal2-5 design, native extraction cross-checked by OpenRCX (rr_clock_282 6002 vs 6045 ohm, 0.423 vs 0.401 pF): nets >200um routed length: median 0.190 fF/um, median 3.30 ohm/um including vias; routed/MST length median 1.14, p75 1.25 (2150 nets).",
+  "macro_blockage": {
+    "grid_um": 10,
+    "max_searches": 200000
+  },
+  "macro_blockage_evidence": "run12 (v17 routing): nets never ripped up had routed/estimate cap p99 1.40, max 2.21; the largest were two-pin nets whose pins lie on opposite sides of an SRAM (n3707 0.091->0.201 pF, n3701, n3689) and were routed around it. CLASS BLOCK macros obstruct Metal1-4 in their LEF and routes did not cross them."
+}

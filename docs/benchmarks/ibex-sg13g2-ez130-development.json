@@ -1,0 +1,633 @@
+{
+  "schema": "rusteda.native-development-results.v1",
+  "updated": "2026-11-01",
+  "status": "retained_qualified_native_runs",
+  "comparative_status": "unverified_no_new_matched_reference",
+  "design": {
+    "family": "Ibex",
+    "top": "ibex_sram_bench",
+    "sram_instances_required": 2
+  },
+  "technology": {
+    "process": "IHP SG13G2",
+    "standard_cell_library": "EZ130 8T v1.1"
+  },
+  "analysis_scope": {
+    "corners": [
+      "tt",
+      "ss"
+    ],
+    "rc_corner": "nom",
+    "wire_model": "spef_rc",
+    "clock_model": "propagated",
+    "cppr": "off",
+    "precision": "f64",
+    "unconstrained_endpoints_per_corner": 156,
+    "active_unconstrained_endpoints": 0
+  },
+  "runtime_scope": "whole worker including parsing/plans/tool I/O/extraction/signoff; no tool installation or source build",
+  "host": {
+    "cpu": "Intel Core i9-13900HX",
+    "assigned_logical_cpus": 16,
+    "ram_limit_mib": 8192,
+    "swap_limit_mib": 2048,
+    "foreign_logical_cpus_average": 0.36,
+    "thermal_scope": "runs reached 98-100 C and throttled; single-host observations"
+  },
+  "source_status": "qualified source snapshots published; measurements retain their original frozen ELF identities, not a claim that a new checkout was rebuilt to the same ELF",
+  "measurements": [
+    {
+      "id": "R20-early-sta",
+      "status": "completed",
+      "steps_completed": 129,
+      "required_gate_count": 16,
+      "gates": {
+        "drc": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/drc.json",
+          "sha256": "c7ed37d3f76552057ccd51f02d9531a265f80d5d86a84c34d9e57636db050a43",
+          "bytes": 1595
+        },
+        "antenna": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/antenna.json",
+          "sha256": "3cf381e3d6a1ebaf2661a633d5b8f404f0755ee6c0a41432232b51a72c8cb39b",
+          "bytes": 1581
+        },
+        "lvs": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/lvs.json",
+          "sha256": "509a712099917a93b7aa841e5eafcbce5f91c30a263f1d81807c6c910ec8e73d",
+          "bytes": 43322
+        },
+        "timing": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/timing.json",
+          "sha256": "d979268621f2a34d7f3391a23b3f330b71d535e77d2f30a00b735d489f587ca0",
+          "bytes": 327835
+        },
+        "timing_accuracy": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/timing_accuracy.json",
+          "sha256": "866c17cc203dd6a46d1aa7fda180df5a6e4f796f3d090e556dc5c98b53a2d2fb",
+          "bytes": 2447
+        },
+        "synthesis_equivalence": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/synthesis_equivalence.json",
+          "sha256": "e4b55be9fe5139abce1b07575f9b3370752020fe0e77aec916adca80531058b3",
+          "bytes": 6019
+        },
+        "final_equivalence": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/final_equivalence.json",
+          "sha256": "9f6de578d43f6547fcc95bc072f8887d6a82fccf7adc73f05a84b0b8df8db5a2",
+          "bytes": 5990
+        },
+        "simulation": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/simulation.json",
+          "sha256": "fb5934bb3484ed8e82e57b9073e0b5b09c033332b3283bd8eb6f26949f5658ee",
+          "bytes": 1429
+        },
+        "controls": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/controls.json",
+          "sha256": "298faf03746c90690ce5c09ea4323ee2520b5a11c49eed135b0c40a8f0001d54",
+          "bytes": 18171
+        },
+        "cts": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/cts.json",
+          "sha256": "f61b1d9f955aac35eb96d80e30187ec8a770c9a354a3b0063965606847fd6585",
+          "bytes": 6250
+        },
+        "extraction": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/extraction.json",
+          "sha256": "927dc1e2ea463c6a04e30690c216f0b19f28f12f2067d1d766d90dd645c77d47",
+          "bytes": 11710
+        },
+        "inputs_frozen": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/inputs_frozen.json",
+          "sha256": "26282c2066b1cb01253d2200892488e0817dc7cff842cbf47f1e842f7563b803",
+          "bytes": 33421
+        },
+        "macros": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/macros.json",
+          "sha256": "d82dc0264153766e63e3279b887ebfe1a2eee651584c41813a5cb261ce8d2cd3",
+          "bytes": 6892
+        },
+        "placement": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/placement.json",
+          "sha256": "b4903c8eb13907f302dcec27110afe8e5f36ffef7c452c4056fea6233d887dc8",
+          "bytes": 10766
+        },
+        "power_connectivity": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/power_connectivity.json",
+          "sha256": "86c5c8978d88fa69003411661738697247151c1877d2f865ef44cb9bbd45f37c",
+          "bytes": 6246
+        },
+        "routing": {
+          "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/routing.json",
+          "sha256": "7c53ca37876ab7d112c2b532ace09d25ca728b658618e4e4b034f959443dc507",
+          "bytes": 7210
+        }
+      },
+      "summary": {
+        "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/summary.json",
+        "sha256": "7fa98f53af84a9f794534c7f409883947516d1f47928d7dcbe5daf667d14e266",
+        "bytes": 7528
+      },
+      "qualification": {
+        "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/qualification.json",
+        "sha256": "c95306cf3679476e232f3755c796f7b7cd88f88e539d4c2bbc06d6e355d32a7d",
+        "bytes": 20229
+      },
+      "receipts": {
+        "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/step-receipts.json",
+        "sha256": "dc8f6185f4e636bda2828de249cc0eaa0411daebcdd2ec34da82fc8266e9c326",
+        "bytes": 83157
+      },
+      "metrics": {
+        "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/worker-metrics.json",
+        "sha256": "334c519dc345d0c764909e60b6689ac8549868aa9384105d0a376e54eaf11b6e",
+        "bytes": 329
+      },
+      "elapsed_seconds": 472.16867780394387,
+      "peak_reaped_process_rss_kib": 2134644,
+      "cgroup": {
+        "memory_peak_bytes": 6509391872,
+        "swap_peak_bytes": 0
+      },
+      "artifacts": {
+        "gds": {
+          "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+          "bytes": 28120726
+        },
+        "def": {
+          "sha256": "3551be231f9884563ba0cf4d034de753891214cf7faafd696c9f458f6aa86c10",
+          "bytes": 17279669
+        },
+        "netlist_synth": {
+          "sha256": "0cc1704499268b63f9f42080cf60c17986fd48f4167d8a8bd481d564a221d561",
+          "bytes": 1585397
+        },
+        "netlist_final": {
+          "sha256": "1a4d1152bd87fb0b4ab3ad716bed665d659ce73d532c1f356d58f7d31360c4ca",
+          "bytes": 2145172
+        },
+        "netlist_powered_final": {
+          "sha256": "0d69d083ed38dd7ce2ee2d743677674fc68558934ad90ece28211afdeb94c9dd",
+          "bytes": 5369171
+        },
+        "spef_native_nom": {
+          "sha256": "e27326d1c21dd4bf803ed45a7396bb9522e14978e3ed09dff20cb7cdb153c4d2",
+          "bytes": 36141441
+        },
+        "spef_openrcx_nom": {
+          "sha256": "5fc7d9415dc0aadc83e26539f2d66847f8f0aeb893575f9deb780f0bcd21dd7b",
+          "bytes": 25747114
+        }
+      },
+      "same_spef_max_difference_ps": 0.4754439128123594,
+      "maximal_categories": 272,
+      "main_categories": 547
+    },
+    {
+      "id": "R21-early-sta",
+      "status": "completed",
+      "steps_completed": 129,
+      "required_gate_count": 16,
+      "gates": {
+        "drc": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/drc.json",
+          "sha256": "d0f22838da0e2180d836e5309efdef316a06e6ad668bd3da0fb3b45f781a41c3",
+          "bytes": 1595
+        },
+        "antenna": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/antenna.json",
+          "sha256": "70b2eecaa9daf96ea1c747f2d3eabfc69e5705e5de2e7ac3e3e32a82e5762b76",
+          "bytes": 1581
+        },
+        "lvs": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/lvs.json",
+          "sha256": "503f9fe9a3d3840ca4932d814de8e537c8e0881e3695eca0dba42fc5a5edd0eb",
+          "bytes": 43323
+        },
+        "timing": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/timing.json",
+          "sha256": "00d29c6e19534601b9d9f32e81b5131351d7e85d6e4b231486648e8487cff689",
+          "bytes": 327835
+        },
+        "timing_accuracy": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/timing_accuracy.json",
+          "sha256": "b86fd2b94bd5bacfda6770855a392a6c3513f79a284eb1ef943780fe0cdc545d",
+          "bytes": 2447
+        },
+        "synthesis_equivalence": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/synthesis_equivalence.json",
+          "sha256": "3f875fbb1d14a66294febbd3272883de41b9b02dae4d67b4aabbcf282abe76f8",
+          "bytes": 6020
+        },
+        "final_equivalence": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/final_equivalence.json",
+          "sha256": "0688bdf63005288088975f4a7b8c058a2f507405e460eb4e9681b559a72d1581",
+          "bytes": 5990
+        },
+        "simulation": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/simulation.json",
+          "sha256": "534723237607b60cce0eec51caf5bdf4f63ed297bd9c7d7d715612678db4347f",
+          "bytes": 1429
+        },
+        "controls": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/controls.json",
+          "sha256": "98f3633348a6c47652d3bd7b2c20482482a4b50587a6a729fa80534e7270e801",
+          "bytes": 18173
+        },
+        "cts": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/cts.json",
+          "sha256": "cb5cfff3566cb8876a24ecd071b0149caf73c34124ff6c4f8d4415caf731d9a8",
+          "bytes": 6250
+        },
+        "extraction": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/extraction.json",
+          "sha256": "59b47a036a1b55a47f6b62b42a3ba715c1b1603f19652d5c71d41c302a285e96",
+          "bytes": 11710
+        },
+        "inputs_frozen": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/inputs_frozen.json",
+          "sha256": "a936761ece0385f4b9123fcdde730de0d6ee39cdd41b491c4aed74a4195f8bda",
+          "bytes": 33421
+        },
+        "macros": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/macros.json",
+          "sha256": "efe8126b70484e16087ae57fe4077b5daa43405de18ddac5dad2ac3685a498a1",
+          "bytes": 6892
+        },
+        "placement": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/placement.json",
+          "sha256": "9f2d0aa222c237e6f2e32c08cf6564ca96bdaa2db1b5b7bc63bb182148dcb95c",
+          "bytes": 10766
+        },
+        "power_connectivity": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/power_connectivity.json",
+          "sha256": "2476aa3f592b81691106482f030f6e179f593bffaeb29e6ee0b3133b925634de",
+          "bytes": 6246
+        },
+        "routing": {
+          "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/routing.json",
+          "sha256": "cf718cffda56a10c1f43553e20d7d01106d3f8762794589099e31a12abce62e2",
+          "bytes": 7210
+        }
+      },
+      "summary": {
+        "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/summary.json",
+        "sha256": "373f34229e5484d6a61ad5850714d1ddbf77bf7bf99fff5ea4e93a00b7c5779a",
+        "bytes": 7527
+      },
+      "qualification": {
+        "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/qualification.json",
+        "sha256": "c6233f4a63d10fa2e292303fbabf3e6c3afcc9a1576ab62cd1771694f772ce61",
+        "bytes": 20231
+      },
+      "receipts": {
+        "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/step-receipts.json",
+        "sha256": "03e276664974dd859c110b8358bf18c0e2d4c19fd3e51068ba4f99624fed09ae",
+        "bytes": 83142
+      },
+      "metrics": {
+        "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/worker-metrics.json",
+        "sha256": "b73e0720e9741cb69dd51858ac37cbc925e8cfa077b4121d708f6302495ecbe2",
+        "bytes": 328
+      },
+      "elapsed_seconds": 472.5745794719551,
+      "peak_reaped_process_rss_kib": 2153172,
+      "cgroup": {
+        "memory_peak_bytes": 6481956864,
+        "swap_peak_bytes": 0
+      },
+      "artifacts": {
+        "gds": {
+          "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+          "bytes": 28120726
+        },
+        "def": {
+          "sha256": "3551be231f9884563ba0cf4d034de753891214cf7faafd696c9f458f6aa86c10",
+          "bytes": 17279669
+        },
+        "netlist_synth": {
+          "sha256": "0cc1704499268b63f9f42080cf60c17986fd48f4167d8a8bd481d564a221d561",
+          "bytes": 1585397
+        },
+        "netlist_final": {
+          "sha256": "1a4d1152bd87fb0b4ab3ad716bed665d659ce73d532c1f356d58f7d31360c4ca",
+          "bytes": 2145172
+        },
+        "netlist_powered_final": {
+          "sha256": "0d69d083ed38dd7ce2ee2d743677674fc68558934ad90ece28211afdeb94c9dd",
+          "bytes": 5369171
+        },
+        "spef_native_nom": {
+          "sha256": "e27326d1c21dd4bf803ed45a7396bb9522e14978e3ed09dff20cb7cdb153c4d2",
+          "bytes": 36141441
+        },
+        "spef_openrcx_nom": {
+          "sha256": "08b4275dcdf33c4ef0e30bbb164c99d0b89309869aed2c0baf4cc70689468f97",
+          "bytes": 25747114
+        }
+      },
+      "same_spef_max_difference_ps": 0.4754439128123594,
+      "maximal_categories": 272,
+      "main_categories": 547
+    }
+  ],
+  "comparative_speedup": null,
+  "comparative_memory_ratio": null,
+  "qor": {
+    "nonfiller_standard_cell_area_um2": 204053.9,
+    "signal_wirelength_um": 1190522,
+    "via_count": 168381
+  },
+  "evidence_inventory": [
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/drc.json",
+      "sha256": "c7ed37d3f76552057ccd51f02d9531a265f80d5d86a84c34d9e57636db050a43",
+      "bytes": 1595
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/antenna.json",
+      "sha256": "3cf381e3d6a1ebaf2661a633d5b8f404f0755ee6c0a41432232b51a72c8cb39b",
+      "bytes": 1581
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/lvs.json",
+      "sha256": "509a712099917a93b7aa841e5eafcbce5f91c30a263f1d81807c6c910ec8e73d",
+      "bytes": 43322
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/timing.json",
+      "sha256": "d979268621f2a34d7f3391a23b3f330b71d535e77d2f30a00b735d489f587ca0",
+      "bytes": 327835
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/timing_accuracy.json",
+      "sha256": "866c17cc203dd6a46d1aa7fda180df5a6e4f796f3d090e556dc5c98b53a2d2fb",
+      "bytes": 2447
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/synthesis_equivalence.json",
+      "sha256": "e4b55be9fe5139abce1b07575f9b3370752020fe0e77aec916adca80531058b3",
+      "bytes": 6019
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/final_equivalence.json",
+      "sha256": "9f6de578d43f6547fcc95bc072f8887d6a82fccf7adc73f05a84b0b8df8db5a2",
+      "bytes": 5990
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/simulation.json",
+      "sha256": "fb5934bb3484ed8e82e57b9073e0b5b09c033332b3283bd8eb6f26949f5658ee",
+      "bytes": 1429
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/controls.json",
+      "sha256": "298faf03746c90690ce5c09ea4323ee2520b5a11c49eed135b0c40a8f0001d54",
+      "bytes": 18171
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/cts.json",
+      "sha256": "f61b1d9f955aac35eb96d80e30187ec8a770c9a354a3b0063965606847fd6585",
+      "bytes": 6250
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/extraction.json",
+      "sha256": "927dc1e2ea463c6a04e30690c216f0b19f28f12f2067d1d766d90dd645c77d47",
+      "bytes": 11710
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/inputs_frozen.json",
+      "sha256": "26282c2066b1cb01253d2200892488e0817dc7cff842cbf47f1e842f7563b803",
+      "bytes": 33421
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/macros.json",
+      "sha256": "d82dc0264153766e63e3279b887ebfe1a2eee651584c41813a5cb261ce8d2cd3",
+      "bytes": 6892
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/placement.json",
+      "sha256": "b4903c8eb13907f302dcec27110afe8e5f36ffef7c452c4056fea6233d887dc8",
+      "bytes": 10766
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/power_connectivity.json",
+      "sha256": "86c5c8978d88fa69003411661738697247151c1877d2f865ef44cb9bbd45f37c",
+      "bytes": 6246
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/gates/routing.json",
+      "sha256": "7c53ca37876ab7d112c2b532ace09d25ca728b658618e4e4b034f959443dc507",
+      "bytes": 7210
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/latchup/summary.json",
+      "sha256": "9689921479c5996766f36ede1f2c35399552baf3a99f399d47f579a290dd9d16",
+      "bytes": 6160
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/backend/tap-coverage-inputs.json",
+      "sha256": "a35ac56121799ee61eb7e4b85752bd380cd909a3ea8d08ba1a892ac7c5598dcc",
+      "bytes": 919
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/tap-coverage/controller.json",
+      "sha256": "fe8fdffaddc23e738d363b0db3755be9ca37ad5aa3afefdfe3cde42c978c1d6f",
+      "bytes": 1631
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/tap-coverage/summary.json",
+      "sha256": "b2440b6581059c6ca0194c723272ec064690ba3548d8c026dc684c07fffb4da8",
+      "bytes": 3363
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/physical/routing-writer-audit.json",
+      "sha256": "ab740520584079b46c63f93269dc6e75281d26b66a16bb77777f924531c508e8",
+      "bytes": 687
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/latchup-execution/result.json",
+      "sha256": "d680d67a3fab17f06b93e41864d913b7f2dd6d784bd860a7b37c8ea246a98a4c",
+      "bytes": 5087
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/tap/tap-coverage-execution/result.json",
+      "sha256": "1b20b53bf344fb4281420a0594275d26d3b4a7dd6e79e1a050bef3be73b59b61",
+      "bytes": 4663
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/summary.json",
+      "sha256": "7fa98f53af84a9f794534c7f409883947516d1f47928d7dcbe5daf667d14e266",
+      "bytes": 7528
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/qualification.json",
+      "sha256": "c95306cf3679476e232f3755c796f7b7cd88f88e539d4c2bbc06d6e355d32a7d",
+      "bytes": 20229
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/step-receipts.json",
+      "sha256": "dc8f6185f4e636bda2828de249cc0eaa0411daebcdd2ec34da82fc8266e9c326",
+      "bytes": 83157
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-early-sta/worker-metrics.json",
+      "sha256": "334c519dc345d0c764909e60b6689ac8549868aa9384105d0a376e54eaf11b6e",
+      "bytes": 329
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/drc.json",
+      "sha256": "d0f22838da0e2180d836e5309efdef316a06e6ad668bd3da0fb3b45f781a41c3",
+      "bytes": 1595
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/antenna.json",
+      "sha256": "70b2eecaa9daf96ea1c747f2d3eabfc69e5705e5de2e7ac3e3e32a82e5762b76",
+      "bytes": 1581
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/lvs.json",
+      "sha256": "503f9fe9a3d3840ca4932d814de8e537c8e0881e3695eca0dba42fc5a5edd0eb",
+      "bytes": 43323
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/timing.json",
+      "sha256": "00d29c6e19534601b9d9f32e81b5131351d7e85d6e4b231486648e8487cff689",
+      "bytes": 327835
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/timing_accuracy.json",
+      "sha256": "b86fd2b94bd5bacfda6770855a392a6c3513f79a284eb1ef943780fe0cdc545d",
+      "bytes": 2447
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/synthesis_equivalence.json",
+      "sha256": "3f875fbb1d14a66294febbd3272883de41b9b02dae4d67b4aabbcf282abe76f8",
+      "bytes": 6020
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/final_equivalence.json",
+      "sha256": "0688bdf63005288088975f4a7b8c058a2f507405e460eb4e9681b559a72d1581",
+      "bytes": 5990
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/simulation.json",
+      "sha256": "534723237607b60cce0eec51caf5bdf4f63ed297bd9c7d7d715612678db4347f",
+      "bytes": 1429
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/controls.json",
+      "sha256": "98f3633348a6c47652d3bd7b2c20482482a4b50587a6a729fa80534e7270e801",
+      "bytes": 18173
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/cts.json",
+      "sha256": "cb5cfff3566cb8876a24ecd071b0149caf73c34124ff6c4f8d4415caf731d9a8",
+      "bytes": 6250
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/extraction.json",
+      "sha256": "59b47a036a1b55a47f6b62b42a3ba715c1b1603f19652d5c71d41c302a285e96",
+      "bytes": 11710
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/inputs_frozen.json",
+      "sha256": "a936761ece0385f4b9123fcdde730de0d6ee39cdd41b491c4aed74a4195f8bda",
+      "bytes": 33421
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/macros.json",
+      "sha256": "efe8126b70484e16087ae57fe4077b5daa43405de18ddac5dad2ac3685a498a1",
+      "bytes": 6892
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/placement.json",
+      "sha256": "9f2d0aa222c237e6f2e32c08cf6564ca96bdaa2db1b5b7bc63bb182148dcb95c",
+      "bytes": 10766
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/power_connectivity.json",
+      "sha256": "2476aa3f592b81691106482f030f6e179f593bffaeb29e6ee0b3133b925634de",
+      "bytes": 6246
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/gates/routing.json",
+      "sha256": "cf718cffda56a10c1f43553e20d7d01106d3f8762794589099e31a12abce62e2",
+      "bytes": 7210
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/latchup/summary.json",
+      "sha256": "bd20d086da9cca49983a3c1ccdbe3be90468accb43df4f5adcc62b263c4b5352",
+      "bytes": 6160
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/backend/tap-coverage-inputs.json",
+      "sha256": "4e51807d4d7050e3d331e76e2611c1200f24b37367aee75e12c4986c5e72dab1",
+      "bytes": 919
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/tap-coverage/controller.json",
+      "sha256": "54be0c8c3f0b823d818d64265708fef8e60a8281191b29e791282ac7037785b3",
+      "bytes": 1631
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/tap-coverage/summary.json",
+      "sha256": "04cd7982c0ed9097965f28bb64f1178900027a73fb04bcfaaee1294837fcf451",
+      "bytes": 3363
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/physical/routing-writer-audit.json",
+      "sha256": "f28169e0c412f61197047a894426cce4ec0979bf0846e10d3b79a84187d8b0ff",
+      "bytes": 687
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/latchup-execution/result.json",
+      "sha256": "7ef6d4677d16462a21fbf3da095d484e9357a68825b3cdd9f298ee04639b0df5",
+      "bytes": 5088
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/tap/tap-coverage-execution/result.json",
+      "sha256": "0a1964c7d47bdaa30a89ed896475b36c342ac9969e6beab152662826616eea80",
+      "bytes": 4664
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/summary.json",
+      "sha256": "373f34229e5484d6a61ad5850714d1ddbf77bf7bf99fff5ea4e93a00b7c5779a",
+      "bytes": 7527
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/qualification.json",
+      "sha256": "c6233f4a63d10fa2e292303fbabf3e6c3afcc9a1576ab62cd1771694f772ce61",
+      "bytes": 20231
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/step-receipts.json",
+      "sha256": "03e276664974dd859c110b8358bf18c0e2d4c19fd3e51068ba4f99624fed09ae",
+      "bytes": 83142
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R21-early-sta/worker-metrics.json",
+      "sha256": "b73e0720e9741cb69dd51858ac37cbc925e8cfa077b4121d708f6302495ecbe2",
+      "bytes": 328
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/sta-source-qa.json",
+      "sha256": "59a5a1089ef6946be18a28f65845883c35b2058a2c6ef775fba319d4ea44b23e",
+      "bytes": 2812
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/sta-dual-replay.json",
+      "sha256": "70d59a0d96f1c6765536d2b003444855a9390b2bb482a3ee5f30589ba2068e99",
+      "bytes": 3978
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R20-negative-controls.json",
+      "sha256": "9eebdf50cd9e62ef64988712eff1cf225f56cb8030f521c7bb43219f9c809e45",
+      "bytes": 3708
+    },
+    {
+      "path": "benchmarks/evidence/ibex-20261101/R17-negative-controls.json",
+      "sha256": "8c50ae09e1841eb1cf9595266e3c60b9860e914a861872da76292d0816b57b8d",
+      "bytes": 3704
+    }
+  ]
+}

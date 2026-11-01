@@ -1,0 +1,39 @@
+{
+  "schema": "rusteda.tap-coverage-controller.v1",
+  "status": "passed",
+  "command": [
+    "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+    "klayout",
+    "-b",
+    "-r",
+    "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage.py",
+    "-rd",
+    "config=/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/tap-coverage-inputs.json"
+  ],
+  "exit_code": 0,
+  "tool": {
+    "path": "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+    "sha256": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+    "bytes": 1398049312
+  },
+  "worker": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage.py",
+    "sha256": "98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47",
+    "bytes": 18682
+  },
+  "controller": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage_runner.py",
+    "sha256": "5e34b964a8d75bf8ff953dc84d972e7b0c1b92820161fd99e05e17fbd945bfdf",
+    "bytes": 4656
+  },
+  "config": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/tap-coverage-inputs.json",
+    "sha256": "a35ac56121799ee61eb7e4b85752bd380cd909a3ea8d08ba1a892ac7c5598dcc",
+    "bytes": 919
+  },
+  "report": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R20-early-sta/run/backend/tap-coverage/summary.json",
+    "sha256": "b2440b6581059c6ca0194c723272ec064690ba3548d8c026dc684c07fffb4da8",
+    "bytes": 3363
+  }
+}

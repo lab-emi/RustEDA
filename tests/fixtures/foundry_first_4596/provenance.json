@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.first-party-compatibility-fixtures.v1",
+  "source_repository": "lab-emi/RustEDA",
+  "source_commit": "4596aca2ec3155765c4d29640c1e05ca0f239a90",
+  "scope": "own-source metadata recipe compatibility; not an EDA oracle",
+  "files": {
+    "native_flow.py": {
+      "source_path": "integration/ibex_sg13g2_ez130/native_flow.py",
+      "sha256": "e7eb65e991473d95e33327d4235c8e22dce6cbb5f07d5a0661a2ab8c330f99b8",
+      "bytes": 30821
+    },
+    "runner.py": {
+      "source_path": "integration/ibex_sg13g2_ez130/foundry_first/runner.py",
+      "sha256": "817d007415f2f9ab83ab41b1e053566a02d82dc886a908010cb1dc2232b745c2",
+      "bytes": 30392
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "elapsed_seconds": 472.5745794719551,
+  "peak_rss_kib": 2153172,
+  "rss_scope": "maximum reaped worker/tool RSS; cgroup peak separately recorded in summary",
+  "request_id": "9fd4cd0fd4ba298f1b1d1fb5b3c28b2e768292e09e6077b3b0514a480141c616",
+  "cgroup": {
+    "memory_peak_bytes": 6481956864,
+    "swap_peak_bytes": 0
+  }
+}

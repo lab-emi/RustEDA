@@ -1,0 +1,1533 @@
+{
+  "schema": "rusteda.device-lvs-result.v1",
+  "status": "passed",
+  "complete": true,
+  "scope": "full device-level LVS",
+  "top": "ibex_sram_bench",
+  "top_port_identity": true,
+  "macro_instances": 2,
+  "reference_macro_instances": 2,
+  "macro_devices_verified": true,
+  "extraction_errors": [],
+  "gds_sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+  "powered_netlist_sha256": "0d69d083ed38dd7ce2ee2d743677674fc68558934ad90ece28211afdeb94c9dd",
+  "deck_sha256": "f1e4d4e47757c0783b87022a92dc4699c8a7f49e2d67452bce127c75a257a8d3",
+  "macro_qualification_sha256": "b6242aa46edff4ef4ad29e3aa1f66905b7878df667234ca33cddd2245b22d389",
+  "sources": {
+    "manifest": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs-inputs.json",
+      "sha256": "b903d6efa5095b412d76564d97e1d8c17d68055af6e9f622df5b9b2013c0afa6",
+      "bytes": 1939
+    },
+    "gds": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/ibex_sram_bench.gds",
+      "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+      "bytes": 28120726
+    },
+    "powered_netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_powered.stdout",
+      "sha256": "0d69d083ed38dd7ce2ee2d743677674fc68558934ad90ece28211afdeb94c9dd",
+      "bytes": 5369171
+    },
+    "deck": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/synth-agent/top-lvs-clean02/qualified/sg13g2.lvs",
+      "sha256": "f1e4d4e47757c0783b87022a92dc4699c8a7f49e2d67452bce127c75a257a8d3",
+      "bytes": 222480
+    },
+    "interfaces": {
+      "path": "/home/cgao/git/RustEDA/integration/ibex_sg13g2_ez130/lvs_interfaces.json",
+      "sha256": "fe5f6af431cc3a9e7364d041b305309bb72d3781d4c7f8291a6e5f348449a60e",
+      "bytes": 14207
+    },
+    "macro_qualification": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/synth-agent/top-lvs-clean02/qualification.json",
+      "sha256": "b6242aa46edff4ef4ad29e3aa1f66905b7878df667234ca33cddd2245b22d389",
+      "bytes": 48492
+    },
+    "cdl_0": {
+      "path": "/home/cgao/pdks/ez130_8t_v1p1/cdl/ez130_8t.cdl",
+      "sha256": "d65b17d5c209ad3fca60a451ffc2bb88aaf604656b518a09037f8feb5b50a542",
+      "bytes": 256515
+    },
+    "cdl_1": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/synth-agent/top-lvs-clean02/qualified/sram.cdl",
+      "sha256": "71db38d0106a0a25e88ee4fd26bd7c4a335f94c9e3c4fc816c0aaf9fa51fec74",
+      "bytes": 585594
+    },
+    "cdl_2": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/synth-agent/top-lvs-compat01/final-pnl01/spacer-reproduced/spacers.cdl",
+      "sha256": "0053af338324459d3973bdcc6b7ce2ab186a0dfcca730a4935286125f2677c36",
+      "bytes": 388
+    },
+    "tool_appimage": {
+      "path": "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "sha256": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+      "bytes": 1398049312
+    },
+    "tool_yosys": {
+      "path": "/home/cgao/tools/yosys/fb535e0ed0e872720d4fc832d1d1dab4ccd2a4d644be5020bca1db7772fb2db6/root/bin/yosys",
+      "sha256": "de10c3ee405ea4bc4b887041b215ee16a517a87dddc420cc6574b20b113d6327",
+      "bytes": 43092168
+    },
+    "tool_time": {
+      "path": "/home/cgao/.local/share/containers/storage/overlay/d1a194c6048338802bb33b89e26ffcad28186a9fdf7082312592e14711add98e/diff/usr/bin/time",
+      "sha256": "3b11dec50514a8473e9f6efa7a34d584d0657538c09988f61b72d38ad4991a10",
+      "bytes": 27160
+    },
+    "source_signoff_lvs.py": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/signoff_lvs.py",
+      "sha256": "0981f3da0d932fead0586899116307503517ca41a079726d30ba97c2e3210844",
+      "bytes": 32931
+    },
+    "snapshot_signoff_lvs.py": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/inputs/signoff_lvs.py",
+      "sha256": "0981f3da0d932fead0586899116307503517ca41a079726d30ba97c2e3210844",
+      "bytes": 32931
+    },
+    "source_build_lvs_reference.py": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/build_lvs_reference.py",
+      "sha256": "e76d99a0a5ae0a44d607fc1103c24add0d935034c7d2882feeecec1b8ea659b0",
+      "bytes": 15350
+    },
+    "snapshot_build_lvs_reference.py": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/inputs/build_lvs_reference.py",
+      "sha256": "e76d99a0a5ae0a44d607fc1103c24add0d935034c7d2882feeecec1b8ea659b0",
+      "bytes": 15350
+    },
+    "source_check_lvs.py": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/check_lvs.py",
+      "sha256": "37b5ec43fb38949cfa9aadbc959e146f8159b41bfcc2466871bf64c8b36e948b",
+      "bytes": 9561
+    },
+    "snapshot_check_lvs.py": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/inputs/check_lvs.py",
+      "sha256": "37b5ec43fb38949cfa9aadbc959e146f8159b41bfcc2466871bf64c8b36e948b",
+      "bytes": 9561
+    },
+    "python": {
+      "path": "/usr/bin/python3.14",
+      "sha256": "44fdcdf23cd94aece60aec10b92b15a0e1cf4561e710985eaa53b362a03db48e",
+      "bytes": 14424
+    },
+    "worker_ownership": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/ownership/native.json",
+      "sha256": "6b9f5228965689bded125df858d746b3119184c04dcd80b48008e538c04caf1c",
+      "bytes": 344
+    },
+    "producer_manifest": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/recipe/manifest.json",
+      "sha256": "cf7dd1374b0057fc1063d141a09616f85860846c98f1a4b1aea85ad4b4c385af",
+      "bytes": 89570
+    }
+  },
+  "estimated_peak_bytes": 1870973976,
+  "host_mem_available_bytes": 57580228608,
+  "resources": {
+    "resource_mode": "inherited_owned_worker",
+    "scope": "rusteda-worker-9fd4cd0fd4ba298f1b1d1fb5.scope",
+    "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/rusteda-worker-9fd4cd0fd4ba298f1b1d1fb5.scope",
+    "request_id": "9fd4cd0fd4ba298f1b1d1fb5b3c28b2e768292e09e6077b3b0514a480141c616",
+    "effective_memory_max_bytes": 8589934592,
+    "effective_swap_max_bytes": 1073741824,
+    "command": [
+      "/usr/bin/python3.14",
+      "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/inputs/signoff_lvs.py",
+      "--_worker",
+      "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/job.json"
+    ],
+    "deadline_reached": false,
+    "interrupted": false,
+    "detached_launcher": false,
+    "launcher_exit": 0,
+    "residual_new_pids": [],
+    "cleanup_verified": true,
+    "wall_seconds": 111.03775800601579,
+    "cgroup_memory_peak_bytes": 6481956864,
+    "peak_scope": "inherited whole producer cgroup cumulative memory.peak, including preceding steps",
+    "failure_cleanup": "outer worker_control must KILL and verify its exact owned scope on failure",
+    "pid_inventory_scope": "pinned disjoint parallel CPU lane within the owned worker cgroup",
+    "cpu_affinity": [
+      4,
+      6
+    ],
+    "parallel_step": "be_lvs"
+  },
+  "input_hashes_unchanged": true,
+  "changed_inputs": [],
+  "worker": {
+    "status": "passed",
+    "complete": true,
+    "stages": [
+      {
+        "name": "yosys",
+        "exit_code": 0,
+        "wall_seconds": 2.0818303250707686
+      },
+      {
+        "name": "reference",
+        "exit_code": 0,
+        "wall_seconds": 0.7294946589972824
+      },
+      {
+        "name": "klayout",
+        "exit_code": 0,
+        "wall_seconds": 103.38180873403326
+      },
+      {
+        "name": "checker",
+        "exit_code": 0,
+        "wall_seconds": 3.0244583890307695
+      }
+    ],
+    "error": null,
+    "verdict": {
+      "status": "passed",
+      "scope": "full device-level LVS",
+      "top": "ibex_sram_bench",
+      "top_pair": {
+        "layout_pins": 122,
+        "reference_pins": 122,
+        "status": "Match"
+      },
+      "top_port_identity": true,
+      "top_pin_pairs": [
+        {
+          "layout": "VGND",
+          "reference": "VGND",
+          "status": "Match"
+        },
+        {
+          "layout": "VPWR",
+          "reference": "VPWR",
+          "status": "Match"
+        },
+        {
+          "layout": "alert_o",
+          "reference": "ALERT_O",
+          "status": "Match"
+        },
+        {
+          "layout": "clk_i",
+          "reference": "CLK_I",
+          "status": "Match"
+        },
+        {
+          "layout": "core_sleep_o",
+          "reference": "CORE_SLEEP_O",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[0]",
+          "reference": "OBSERVE_DATA_O[0]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[10]",
+          "reference": "OBSERVE_DATA_O[10]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[11]",
+          "reference": "OBSERVE_DATA_O[11]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[12]",
+          "reference": "OBSERVE_DATA_O[12]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[13]",
+          "reference": "OBSERVE_DATA_O[13]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[14]",
+          "reference": "OBSERVE_DATA_O[14]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[15]",
+          "reference": "OBSERVE_DATA_O[15]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[16]",
+          "reference": "OBSERVE_DATA_O[16]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[17]",
+          "reference": "OBSERVE_DATA_O[17]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[18]",
+          "reference": "OBSERVE_DATA_O[18]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[19]",
+          "reference": "OBSERVE_DATA_O[19]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[1]",
+          "reference": "OBSERVE_DATA_O[1]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[20]",
+          "reference": "OBSERVE_DATA_O[20]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[21]",
+          "reference": "OBSERVE_DATA_O[21]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[22]",
+          "reference": "OBSERVE_DATA_O[22]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[23]",
+          "reference": "OBSERVE_DATA_O[23]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[24]",
+          "reference": "OBSERVE_DATA_O[24]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[25]",
+          "reference": "OBSERVE_DATA_O[25]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[26]",
+          "reference": "OBSERVE_DATA_O[26]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[27]",
+          "reference": "OBSERVE_DATA_O[27]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[28]",
+          "reference": "OBSERVE_DATA_O[28]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[29]",
+          "reference": "OBSERVE_DATA_O[29]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[2]",
+          "reference": "OBSERVE_DATA_O[2]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[30]",
+          "reference": "OBSERVE_DATA_O[30]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[31]",
+          "reference": "OBSERVE_DATA_O[31]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[3]",
+          "reference": "OBSERVE_DATA_O[3]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[4]",
+          "reference": "OBSERVE_DATA_O[4]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[5]",
+          "reference": "OBSERVE_DATA_O[5]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[6]",
+          "reference": "OBSERVE_DATA_O[6]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[7]",
+          "reference": "OBSERVE_DATA_O[7]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[8]",
+          "reference": "OBSERVE_DATA_O[8]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_data_o[9]",
+          "reference": "OBSERVE_DATA_O[9]",
+          "status": "Match"
+        },
+        {
+          "layout": "observe_valid_o",
+          "reference": "OBSERVE_VALID_O",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[0]",
+          "reference": "PROG_ADDR_I[0]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[1]",
+          "reference": "PROG_ADDR_I[1]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[2]",
+          "reference": "PROG_ADDR_I[2]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[3]",
+          "reference": "PROG_ADDR_I[3]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[4]",
+          "reference": "PROG_ADDR_I[4]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[5]",
+          "reference": "PROG_ADDR_I[5]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[6]",
+          "reference": "PROG_ADDR_I[6]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[7]",
+          "reference": "PROG_ADDR_I[7]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[8]",
+          "reference": "PROG_ADDR_I[8]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_addr_i[9]",
+          "reference": "PROG_ADDR_I[9]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_bank_i",
+          "reference": "PROG_BANK_I",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_be_i[0]",
+          "reference": "PROG_BE_I[0]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_be_i[1]",
+          "reference": "PROG_BE_I[1]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_be_i[2]",
+          "reference": "PROG_BE_I[2]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_be_i[3]",
+          "reference": "PROG_BE_I[3]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[0]",
+          "reference": "PROG_RDATA_O[0]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[10]",
+          "reference": "PROG_RDATA_O[10]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[11]",
+          "reference": "PROG_RDATA_O[11]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[12]",
+          "reference": "PROG_RDATA_O[12]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[13]",
+          "reference": "PROG_RDATA_O[13]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[14]",
+          "reference": "PROG_RDATA_O[14]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[15]",
+          "reference": "PROG_RDATA_O[15]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[16]",
+          "reference": "PROG_RDATA_O[16]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[17]",
+          "reference": "PROG_RDATA_O[17]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[18]",
+          "reference": "PROG_RDATA_O[18]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[19]",
+          "reference": "PROG_RDATA_O[19]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[1]",
+          "reference": "PROG_RDATA_O[1]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[20]",
+          "reference": "PROG_RDATA_O[20]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[21]",
+          "reference": "PROG_RDATA_O[21]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[22]",
+          "reference": "PROG_RDATA_O[22]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[23]",
+          "reference": "PROG_RDATA_O[23]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[24]",
+          "reference": "PROG_RDATA_O[24]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[25]",
+          "reference": "PROG_RDATA_O[25]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[26]",
+          "reference": "PROG_RDATA_O[26]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[27]",
+          "reference": "PROG_RDATA_O[27]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[28]",
+          "reference": "PROG_RDATA_O[28]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[29]",
+          "reference": "PROG_RDATA_O[29]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[2]",
+          "reference": "PROG_RDATA_O[2]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[30]",
+          "reference": "PROG_RDATA_O[30]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[31]",
+          "reference": "PROG_RDATA_O[31]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[3]",
+          "reference": "PROG_RDATA_O[3]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[4]",
+          "reference": "PROG_RDATA_O[4]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[5]",
+          "reference": "PROG_RDATA_O[5]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[6]",
+          "reference": "PROG_RDATA_O[6]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[7]",
+          "reference": "PROG_RDATA_O[7]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[8]",
+          "reference": "PROG_RDATA_O[8]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rdata_o[9]",
+          "reference": "PROG_RDATA_O[9]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_req_i",
+          "reference": "PROG_REQ_I",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_rvalid_o",
+          "reference": "PROG_RVALID_O",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[0]",
+          "reference": "PROG_WDATA_I[0]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[10]",
+          "reference": "PROG_WDATA_I[10]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[11]",
+          "reference": "PROG_WDATA_I[11]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[12]",
+          "reference": "PROG_WDATA_I[12]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[13]",
+          "reference": "PROG_WDATA_I[13]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[14]",
+          "reference": "PROG_WDATA_I[14]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[15]",
+          "reference": "PROG_WDATA_I[15]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[16]",
+          "reference": "PROG_WDATA_I[16]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[17]",
+          "reference": "PROG_WDATA_I[17]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[18]",
+          "reference": "PROG_WDATA_I[18]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[19]",
+          "reference": "PROG_WDATA_I[19]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[1]",
+          "reference": "PROG_WDATA_I[1]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[20]",
+          "reference": "PROG_WDATA_I[20]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[21]",
+          "reference": "PROG_WDATA_I[21]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[22]",
+          "reference": "PROG_WDATA_I[22]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[23]",
+          "reference": "PROG_WDATA_I[23]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[24]",
+          "reference": "PROG_WDATA_I[24]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[25]",
+          "reference": "PROG_WDATA_I[25]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[26]",
+          "reference": "PROG_WDATA_I[26]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[27]",
+          "reference": "PROG_WDATA_I[27]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[28]",
+          "reference": "PROG_WDATA_I[28]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[29]",
+          "reference": "PROG_WDATA_I[29]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[2]",
+          "reference": "PROG_WDATA_I[2]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[30]",
+          "reference": "PROG_WDATA_I[30]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[31]",
+          "reference": "PROG_WDATA_I[31]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[3]",
+          "reference": "PROG_WDATA_I[3]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[4]",
+          "reference": "PROG_WDATA_I[4]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[5]",
+          "reference": "PROG_WDATA_I[5]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[6]",
+          "reference": "PROG_WDATA_I[6]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[7]",
+          "reference": "PROG_WDATA_I[7]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[8]",
+          "reference": "PROG_WDATA_I[8]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_wdata_i[9]",
+          "reference": "PROG_WDATA_I[9]",
+          "status": "Match"
+        },
+        {
+          "layout": "prog_we_i",
+          "reference": "PROG_WE_I",
+          "status": "Match"
+        },
+        {
+          "layout": "rst_ni",
+          "reference": "RST_NI",
+          "status": "Match"
+        },
+        {
+          "layout": "run_i",
+          "reference": "RUN_I",
+          "status": "Match"
+        }
+      ],
+      "macro_instances": 2,
+      "reference_macro_instances": 2,
+      "expected_macro_instances": 2,
+      "circuits": [
+        {
+          "layout": "AND2X3",
+          "reference": "AND2X3",
+          "status": "Match"
+        },
+        {
+          "layout": "AND3BX2",
+          "reference": "AND3BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "AND3X2",
+          "reference": "AND3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AND4X2",
+          "reference": "AND4X2",
+          "status": "Match"
+        },
+        {
+          "layout": "ANTENNA2",
+          "reference": "ANTENNA2",
+          "status": "Match"
+        },
+        {
+          "layout": "AO211X2",
+          "reference": "AO211X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AO21X2",
+          "reference": "AO21X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AO22X2",
+          "reference": "AO22X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AO31X2",
+          "reference": "AO31X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOAI211X2",
+          "reference": "AOAI211X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI211X2",
+          "reference": "AOI211X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI21BX1",
+          "reference": "AOI21BX1",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI21BX2",
+          "reference": "AOI21BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI21X2",
+          "reference": "AOI21X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI221X1",
+          "reference": "AOI221X1",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI221X3",
+          "reference": "AOI221X3",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI22X2",
+          "reference": "AOI22X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI2B1X1",
+          "reference": "AOI2B1X1",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI2B2BX2",
+          "reference": "AOI2B2BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI2B2X1",
+          "reference": "AOI2B2X1",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI2B2X2",
+          "reference": "AOI2B2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI2BB2X2",
+          "reference": "AOI2BB2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI31X1",
+          "reference": "AOI31X1",
+          "status": "Match"
+        },
+        {
+          "layout": "AOI31X2",
+          "reference": "AOI31X2",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX1",
+          "reference": "BUFX1",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX16",
+          "reference": "BUFX16",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX24",
+          "reference": "BUFX24",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX3",
+          "reference": "BUFX3",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX4",
+          "reference": "BUFX4",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX6",
+          "reference": "BUFX6",
+          "status": "Match"
+        },
+        {
+          "layout": "BUFX8",
+          "reference": "BUFX8",
+          "status": "Match"
+        },
+        {
+          "layout": "DECAP16",
+          "reference": "DECAP16",
+          "status": "Match"
+        },
+        {
+          "layout": "DECAP32",
+          "reference": "DECAP32",
+          "status": "Match"
+        },
+        {
+          "layout": "DECAP4",
+          "reference": "DECAP4",
+          "status": "Match"
+        },
+        {
+          "layout": "DECAP8",
+          "reference": "DECAP8",
+          "status": "Match"
+        },
+        {
+          "layout": "DFFMRQX2",
+          "reference": "DFFMRQX2",
+          "status": "Match"
+        },
+        {
+          "layout": "DFFQX1",
+          "reference": "DFFQX1",
+          "status": "Match"
+        },
+        {
+          "layout": "DFFRQX1",
+          "reference": "DFFRQX1",
+          "status": "Match"
+        },
+        {
+          "layout": "DFFRX1",
+          "reference": "DFFRX1",
+          "status": "Match"
+        },
+        {
+          "layout": "DLY1X2",
+          "reference": "DLY1X2",
+          "status": "Match"
+        },
+        {
+          "layout": "INVX1",
+          "reference": "INVX1",
+          "status": "Match"
+        },
+        {
+          "layout": "LATNQX1",
+          "reference": "LATNQX1",
+          "status": "Match"
+        },
+        {
+          "layout": "MIN3X2",
+          "reference": "MIN3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "MUX2X2",
+          "reference": "MUX2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "MUXI2X2",
+          "reference": "MUXI2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND2BX3",
+          "reference": "NAND2BX3",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND2BX4",
+          "reference": "NAND2BX4",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND2X3",
+          "reference": "NAND2X3",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND2X4",
+          "reference": "NAND2X4",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND3BX3",
+          "reference": "NAND3BX3",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND3X2",
+          "reference": "NAND3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND4BX2",
+          "reference": "NAND4BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "NAND4X2",
+          "reference": "NAND4X2",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR2BX2",
+          "reference": "NOR2BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR2X3",
+          "reference": "NOR2X3",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR2X4",
+          "reference": "NOR2X4",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR3BX1P5",
+          "reference": "NOR3BX1P5",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR3BX3",
+          "reference": "NOR3BX3",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR3X2",
+          "reference": "NOR3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR4BBX1",
+          "reference": "NOR4BBX1",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR4BBX2",
+          "reference": "NOR4BBX2",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR4BX2",
+          "reference": "NOR4BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "NOR4X2",
+          "reference": "NOR4X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OA211X2",
+          "reference": "OA211X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OA21X2",
+          "reference": "OA21X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI211X2",
+          "reference": "OAI211X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI21X2",
+          "reference": "OAI21X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI221X2",
+          "reference": "OAI221X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI22X2",
+          "reference": "OAI22X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI2B2BX2",
+          "reference": "OAI2B2BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI2BB2X2",
+          "reference": "OAI2BB2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAI31X2",
+          "reference": "OAI31X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OAOI211X2",
+          "reference": "OAOI211X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OR2X3",
+          "reference": "OR2X3",
+          "status": "Match"
+        },
+        {
+          "layout": "OR3BX2",
+          "reference": "OR3BX2",
+          "status": "Match"
+        },
+        {
+          "layout": "OR3X2",
+          "reference": "OR3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "OR4X2",
+          "reference": "OR4X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+          "reference": "RM_IHPSG13_1P_1024X32_C2_BM_BIST",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_BITKIT_16x2_EDGE_LR",
+          "reference": "RM_IHPSG13_1P_BITKIT_16X2_EDGE_LR",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_BITKIT_16x2_SRAM",
+          "reference": "RM_IHPSG13_1P_BITKIT_16X2_SRAM",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_BLDRV",
+          "reference": "RM_IHPSG13_1P_BLDRV",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_COLCTRL2",
+          "reference": "RM_IHPSG13_1P_COLCTRL2",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_COLDEC2",
+          "reference": "RM_IHPSG13_1P_COLDEC2",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_COLDRV13X4",
+          "reference": "RM_IHPSG13_1P_COLDRV13X4",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_COLDRV13_FILL4",
+          "reference": "RM_IHPSG13_1P_COLDRV13_FILL4",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_COLDRV13_FILL4C2",
+          "reference": "RM_IHPSG13_1P_COLDRV13_FILL4C2",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_CTRL",
+          "reference": "RM_IHPSG13_1P_CTRL",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_DEC00",
+          "reference": "RM_IHPSG13_1P_DEC00",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_DEC01",
+          "reference": "RM_IHPSG13_1P_DEC01",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_DEC02",
+          "reference": "RM_IHPSG13_1P_DEC02",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_DEC03",
+          "reference": "RM_IHPSG13_1P_DEC03",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_DEC04",
+          "reference": "RM_IHPSG13_1P_DEC04",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_ROWDEC8",
+          "reference": "RM_IHPSG13_1P_ROWDEC8",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_ROWREG8",
+          "reference": "RM_IHPSG13_1P_ROWREG8",
+          "status": "Match"
+        },
+        {
+          "layout": "RM_IHPSG13_1P_WLDRV16X4",
+          "reference": "RM_IHPSG13_1P_WLDRV16X4",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_AND2X2",
+          "reference": "RSC_IHPSG13_AND2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CBUFX2",
+          "reference": "RSC_IHPSG13_CBUFX2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CBUFX4",
+          "reference": "RSC_IHPSG13_CBUFX4",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CBUFX8",
+          "reference": "RSC_IHPSG13_CBUFX8",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "reference": "RSC_IHPSG13_CDLYX1",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "reference": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CDLYX2",
+          "reference": "RSC_IHPSG13_CDLYX2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CGATEPX4",
+          "reference": "RSC_IHPSG13_CGATEPX4",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CINVX4",
+          "reference": "RSC_IHPSG13_CINVX4",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CINVX4_WN",
+          "reference": "RSC_IHPSG13_CINVX4_WN",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_CNAND2X2",
+          "reference": "RSC_IHPSG13_CNAND2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_DFNQMX2IX1",
+          "reference": "RSC_IHPSG13_DFNQMX2IX1",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_DFNQX2",
+          "reference": "RSC_IHPSG13_DFNQX2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_INVX2",
+          "reference": "RSC_IHPSG13_INVX2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_INVX4",
+          "reference": "RSC_IHPSG13_INVX4",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_LHPQX2",
+          "reference": "RSC_IHPSG13_LHPQX2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_MX2IX1",
+          "reference": "RSC_IHPSG13_MX2IX1",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_MX2X2",
+          "reference": "RSC_IHPSG13_MX2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_NAND2X2",
+          "reference": "RSC_IHPSG13_NAND2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_NAND3X2",
+          "reference": "RSC_IHPSG13_NAND3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_NOR2X2",
+          "reference": "RSC_IHPSG13_NOR2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_NOR3X2",
+          "reference": "RSC_IHPSG13_NOR3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_OA12X1",
+          "reference": "RSC_IHPSG13_OA12X1",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_TIEH",
+          "reference": "RSC_IHPSG13_TIEH",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_TIEL",
+          "reference": "RSC_IHPSG13_TIEL",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_WLDRVX4",
+          "reference": "RSC_IHPSG13_WLDRVX4",
+          "status": "Match"
+        },
+        {
+          "layout": "RSC_IHPSG13_XOR2X2",
+          "reference": "RSC_IHPSG13_XOR2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "TIEHI",
+          "reference": "TIEHI",
+          "status": "Match"
+        },
+        {
+          "layout": "TIELO",
+          "reference": "TIELO",
+          "status": "Match"
+        },
+        {
+          "layout": "XNOR2X2",
+          "reference": "XNOR2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "XNOR3X2",
+          "reference": "XNOR3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "XOR2X2",
+          "reference": "XOR2X2",
+          "status": "Match"
+        },
+        {
+          "layout": "XOR3X2",
+          "reference": "XOR3X2",
+          "status": "Match"
+        },
+        {
+          "layout": "ibex_sram_bench",
+          "reference": "IBEX_SRAM_BENCH",
+          "status": "Match"
+        }
+      ],
+      "macro_devices_verified": true,
+      "macro_expanded_device_counts": {
+        "layout": {
+          "sg13_lv_nmos": 139795,
+          "sg13_lv_pmos": 72755,
+          "res_metal3": 32960,
+          "res_metal2": 34848,
+          "res_metal1": 10
+        },
+        "reference": {
+          "sg13_lv_nmos": 139795,
+          "sg13_lv_pmos": 72755,
+          "res_metal2": 34848,
+          "res_metal3": 32960,
+          "res_metal1": 10
+        }
+      },
+      "macro_qualification_sha256": "b6242aa46edff4ef4ad29e3aa1f66905b7878df667234ca33cddd2245b22d389",
+      "extraction_errors": [],
+      "database_sha256": "e0d3702fee9b7b8cd91341fb883a143a897105037d051d1e6f61c680bee0c432",
+      "reference_report_sha256": "e62602dd4ea481131a745c8f6b3ebe825f60d998a1607cb200b7dd12b7238221",
+      "reference_cdl_sha256": "0d30843904f5b0160077a0cceb0718987e61e2c13572d84a4d5cb975e8bf8bf9",
+      "provenance_scope": "requires the pinned extraction deck and source input bindings",
+      "diagnostics_truncated": false
+    },
+    "wall_seconds": 110.02698546100874,
+    "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/rusteda-worker-9fd4cd0fd4ba298f1b1d1fb5.scope",
+    "cgroup_memory": {
+      "memory.peak": 6481956864,
+      "memory.current": 3079151616,
+      "memory.swap.current": 0
+    }
+  },
+  "macro_expanded_device_counts": {
+    "layout": {
+      "sg13_lv_nmos": 139795,
+      "sg13_lv_pmos": 72755,
+      "res_metal3": 32960,
+      "res_metal2": 34848,
+      "res_metal1": 10
+    },
+    "reference": {
+      "sg13_lv_nmos": 139795,
+      "sg13_lv_pmos": 72755,
+      "res_metal2": 34848,
+      "res_metal3": 32960,
+      "res_metal1": 10
+    }
+  },
+  "database_sha256": "e0d3702fee9b7b8cd91341fb883a143a897105037d051d1e6f61c680bee0c432",
+  "reference_cdl_sha256": "0d30843904f5b0160077a0cceb0718987e61e2c13572d84a4d5cb975e8bf8bf9",
+  "artifacts": {
+    "netlist.json": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/netlist.json",
+      "sha256": "668cfd6dcc25bc5be79302479f286d37558d3aa457aff0263d3d79d83edbddd0",
+      "bytes": 40174662
+    },
+    "layout.lvsdb": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/layout.lvsdb",
+      "sha256": "e0d3702fee9b7b8cd91341fb883a143a897105037d051d1e6f61c680bee0c432",
+      "bytes": 66161731
+    },
+    "check_lvs.json": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/check_lvs.json",
+      "sha256": "6a7039fd2f7e3c102d77223e938a652c799d2e1086e7a1576acd95855ca6fab8",
+      "bytes": 28067
+    },
+    "reference/reference.cdl": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/reference/reference.cdl",
+      "sha256": "0d30843904f5b0160077a0cceb0718987e61e2c13572d84a4d5cb975e8bf8bf9",
+      "bytes": 4559037
+    },
+    "reference/reference.json": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/reference/reference.json",
+      "sha256": "e62602dd4ea481131a745c8f6b3ebe825f60d998a1607cb200b7dd12b7238221",
+      "bytes": 7882873
+    }
+  }
+}

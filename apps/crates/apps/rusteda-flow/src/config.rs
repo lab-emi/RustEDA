@@ -21,6 +21,8 @@ pub enum Pdk {
     Gf180Seven,
     #[serde(rename = "gf180mcu_fd_sc_mcu9t5v0")]
     Gf180Nine,
+    #[serde(rename = "ihp_sg13g2_ez130", alias = "ihp-sg13g2")]
+    IhpEz130,
 }
 
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]

@@ -1,0 +1,918 @@
+{
+  "cell_buses": {
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": {
+      "A_ADDR": [
+        9,
+        0
+      ],
+      "A_DIN": [
+        31,
+        0
+      ],
+      "A_DOUT": [
+        31,
+        0
+      ],
+      "A_BM": [
+        31,
+        0
+      ],
+      "A_BIST_ADDR": [
+        9,
+        0
+      ],
+      "A_BIST_DIN": [
+        31,
+        0
+      ],
+      "A_BIST_BM": [
+        31,
+        0
+      ]
+    }
+  },
+  "body_ties": {
+    "WELLTAP": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND2X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND2X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND3BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND3BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND4X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AND4X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "ANTENNA2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "ANTENNA4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "ANTENNA8": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO22X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO22X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO21X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO211X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO211X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO31X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AO31X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2B1X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2B1X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI21BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI21BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI21X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI21X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI211X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI211X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI221X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI221X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI221X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI22X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI22X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI22X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2B2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2B2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2BB2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2BB2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2B2BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI2B2BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOAI211X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOAI211X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI31X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "AOI31X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX6": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX8": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX12": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX16": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX24": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX32": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX44": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX48": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "BUFX64": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGTSX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGTSX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGTSX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "CGTSX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DECAP4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DECAP8": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DECAP16": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DECAP32": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFQX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFQX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFQX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFQX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFQX4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFQX6": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFMRQX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQX4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQX6": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ2X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ2X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ4X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ4X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ4X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRQ4X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRX4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DFFRX6": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "DLY1X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "FAX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "HAX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX6": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX8": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX14": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX16": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX32": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "INVX64": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNRX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNRX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNRX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNRX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNQX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNQX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATNQX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATRX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATRX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATRX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATRX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATQX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATQX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "LATQX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MIN3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MIN3X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MIN3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUX2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUX2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUX4X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUX4X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUX4X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUX4X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUXI2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "MUXI2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2BX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2BX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2BX4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2X1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND2X4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND3BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND3BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND3BX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND4BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND4BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND4BBX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND4BBX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NAND4X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR2X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR2X4": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR2BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR2BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR3BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR3BX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR3BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR3BX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR4BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR4BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR4BBX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR4BBX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR4X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "NOR4X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OA21X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OA211X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OA211X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI2B2BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI2B2BX1P5": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI2B2BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI2B2BX3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI2BB2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI21X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI21X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI211X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI211X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI22X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI22X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI221X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI221X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAOI211X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAOI211X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI31X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OAI31X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR2X3": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR4X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR4X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR3BX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "OR3BX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "TBUFX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "TBUFX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "TIEHI": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "TIELO": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "TINVX1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "TINVX2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XNOR2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XNOR2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XNOR3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XNOR3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XOR2X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XOR2X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XOR3X1": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    },
+    "XOR3X2": {
+      "VNW": "VDD",
+      "VPW": "VSS"
+    }
+  },
+  "top_buses": {
+    "observe_data_o": [
+      31,
+      0
+    ],
+    "prog_addr_i": [
+      9,
+      0
+    ],
+    "prog_be_i": [
+      3,
+      0
+    ],
+    "prog_rdata_o": [
+      31,
+      0
+    ],
+    "prog_wdata_i": [
+      31,
+      0
+    ]
+  }
+}

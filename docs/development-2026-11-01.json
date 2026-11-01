@@ -1,0 +1,48 @@
+{
+  "schema": "rusteda.development-publication.v1",
+  "date": "2026-11-01",
+  "modules": {
+    "RustEDA-Common": {
+      "commit": "06a9cdac2336b054b79b4d3647421dcae6cb6a1c",
+      "repository": "https://github.com/lab-emi/RustEDA-Common",
+      "documentation": "https://lab-emi.github.io/RustEDA/modules/rusteda-common/"
+    },
+    "RustSys": {
+      "commit": "0f8a2d80654def4d91d08d6f3791c12726339a53",
+      "repository": "https://github.com/lab-emi/RustSys",
+      "documentation": "https://lab-emi.github.io/RustEDA/modules/rustsys/"
+    },
+    "RustSTA": {
+      "commit": "0c2bcc6a539580ed43aac1bad6badb82db4976c4",
+      "repository": "https://github.com/lab-emi/RustSTA",
+      "documentation": "https://lab-emi.github.io/RustEDA/modules/ruststa/"
+    },
+    "RustROAD": {
+      "commit": "07e1626f220ef1b7f3029ef827fae4b1491c3373",
+      "repository": "https://github.com/lab-emi/RustROAD",
+      "documentation": "https://lab-emi.github.io/RustEDA/modules/rustroad/"
+    },
+    "RustSpice": {
+      "commit": "cc2426f3e6cbb1ad05843b22a71632f118f62ddc",
+      "repository": "https://github.com/lab-emi/RustSpice",
+      "documentation": "https://lab-emi.github.io/RustEDA/modules/rustspice/"
+    }
+  },
+  "local_rust_tests": {
+    "passed": 1955,
+    "ignored": 55,
+    "scope": "418 Common +475 synthesis +415 timing +472 physical +175 headless applications; ignored checks are not passes"
+  },
+  "local_python_tests": {
+    "total": 311,
+    "skipped": 9,
+    "scope": "191 application/integration controls +120 synthesis harness controls"
+  },
+  "documentation": {
+    "strict_build": "passed",
+    "rendered_links": "passed",
+    "scope": "unified site and standalone synthesis/timing sites"
+  },
+  "retained_measurements": "benchmarks/ibex-sg13g2-ez130-development.json",
+  "publication_scope": "source, repository documentation and retained identity-bound evidence; no new whole-flow campaign or cross-tool ratio"
+}

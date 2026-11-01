@@ -25,21 +25,32 @@ No endpoint-parity tolerance is silently relaxed.
 
 The [flow integration receipt](../integration/evidence/phase3.json) records fresh
 counter/SKY130, counter/GF180 and fifo/SKY130 runs, cache verification and worker
-recovery. Their full initialization-plus-run times were 109.273 s, 151.883 s and
-237.357 s. These are single-flow qualification observations without matched
-competitor measurements; they do not yield a comparative speedup.
+recovery. They qualify the application protocol; they are not benchmarks. The only
+published benchmark is the [Ibex SG13G2/EZ130 campaign](benchmarks.md).
 
 ## Known limits
 
+- The Ibex SG13G2/EZ130 results are repeated runs of one design. It does not
+  qualify other designs, SRAM configurations or the IHP `sg13g2_stdcell` library.
 - OpenC910 placement, routing, GDS and end-to-end performance are unverified.
 - The original failing OpenC910 independent timing-checker case is unavailable
   for reproduction; it has not been reclassified as passing.
 - Full GF180 latch timing and high-resistance effective capacitance retain
   explicit coverage limits in the timing documentation.
-- IR/EM, signal integrity, OCV/CPPR, full-chip assembly and foundry acceptance
+- IR/EM, signal integrity, general OCV/CPPR, full-chip assembly and foundry acceptance
   are not established by the small-block matrix.
 - A source build or unit-test pass is not a new equivalence or signoff result.
 
 Public benchmark and oracle records retain their original identities and scope.
 Local planning notes do not replace those records. Licenses, notices and design
 provenance remain authoritative; publication is not a legal certification.
+
+## Latest retained native runs
+
+R20/R21 complete 129 steps and the original 16 gates with two real SRAMs. Their
+extra tap proof binds the actual maximal/coverage processes, complete LU.a/LU.b
+categories and immutable GDS. The publication retains original reports by SHA-256
+and does not rerun or relabel failed attempts. The original qualifier’s benchmark
+field remains `unverified`: no new matched reference campaign was performed.
+
+[Latest measurement scope and evidence](benchmarks.md#latest-native-development-results-2026-11-01)

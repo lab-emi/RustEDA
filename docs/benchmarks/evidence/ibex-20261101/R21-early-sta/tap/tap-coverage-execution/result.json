@@ -1,0 +1,111 @@
+{
+  "schema": "rusteda.joint-tap-execution.v1",
+  "status": "captured_passed_requires_joint_qualification",
+  "producer_step": "nf_tap_coverage",
+  "input_manifest": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/recipe/manifest.json",
+    "sha256": "cf7dd1374b0057fc1063d141a09616f85860846c98f1a4b1aea85ad4b4c385af",
+    "bytes": 89570
+  },
+  "ownership": {
+    "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/ownership/native.json",
+    "sha256": "6b9f5228965689bded125df858d746b3119184c04dcd80b48008e538c04caf1c",
+    "bytes": 344
+  },
+  "source_pins": {
+    "guard": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/helpers/early2/tap_capture.py",
+      "sha256": "740a7621f238faa3e34060e9084dbd09e40d96deb4b0040acbd42527b83a7444",
+      "bytes": 14206
+    },
+    "runner": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage_runner.py",
+      "sha256": "5e34b964a8d75bf8ff953dc84d972e7b0c1b92820161fd99e05e17fbd945bfdf",
+      "bytes": 4656
+    },
+    "worker": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage.py",
+      "sha256": "98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47",
+      "bytes": 18682
+    }
+  },
+  "tools": {
+    "python": {
+      "path": "/usr/bin/python3.14",
+      "sha256": "44fdcdf23cd94aece60aec10b92b15a0e1cf4561e710985eaa53b362a03db48e",
+      "bytes": 14424
+    },
+    "appimage": {
+      "path": "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "sha256": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+      "bytes": 1398049312
+    }
+  },
+  "inputs": {
+    "config": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-inputs.json",
+      "sha256": "4e51807d4d7050e3d331e76e2611c1200f24b37367aee75e12c4986c5e72dab1",
+      "bytes": 919
+    },
+    "gds": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/ibex_sram_bench.gds",
+      "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+      "bytes": 28120726
+    }
+  },
+  "outputs": {
+    "summary": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage/summary.json",
+      "sha256": "04cd7982c0ed9097965f28bb64f1178900027a73fb04bcfaaee1294837fcf451",
+      "bytes": 3363
+    },
+    "head": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage/HEAD",
+      "sha256": "04ba8965e2c86e1c96c4fa037d255cc541b3a511dee31764425cf38689131724",
+      "bytes": 5
+    },
+    "controller": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage/controller.json",
+      "sha256": "54be0c8c3f0b823d818d64265708fef8e60a8281191b29e791282ac7037785b3",
+      "bytes": 1631
+    }
+  },
+  "child": {
+    "argv": [
+      "/usr/bin/python3.14",
+      "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage_runner.py",
+      "--config",
+      "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-inputs.json",
+      "--workspace",
+      "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage",
+      "--base-rev",
+      "empty",
+      "--tool",
+      "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "--tool-sha256",
+      "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+      "--tool-bytes",
+      "1398049312"
+    ],
+    "pid": 1575257,
+    "exit_code": 0,
+    "wall_seconds": 35.908052343991585,
+    "available_seconds": 588.3914037880022,
+    "stdout": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-execution/stdout.log",
+      "sha256": "c748f721a14a55609953469c752b928aaa5be9dc6e2f6992b4fcb51fdab6e136",
+      "bytes": 412
+    },
+    "stderr": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-execution/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "actual_python_children": 1,
+  "actual_native_processes": null,
+  "command_deadline_seconds": 600,
+  "cleanup_reserve_seconds": 10,
+  "native_process_count_scope": "not inferred; exact existing checker/controller command is separately bound",
+  "wall_seconds": 38.295577576966025
+}

@@ -19,6 +19,18 @@ MAX_FILES = 2500
 MAX_BYTES = 256 * 1024 * 1024
 SUFFIXES = {'.md', '.html', '.svg', '.gif', '.png', '.jpg', '.css', '.js', '.json', '.time', '.txt'}
 
+# Preserve source snapshots and correctness fixtures without republishing retired
+# performance data in the active static documentation site.
+RETIRED_BENCHMARK_ASSETS = frozenset((ROOT / name).resolve() for name in (
+    'docs/benchmarks/openc910-sky130.json',
+    'modules/RustROAD/docs/evidence/placement-benchmark.json',
+    'modules/RustROAD/docs/evidence/placement-benchmark-final.time',
+    'modules/RustROAD/docs/evidence/placement-benchmark-v2.time',
+    'modules/RustROAD/docs/evidence/scale.json',
+    'modules/RustROAD/docs/evidence/scale-stretch.json',
+))
+
+
 
 def git_head(repo):
     return subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
@@ -36,8 +48,13 @@ def build(stage, site):
         for src in sorted((repo/'docs').rglob('*')):
             if not src.is_file() or src.suffix not in SUFFIXES:
                 continue
+            if src.resolve() in RETIRED_BENCHMARK_ASSETS:
+                continue
             rel = src.relative_to(repo/'docs')
             if any(part.startswith(('.', '_')) for part in rel.parts) or src.name in ('requirements.txt', 'requirements.in'):
+                continue
+            # Agent handoff prompts are local coordination notes, not site pages.
+            if repo == ROOT and rel.parts[0] == 'handoffs':
                 continue
             total += src.stat().st_size
             if len(files) >= MAX_FILES or total > MAX_BYTES:
@@ -53,6 +70,14 @@ def build(stage, site):
             return value
         target = (source.parent/unquote(url.path)).resolve()
         suffix = ('?'+url.query if url.query else '') + ('#'+url.fragment if url.fragment else '')
+        if target in RETIRED_BENCHMARK_ASSETS:
+            import os
+            output = stage/'benchmarks.md'
+            if html:
+                output = stage/'benchmarks'
+                return Path(os.path.relpath(output, dest.parent)).as_posix()+'/'
+            return Path(os.path.relpath(output, dest.parent)).as_posix()
+
         staged_target = (dest.parent/unquote(url.path)).resolve()
         if not html and staged_target in files.values():
             return value
@@ -112,7 +137,7 @@ def build(stage, site):
         result = {key: p for key, value in item.items() if (p := prune(value)) is not None}
         return result or None
 
-    nav = [{'Overview': 'index.md'}, {'Get started': [{'Build': 'development.md'}, {'Run a flow': 'flows.md'}]}, {'Workbench': [{'Overview': 'workbench/index.md'}, {'Interface': 'workbench/specs/studio/cli.md'}, {'Architecture': 'application-integration.md'}]}]
+    nav = [{'Overview': 'index.md'}, {'Get started': [{'Build': 'development.md'}, {'Development snapshot': 'development-snapshot.md'}, {'Run a flow': 'flows.md'}]}, {'Workbench': [{'Overview': 'workbench/index.md'}, {'Interface': 'workbench/specs/studio/cli.md'}, {'Architecture': 'application-integration.md'}]}]
     module_nav = [{'Overview': 'modules.md'}]
     for name in MODULES:
         repo = ROOT/'modules'/name; prefix = 'modules/'+name.lower()

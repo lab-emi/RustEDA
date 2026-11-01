@@ -103,7 +103,7 @@ pub fn prepare(root: &Path, base: &str, retry_failed: bool) -> Result<Value> {
     let rustroad = engine::resolve_tool(&config.tools.rustroad)?;
     let timer = engine::resolve_tool(&config.tools.gnu_time)?;
     let podman = engine::resolve_tool(&config.tools.podman)?;
-    let args = vec![
+    let mut args = vec![
         text(&road.driver)?,
         "--project".into(),
         text(&road.project)?,
@@ -118,11 +118,17 @@ pub fn prepare(root: &Path, base: &str, retry_failed: bool) -> Result<Value> {
         "--gnu-time".into(),
         text(&timer)?,
     ];
+    if config.pdk == crate::config::Pdk::IhpEz130 {
+        args.extend(["--base-rev".into(), "empty".into()]);
+    }
     let mut request = json!({"schema":"rustlane.worker.v1","workspace":ws.root,"base_rev":base,
         "stage":"rtl2gds","attempt":attempt,"program":program,"arguments":args,"cwd":dir,
         "podman":podman,"timeout_seconds":config.limits.timeout_secs,
         "memory_mib":config.limits.memory_mib,"max_log_bytes":config.limits.max_log_bytes,
         "environment":{"PYTHONDONTWRITEBYTECODE":"1","OMP_NUM_THREADS":"2","OPENBLAS_NUM_THREADS":"2"}});
+    if config.pdk == crate::config::Pdk::IhpEz130 {
+        request["cpu_affinity"] = json!(crate::ihp::worker_cpu_affinity(config)?);
+    }
     let id = format!("{:x}", Sha256::digest(serde_json::to_vec(&request)?));
     request["request_id"] = json!(id);
     request["unit"] = json!(format!("rusteda-worker-{}", &id[..24]));

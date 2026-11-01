@@ -1,0 +1,4005 @@
+{
+  "schema": "rusteda.recorded-early-schedule.v1",
+  "scope": "recorded R20/R21; serial composer default unchanged",
+  "parallel_groups": [
+    {
+      "max_parallel": 8,
+      "max_memory_mib": 7168,
+      "steps": {
+        "nf_tap_latchup": {
+          "depends_on": [],
+          "cpu_slots": [
+            6,
+            7
+          ],
+          "memory_mib": 1792
+        },
+        "be_postroute": {
+          "depends_on": [],
+          "cpu_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "memory_mib": 5248
+        },
+        "be_antenna_inputs": {
+          "depends_on": [
+            "be_postroute"
+          ]
+        },
+        "be_ff_export": {
+          "depends_on": [
+            "be_antenna_inputs"
+          ],
+          "cpu_slots": [
+            0,
+            1
+          ],
+          "memory_mib": 512
+        },
+        "be_inspect": {
+          "depends_on": [
+            "be_ff_export"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 512
+        },
+        "be_def": {
+          "depends_on": [
+            "be_inspect"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 512
+        },
+        "be_netlist": {
+          "depends_on": [
+            "be_def"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 512
+        },
+        "be_powered": {
+          "depends_on": [
+            "be_netlist"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 512
+        },
+        "be_gds": {
+          "depends_on": [
+            "be_powered"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 512
+        },
+        "be_ff_main": {
+          "depends_on": [
+            "be_ff_export"
+          ],
+          "cpu_slots": [
+            0,
+            1
+          ],
+          "memory_mib": 2304
+        },
+        "be_ff_antenna": {
+          "depends_on": [
+            "be_ff_export"
+          ],
+          "cpu_slots": [
+            2,
+            3
+          ],
+          "memory_mib": 2560
+        },
+        "be_antenna_repair": {
+          "depends_on": [
+            "be_ff_main",
+            "be_ff_antenna",
+            "be_gds"
+          ],
+          "cpu_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "memory_mib": 5248
+        },
+        "be_antenna_verify": {
+          "depends_on": [
+            "be_antenna_repair"
+          ],
+          "cpu_slots": [
+            0,
+            1
+          ],
+          "memory_mib": 2304
+        },
+        "be_extract": {
+          "depends_on": [
+            "be_antenna_verify"
+          ],
+          "cpu_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "memory_mib": 3840
+        },
+        "be_rcx_inputs": {
+          "depends_on": [
+            "be_def"
+          ]
+        },
+        "be_openrcx": {
+          "depends_on": [
+            "be_rcx_inputs",
+            "be_ff_antenna"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 768
+        },
+        "be_timing_inputs": {
+          "depends_on": [
+            "be_openrcx",
+            "be_extract"
+          ]
+        },
+        "be_timing": {
+          "depends_on": [
+            "be_timing_inputs"
+          ],
+          "cpu_slots": [
+            4,
+            5
+          ],
+          "memory_mib": 1024
+        },
+        "be_main": {
+          "depends_on": [
+            "be_extract"
+          ],
+          "cpu_slots": [
+            0,
+            1
+          ],
+          "memory_mib": 2304
+        },
+        "be_antenna": {
+          "depends_on": [
+            "be_extract"
+          ],
+          "cpu_slots": [
+            2,
+            3
+          ],
+          "memory_mib": 2560
+        },
+        "be_lvs_inputs": {
+          "depends_on": [
+            "be_gds"
+          ]
+        },
+        "be_lvs": {
+          "depends_on": [
+            "be_lvs_inputs",
+            "be_ff_antenna"
+          ],
+          "cpu_slots": [
+            2,
+            3
+          ],
+          "memory_mib": 2048
+        },
+        "be_macro_contract": {
+          "depends_on": [
+            "be_lvs"
+          ],
+          "cpu_slots": [
+            10,
+            11
+          ],
+          "memory_mib": 256
+        },
+        "nf_tap_coverage_inputs": {
+          "depends_on": [
+            "be_extract"
+          ]
+        },
+        "nf_tap_coverage": {
+          "depends_on": [
+            "nf_tap_coverage_inputs"
+          ],
+          "cpu_slots": [
+            0,
+            1
+          ],
+          "memory_mib": 1280
+        },
+        "nf_logic_inputs": {
+          "depends_on": [
+            "be_extract"
+          ]
+        },
+        "nf_logic": {
+          "depends_on": [
+            "nf_logic_inputs"
+          ],
+          "cpu_slots": [
+            8,
+            9
+          ],
+          "memory_mib": 768
+        }
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "fe_context",
+      "kind": "render",
+      "destination": "frontend/context.json",
+      "content": {
+        "schema": "rusteda.native-frontend-context.v1",
+        "run_root": "{output}",
+        "files": {
+          "rtl": {
+            "$input": "rtl"
+          },
+          "sdc": {
+            "$input": "sdc"
+          },
+          "std_tt": {
+            "$input": "std_tt"
+          },
+          "std_ss": {
+            "$input": "std_ss"
+          },
+          "ram_tt": {
+            "$input": "ram_tt"
+          },
+          "ram_ss": {
+            "$input": "ram_ss"
+          },
+          "tech_lef": {
+            "$input": "tech_lef"
+          },
+          "cell_lef": {
+            "$input": "cell_lef"
+          },
+          "std_lef": {
+            "$input": "std_lef"
+          },
+          "floorplan": {
+            "$input": "floorplan"
+          },
+          "physical": {
+            "$input": "physical"
+          },
+          "routing": {
+            "$input": "routing"
+          },
+          "interfaces": {
+            "$input": "interfaces"
+          },
+          "ecos": {
+            "$input": "ecos"
+          },
+          "frontend": {
+            "$input": "frontend"
+          },
+          "prepare": {
+            "$input": "prepare"
+          },
+          "delay_helper": {
+            "$input": "delay_helper"
+          },
+          "sizing_helper": {
+            "$input": "sizing_helper"
+          },
+          "liberty_reader": {
+            "$input": "liberty_reader"
+          },
+          "pin_caps_source": {
+            "$input": "pin_caps_source"
+          },
+          "producer": {
+            "$input": "producer"
+          },
+          "estimator": {
+            "$input": "estimator"
+          },
+          "rc_policy": {
+            "$input": "rc_policy"
+          }
+        },
+        "tools": {
+          "rustsys": {
+            "$tool": "rustsys"
+          },
+          "rusteda": {
+            "$tool": "rusteda"
+          },
+          "ruststa": {
+            "$tool": "ruststa"
+          },
+          "rustroad": {
+            "$tool": "rustroad"
+          },
+          "python": {
+            "$tool": "python"
+          },
+          "xxhsum": {
+            "$tool": "xxhsum"
+          },
+          "pin_caps": {
+            "$tool": "pin_caps"
+          },
+          "gnu_time": {
+            "$tool": "gnu_time"
+          }
+        },
+        "selection": {
+          "top": "ibex_sram_bench",
+          "primary_clock": "clk_i",
+          "clock_sink_pin": "CK",
+          "gating_cells": [
+            "AND2X3"
+          ],
+          "buffers": [
+            {
+              "cell": "BUFX1",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX2",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX3",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX4",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX6",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX8",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX12",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX16",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX24",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX32",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX44",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX48",
+              "input": "A",
+              "output": "Y"
+            },
+            {
+              "cell": "BUFX64",
+              "input": "A",
+              "output": "Y"
+            }
+          ],
+          "primary_buffer": "BUFX24",
+          "reset": {
+            "pin": "RB",
+            "leaf": "BUFX8",
+            "trunk": "BUFX16"
+          },
+          "delay_cells": [
+            "DLY1X2"
+          ],
+          "target_fanout": 8,
+          "cap_fraction": 0.8,
+          "hold_margin_ns": 0.075,
+          "setup_margin_ns": 0.05,
+          "port_diode": {
+            "cell": "ANTENNA2",
+            "pin": "A"
+          },
+          "electrical": {
+            "driver_cells": [
+              "BUFX3",
+              "BUFX4",
+              "BUFX6",
+              "BUFX8",
+              "BUFX12",
+              "BUFX16"
+            ],
+            "sram_buffer": "BUFX4",
+            "sram_clock_buffer": "BUFX8",
+            "sram_masters": [
+              "RM_IHPSG13_1P_1024x32_c2_bm_bist"
+            ],
+            "load_fraction": 0.6,
+            "max_wire_um": 1200,
+            "antenna_cells": [
+              "ANTENNA2"
+            ],
+            "drv_margin": 0.25,
+            "hold_drv_margin": 0.2,
+            "clock_balance": {
+              "cell": "DLY1X2",
+              "max_stages": 32,
+              "margin_ns": 0.1,
+              "wire_pf": 0.002
+            }
+          },
+          "launch_chain_max": 32
+        }
+      }
+    },
+    {
+      "id": "fe_profiles",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "profiles",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/profiles",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_caps_tt_std",
+      "kind": "command",
+      "tool": "pin_caps",
+      "arguments": [
+        "{files:std_tt}"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_caps_tt_std"
+    },
+    {
+      "id": "fe_caps_tt_ram",
+      "kind": "command",
+      "tool": "pin_caps",
+      "arguments": [
+        "{files:ram_tt}"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_caps_tt_ram"
+    },
+    {
+      "id": "fe_caps_ss_std",
+      "kind": "command",
+      "tool": "pin_caps",
+      "arguments": [
+        "{files:std_ss}"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_caps_ss_std"
+    },
+    {
+      "id": "fe_caps_ss_ram",
+      "kind": "command",
+      "tool": "pin_caps",
+      "arguments": [
+        "{files:ram_ss}"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_caps_ss_ram"
+    },
+    {
+      "id": "fe_synth_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/synth",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_synth_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/synth",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--rtl",
+        "{files:rtl}",
+        "--top",
+        "ibex_sram_bench"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_synth",
+      "kind": "command",
+      "tool": "rustsys",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/synth",
+        "synth",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 600
+    },
+    {
+      "id": "fe_synth_export",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/synth",
+        "--rev",
+        "rev2",
+        "--netlist",
+        "{output}/frontend/mapped.v",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_mapped_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-mapped",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_mapped_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-mapped",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--netlist",
+        "{output}/frontend/mapped.v",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_mapped_run",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "run",
+        "-w",
+        "{output}/frontend/sta-mapped",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "2",
+        "--max-state-gib",
+        "2",
+        "--max-paths",
+        "32",
+        "--max-limit-rows",
+        "100000",
+        "--require-wire-model",
+        "ideal",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_mapped_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-mapped",
+        "--rev",
+        "rev2",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/mapped-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_mapped_tt_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-mapped",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "violating",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_mapped_tt_drv"
+    },
+    {
+      "id": "fe_mapped_ss_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-mapped",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "violating",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_mapped_ss_drv"
+    },
+    {
+      "id": "fe_bundle_reset",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "bundle",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/bundle-reset",
+        "--base-rev",
+        "empty",
+        "--operation",
+        "reset",
+        "--timing-tag",
+        "mapped",
+        "--source",
+        "{output}/frontend/mapped.v",
+        "--graph",
+        "{output}/frontend/mapped-graph.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_eco_reset",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:ecos}",
+        "reset",
+        "--workspace",
+        "{output}/frontend/eco-reset",
+        "--base-rev",
+        "empty",
+        "--inputs",
+        "{output}/frontend/bundle-reset/inputs.json",
+        "--policy",
+        "{output}/frontend/bundle-reset/policy.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_reset_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-reset",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_reset_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-reset",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--netlist",
+        "{output}/frontend/eco-reset/netlist.v",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_reset_run",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "run",
+        "-w",
+        "{output}/frontend/sta-reset",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "2",
+        "--max-state-gib",
+        "2",
+        "--max-paths",
+        "32",
+        "--max-limit-rows",
+        "100000",
+        "--require-wire-model",
+        "ideal",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_reset_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-reset",
+        "--rev",
+        "rev2",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/reset-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_reset_tt_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-reset",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "violating",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_reset_tt_drv"
+    },
+    {
+      "id": "fe_reset_ss_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-reset",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "violating",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_reset_ss_drv"
+    },
+    {
+      "id": "fe_bundle_fanout",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "bundle",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/bundle-fanout",
+        "--base-rev",
+        "empty",
+        "--operation",
+        "fanout",
+        "--timing-tag",
+        "reset",
+        "--source",
+        "{output}/frontend/eco-reset/netlist.v",
+        "--graph",
+        "{output}/frontend/reset-graph.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_eco_fanout",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:ecos}",
+        "fanout",
+        "--workspace",
+        "{output}/frontend/eco-fanout",
+        "--base-rev",
+        "empty",
+        "--inputs",
+        "{output}/frontend/bundle-fanout/inputs.json",
+        "--policy",
+        "{output}/frontend/bundle-fanout/policy.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_fanout_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-fanout",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_fanout_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-fanout",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--netlist",
+        "{output}/frontend/eco-fanout/netlist.v",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_fanout_run",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "run",
+        "-w",
+        "{output}/frontend/sta-fanout",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "2",
+        "--max-state-gib",
+        "2",
+        "--max-paths",
+        "32",
+        "--max-limit-rows",
+        "100000",
+        "--require-wire-model",
+        "ideal",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_fanout_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-fanout",
+        "--rev",
+        "rev2",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/fanout-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_fanout_tt_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-fanout",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "violating",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_fanout_tt_drv"
+    },
+    {
+      "id": "fe_fanout_ss_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-fanout",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "violating",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_fanout_ss_drv"
+    },
+    {
+      "id": "fe_bundle_primary-clock",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "bundle",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/bundle-primary-clock",
+        "--base-rev",
+        "empty",
+        "--operation",
+        "primary-clock",
+        "--timing-tag",
+        "fanout",
+        "--source",
+        "{output}/frontend/eco-fanout/netlist.v",
+        "--graph",
+        "{output}/frontend/fanout-graph.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_eco_primary-clock",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:ecos}",
+        "primary-clock",
+        "--workspace",
+        "{output}/frontend/eco-primary-clock",
+        "--base-rev",
+        "empty",
+        "--inputs",
+        "{output}/frontend/bundle-primary-clock/inputs.json",
+        "--policy",
+        "{output}/frontend/bundle-primary-clock/policy.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_primary_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-primary",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_primary_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-primary",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--netlist",
+        "{output}/frontend/eco-primary-clock/netlist.v",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_primary_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-primary",
+        "--rev",
+        "rev1",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/primary-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_physical_config",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "physical",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/physical",
+        "--base-rev",
+        "empty",
+        "--roots",
+        "{output}/frontend/bundle-reset/roots.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_pins_pdk_import",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-pins",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "import-pdk",
+        "--base-rev",
+        "rev0",
+        "--tech-lef",
+        "{files:tech_lef}",
+        "--cell-lef",
+        "{files:cell_lef}",
+        "--netlist",
+        "{output}/frontend/eco-primary-clock/netlist.v",
+        "--floorplan",
+        "{files:floorplan}",
+        "--physical-config",
+        "{output}/frontend/physical/physical.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_pins_place",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-pins",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "place",
+        "--base-rev",
+        "rev1"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_pins_def",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-pins",
+        "export-def"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_pins_def"
+    },
+    {
+      "id": "fe_pins",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "pins",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/physical-pins",
+        "--base-rev",
+        "empty",
+        "--def",
+        "{output}/logs/fe_pins_def.stdout"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_pdk_import",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-temporary",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "import-pdk",
+        "--base-rev",
+        "rev0",
+        "--tech-lef",
+        "{files:tech_lef}",
+        "--cell-lef",
+        "{files:cell_lef}",
+        "--netlist",
+        "{output}/frontend/eco-primary-clock/netlist.v",
+        "--floorplan",
+        "{files:floorplan}",
+        "--physical-config",
+        "{output}/frontend/physical-pins/physical.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_place",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-temporary",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "place",
+        "--base-rev",
+        "rev1"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_cts",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-temporary",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "clock-tree",
+        "--base-rev",
+        "rev2",
+        "--sdc",
+        "{output}/frontend/profiles/cts.sdc"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_export",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-temporary",
+        "export-verilog"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_export"
+    },
+    {
+      "id": "fe_temporary_seed",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-temporary",
+        "export-placement-seed"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_seed"
+    },
+    {
+      "id": "fe_temporary_def",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-temporary",
+        "export-def"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_def"
+    },
+    {
+      "id": "fe_temporary_estimate",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:estimator}",
+        "--def",
+        "{output}/logs/fe_temporary_def.stdout",
+        "--lef",
+        "{files:cell_lef}",
+        "--policy",
+        "{files:rc_policy}",
+        "--workspace",
+        "{output}/frontend/estimate-temporary",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--max-spef-mib",
+        "64",
+        "--max-rc-name-mib",
+        "64",
+        "--max-rc-nodes",
+        "2000000",
+        "--max-rc-elements",
+        "4000000",
+        "--max-rc-nets",
+        "100000",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--spef",
+        "{output}/frontend/estimate-temporary/estimate.spef",
+        "--spef-corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--spef",
+        "{output}/frontend/estimate-temporary/estimate.spef",
+        "--spef-corner",
+        "ss",
+        "--netlist",
+        "{output}/logs/fe_temporary_export.stdout",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_run",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "run",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "8",
+        "--max-state-gib",
+        "2",
+        "--max-paths",
+        "32",
+        "--max-limit-rows",
+        "100000",
+        "--require-wire-model",
+        "spef_rc",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--rev",
+        "rev2",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/temporary-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_temporary_tt_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "slack<0.2",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_tt_drv"
+    },
+    {
+      "id": "fe_temporary_tt_endpoints",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "endpoints",
+        "--limit",
+        "0",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_tt_endpoints"
+    },
+    {
+      "id": "fe_temporary_ss_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "slack<0.2",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_ss_drv"
+    },
+    {
+      "id": "fe_temporary_ss_endpoints",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "endpoints",
+        "--limit",
+        "0",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_ss_endpoints"
+    },
+    {
+      "id": "fe_temporary_hold",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-temporary",
+        "--threads",
+        "2",
+        "--section",
+        "hold_fix",
+        "--target-margin",
+        "0.5",
+        "--limit",
+        "0",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_temporary_hold"
+    },
+    {
+      "id": "fe_bundle_electrical",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "bundle",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/bundle-electrical",
+        "--base-rev",
+        "empty",
+        "--operation",
+        "electrical",
+        "--timing-tag",
+        "temporary",
+        "--source",
+        "{output}/frontend/eco-primary-clock/netlist.v",
+        "--graph",
+        "{output}/frontend/primary-graph.json",
+        "--timed",
+        "{output}/logs/fe_temporary_export.stdout"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_eco_electrical",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:ecos}",
+        "electrical",
+        "--workspace",
+        "{output}/frontend/eco-electrical",
+        "--base-rev",
+        "empty",
+        "--inputs",
+        "{output}/frontend/bundle-electrical/inputs.json",
+        "--policy",
+        "{output}/frontend/bundle-electrical/policy.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_electrical_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-electrical",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_electrical_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-electrical",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--netlist",
+        "{output}/frontend/eco-electrical/netlist.v",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_electrical_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-electrical",
+        "--rev",
+        "rev1",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/electrical-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_pdk_import",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-repair",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "import-pdk",
+        "--base-rev",
+        "rev0",
+        "--tech-lef",
+        "{files:tech_lef}",
+        "--cell-lef",
+        "{files:cell_lef}",
+        "--netlist",
+        "{output}/frontend/eco-electrical/netlist.v",
+        "--floorplan",
+        "{files:floorplan}",
+        "--physical-config",
+        "{output}/frontend/physical-pins/physical.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_place",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-repair",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "place",
+        "--base-rev",
+        "rev1",
+        "--seed",
+        "{output}/frontend/eco-electrical/seed.json",
+        "--net-weights",
+        "{output}/frontend/eco-electrical/weights.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_cts",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-repair",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "clock-tree",
+        "--base-rev",
+        "rev2",
+        "--sdc",
+        "{output}/frontend/profiles/cts.sdc"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_export",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-repair",
+        "export-verilog"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_export"
+    },
+    {
+      "id": "fe_repair_seed",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-repair",
+        "export-placement-seed"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_seed"
+    },
+    {
+      "id": "fe_repair_def",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-repair",
+        "export-def"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_def"
+    },
+    {
+      "id": "fe_repair_estimate",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:estimator}",
+        "--def",
+        "{output}/logs/fe_repair_def.stdout",
+        "--lef",
+        "{files:cell_lef}",
+        "--policy",
+        "{files:rc_policy}",
+        "--workspace",
+        "{output}/frontend/estimate-repair",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--max-spef-mib",
+        "64",
+        "--max-rc-name-mib",
+        "64",
+        "--max-rc-nodes",
+        "2000000",
+        "--max-rc-elements",
+        "4000000",
+        "--max-rc-nets",
+        "100000",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--spef",
+        "{output}/frontend/estimate-repair/estimate.spef",
+        "--spef-corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--spef",
+        "{output}/frontend/estimate-repair/estimate.spef",
+        "--spef-corner",
+        "ss",
+        "--netlist",
+        "{output}/logs/fe_repair_export.stdout",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_run",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "run",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "8",
+        "--max-state-gib",
+        "2",
+        "--max-paths",
+        "32",
+        "--max-limit-rows",
+        "100000",
+        "--require-wire-model",
+        "spef_rc",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--rev",
+        "rev2",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/repair-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_repair_tt_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "slack<0.2",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_tt_drv"
+    },
+    {
+      "id": "fe_repair_tt_endpoints",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "endpoints",
+        "--limit",
+        "0",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_tt_endpoints"
+    },
+    {
+      "id": "fe_repair_ss_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "slack<0.2",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_ss_drv"
+    },
+    {
+      "id": "fe_repair_ss_endpoints",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "endpoints",
+        "--limit",
+        "0",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_ss_endpoints"
+    },
+    {
+      "id": "fe_repair_hold",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-repair",
+        "--threads",
+        "2",
+        "--section",
+        "hold_fix",
+        "--target-margin",
+        "0.5",
+        "--limit",
+        "0",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_repair_hold"
+    },
+    {
+      "id": "fe_bundle_hold",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "bundle",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/bundle-hold",
+        "--base-rev",
+        "empty",
+        "--operation",
+        "hold",
+        "--timing-tag",
+        "repair",
+        "--source",
+        "{output}/frontend/eco-electrical/netlist.v",
+        "--graph",
+        "{output}/frontend/electrical-graph.json",
+        "--timed",
+        "{output}/logs/fe_repair_export.stdout"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_eco_hold",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:ecos}",
+        "hold",
+        "--workspace",
+        "{output}/frontend/eco-hold",
+        "--base-rev",
+        "empty",
+        "--inputs",
+        "{output}/frontend/bundle-hold/inputs.json",
+        "--policy",
+        "{output}/frontend/bundle-hold/policy.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_pdk_import",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "import-pdk",
+        "--base-rev",
+        "rev0",
+        "--tech-lef",
+        "{files:tech_lef}",
+        "--cell-lef",
+        "{files:cell_lef}",
+        "--netlist",
+        "{output}/frontend/eco-hold/netlist.v",
+        "--floorplan",
+        "{files:floorplan}",
+        "--physical-config",
+        "{output}/frontend/physical-pins/physical.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_place",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "place",
+        "--base-rev",
+        "rev1",
+        "--seed",
+        "{output}/frontend/eco-hold/seed.json",
+        "--net-weights",
+        "{output}/frontend/eco-hold/weights.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_cts",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "--threads",
+        "2",
+        "--max-expansions",
+        "4000000",
+        "clock-tree",
+        "--base-rev",
+        "rev2",
+        "--sdc",
+        "{output}/frontend/profiles/cts.sdc"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_export",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "export-verilog"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_final_export"
+    },
+    {
+      "id": "fe_final_inspect",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "inspect"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_def",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "export-def"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_final_def"
+    },
+    {
+      "id": "fe_final_estimate",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:estimator}",
+        "--def",
+        "{output}/logs/fe_final_def.stdout",
+        "--lef",
+        "{files:cell_lef}",
+        "--policy",
+        "{files:rc_policy}",
+        "--workspace",
+        "{output}/frontend/estimate-final",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_init",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "init",
+        "-w",
+        "{output}/frontend/sta-final",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_import",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "import",
+        "-w",
+        "{output}/frontend/sta-final",
+        "--base-rev",
+        "rev0",
+        "--threads",
+        "2",
+        "--format",
+        "json",
+        "--max-spef-mib",
+        "64",
+        "--max-rc-name-mib",
+        "64",
+        "--max-rc-nodes",
+        "2000000",
+        "--max-rc-elements",
+        "4000000",
+        "--max-rc-nets",
+        "100000",
+        "--lib",
+        "{files:std_tt}",
+        "--corner",
+        "tt",
+        "--lib",
+        "{files:ram_tt}",
+        "--corner",
+        "tt",
+        "--spef",
+        "{output}/frontend/estimate-final/estimate.spef",
+        "--spef-corner",
+        "tt",
+        "--lib",
+        "{files:std_ss}",
+        "--corner",
+        "ss",
+        "--lib",
+        "{files:ram_ss}",
+        "--corner",
+        "ss",
+        "--spef",
+        "{output}/frontend/estimate-final/estimate.spef",
+        "--spef-corner",
+        "ss",
+        "--netlist",
+        "{output}/logs/fe_final_export.stdout",
+        "--sdc",
+        "{files:sdc}"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_run",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "run",
+        "-w",
+        "{output}/frontend/sta-final",
+        "--base-rev",
+        "rev1",
+        "--threads",
+        "8",
+        "--max-state-gib",
+        "2",
+        "--max-paths",
+        "32",
+        "--max-limit-rows",
+        "100000",
+        "--require-wire-model",
+        "spef_rc",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_graph",
+      "kind": "command",
+      "tool": "rusteda",
+      "arguments": [
+        "export",
+        "-w",
+        "{output}/frontend/sta-final",
+        "--rev",
+        "rev2",
+        "--kind",
+        "connectivity-json",
+        "--cell-buses",
+        "{output}/frontend/profiles/cell-buses.json",
+        "--netlist",
+        "{output}/frontend/final-graph.json",
+        "--format",
+        "json",
+        "--threads",
+        "2"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "fe_final_tt_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-final",
+        "--corner",
+        "tt",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "slack<0.2",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_final_tt_drv"
+    },
+    {
+      "id": "fe_final_ss_drv",
+      "kind": "command",
+      "tool": "ruststa",
+      "arguments": [
+        "report",
+        "-w",
+        "{output}/frontend/sta-final",
+        "--corner",
+        "ss",
+        "--threads",
+        "2",
+        "--section",
+        "drv",
+        "--filter",
+        "slack<0.2",
+        "--limit",
+        "100000",
+        "--format",
+        "json"
+      ],
+      "timeout_s": 180,
+      "stdout_artifact": "fe_final_ss_drv"
+    },
+    {
+      "id": "fe_frontend_validate",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:prepare}",
+        "validate",
+        "--context",
+        "{output}/frontend/context.json",
+        "--workspace",
+        "{output}/frontend/result",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "be_physical_inputs",
+      "kind": "render",
+      "destination": "backend/physical-inputs.json",
+      "content": {
+        "schema": "rusteda.native-physical-inputs.v1",
+        "pdk_root": "/home/cgao/pdks/ihp-open-pdk",
+        "files": {
+          "std_gds": {
+            "$input": "std_gds"
+          },
+          "ram_gds": {
+            "$input": "ram_gds"
+          },
+          "layer_map": {
+            "$input": "layer_map"
+          },
+          "tech_lef": {
+            "$input": "tech_lef"
+          },
+          "rules_nom": {
+            "$input": "rules_nom"
+          },
+          "magic_tech": {
+            "$input": "magic_tech"
+          },
+          "magic_extract": {
+            "$input": "magic_extract"
+          },
+          "rc_builder": {
+            "$input": "rc_builder"
+          }
+        }
+      }
+    },
+    {
+      "id": "be_profiles",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:physical_prepare}",
+        "--inputs",
+        "{output}/backend/physical-inputs.json",
+        "--workspace",
+        "{output}/backend/profiles",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "be_route",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "--threads",
+        "{threads}",
+        "--max-expansions",
+        "80000000",
+        "route",
+        "--base-rev",
+        "rev3",
+        "--scope",
+        "all",
+        "--config",
+        "{output}/frontend/physical/routing.json"
+      ],
+      "timeout_s": 43200
+    },
+    {
+      "id": "be_postroute_inputs",
+      "kind": "render",
+      "destination": "backend/postroute-inputs.json",
+      "content": {
+        "schema": "rusteda.native-postroute-reuse-inputs.v1",
+        "top": "ibex_sram_bench",
+        "trial": {
+          "workspace": "{output}/frontend/road-final",
+          "revision": "rev4"
+        },
+        "final_workspace": "{output}/backend/postroute/road",
+        "prects_netlist": "{output}/frontend/eco-hold/netlist.v",
+        "recipe": {
+          "import": [
+            "--threads",
+            "2",
+            "--max-expansions",
+            "4000000",
+            "import-pdk",
+            "--base-rev",
+            "rev0",
+            "--tech-lef",
+            "{files:tech_lef}",
+            "--cell-lef",
+            "{files:cell_lef}",
+            "--netlist",
+            "@NETLIST@",
+            "--floorplan",
+            "{files:floorplan}",
+            "--physical-config",
+            "{output}/frontend/physical-pins/physical.json"
+          ],
+          "place": [
+            "--threads",
+            "2",
+            "--max-expansions",
+            "4000000",
+            "place",
+            "--base-rev",
+            "rev1",
+            "--seed",
+            "{output}/frontend/eco-hold/seed.json",
+            "--net-weights",
+            "{output}/frontend/eco-hold/weights.json"
+          ],
+          "cts": [
+            "--threads",
+            "2",
+            "--max-expansions",
+            "4000000",
+            "clock-tree",
+            "--base-rev",
+            "rev2",
+            "--sdc",
+            "{output}/frontend/profiles/cts.sdc"
+          ],
+          "route": [
+            "--threads",
+            "{threads}",
+            "--max-expansions",
+            "80000000",
+            "route",
+            "--base-rev",
+            "rev3",
+            "--scope",
+            "all",
+            "--config",
+            "{output}/frontend/physical/routing.json"
+          ],
+          "extract": [
+            "--threads",
+            "16",
+            "--max-expansions",
+            "8000000",
+            "extract",
+            "--rc-profile",
+            "{output}/backend/profiles/ihp-rc-nom.json",
+            "--corner",
+            "nom",
+            "--out",
+            "@SPEF@",
+            "--extract-query-workers",
+            "16",
+            "--extract-query-batch-runs",
+            "8",
+            "--extract-query-scratch-mib",
+            "32",
+            "--max-spef-mib",
+            "256",
+            "--extract-memory-mib",
+            "3584",
+            "--max-extract-shapes",
+            "4000000",
+            "--max-rc-nodes",
+            "2000000",
+            "--max-rc-elements",
+            "30000000",
+            "--max-coupling-caps",
+            "10000000",
+            "--max-extract-work",
+            "100000000000",
+            "--max-extract-candidates",
+            "65536",
+            "--min-coupling-ff",
+            "0.1"
+          ]
+        },
+        "profiles": {
+          "sizing": "{output}/frontend/profiles/sizing.json",
+          "delay": "{output}/frontend/profiles/delay.json",
+          "cell_buses": "{output}/frontend/profiles/cell-buses.json",
+          "cell_lef": "{files:cell_lef}"
+        },
+        "timing": {
+          "std_tt": {
+            "$input": "std_tt"
+          },
+          "ram_tt": {
+            "$input": "ram_tt"
+          },
+          "std_ss": {
+            "$input": "std_ss"
+          },
+          "ram_ss": {
+            "$input": "ram_ss"
+          },
+          "sdc": {
+            "$input": "sdc"
+          }
+        },
+        "tools": {
+          "rustroad": {
+            "$tool": "rustroad"
+          },
+          "rusteda": {
+            "$tool": "rusteda"
+          },
+          "ruststa": {
+            "$tool": "ruststa"
+          }
+        },
+        "policy": {
+          "near_limit_ratio": 0.9,
+          "target_ratio": 0.8,
+          "max_rounds": 2,
+          "max_resizes": 256
+        },
+        "limits": {
+          "threads": 16,
+          "deadline_seconds": 5400
+        },
+        "foundry_first": {
+          "protocol": {
+            "$input": "foundry_first_protocol"
+          },
+          "policy": {
+            "$input": "foundry_first_policy"
+          },
+          "cell_gds": {
+            "$identity": "backend/profiles/combined-cells.gds"
+          },
+          "layer_map": {
+            "$identity": "backend/profiles/gds-map.json"
+          },
+          "drc_profile": {
+            "$input": "drc_profile"
+          },
+          "cell_lef": {
+            "$input": "cell_lef"
+          },
+          "run_root": "{output}"
+        }
+      }
+    },
+    {
+      "id": "be_tap_export",
+      "kind": "command",
+      "tool": "rustroad",
+      "timeout_s": 300,
+      "arguments": [
+        "--workspace",
+        "{output}/frontend/road-final",
+        "export-gds",
+        "--cell-gds",
+        "{output}/backend/profiles/combined-cells.gds",
+        "--layer-map",
+        "{output}/backend/profiles/gds-map.json",
+        "--out",
+        "{output}/backend/tap-early.gds",
+        "--cell-lef",
+        "{files:cell_lef}"
+      ]
+    },
+    {
+      "id": "nf_tap_latchup",
+      "kind": "command",
+      "tool": "python",
+      "timeout_s": 900,
+      "arguments": [
+        "{files:tap_guard}",
+        "{files:tap_latchup_runner}",
+        "--gds",
+        "{output}/backend/tap-early.gds",
+        "--profile",
+        "{files:drc_profile}",
+        "--tool",
+        "{tools:appimage}",
+        "--top",
+        "ibex_sram_bench",
+        "--workspace",
+        "{output}/backend/latchup",
+        "--base-rev",
+        "empty"
+      ]
+    },
+    {
+      "id": "be_postroute",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:postroute_runner}",
+        "--inputs",
+        "{output}/backend/postroute-inputs.json",
+        "--workspace",
+        "{output}/backend/postroute",
+        "--base-rev",
+        "empty",
+        "--foundry-first"
+      ],
+      "timeout_s": 5460
+    },
+    {
+      "id": "be_antenna_inputs",
+      "kind": "render",
+      "destination": "backend/foundry-first/inputs.json",
+      "content": {
+        "schema": "rusteda.foundry-first-inputs.v1",
+        "run_root": "{output}",
+        "workspace": "{output}/backend/postroute/road",
+        "initial_revision": "rev4",
+        "legacy_inputs": {
+          "schema": "rusteda.native-antenna-inputs.v2",
+          "design_workspace": "{output}/backend/postroute/road",
+          "initial_revision": "rev4",
+          "tool": {
+            "$tool": "rustroad"
+          },
+          "limits": {
+            "threads": 16,
+            "max_rounds": 3,
+            "max_selected_nets": 100000,
+            "max_work": 200000000,
+            "max_expansions": 8000000,
+            "deadline_seconds": 1800
+          },
+          "grouping": {
+            "group_names": 128,
+            "max_groups": 1024,
+            "max_attempts": 64,
+            "max_total_jumpers": 4096,
+            "max_commands": 4096,
+            "max_report_bytes": 8589934592,
+            "max_selected_report_bytes": 134217728,
+            "max_metadata_bytes": 4194304,
+            "max_cumulative_work": 200000000000
+          }
+        },
+        "postroute_result": {
+          "$identity": "backend/postroute/result.json"
+        },
+        "files": {
+          "foundry_first_runner": {
+            "$input": "foundry_first_runner"
+          },
+          "foundry_first_protocol": {
+            "$input": "foundry_first_protocol"
+          },
+          "foundry_first_verifier": {
+            "$input": "foundry_first_verifier"
+          },
+          "foundry_first_policy": {
+            "$input": "foundry_first_policy"
+          },
+          "foundry_first_scopes": {
+            "$input": "foundry_first_scopes"
+          },
+          "foundry_first_sources": {
+            "$input": "foundry_first_sources"
+          },
+          "drc_runner": {
+            "$input": "drc_runner"
+          },
+          "drc_profile": {
+            "$input": "drc_profile"
+          },
+          "drc_deck": {
+            "$input": "drc_deck"
+          },
+          "antenna_deck": {
+            "$input": "antenna_deck"
+          },
+          "antenna_runner": {
+            "$input": "antenna_runner"
+          },
+          "antenna_verifier": {
+            "$input": "antenna_verifier"
+          },
+          "antenna_source_manifest": {
+            "$input": "antenna_source_manifest"
+          },
+          "postroute_runner": {
+            "$input": "postroute_runner"
+          },
+          "producer": {
+            "$input": "producer"
+          },
+          "cell_lef": {
+            "$input": "cell_lef"
+          }
+        },
+        "tools": {
+          "python": {
+            "$tool": "python"
+          },
+          "rustroad": {
+            "$tool": "rustroad"
+          },
+          "appimage": {
+            "$tool": "appimage"
+          },
+          "gnu_time": {
+            "$tool": "gnu_time"
+          }
+        },
+        "initial_gds": "{output}/backend/foundry-first/initial.gds",
+        "final_gds": "{output}/backend/ibex_sram_bench.gds",
+        "effective_inputs": "{output}/backend/postroute/effective-inputs/",
+        "extract_argv": [
+          "{tools:rustroad}",
+          "--workspace",
+          "{output}/backend/postroute/road",
+          "--threads",
+          "{threads}",
+          "--max-expansions",
+          "8000000",
+          "extract",
+          "--rc-profile",
+          "{output}/backend/postroute/effective-inputs/rc-profile.json",
+          "--corner",
+          "nom",
+          "--out",
+          "{output}/backend/native.nom.spef",
+          "--extract-query-workers",
+          "16",
+          "--extract-query-batch-runs",
+          "8",
+          "--extract-query-scratch-mib",
+          "32",
+          "--max-spef-mib",
+          "256",
+          "--extract-memory-mib",
+          "3584",
+          "--max-extract-shapes",
+          "4000000",
+          "--max-rc-nodes",
+          "2000000",
+          "--max-rc-elements",
+          "30000000",
+          "--max-coupling-caps",
+          "10000000",
+          "--max-extract-work",
+          "100000000000",
+          "--max-extract-candidates",
+          "65536",
+          "--min-coupling-ff",
+          "0.1"
+        ],
+        "scope": {
+          "threads": 16,
+          "cpu_affinity": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23
+          ],
+          "max_log_bytes": 67108864,
+          "wire_model": "ideal_diagnostic",
+          "cppr": "off",
+          "max_memory_bytes": 8589934592,
+          "memory_mib": 8192,
+          "max_stdout_artifact_bytes": 1610612736
+        },
+        "export_argv": [
+          "{tools:rustroad}",
+          "--workspace",
+          "{output}/backend/postroute/road",
+          "export-gds",
+          "--cell-gds",
+          "{output}/backend/postroute/effective-inputs/cells.gds",
+          "--layer-map",
+          "{output}/backend/postroute/effective-inputs/layer-map.json",
+          "--out",
+          "{output}/backend/foundry-first/initial.gds",
+          "--cell-lef",
+          "{output}/backend/postroute/effective-inputs/cells.lef"
+        ]
+      }
+    },
+    {
+      "id": "be_ff_export",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/backend/postroute/road",
+        "export-gds",
+        "--cell-gds",
+        "{output}/backend/postroute/effective-inputs/cells.gds",
+        "--layer-map",
+        "{output}/backend/postroute/effective-inputs/layer-map.json",
+        "--out",
+        "{output}/backend/foundry-first/initial.gds",
+        "--cell-lef",
+        "{output}/backend/postroute/effective-inputs/cells.lef"
+      ],
+      "timeout_s": 300
+    },
+    {
+      "id": "be_inspect",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/backend/postroute/road",
+        "inspect"
+      ],
+      "timeout_s": 300
+    },
+    {
+      "id": "be_def",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/backend/postroute/road",
+        "export-def"
+      ],
+      "timeout_s": 300,
+      "stdout_artifact": "be_def"
+    },
+    {
+      "id": "be_netlist",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/backend/postroute/road",
+        "export-verilog"
+      ],
+      "timeout_s": 300,
+      "stdout_artifact": "be_netlist"
+    },
+    {
+      "id": "be_powered",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/backend/postroute/road",
+        "export-verilog",
+        "--include-power"
+      ],
+      "timeout_s": 300,
+      "stdout_artifact": "be_powered"
+    },
+    {
+      "id": "be_gds",
+      "kind": "command",
+      "tool": "rustroad",
+      "arguments": [
+        "--workspace",
+        "{output}/backend/postroute/road",
+        "export-gds",
+        "--cell-gds",
+        "{output}/backend/postroute/effective-inputs/cells.gds",
+        "--layer-map",
+        "{output}/backend/postroute/effective-inputs/layer-map.json",
+        "--out",
+        "{output}/backend/ibex_sram_bench.gds",
+        "--cell-lef",
+        "{output}/backend/postroute/effective-inputs/cells.lef"
+      ],
+      "timeout_s": 300
+    },
+    {
+      "id": "be_ff_main",
+      "kind": "command",
+      "tool": "python",
+      "timeout_s": 1260,
+      "arguments": [
+        "{files:foundry_first_runner}",
+        "precheck",
+        "--table",
+        "main",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/foundry-first/pre-main",
+        "--base-rev",
+        "empty"
+      ]
+    },
+    {
+      "id": "be_ff_antenna",
+      "kind": "command",
+      "tool": "python",
+      "timeout_s": 1260,
+      "arguments": [
+        "{files:foundry_first_runner}",
+        "precheck",
+        "--table",
+        "antenna",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/foundry-first/pre-antenna",
+        "--base-rev",
+        "empty"
+      ]
+    },
+    {
+      "id": "be_antenna_repair",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:foundry_first_runner}",
+        "decide",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/foundry-first/decision",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1860
+    },
+    {
+      "id": "be_antenna_verify",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:foundry_first_verifier}",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/foundry-verification",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "be_extract",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:foundry_first_runner}",
+        "extract",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/foundry-extraction",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1800
+    },
+    {
+      "id": "be_rcx_inputs",
+      "kind": "render",
+      "destination": "backend/openrcx-inputs.json",
+      "content": {
+        "schema": "rusteda.reference-extraction-inputs.v1",
+        "top": "ibex_sram_bench",
+        "files": {
+          "def": {
+            "$identity": "logs/be_def.stdout"
+          },
+          "tech_lef": {
+            "$input": "tech_lef"
+          },
+          "cell_lef": {
+            "$input": "std_lef"
+          },
+          "ram_lef": {
+            "$input": "ram_lef"
+          },
+          "rules_nom": {
+            "$input": "rules_nom"
+          }
+        },
+        "tools": {
+          "appimage": {
+            "$tool": "appimage"
+          },
+          "gnu_time": {
+            "$tool": "gnu_time"
+          }
+        },
+        "budgets": {
+          "threads": 2,
+          "timeout_seconds": 900,
+          "max_spef_bytes": 134217728,
+          "max_nets": 100000,
+          "max_log_bytes": 33554432
+        }
+      }
+    },
+    {
+      "id": "be_openrcx",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:reference_extract}",
+        "--inputs",
+        "{output}/backend/openrcx-inputs.json",
+        "--workspace",
+        "{output}/backend/openrcx",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1000
+    },
+    {
+      "id": "be_timing_inputs",
+      "kind": "render",
+      "destination": "backend/timing-inputs.json",
+      "content": {
+        "schema": "rusteda.signoff-timing-inputs.v1",
+        "top": "ibex_sram_bench",
+        "files": {
+          "netlist": {
+            "$identity": "logs/be_netlist.stdout"
+          },
+          "sdc": {
+            "$input": "sdc"
+          },
+          "std_tt": {
+            "$input": "std_tt"
+          },
+          "ram_tt": {
+            "$input": "ram_tt"
+          },
+          "std_ss": {
+            "$input": "std_ss"
+          },
+          "ram_ss": {
+            "$input": "ram_ss"
+          },
+          "spef_native": {
+            "$identity": "backend/native.nom.spef"
+          },
+          "spef_openrcx": {
+            "$identity": "backend/openrcx/nom.spef"
+          },
+          "physical_lef": {
+            "$input": "std_lef"
+          }
+        },
+        "tools": {
+          "rusteda": {
+            "$tool": "rusteda"
+          },
+          "ruststa": {
+            "$tool": "ruststa"
+          },
+          "opensta": {
+            "$tool": "opensta"
+          },
+          "gnu_time": {
+            "$tool": "gnu_time"
+          }
+        },
+        "budgets": {
+          "threads": 2,
+          "timeout_seconds": 180,
+          "max_input_bytes": 134217728,
+          "max_output_bytes": 268435456,
+          "max_state_gib": 2,
+          "max_limit_rows": 100000,
+          "max_checks": 100000
+        },
+        "scope": {
+          "mode": "signoff",
+          "rc_corner": "nom",
+          "cppr": "off",
+          "precision": "f64",
+          "backend": "cpu",
+          "clock_model": "propagated",
+          "wire_model": "spef_rc",
+          "tolerance_ns": 0.001
+        }
+      }
+    },
+    {
+      "id": "be_timing",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:timing_runner}",
+        "--inputs",
+        "{output}/backend/timing-inputs.json",
+        "--workspace",
+        "{output}/backend/timing",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1800
+    },
+    {
+      "id": "be_main",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:foundry_first_runner}",
+        "final-table",
+        "--table",
+        "main",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/main",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1260
+    },
+    {
+      "id": "be_antenna",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:foundry_first_runner}",
+        "final-table",
+        "--table",
+        "antenna",
+        "--inputs",
+        "{output}/backend/foundry-first/inputs.json",
+        "--workspace",
+        "{output}/backend/antenna",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1260
+    },
+    {
+      "id": "be_lvs_inputs",
+      "kind": "render",
+      "destination": "backend/lvs-inputs.json",
+      "content": {
+        "schema": "rusteda.device-lvs-inputs.v1",
+        "top": "ibex_sram_bench",
+        "gds": "{output}/backend/ibex_sram_bench.gds",
+        "powered_netlist": "{output}/logs/be_powered.stdout",
+        "deck": "{files:lvs_deck}",
+        "cdl": [
+          "{files:std_cdl}",
+          "{files:ram_cdl}",
+          "{files:filler_cdl}"
+        ],
+        "interfaces": "{files:lvs_interfaces}",
+        "macro": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+        "macro_count": 2,
+        "macro_qualification": "{files:sram_qualification}",
+        "tools": {
+          "appimage": "{tools:appimage}",
+          "yosys": "{tools:yosys}",
+          "time": "{tools:gnu_time}"
+        },
+        "limits": {
+          "memory_mib": 4096,
+          "swap_mib": 512,
+          "deadline_seconds": 1200,
+          "threads": 2
+        },
+        "expected_hashes": {
+          "gds": {
+            "$sha256": "backend/ibex_sram_bench.gds"
+          },
+          "powered_netlist": {
+            "$sha256": "logs/be_powered.stdout"
+          },
+          "deck": "f1e4d4e47757c0783b87022a92dc4699c8a7f49e2d67452bce127c75a257a8d3",
+          "macro_qualification": "b6242aa46edff4ef4ad29e3aa1f66905b7878df667234ca33cddd2245b22d389",
+          "interfaces": "fe5f6af431cc3a9e7364d041b305309bb72d3781d4c7f8291a6e5f348449a60e"
+        }
+      }
+    },
+    {
+      "id": "be_lvs",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:lvs_runner}",
+        "--inputs",
+        "{output}/backend/lvs-inputs.json",
+        "--workspace",
+        "{output}/backend/lvs",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1500
+    },
+    {
+      "id": "be_macro_contract",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:macro_contract}",
+        "{output}/backend/lvs/netlist.json"
+      ],
+      "timeout_s": 180
+    },
+    {
+      "id": "nf_tap_coverage_inputs",
+      "kind": "render",
+      "destination": "backend/tap-coverage-inputs.json",
+      "content": {
+        "schema": "rusteda.tap-coverage.v1",
+        "gds": {
+          "$identity": "backend/ibex_sram_bench.gds"
+        },
+        "workspace": "{output}/backend/tap-coverage",
+        "base_revision": "empty",
+        "top": "ibex_sram_bench",
+        "excluded_cells": {
+          "RM_IHPSG13_1P_1024x32_c2_bm_bist": 2
+        },
+        "limits": {
+          "cells": 16384,
+          "hierarchy_edges": 250000,
+          "instance_visits": 4000000,
+          "input_shapes": 2000000,
+          "vertices": 8000000,
+          "shape_visits": 8000000,
+          "vertex_visits": 32000000,
+          "domains": 4096,
+          "anchors": 250000,
+          "bin_entries": 1000000,
+          "candidates": 4096,
+          "boxes": 16000000,
+          "distance_checks": 200000000,
+          "pending": 64,
+          "depth": 32
+        }
+      }
+    },
+    {
+      "id": "nf_tap_coverage",
+      "kind": "command",
+      "tool": "python",
+      "timeout_s": 600,
+      "arguments": [
+        "{files:tap_guard}",
+        "{files:tap_coverage_runner}",
+        "--config",
+        "{output}/backend/tap-coverage-inputs.json",
+        "--workspace",
+        "{output}/backend/tap-coverage",
+        "--base-rev",
+        "empty",
+        "--tool",
+        "{tools:appimage}",
+        "--tool-sha256",
+        "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+        "--tool-bytes",
+        "1398049312"
+      ]
+    },
+    {
+      "id": "nf_logic_inputs",
+      "kind": "render",
+      "destination": "backend/logic-inputs.json",
+      "content": {
+        "schema": "rusteda.logic-signoff-inputs.v1",
+        "top": "ibex_sram_bench",
+        "rtl": "{files:rtl}",
+        "synthesis_netlist": "{output}/frontend/mapped.v",
+        "final_netlist": "{output}/logs/be_netlist.stdout",
+        "library": "{files:std_tt}",
+        "macro_bb": "{files:macro_bb}",
+        "macro": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+        "macro_instances": [
+          "u_imem",
+          "u_dmem"
+        ],
+        "tb": "{files:tb}",
+        "vendor_verilog": [
+          "{files:vendor_std}",
+          "{files:vendor_macro}",
+          "{files:vendor_core}"
+        ],
+        "vendor_include_dirs": [
+          "/home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog"
+        ],
+        "relation_checker": "{files:relation_checker}",
+        "tools": {
+          "yosys": "{tools:yosys}",
+          "abc": "{tools:abc}",
+          "checker": "{tools:checker}",
+          "iverilog": "{tools:iverilog}",
+          "vvp": "{tools:vvp}",
+          "time": "{tools:gnu_time}"
+        },
+        "physical_lef": "{files:std_lef}",
+        "physical_libraries": {
+          "std_tt": "{files:std_tt}",
+          "ram_tt": "{files:ram_tt}",
+          "std_ss": "{files:std_ss}",
+          "ram_ss": "{files:ram_ss}"
+        },
+        "limits": {
+          "memory_mib": 4096,
+          "swap_mib": 512,
+          "deadline_seconds": 1200,
+          "threads": 2,
+          "stage_seconds": 180,
+          "cec_seconds": 160,
+          "max_conflicts": 2000000,
+          "discovery_work": 16000000000,
+          "discovery_rounds": 32
+        },
+        "expected_hashes": {
+          "rtl": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+          "library": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+          "macro_bb": "9bf99a1b9362568ece4d16ce650bbc26c731d5020c828ab3a6e20e95bb922e76",
+          "tb": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+          "synthesis_netlist": {
+            "$sha256": "frontend/mapped.v"
+          },
+          "final_netlist": {
+            "$sha256": "logs/be_netlist.stdout"
+          }
+        }
+      }
+    },
+    {
+      "id": "nf_logic",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:logic_runner}",
+        "--inputs",
+        "{output}/backend/logic-inputs.json",
+        "--workspace",
+        "{output}/backend/logic",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 1320
+    },
+    {
+      "id": "nf_qualification_inputs",
+      "kind": "render",
+      "destination": "backend/qualification-inputs.json",
+      "content": {
+        "schema": "rusteda.native-foundry-first-tap-qualification-inputs.v2",
+        "run_root": "{output}",
+        "files": {
+          "rtl": {
+            "$input": "rtl"
+          },
+          "sdc": {
+            "$input": "sdc"
+          },
+          "std_tt": {
+            "$input": "std_tt"
+          },
+          "std_ss": {
+            "$input": "std_ss"
+          },
+          "ram_tt": {
+            "$input": "ram_tt"
+          },
+          "ram_ss": {
+            "$input": "ram_ss"
+          },
+          "tech_lef": {
+            "$input": "tech_lef"
+          },
+          "cell_lef": {
+            "$input": "cell_lef"
+          },
+          "std_lef": {
+            "$input": "std_lef"
+          },
+          "floorplan": {
+            "$input": "floorplan"
+          },
+          "physical": {
+            "$input": "physical"
+          },
+          "routing": {
+            "$input": "routing"
+          },
+          "interfaces": {
+            "$input": "interfaces"
+          },
+          "ecos": {
+            "$input": "ecos"
+          },
+          "frontend": {
+            "$input": "frontend"
+          },
+          "prepare": {
+            "$input": "prepare"
+          },
+          "delay_helper": {
+            "$input": "delay_helper"
+          },
+          "sizing_helper": {
+            "$input": "sizing_helper"
+          },
+          "liberty_reader": {
+            "$input": "liberty_reader"
+          },
+          "pin_caps_source": {
+            "$input": "pin_caps_source"
+          },
+          "producer": {
+            "$input": "producer"
+          },
+          "estimator": {
+            "$input": "estimator"
+          },
+          "rc_policy": {
+            "$input": "rc_policy"
+          },
+          "std_gds": {
+            "$input": "std_gds"
+          },
+          "ram_gds": {
+            "$input": "ram_gds"
+          },
+          "layer_map": {
+            "$input": "layer_map"
+          },
+          "rules_nom": {
+            "$input": "rules_nom"
+          },
+          "magic_tech": {
+            "$input": "magic_tech"
+          },
+          "magic_extract": {
+            "$input": "magic_extract"
+          },
+          "rc_builder": {
+            "$input": "rc_builder"
+          },
+          "physical_prepare": {
+            "$input": "physical_prepare"
+          },
+          "reference_extract": {
+            "$input": "reference_extract"
+          },
+          "timing_runner": {
+            "$input": "timing_runner"
+          },
+          "lvs_runner": {
+            "$input": "lvs_runner"
+          },
+          "drc_runner": {
+            "$input": "drc_runner"
+          },
+          "macro_contract": {
+            "$input": "macro_contract"
+          },
+          "ram_lef": {
+            "$input": "ram_lef"
+          },
+          "drc_profile": {
+            "$input": "drc_profile"
+          },
+          "drc_deck": {
+            "$input": "drc_deck"
+          },
+          "antenna_deck": {
+            "$input": "antenna_deck"
+          },
+          "lvs_deck": {
+            "$input": "lvs_deck"
+          },
+          "std_cdl": {
+            "$input": "std_cdl"
+          },
+          "ram_cdl": {
+            "$input": "ram_cdl"
+          },
+          "filler_cdl": {
+            "$input": "filler_cdl"
+          },
+          "sram_qualification": {
+            "$input": "sram_qualification"
+          },
+          "lvs_interfaces": {
+            "$input": "lvs_interfaces"
+          },
+          "antenna_runner": {
+            "$input": "antenna_runner"
+          },
+          "antenna_fields": {
+            "$input": "antenna_fields"
+          },
+          "contract": {
+            "$input": "contract"
+          },
+          "backend_composer": {
+            "$input": "backend_composer"
+          },
+          "antenna_legacy": {
+            "$input": "antenna_legacy"
+          },
+          "antenna_group_policy": {
+            "$input": "antenna_group_policy"
+          },
+          "antenna_verifier": {
+            "$input": "antenna_verifier"
+          },
+          "antenna_source_manifest": {
+            "$input": "antenna_source_manifest"
+          },
+          "postroute_runner": {
+            "$input": "postroute_runner"
+          },
+          "antenna_session_policy": {
+            "$input": "antenna_session_policy"
+          },
+          "foundry_first_runner": {
+            "$input": "foundry_first_runner"
+          },
+          "foundry_first_protocol": {
+            "$input": "foundry_first_protocol"
+          },
+          "foundry_first_verifier": {
+            "$input": "foundry_first_verifier"
+          },
+          "foundry_first_policy": {
+            "$input": "foundry_first_policy"
+          },
+          "foundry_first_scopes": {
+            "$input": "foundry_first_scopes"
+          },
+          "foundry_first_sources": {
+            "$input": "foundry_first_sources"
+          },
+          "tap_coverage_worker": {
+            "$input": "tap_coverage_worker"
+          },
+          "tap_coverage_runner": {
+            "$input": "tap_coverage_runner"
+          },
+          "tap_latchup_runner": {
+            "$input": "tap_latchup_runner"
+          },
+          "tap_latchup_common": {
+            "$input": "tap_latchup_common"
+          },
+          "tap_guard": {
+            "$input": "tap_guard"
+          },
+          "tap_policy": {
+            "$input": "tap_policy"
+          },
+          "tap_latchup_deck": {
+            "$input": "tap_latchup_deck"
+          },
+          "logic_runner": {
+            "$input": "logic_runner"
+          },
+          "flow_qualifier": {
+            "$input": "flow_qualifier"
+          },
+          "component_controls": {
+            "$input": "component_controls"
+          },
+          "macro_bb": {
+            "$input": "macro_bb"
+          },
+          "tb": {
+            "$input": "tb"
+          },
+          "vendor_std": {
+            "$input": "vendor_std"
+          },
+          "vendor_macro": {
+            "$input": "vendor_macro"
+          },
+          "vendor_core": {
+            "$input": "vendor_core"
+          },
+          "relation_checker": {
+            "$input": "relation_checker"
+          },
+          "density_checker": {
+            "$input": "density_checker"
+          },
+          "density_policy": {
+            "$input": "density_policy"
+          },
+          "logic_guard": {
+            "$input": "logic_guard"
+          },
+          "logic_physical_models": {
+            "$input": "logic_physical_models"
+          },
+          "logic_macro_contract": {
+            "$input": "logic_macro_contract"
+          },
+          "flow_composer": {
+            "$input": "flow_composer"
+          },
+          "flow_config": {
+            "$input": "flow_config"
+          },
+          "flow_backend_fragment": {
+            "$input": "flow_backend_fragment"
+          },
+          "logic_relation_large_lec_py": {
+            "$input": "logic_relation_large_lec_py"
+          },
+          "logic_relation_run_py": {
+            "$input": "logic_relation_run_py"
+          },
+          "logic_relation_transition_py": {
+            "$input": "logic_relation_transition_py"
+          },
+          "logic_relation_lec_py": {
+            "$input": "logic_relation_lec_py"
+          },
+          "logic_relation_equiv_py": {
+            "$input": "logic_relation_equiv_py"
+          },
+          "logic_relation_rtl_semantics_py": {
+            "$input": "logic_relation_rtl_semantics_py"
+          },
+          "logic_relation_library_models_py": {
+            "$input": "logic_relation_library_models_py"
+          },
+          "logic_relation_lec_canonical_py": {
+            "$input": "logic_relation_lec_canonical_py"
+          },
+          "logic_relation_designs_json": {
+            "$input": "logic_relation_designs_json"
+          },
+          "logic_relation_module": {
+            "$input": "logic_relation_module"
+          }
+        },
+        "tools": {
+          "rustsys": {
+            "$tool": "rustsys"
+          },
+          "rusteda": {
+            "$tool": "rusteda"
+          },
+          "ruststa": {
+            "$tool": "ruststa"
+          },
+          "rustroad": {
+            "$tool": "rustroad"
+          },
+          "python": {
+            "$tool": "python"
+          },
+          "xxhsum": {
+            "$tool": "xxhsum"
+          },
+          "pin_caps": {
+            "$tool": "pin_caps"
+          },
+          "gnu_time": {
+            "$tool": "gnu_time"
+          },
+          "appimage": {
+            "$tool": "appimage"
+          },
+          "opensta": {
+            "$tool": "opensta"
+          },
+          "yosys": {
+            "$tool": "yosys"
+          },
+          "abc": {
+            "$tool": "abc"
+          },
+          "checker": {
+            "$tool": "checker"
+          },
+          "iverilog": {
+            "$tool": "iverilog"
+          },
+          "vvp": {
+            "$tool": "vvp"
+          }
+        },
+        "artifacts": {
+          "gds": "backend/ibex_sram_bench.gds",
+          "def": "logs/be_def.stdout",
+          "netlist_synth": "frontend/mapped.v",
+          "netlist_final": "logs/be_netlist.stdout",
+          "netlist_powered_final": "logs/be_powered.stdout",
+          "spef_native_nom": "backend/native.nom.spef",
+          "spef_openrcx_nom": "backend/openrcx/nom.spef"
+        },
+        "reports": {
+          "drc": "backend/main/summary.json",
+          "antenna": "backend/antenna/summary.json",
+          "lvs": "backend/lvs/summary.json",
+          "timing": "backend/timing/timing.json",
+          "timing_accuracy": "backend/timing/parity.json",
+          "synthesis_equivalence": "backend/logic/synthesis_equivalence.json",
+          "final_equivalence": "backend/logic/final_equivalence.json",
+          "simulation": "backend/logic/simulation.json"
+        },
+        "native_reports": {
+          "route": "logs/be_route.stdout",
+          "inspect": "logs/be_inspect.stdout",
+          "cts": "logs/fe_final_cts.stdout",
+          "macro_contract": "logs/be_macro_contract.stdout",
+          "native_extraction": "logs/be_extract.stdout",
+          "openrcx_extraction": "backend/openrcx/result.json",
+          "antenna_lineage": "backend/foundry-first/decision/result.json",
+          "antenna_verification": "backend/foundry-verification/result.json",
+          "postroute": "backend/postroute/result.json"
+        },
+        "controls": "{files:component_controls}",
+        "tap_checks": {
+          "latchup": "backend/latchup/summary.json",
+          "coverage_config": "backend/tap-coverage-inputs.json",
+          "coverage_controller": "backend/tap-coverage/controller.json",
+          "coverage_report": "backend/tap-coverage/summary.json",
+          "routing_audit": "frontend/physical/routing-writer-audit.json",
+          "latchup_execution": "backend/latchup-execution/result.json",
+          "coverage_execution": "backend/tap-coverage-execution/result.json"
+        }
+      }
+    },
+    {
+      "id": "nf_qualify",
+      "kind": "command",
+      "tool": "python",
+      "arguments": [
+        "{files:flow_qualifier}",
+        "--inputs",
+        "{output}/backend/qualification-inputs.json",
+        "--workspace",
+        "{output}/backend/qualification",
+        "--base-rev",
+        "empty"
+      ],
+      "timeout_s": 180
+    }
+  ]
+}

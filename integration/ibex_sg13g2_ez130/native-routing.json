@@ -1,0 +1,156 @@
+{
+ "grid_step": 420,
+ "access_layer": "Metal3",
+ "layers": [
+  {
+   "name": "Metal1",
+   "spacing": 180
+  },
+  {
+   "name": "Metal2",
+   "spacing": 210,
+   "wide_spacing": {
+    "width": 390,
+    "parallel_run": 1000,
+    "spacing": 240
+   }
+  },
+  {
+   "name": "Metal3",
+   "spacing": 210,
+   "wide_spacing": {
+    "width": 390,
+    "parallel_run": 1000,
+    "spacing": 240
+   }
+  },
+  {
+   "name": "Metal4",
+   "spacing": 210,
+   "wide_spacing": {
+    "width": 390,
+    "parallel_run": 1000,
+    "spacing": 240
+   }
+  },
+  {
+   "name": "Metal5",
+   "spacing": 210,
+   "wide_spacing": {
+    "width": 390,
+    "parallel_run": 1000,
+    "spacing": 240
+   }
+  },
+  {
+   "name": "TopMetal1",
+   "spacing": 1640
+  },
+  {
+   "name": "TopMetal2",
+   "spacing": 2000
+  }
+ ],
+ "vias": [
+  {
+   "name": "Via1_XX_so",
+   "cut_spacing": 220
+  },
+  {
+   "name": "Via2_XX_so",
+   "cut_spacing": 220
+  },
+  {
+   "name": "Via3_XX_so",
+   "cut_spacing": 220
+  },
+  {
+   "name": "Via4_XX_so",
+   "cut_spacing": 220
+  },
+  {
+   "name": "TopVia1EWNS",
+   "cut_spacing": 420
+  },
+  {
+   "name": "TopVia2EWNS",
+   "cut_spacing": 1060
+  }
+ ],
+ "lef_rules": true,
+ "max_skew_ns": 1.0,
+ "limits": {
+  "max_axis": 1048576,
+  "max_grid_nodes": 128000000,
+  "max_obstacles": 8000000,
+  "max_bin_entries": 48000000,
+  "max_segments": 8000000,
+  "max_expansions": 100000000000,
+  "max_search_expansions": 80000000,
+  "max_comparisons": 20000000000000,
+  "max_heap": 2000000,
+  "max_hard_search_expansions": 200000,
+  "max_active_nodes": 400000,
+  "max_target_segments": 8192,
+  "max_batch_retries": 16,
+  "max_batch_displaced_nets": 1024,
+  "max_batch_repair_terminals": 1000000,
+  "max_rule_violations": 100000,
+  "max_rule_grid_cells": 1000000,
+  "replay": {
+   "path": "{output}/backend/route-budget-error.json",
+   "net": null,
+   "round": null,
+   "max_bytes": 536870912,
+   "phase": "post_budget_error"
+  },
+  "scouts": {
+   "wide_hard_expansions": 1000000,
+   "soft_expansions": 5000000,
+   "reuse_expansions": 200000,
+   "fast_expansions": 2000000,
+   "owner_first_expansions": 100000,
+   "owner_progress_expansions": 500000
+  },
+  "eager_repair_expansions": 1000000,
+  "eager_repair_max_victims": 16,
+  "repair_detour": {
+   "percent": 130,
+   "slack": 40000,
+   "max_rejections_per_net": 4,
+   "max_rejections": 20000
+  }
+ },
+ "track_router": {
+  "gcell": 13440,
+  "via_cost": 840,
+  "memory_mib": 6144,
+  "min_routing_layer": "Metal2",
+  "max_routing_layer": "TopMetal2",
+  "heuristic_weight": 4,
+  "tracks": [],
+  "global_iterations": 20,
+  "capacity_percent": 80,
+  "guide_margin": 1,
+  "expand_margin": 4,
+  "max_ripups_per_net": 256,
+  "max_repair_rounds": 2000000,
+  "wrong_way_factor": 4,
+  "max_history_entries": 4000000,
+  "repair_heuristic_weight": 2,
+  "single_owner_repair": {
+   "max_candidates": 4,
+   "max_frontier_nodes": 4096,
+   "first_search_expansions": 100000,
+   "max_progress_candidates": 2,
+   "progress_search_expansions": 500000,
+   "max_total_expansions": 4000000,
+   "post_soft_refinement": "single_owner",
+   "heuristic_weight": 3
+  },
+  "own_pin_index": "layer_ranges",
+  "instance_index": "template_layers",
+  "area_stacks": true
+ },
+ "batch_terminals": 100000
+}

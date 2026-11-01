@@ -48,7 +48,7 @@
 
 **RCLI-REQ-0018** `rusteda revert -w <WS> --base-rev <REV> --to <REV>` moves `HEAD` from `--base-rev` to `--to` under the exclusive workspace lock without creating a new revision directory, logging the revert in `history.jsonl`; `rusteda completions <SHELL>` outputs completion scripts for `bash`, `elvish`, `fish`, `powershell`, and `zsh`.
 
-**RCLI-REQ-0020** `rusteda export -w <WS> [--rev <REV>] --netlist <FILE>` (default `HEAD`) thaws the revision's `netlist` table and writes a deterministic structural Verilog netlist (with escaped identifiers per IEEE 1364-2005 §3.7.1) to `<FILE>` without modifying the workspace or appending to `history.jsonl`.
+**RCLI-REQ-0020** `rusteda export -w <WS> [--rev <REV>] --netlist <FILE>` (default `HEAD`) streams the revision's validated mmap `netlist` table as deterministic structural Verilog (with escaped identifiers per IEEE 1364-2005 §3.7.1), without modifying the workspace or appending to `history.jsonl`. `--kind connectivity-json` selects the [bounded native connectivity projection](connectivity.md), preserving original bus orientation and structural aliases. The receipt binds revision, table, explicit interface schema and output hashes. The default remains Verilog.
 
 **RCLI-REQ-0023** `rusteda show` reports the design-rule counts of a timing table as recorded when
 its summary states `drv_status`; a timing summary without `drv_status` comes from an analysis that

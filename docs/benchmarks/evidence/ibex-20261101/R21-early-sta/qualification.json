@@ -1,0 +1,421 @@
+{
+  "status": "passed",
+  "scope": "current native run, all independent gates and input bindings",
+  "logic_scope": "two-state X/Z-as-zero original RTL events; four-state refinement unverified",
+  "artifacts": {
+    "gds": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/ibex_sram_bench.gds",
+      "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+      "bytes": 28120726
+    },
+    "def": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_def.stdout",
+      "sha256": "3551be231f9884563ba0cf4d034de753891214cf7faafd696c9f458f6aa86c10",
+      "bytes": 17279669
+    },
+    "netlist_synth": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/frontend/mapped.v",
+      "sha256": "0cc1704499268b63f9f42080cf60c17986fd48f4167d8a8bd481d564a221d561",
+      "bytes": 1585397
+    },
+    "netlist_final": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_netlist.stdout",
+      "sha256": "1a4d1152bd87fb0b4ab3ad716bed665d659ce73d532c1f356d58f7d31360c4ca",
+      "bytes": 2145172
+    },
+    "netlist_powered_final": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_powered.stdout",
+      "sha256": "0d69d083ed38dd7ce2ee2d743677674fc68558934ad90ece28211afdeb94c9dd",
+      "bytes": 5369171
+    },
+    "spef_native_nom": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/native.nom.spef",
+      "sha256": "e27326d1c21dd4bf803ed45a7396bb9522e14978e3ed09dff20cb7cdb153c4d2",
+      "bytes": 36141441
+    },
+    "spef_openrcx_nom": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/openrcx/nom.spef",
+      "sha256": "08b4275dcdf33c4ef0e30bbb164c99d0b89309869aed2c0baf4cc70689468f97",
+      "bytes": 25747114
+    }
+  },
+  "independent_reports": {
+    "drc": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/main/summary.json",
+      "sha256": "d0f22838da0e2180d836e5309efdef316a06e6ad668bd3da0fb3b45f781a41c3",
+      "bytes": 1595
+    },
+    "antenna": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/antenna/summary.json",
+      "sha256": "70b2eecaa9daf96ea1c747f2d3eabfc69e5705e5de2e7ac3e3e32a82e5762b76",
+      "bytes": 1581
+    },
+    "lvs": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/lvs/summary.json",
+      "sha256": "503f9fe9a3d3840ca4932d814de8e537c8e0881e3695eca0dba42fc5a5edd0eb",
+      "bytes": 43323
+    },
+    "timing": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/timing/timing.json",
+      "sha256": "00d29c6e19534601b9d9f32e81b5131351d7e85d6e4b231486648e8487cff689",
+      "bytes": 327835
+    },
+    "timing_accuracy": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/timing/parity.json",
+      "sha256": "b86fd2b94bd5bacfda6770855a392a6c3513f79a284eb1ef943780fe0cdc545d",
+      "bytes": 2447
+    },
+    "synthesis_equivalence": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/synthesis_equivalence.json",
+      "sha256": "3f875fbb1d14a66294febbd3272883de41b9b02dae4d67b4aabbcf282abe76f8",
+      "bytes": 6020
+    },
+    "final_equivalence": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/final_equivalence.json",
+      "sha256": "0688bdf63005288088975f4a7b8c058a2f507405e460eb4e9681b559a72d1581",
+      "bytes": 5990
+    },
+    "simulation": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/logic/simulation.json",
+      "sha256": "534723237607b60cce0eec51caf5bdf4f63ed297bd9c7d7d715612678db4347f",
+      "bytes": 1429
+    }
+  },
+  "native_reports": {
+    "route": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_route.stdout",
+      "sha256": "a949261c96125b8e8f8e3a34e42d2eb01e4145bca5fc301e4848c11568d677d1",
+      "bytes": 10827
+    },
+    "inspect": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_inspect.stdout",
+      "sha256": "aab46779a1da9002e0fec33b5ece93a8187a019b22391e6f323725c282f3f6e0",
+      "bytes": 10250
+    },
+    "cts": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/fe_final_cts.stdout",
+      "sha256": "19cdad09381f8cf105c4c7b152c8731f783877d9226ac682f687a8095038042a",
+      "bytes": 10229
+    },
+    "macro_contract": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_macro_contract.stdout",
+      "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+      "bytes": 262
+    },
+    "native_extraction": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/be_extract.stdout",
+      "sha256": "bf5229c96d0b4080539dbd6648f11f272e31c3309b07f9153f61d9f6f63c85e7",
+      "bytes": 2414
+    },
+    "openrcx_extraction": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/openrcx/result.json",
+      "sha256": "6fdf30d8e81ac7e1c4e30b4d6347940cca61fb54248a81010e76cf1a8c599e7c",
+      "bytes": 2462
+    },
+    "antenna_lineage": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-first/decision/result.json",
+      "sha256": "0367a7d2f33eaf35f3d11d7c6cf66541a591d8d9decae81e1663ad7f93223f43",
+      "bytes": 4481
+    },
+    "antenna_verification": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-verification/result.json",
+      "sha256": "ea1721947824e74a5bbf1c0b04e0dab79b38b9d287b410d9655decaf3aa2fb80",
+      "bytes": 1102
+    },
+    "postroute": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/postroute/result.json",
+      "sha256": "522dd435d43804e9168e7450f98b123fd52d455c946aeec457957f29c4caa242",
+      "bytes": 455779
+    }
+  },
+  "derived_gates": {
+    "inputs_frozen": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/inputs_frozen.json",
+      "sha256": "a936761ece0385f4b9123fcdde730de0d6ee39cdd41b491c4aed74a4195f8bda",
+      "bytes": 33421
+    },
+    "macros": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/macros.json",
+      "sha256": "efe8126b70484e16087ae57fe4077b5daa43405de18ddac5dad2ac3685a498a1",
+      "bytes": 6892
+    },
+    "placement": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/placement.json",
+      "sha256": "9f2d0aa222c237e6f2e32c08cf6564ca96bdaa2db1b5b7bc63bb182148dcb95c",
+      "bytes": 10766
+    },
+    "cts": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/cts.json",
+      "sha256": "cb5cfff3566cb8876a24ecd071b0149caf73c34124ff6c4f8d4415caf731d9a8",
+      "bytes": 6250
+    },
+    "power_connectivity": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/power_connectivity.json",
+      "sha256": "2476aa3f592b81691106482f030f6e179f593bffaeb29e6ee0b3133b925634de",
+      "bytes": 6246
+    },
+    "routing": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/routing.json",
+      "sha256": "cf718cffda56a10c1f43553e20d7d01106d3f8762794589099e31a12abce62e2",
+      "bytes": 7210
+    },
+    "extraction": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/extraction.json",
+      "sha256": "59b47a036a1b55a47f6b62b42a3ba715c1b1603f19652d5c71d41c302a285e96",
+      "bytes": 11710
+    },
+    "controls": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/qualification/controls.json",
+      "sha256": "98f3633348a6c47652d3bd7b2c20482482a4b50587a6a729fa80534e7270e801",
+      "bytes": 18173
+    }
+  },
+  "benchmark": "unverified",
+  "tap_checks": {
+    "status": "passed",
+    "policy": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/helpers/early2/tap-policy.json",
+      "sha256": "c3c6944a8f3c6adaa4c970fea13086af10e515aa1670d5475fd443a73a0056f1",
+      "bytes": 334
+    },
+    "final_gds": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/ibex_sram_bench.gds",
+      "sha256": "16ce5a0761a87a8a4783b01882fd003c0da1d97368ffebcd3d941163d0c8a95d",
+      "bytes": 28120726
+    },
+    "source_pins": {
+      "tap_coverage_runner": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage_runner.py",
+        "sha256": "5e34b964a8d75bf8ff953dc84d972e7b0c1b92820161fd99e05e17fbd945bfdf",
+        "bytes": 4656
+      },
+      "tap_coverage_worker": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/tap_coverage.py",
+        "sha256": "98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47",
+        "bytes": 18682
+      },
+      "tap_guard": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/helpers/early2/tap_capture.py",
+        "sha256": "740a7621f238faa3e34060e9084dbd09e40d96deb4b0040acbd42527b83a7444",
+        "bytes": 14206
+      },
+      "tap_latchup_common": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/signoff_drc.py",
+        "sha256": "2a8ab18b9496de005d14561432ed4aa51d67f777520906ba05f99eb89c72370d",
+        "bytes": 6389
+      },
+      "tap_latchup_deck": {
+        "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/official-signoff/klayout/tech/drc/rule_decks/sg13g2_maximal.drc",
+        "sha256": "9516612355c2d96aaffd15281727816b52cda43beffbcc54df42488aaac812db",
+        "bytes": 151424
+      },
+      "tap_latchup_runner": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261030/c7-t1-private-cpu01/private-run01/helpers/signoff_latchup.py",
+        "sha256": "8f58167b322b27c7563467b76c19a9086f49610fff259dfe0a92bc6fcc574e88",
+        "bytes": 6451
+      },
+      "tap_policy": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/helpers/early2/tap-policy.json",
+        "sha256": "c3c6944a8f3c6adaa4c970fea13086af10e515aa1670d5475fd443a73a0056f1",
+        "bytes": 334
+      }
+    },
+    "tool": {
+      "path": "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "sha256": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c",
+      "bytes": 1398049312
+    },
+    "actual_producer": {
+      "ownership": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/ownership/native.json",
+        "sha256": "6b9f5228965689bded125df858d746b3119184c04dcd80b48008e538c04caf1c",
+        "bytes": 344
+      },
+      "commands": {
+        "nf_tap_latchup": {
+          "receipt": {
+            "id": "nf_tap_latchup",
+            "kind": "command",
+            "exit_code": 0,
+            "wall_seconds": 351.12248698296025,
+            "stdout": {
+              "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/nf_tap_latchup.stdout",
+              "sha256": "09e5f8cc83d32096a69a5ce18ab1e5f36d64ea2647068d8705d5e9187ee0405c",
+              "bytes": 374
+            },
+            "stderr": {
+              "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/nf_tap_latchup.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "bytes": 0
+            },
+            "started_seconds": 116.31605330097955,
+            "cpu_affinity": [
+              12,
+              14
+            ],
+            "memory_reservation_mib": 1792,
+            "depends_on": []
+          },
+          "command": {
+            "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/nf_tap_latchup.command.json",
+            "sha256": "c8dfe37b6e92f2cca9f29ac9065a99e42e2d747904d9e0d19dc359d3bbda572b",
+            "bytes": 1161
+          },
+          "execution": {
+            "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup-execution/result.json",
+            "sha256": "7ef6d4677d16462a21fbf3da095d484e9357a68825b3cdd9f298ee04639b0df5",
+            "bytes": 5088
+          }
+        },
+        "nf_tap_coverage": {
+          "receipt": {
+            "id": "nf_tap_coverage",
+            "kind": "command",
+            "exit_code": 0,
+            "wall_seconds": 38.38506175298244,
+            "stdout": {
+              "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/nf_tap_coverage.stdout",
+              "sha256": "e52039b30a706b1e9bc61fcb4d64f4d5b135cccd4e6d22c1aea65ae2d2709fac",
+              "bytes": 380
+            },
+            "stderr": {
+              "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/nf_tap_coverage.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "bytes": 0
+            },
+            "started_seconds": 427.27272634697147,
+            "cpu_affinity": [
+              0,
+              2
+            ],
+            "memory_reservation_mib": 1280,
+            "depends_on": [
+              "nf_tap_coverage_inputs"
+            ]
+          },
+          "command": {
+            "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/logs/nf_tap_coverage.command.json",
+            "sha256": "fb7b85103d6c78987e3c60937cc68125fa92c67fc9c766872093e636332d4a91",
+            "bytes": 1173
+          },
+          "execution": {
+            "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-execution/result.json",
+            "sha256": "0a1964c7d47bdaa30a89ed896475b36c342ac9969e6beab152662826616eea80",
+            "bytes": 4664
+          }
+        }
+      },
+      "coverage_render": {
+        "id": "nf_tap_coverage_inputs",
+        "kind": "render",
+        "wall_seconds": 0.024264623993076384
+      }
+    },
+    "effective_profile": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/postroute/effective-inputs/foundry/provenance.json",
+      "sha256": "1f78e017ccfa8afb9146d2cf1951842f5688d7af96976dd83312ee98e6c6c732",
+      "bytes": 157113
+    },
+    "completed_workspaces": {
+      "latchup": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/HEAD",
+        "sha256": "04ba8965e2c86e1c96c4fa037d255cc541b3a511dee31764425cf38689131724",
+        "bytes": 5
+      },
+      "coverage_report": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage/HEAD",
+        "sha256": "04ba8965e2c86e1c96c4fa037d255cc541b3a511dee31764425cf38689131724",
+        "bytes": 5
+      }
+    },
+    "source_profile": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/official-signoff/provenance.json",
+      "sha256": "1f78e017ccfa8afb9146d2cf1951842f5688d7af96976dd83312ee98e6c6c732",
+      "bytes": 157113
+    },
+    "effective_deck": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/postroute/effective-inputs/foundry/klayout/tech/drc/rule_decks/sg13g2_maximal.drc",
+      "sha256": "9516612355c2d96aaffd15281727816b52cda43beffbcc54df42488aaac812db",
+      "bytes": 151424
+    },
+    "source_deck": {
+      "path": "/home/cgao/git/RustEDA/.work/ibex-sg13g2-repair/official-signoff/klayout/tech/drc/rule_decks/sg13g2_maximal.drc",
+      "sha256": "9516612355c2d96aaffd15281727816b52cda43beffbcc54df42488aaac812db",
+      "bytes": 151424
+    },
+    "reports": {
+      "latchup": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/summary.json",
+        "sha256": "bd20d086da9cca49983a3c1ccdbe3be90468accb43df4f5adcc62b263c4b5352",
+        "bytes": 6160
+      },
+      "coverage_config": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-inputs.json",
+        "sha256": "4e51807d4d7050e3d331e76e2611c1200f24b37367aee75e12c4986c5e72dab1",
+        "bytes": 919
+      },
+      "coverage_controller": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage/controller.json",
+        "sha256": "54be0c8c3f0b823d818d64265708fef8e60a8281191b29e791282ac7037785b3",
+        "bytes": 1631
+      },
+      "coverage_report": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage/summary.json",
+        "sha256": "04cd7982c0ed9097965f28bb64f1178900027a73fb04bcfaaee1294837fcf451",
+        "bytes": 3363
+      },
+      "routing_audit": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/frontend/physical/routing-writer-audit.json",
+        "sha256": "f28169e0c412f61197047a894426cce4ec0979bf0846e10d3b79a84187d8b0ff",
+        "bytes": 687
+      },
+      "latchup_execution": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup-execution/result.json",
+        "sha256": "7ef6d4677d16462a21fbf3da095d484e9357a68825b3cdd9f298ee04639b0df5",
+        "bytes": 5088
+      },
+      "coverage_execution": {
+        "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/tap-coverage-execution/result.json",
+        "sha256": "0a1964c7d47bdaa30a89ed896475b36c342ac9969e6beab152662826616eea80",
+        "bytes": 4664
+      }
+    },
+    "maximal_raw_report": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/drc.lyrdb",
+      "sha256": "2c7437f620d0012b1f83144622224aa0ab9211c8e5fb02b7f792a8b1b7aec10f",
+      "bytes": 46912
+    },
+    "original_main_raw_report": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/foundry-first/pre-main/raw/drc.lyrdb",
+      "sha256": "1b8fb42910df3689a6e2bb9d13882bf332b0b6f5f14f2536c09ee90c8bc9f25f",
+      "bytes": 111055
+    },
+    "maximal_command": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/backend/latchup/command.json",
+      "sha256": "871de58917e25371e05fdff3b39cb4d22cba7e90558bc900918684d260b402dd",
+      "bytes": 664
+    },
+    "routing_template": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/recipe/routing.json",
+      "sha256": "fe59328ab6e39aeff34e7d430d2f0ec2f952c1a0350bd3fb12b3e36262d7e521",
+      "bytes": 3175
+    },
+    "rendered_routing": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/frontend/physical/routing.json",
+      "sha256": "40ba813a0ca62f15e936a4982f8bfccfe5ae7567307384e2716255972ee651ac",
+      "bytes": 3616
+    },
+    "routing_writer_audit": {
+      "path": "/home/cgao/git/RustEDA/.work/perf-20261031-claude/flow/R21-early-sta/run/frontend/physical/routing-writer-audit.json",
+      "sha256": "f28169e0c412f61197047a894426cce4ec0979bf0846e10d3b79a84187d8b0ff",
+      "bytes": 687
+    },
+    "required_maximal_category": "LU.a",
+    "required_original_main_category": "LU.b",
+    "maximal_category_count": 272,
+    "main_category_count": 547,
+    "certificate_scope": "nonexcluded_diffusion_contact_targets_full_well_domains",
+    "excluded_macro_content_status": "unchecked_requires_separate_macro_contract_and_full_lvs",
+    "macro_obligation": "separate original macro contract and complete device LVS required and retained"
+  }
+}
