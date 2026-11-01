@@ -193,6 +193,14 @@ class JointAdmission(unittest.TestCase):
         deck.write_bytes(b'only a metadata byte fixture; not a reference deck')
         self.files['tap_latchup_deck'] = p.identity(deck)
 
+    def legacy_source(self, name):
+        # Own-source compatibility baseline, independent of Git clone depth/history.
+        hashes = {'native_flow.py': 'e7eb65e991473d95e33327d4235c8e22dce6cbb5f07d5a0661a2ab8c330f99b8', 'runner.py': '817d007415f2f9ab83ab41b1e053566a02d82dc886a908010cb1dc2232b745c2'}
+        source = (Path(__file__).parent / 'fixtures/foundry_first_4596' / name).read_bytes()
+        self.assertLessEqual(len(source), 1 << 20)
+        self.assertEqual(hashlib.sha256(source).hexdigest(), hashes[name])
+        return source
+
     def assembled(self):
         return flow.assemble(copy.deepcopy(self.backend), self.files, self.tools, composition.LOGIC_LIMITS)
 
@@ -208,9 +216,7 @@ class JointAdmission(unittest.TestCase):
         self.assertFalse(any(k.startswith('nf_tap_') for g in manifest['parallel_groups'] for k in g['steps']))
 
     def test_legacy_and_standalone_c7_serialized_bytes_equal4596_with_identical_inputs(self):
-        source = subprocess.check_output(['git', 'show',
-            '4596aca2ec3155765c4d29640c1e05ca0f239a90:integration/ibex_sg13g2_ez130/native_flow.py'],
-            cwd=Path(flow.__file__).resolve().parents[2])
+        source = self.legacy_source('native_flow.py')
         baseline = self.root / 'baseline4596-native-flow.py'
         baseline.write_bytes(source)
         spec = importlib.util.spec_from_file_location('joint_default_baseline', baseline)
@@ -235,9 +241,7 @@ class JointAdmission(unittest.TestCase):
                         stream.write(raw)
 
     def test_standalone_c7_compose_function_bytes_equal_exact4596_implementation(self):
-        source = subprocess.check_output(['git', 'show',
-            '4596aca2ec3155765c4d29640c1e05ca0f239a90:integration/ibex_sg13g2_ez130/foundry_first/runner.py'],
-            cwd=Path(flow.__file__).resolve().parents[2])
+        source = self.legacy_source('runner.py')
         baseline = self.root / 'baseline4596-runner.py'
         baseline.write_bytes(source)
         name = 'integration.ibex_sg13g2_ez130.foundry_first.joint_composition_baseline'
