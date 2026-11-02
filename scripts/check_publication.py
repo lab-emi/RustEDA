@@ -124,9 +124,38 @@ def check_development_results():
         assert rows[0]['artifacts'][name] == rows[1]['artifacts'][name], name
 
 
+def check_host_benchmarks():
+    """Host reproduction receipts: identity, evidence hashes and the ratio rule."""
+    for path in sorted((ROOT/'docs/benchmarks').glob('ibex-sg13g2-ez130-host-*.json')):
+        assert path.stat().st_size <= 131072, (path, 'host receipt exceeds byte cap')
+        receipt = json.loads(path.read_text())
+        assert receipt['schema'] == 'rusteda.ibex-host-benchmark.v1', path
+        assert receipt['design']['family'] == 'Ibex' and receipt['design']['sram_instances_required'] == 2
+        assert receipt['technology']['process'] == 'IHP SG13G2'
+        assert receipt['technology']['standard_cell_library'].startswith('EZ130')
+        assert sorted(receipt['implementations']) == ['LibreLane', 'RustEDA']
+        for name, row in receipt['implementations'].items():
+            assert row['end_to_end_seconds'] > 0, name
+        complete = receipt['status'] == 'completed'
+        assert complete == all(all(gates.values()) for gates in receipt['gate_pass'].values()), path
+        if not complete:
+            assert all(value is None for key, value in receipt['ratios'].items() if key != 'eligibility'), path
+        inventory = receipt['evidence_inventory']
+        assert 1 <= len(inventory) <= 128, 'host evidence file budget'
+        total = 0
+        for record in inventory:
+            source = (ROOT/'docs'/record['path']).resolve()
+            assert source.is_relative_to(ROOT/'docs/benchmarks/evidence'), source
+            assert source.stat().st_size == record['bytes'] <= 2*1024*1024, source
+            total += record['bytes']
+            assert total <= 8*1024*1024, 'host evidence byte budget'
+            assert hashlib.sha256(source.read_bytes()).hexdigest() == record['sha256'], source
+
+
 def main():
     check_current_benchmark()
     check_development_results()
+    check_host_benchmarks()
     products=[('RustEDA',ROOT)]+[(name,ROOT/'modules'/name) for name in ('RustSys','RustSTA','RustROAD','RustSpice','RustEDA-Common')]
     logos=set()
     for name,repo in products:
