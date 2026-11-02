@@ -65,7 +65,7 @@ idle; log "module bench: start"
 $PY "$H/module_bench.py" --output native-final/output --out bench-modules --reps 3 --threads 2,4 \
   > bench-modules.console 2>&1; log "module bench: exit $?"
 idle; log "spice bench: start"
-rm -rf bench-spice && $PY "$H/spef_spice_decks.py" native-final/output/backend/native.nom.spef --out bench-spice/decks \
+rm -rf bench-spice && mkdir -p bench-spice && $PY "$H/spef_spice_decks.py" native-final/output/backend/native.nom.spef --out bench-spice/decks \
   --top-nets 8 --bulk 10 --bulk 40 > bench-spice/decks.log 2>&1
 (cd bench-spice && /home/user/RustEDA/.work/target/RustSpice/release/rustspice bench-suite --cases decks --filter ibex_ \
   --no-fuzz --reps 7 --ngspice /opt/eda/ngspice/bin/ngspice --json suite.json --report suite.md --artifacts artifacts \
