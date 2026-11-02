@@ -45,19 +45,28 @@ Fast inference is only part of a fast iteration. RustEDA pairs native engines
 with revisioned disk workspaces, machine-readable results and explicit verification
 so agents and engineers can act on the same design state.
 
-## Latest development · 2026-11-01
+## Latest development · 2026-11-02
 
-The latest retained Ibex runs complete **129/129 steps and all 16 gates in
-472.2 s and 472.6 s**, using IHP SG13G2, EZ130 cells and **two real SRAM macros**.
-They combine SRAM-preserving synthesis, mixed-library timing with parallel RC
-preparation, spacing-aware placement, bounded physical implementation and an
-explicit early signoff schedule. Both produce identical GDS and timing results.
-Peak reaped process RSS is about 2.05 GiB; aggregate cgroup peak is 6.06 GiB
-including file cache. These are CPU-flow results on the documented host.
+On a 4-vCPU cloud host (Xeon 2.1 GHz), the repository's native recipe and
+LibreLane 3.0.17 built Ibex on IHP SG13G2 with EZ130 cells and **two real SRAM
+macros** from the same prepared inputs, and the same independent scripts checked
+both layouts (one sample per flow). **RustEDA's layout passes every design gate**:
+foundry main and antenna DRC, LVS, TT/SS timing with zero violations, simulation,
+both equivalence checks and density. On identical SPEF, RustSTA and OpenSTA
+differ by up to 1.405 ps, failing the 1 ps parity gate, and the run is
+`unqualified` because the recipe was composed without unpublished
+component-qualification evidence. **LibreLane fails timing** on capacitance and
+fanout violations; its equivalence is `unverified`.
 
-The original run16 and matched LibreLane 3.0.17 comparison remain available.
-LibreLane did not complete that comparison, and it was not rerun for the latest
-optimization, so **no cross-tool end-to-end speedup or memory ratio is published**.
+RustEDA: 233,909.2 µm² standard-cell area, 1,679,076.6 µm routed signal wire,
+301,099 vias, 2,609.9 s end to end. LibreLane: 197,913.7 µm², 969,571.6 µm,
+122,194 vias, 3,286.9 s. Both times include sv2v preparation, implementation and
+every gate. Neither flow passes every gate, so the receipt's ratios are null and
+**no cross-tool speedup or QoR ratio is published**.
+
+The retained R20/R21 native runs (129/129 steps and all 16 gates in 472.2 s and
+472.6 s on 16 logical CPUs of an i9-13900HX) remain on the benchmark page; their
+recipe inputs are not in the repository, so this host ran the run16-class recipe.
 
 [Published source versions](docs/development-snapshot.md) ·
 [Current modules and remaining limits](docs/engine-status.md) ·
@@ -85,7 +94,9 @@ RTL-to-GDS or faster agent iterations.
 
 ## One benchmark campaign
 
-The [Ibex SG13G2/EZ130 campaign](docs/benchmarks.md) is the single public performance source for RustEDA and its modules. Module pages link to its [machine-readable receipt](docs/benchmarks/ibex-sg13g2-ez130.json). RustSpice is not timed in the RTL-to-GDS main flow and has no Ibex speedup claim.
+The [Ibex SG13G2/EZ130 benchmark page](docs/benchmarks.md) is the single public performance source for RustEDA and its modules; module pages link to it. It holds the 2026-11-02 host campaign, the retained R20/R21 native runs and the historical 2026-10-30 matched comparison, each with a machine-readable receipt ([host](docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json) · [R20/R21](docs/benchmarks/ibex-sg13g2-ez130-development.json) · [historical](docs/benchmarks/ibex-sg13g2-ez130.json)).
+
+The host campaign adds module head-to-heads. On identical inputs: RustSys against Yosys with ABC (LibreLane's synthesis script), RustSTA against OpenSTA, RustROAD extraction against OpenRCX and RustROAD GDS export against KLayout. RustROAD placement, CTS and routing are compared with OpenROAD's stages inside the two flows. RustSpice is compared with ngspice-45 on RC networks extracted from the final Ibex layout, not at transistor level: it does not support IHP's PSP103 transistor models. RustSpice is not timed in the RTL-to-GDS main flow.
 
 ## PDKs and standard-cell libraries
 
@@ -93,7 +104,7 @@ The [Ibex SG13G2/EZ130 campaign](docs/benchmarks.md) is the single public perfor
 | --- | --- | --- |
 | SkyWater SKY130A | `sky130_fd_sc_hd`, `hdll`, `hs`, `ms`, `ls`, `lp`, `hvl` | HD: synthesis, timing and small-block physical flow qualification. Other libraries: installed; integrated physical flow unverified. |
 | GlobalFoundries GF180MCU | `gf180mcu_fd_sc_mcu7t5v0`, `gf180mcu_fd_sc_mcu9t5v0` | 7T: synthesis, timing and small-block physical flow qualification. The 9T library is also a library-coverage baseline, not the qualified physical-flow default. |
-| IHP SG13G2 | `sg13g2_stdcell`, [EZ130 8T v1.1](https://iip.ethz.ch/ez-library/ihp130-8t.html) | EZ130: Ibex with two real SRAMs completes native RTL-to-GDS with all 16 gates (one public run). Other EZ130 designs: unverified. IHP standard cells: installed; integrated flow unverified. |
+| IHP SG13G2 | `sg13g2_stdcell`, [EZ130 8T v1.1](https://iip.ethz.ch/ez-library/ihp130-8t.html) | EZ130: Ibex with two real SRAMs completes native RTL-to-GDS with all 16 gates (retained runs on one host). A second-host reproduction with reconstructed EZ130 tech LEF and GDS passed every design gate but not the 1 ps RustSTA/OpenSTA parity gate; it is `unqualified`. Other EZ130 designs: unverified. IHP standard cells: installed; integrated flow unverified. |
 
 Select an installed Liberty corner for direct RustSys commands with
 `./rusteda library NAME --corner tt` (also `ff` or `ss` where catalogued).

@@ -26,12 +26,19 @@ guides the next iteration.
 
 ## Ibex SG13G2 / EZ130
 
-The latest two recorded native runs complete **129/129 steps and all 16 gates
-in 472.2 s and 472.6 s**, using EZ130 cells and **two real IHP SRAM macros**.
-SRAM-preserving synthesis, mixed-library timing, spacing-aware placement and a
-pinned early signoff schedule are now captured in the development sources.
-The older matched LibreLane run failed foundry main DRC; no cross-tool ratio
-is published for these newer native-only measurements.
+The 2026-11-02 host campaign built Ibex with EZ130 cells and **two real IHP
+SRAM macros** on a 4-vCPU cloud host: the native recipe and LibreLane 3.0.17
+read the same prepared inputs, and the same independent scripts checked both
+layouts. RustEDA's layout passes DRC, antenna, LVS, TT/SS timing, simulation,
+equivalence and density; on identical SPEF, RustSTA and OpenSTA differ by up
+to **1.405 ps**, failing the 1 ps parity gate, and the run is `unqualified`.
+LibreLane fails timing on capacitance and fanout violations, and its equivalence
+is `unverified`. Neither flow passes every gate, so no cross-tool ratio is
+published. Module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice
+(on extracted RC nets, not transistor level).
+
+The retained R20/R21 native runs complete **129/129 steps and all 16 gates in
+472.2 s and 472.6 s** on 16 logical CPUs.
 
 [Latest Ibex campaign →](benchmarks.md) · [Engine capabilities →](engine-status.md)
 
