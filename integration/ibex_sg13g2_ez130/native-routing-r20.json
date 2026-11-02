@@ -1,0 +1,156 @@
+{
+ "access_layer": "Metal2",
+ "batch_terminals": 100000,
+ "grid_step": 420,
+ "layers": [
+  {
+   "name": "Metal1",
+   "spacing": 180
+  },
+  {
+   "name": "Metal2",
+   "spacing": 210,
+   "wide_spacing": {
+    "parallel_run": 1000,
+    "spacing": 240,
+    "width": 390
+   }
+  },
+  {
+   "name": "Metal3",
+   "spacing": 210,
+   "wide_spacing": {
+    "parallel_run": 1000,
+    "spacing": 240,
+    "width": 390
+   }
+  },
+  {
+   "name": "Metal4",
+   "spacing": 210,
+   "wide_spacing": {
+    "parallel_run": 1000,
+    "spacing": 240,
+    "width": 390
+   }
+  },
+  {
+   "name": "Metal5",
+   "spacing": 210,
+   "wide_spacing": {
+    "parallel_run": 1000,
+    "spacing": 240,
+    "width": 390
+   }
+  },
+  {
+   "name": "TopMetal1",
+   "spacing": 1640
+  },
+  {
+   "name": "TopMetal2",
+   "spacing": 2000
+  }
+ ],
+ "lef_rules": true,
+ "limits": {
+  "eager_repair_expansions": 1000000,
+  "eager_repair_max_victims": 16,
+  "max_active_nodes": 400000,
+  "max_axis": 1048576,
+  "max_batch_displaced_nets": 1024,
+  "max_batch_repair_terminals": 1000000,
+  "max_batch_retries": 16,
+  "max_bin_entries": 48000000,
+  "max_comparisons": 20000000000000,
+  "max_expansions": 100000000000,
+  "max_grid_nodes": 128000000,
+  "max_hard_search_expansions": 200000,
+  "max_heap": 2000000,
+  "max_obstacles": 8000000,
+  "max_rule_grid_cells": 1000000,
+  "max_rule_violations": 100000,
+  "max_search_expansions": 80000000,
+  "max_segments": 8000000,
+  "max_target_segments": 8192,
+  "repair_detour": {
+   "max_rejections": 20000,
+   "max_rejections_per_net": 4,
+   "percent": 130,
+   "slack": 40000
+  },
+  "replay": {
+   "max_bytes": 536870912,
+   "net": null,
+   "path": "{output}/backend/route-budget-error.json",
+   "phase": "post_budget_error",
+   "round": null
+  },
+  "scouts": {
+   "fast_expansions": 2000000,
+   "owner_first_expansions": 100000,
+   "owner_progress_expansions": 500000,
+   "reuse_expansions": 200000,
+   "soft_expansions": 5000000,
+   "wide_hard_expansions": 1000000
+  }
+ },
+ "max_skew_ns": 1.0,
+ "track_router": {
+  "area_stacks": true,
+  "capacity_percent": 80,
+  "expand_margin": 4,
+  "gcell": 13440,
+  "global_iterations": 20,
+  "guide_margin": 1,
+  "heuristic_weight": 2,
+  "instance_index": "template_layers",
+  "max_history_entries": 4000000,
+  "max_repair_rounds": 2000000,
+  "max_ripups_per_net": 256,
+  "max_routing_layer": "TopMetal2",
+  "memory_mib": 6144,
+  "min_routing_layer": "Metal2",
+  "own_pin_index": "layer_ranges",
+  "repair_heuristic_weight": 2,
+  "single_owner_repair": {
+   "first_search_expansions": 100000,
+   "heuristic_weight": 3,
+   "max_candidates": 4,
+   "max_frontier_nodes": 4096,
+   "max_progress_candidates": 2,
+   "max_total_expansions": 4000000,
+   "post_soft_refinement": "single_owner",
+   "progress_search_expansions": 500000
+  },
+  "tracks": [],
+  "via_cost": 1680,
+  "wrong_way_factor": 4
+ },
+ "vias": [
+  {
+   "cut_spacing": 220,
+   "name": "Via1_XX_so"
+  },
+  {
+   "cut_spacing": 220,
+   "name": "Via2_XX_so"
+  },
+  {
+   "cut_spacing": 220,
+   "name": "Via3_XX_so"
+  },
+  {
+   "cut_spacing": 220,
+   "name": "Via4_XX_so"
+  },
+  {
+   "cut_spacing": 420,
+   "name": "TopVia1EWNS"
+  },
+  {
+   "cut_spacing": 1060,
+   "name": "TopVia2EWNS"
+  }
+ ]
+}

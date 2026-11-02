@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,7 +12,8 @@ TOOL = ROOT / 'integration/ibex_sg13g2_ez130/campaigns/early-20261101/r20_recipe
 spec = importlib.util.spec_from_file_location('r20_recipe', TOOL)
 r20 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(r20)
-CONTRACT = ROOT / 'integration/ibex_sg13g2_ez130/contract-r20.json'
+RECIPE_DIR = ROOT / 'integration/ibex_sg13g2_ez130'
+CONTRACT = RECIPE_DIR / 'contract-r20.json'
 
 
 class R20Recipe(unittest.TestCase):
@@ -29,6 +31,11 @@ class R20Recipe(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
         return source
+
+    def test_fresh_checkout_holds_every_pinned_recipe_file(self):
+        result = r20.verify(r20.RECIPE_DIR)
+        self.assertEqual(result['recipe'], {role: 'match' for role in r20.RECIPE})
+        self.assertTrue(result['ok'])
 
     def test_committed_contract_is_the_pinned_tap_contract(self):
         self.assertEqual(r20.check('contract', CONTRACT, self.pin), 'match')
@@ -66,6 +73,41 @@ class R20Recipe(unittest.TestCase):
         self.assertEqual(config['files']['contract']['sha256'], self.pin[0])
         with self.assertRaises(SystemExit):
             r20.overlay(dict(files=dict(physical=dict(path='x', sha256='0', bytes=0))), self.recipe)
+
+
+class PrepareCompatibility(unittest.TestCase):
+    """The R20 and run16 recipes are not interchangeable, so they stay side by side."""
+
+    def prepare(self, helper, physical, routing):
+        """Run the helper's real `physical` stage; returns the output directory."""
+        spec = importlib.util.spec_from_file_location('prepare_' + helper.stem, helper)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name).resolve()
+        out = root / 'frontend/physical'
+        out.mkdir(parents=True)
+        (root / 'roots.json').write_text(json.dumps(dict(clock_root='n1')))
+        records = dict(physical=physical, routing=routing, floorplan=RECIPE_DIR / 'native-floorplan.json')
+        context = dict(root=root, files={role: dict(path=str(path)) for role, path in records.items()})
+        module.physical(context, SimpleNamespace(roots=str(root / 'roots.json')), out)
+        return out
+
+    def test_r20_prepare_accepts_the_r20_recipe_and_writes_the_routing_audit(self):
+        out = self.prepare(RECIPE_DIR / 'native_frontend_inputs_r20.py',
+                           RECIPE_DIR / 'native-physical-r20.json', RECIPE_DIR / 'native-routing-r20.json')
+        self.assertEqual(json.loads((out / 'routing-writer-audit.json').read_text())['status'], 'passed')
+
+    def test_r20_prepare_rejects_the_run16_physical(self):
+        with self.assertRaisesRegex(ValueError, 'matched decap/tap template differs'):
+            self.prepare(RECIPE_DIR / 'native_frontend_inputs_r20.py',
+                         RECIPE_DIR / 'native-physical.json', RECIPE_DIR / 'native-routing.json')
+
+    def test_run16_prepare_rejects_the_r20_physical(self):
+        with self.assertRaisesRegex(ValueError, 'matched decap/tap template differs'):
+            self.prepare(RECIPE_DIR / 'native_frontend_inputs.py',
+                         RECIPE_DIR / 'native-physical-r20.json', RECIPE_DIR / 'native-routing-r20.json')
 
 
 if __name__ == '__main__':

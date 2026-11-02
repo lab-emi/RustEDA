@@ -43,39 +43,52 @@ receipts still pin the run16 files, so the R20 files sit beside them:
 
 `contract-r20.json` is the common contract with `native_tap_max_gap_um` set to 30
 instead of 15. This is the T1 contract that `native_flow.py` requires for the joint
-tap proof, and its SHA-256 equals the pin. The other four files came from the
-campaign host's `.work` directory. Do not reconstruct them from the values listed
-above: a host that composes from the run16 files reproduces run16-class routing
-(about 1.68 Mm of signal wire and 301k vias), not R20's 1,190,522 µm and 168,381
-vias. Until the files are imported, `verify` reports them as `missing`.
+tap proof. The other four files are byte copies of the files R20 read on the campaign
+host. A recipe composed from the run16 files reproduces run16-class routing (about
+1.68 Mm of signal wire and 301k vias), not R20's 1,190,522 µm and 168,381 vias.
 
-1. On the campaign host, import the files once and commit the result:
+The two prepare helpers are not interchangeable. Each rejects the other recipe's tap
+template (`max_gap` 30000 with the staggered pattern, against 15000), and only the R20
+helper writes the `routing-writer-audit.json` that the joint tap qualification reads.
+`tests/test_r20_recipe.py` runs both directions.
 
-   ```bash
-   python3 integration/ibex_sg13g2_ez130/campaigns/early-20261101/r20_recipe.py import
-   ```
-
-   The tool reads each recorded path (the R20 recipe first, then R21's) under
-   `--source-root`, which defaults to `/home/cgao/git/RustEDA`. It writes a file
-   only when the SHA-256 and size equal the pin, and it never overwrites a file
-   that has different bytes.
-2. In a fresh checkout, `r20_recipe.py verify` must report `match` for every role.
-3. Write the composer configs the same way as for run16
+1. In a fresh checkout, `r20_recipe.py verify` must report `match` for every role.
+2. Write the composer configs the same way as for run16
    (`rusteda.native-frontend-inputs.v1` for `native_frontend.py`, and the
    backend and flow inputs for `native_backend.py` and `native_flow.py`). Then
    run `r20_recipe.py overlay --config CONFIG --output R20-CONFIG` on each one.
    This replaces every `files.<role>` record in the table with the verified R20
-   file. Compose from `R20-CONFIG`.
-4. `r20_recipe.py verify --manifest WORKSPACE/manifest.json` accepts the composed
+   file. Compose from `R20-CONFIG`. A foundry-first bundle's `manifest.json` pins its
+   members by absolute path, so all six `foundry_first_*` roles must come from one
+   bundle.
+3. `r20_recipe.py verify --manifest WORKSPACE/manifest.json` accepts the composed
    manifest only if `physical`, `routing` and `prepare` are present, and if every
    role from the table that the manifest names hash-matches R20.
 
-The R20 prepare helper stays beside the run16 helper. Replace the run16 helper
-only after checking that the R20 helper is backward compatible with the run16
-recipe. This tool covers recipe policy only. `inputs_frozen.json` also pins other
-host-local files that the repository does not contain, such as `tap-policy.json`,
-the foundry-first `policy.json`/`manifest.json` and that run's `native_backend.py`.
-The full early schedule needs them as well.
+`r20_recipe.py import` recreates the files from the paths recorded in
+`inputs_frozen.json` under `--source-root`. It writes a file only when the SHA-256 and
+size equal the pin, and it never overwrites a file that has different bytes.
+
+### What a composed manifest reproduces
+
+This was checked on the campaign host on 2026-11-02, composing from a fresh clone
+through all three composers. PDK files, tools, RTL and the foundry-first bundle stayed
+at their recorded host paths. All five roles above match, and 92 of the 96 file roles
+and every tool carry R20's bytes. The manifest was composed, not run. It still differs
+from R20's manifest:
+
+| Difference from R20 | Cause |
+| --- | --- |
+| 128 steps and six parallel groups, not 129 and one. No `be_tap_export`. `nf_tap_latchup` reads the final GDS and the postroute profile. | `native_flow.py` composes the serial policy. The campaign harness applied the early schedule and its `tap-policy.json` afterwards. |
+| `fe_temporary_run`, `fe_repair_run` and `fe_final_run` use `--threads 2`, not 8. | Campaign harness edit. |
+| `be_postroute_inputs` and `be_antenna_inputs` lack `--threads` and the `--extract-query-workers 16`, `--extract-query-batch-runs 8` and `--extract-query-scratch-mib 32` options. | The repository's `native_backend.py` (`323c0c79…`, 23,095 B) is not the one R20 read (`957bdc4b…`, 23,350 B). |
+
+The remaining role differences follow from these: `tap_policy`, `backend_composer`,
+and the derived `flow_config` and `flow_backend_fragment`. Hash-matching recipe files
+therefore do not carry over the 472 s measurement. A new run must measure its own time.
+The repository also does not contain `tap-policy.json`, the foundry-first
+`policy.json`/`manifest.json` or that run's `native_backend.py`, and the full early
+schedule needs them.
 
 [Native results and scope](https://lab-emi.github.io/RustEDA/benchmarks/) ·
 [Portable evidence inventory](https://lab-emi.github.io/RustEDA/benchmarks/ibex-sg13g2-ez130-development.json)
