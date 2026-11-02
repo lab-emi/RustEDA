@@ -185,8 +185,10 @@ def main() -> int:
             work.mkdir(parents=True)
             argv = [a if not a.endswith("ibex_sram_bench.gds") else str(work / "rustroad.gds") for a in native]
             r1 = measure(argv, work)
+            # KLayout selects its reader by file extension; the flow saved the DEF as a .stdout capture.
+            (work / "design.def").symlink_to(o / "logs/be_def.stdout")
             r2 = measure(["/opt/eda/wrap/klayout", "-b", "-r", str(script),
-                          "-rd", f"def_path={o / 'logs/be_def.stdout'}",
+                          "-rd", f"def_path={work / 'design.def'}",
                           "-rd", "tlef=/opt/eda/ez130_8t_v1p1/lef/ez130_sg13g2_tech.lef",
                           "-rd", f"clef={args.cell_lef}",
                           "-rd", f"cgds={prof / 'combined-cells.gds'}",
