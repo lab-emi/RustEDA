@@ -16,7 +16,8 @@ timing of ngspice SPARSE and KLU).
 
 Families written:
   ibex_net_<k>    the K largest single nets by node count (accuracy + timing);
-  ibex_bulk_<n>   n nets in one deck, largest first, up to --bulk-unknowns.
+  ibex_bulk_<n>   n nets in one deck, largest first (10 ps output step keeps the
+                  rawfiles of both simulators within the suite's 1 GiB budget).
 """
 from __future__ import annotations
 
@@ -79,7 +80,8 @@ def node_name(token: str, names) -> str:
         token = names.get(head, head) + ":" + tail
     else:
         token = names.get(token, token)
-    return "n_" + re.sub(r"[^A-Za-z0-9_]", "_", token)
+    # SPICE is case-insensitive; the bench-suite probe grammar requires lower case.
+    return ("n_" + re.sub(r"[^A-Za-z0-9_]", "_", token)).lower()
 
 
 def emit_net(net, names, index, driver_ohm, sink_ff, rise_ps):
@@ -115,20 +117,20 @@ def emit_net(net, names, index, driver_ohm, sink_ff, rise_ps):
     return dict(lines=lines, unknowns=len(nodes) + 2, probes=probes, sinks=len(sinks))
 
 
-def write_deck(path, ident, title, nets, oracle, tags):
+def write_deck(path, ident, title, nets, oracle, tags, tstep="1p"):
     unknowns = sum(n["unknowns"] for n in nets)
     probes = [f"v({p})" for n in nets[:4] for p in n["probes"][:2]]
     meta = [f"* bench.id: {ident}", "* bench.group: performance", f"* bench.title: {title}",
             f"* bench.probes: {', '.join(probes)}", "* bench.tol.norm: 2e-3", "* bench.expect: match",
             "* bench.ref: reltol=1e-6 abstol=1e-15 vntol=1e-9", "* bench.ref.tmax: 2p",
             "* bench.ng.solver: both", "* bench.timing: yes", f"* bench.size: {unknowns}",
-            f"* bench.est_rss_mib: {max(16, unknowns // 200)}", f"* bench.tags: linear, tran, ibex, spef, {tags}",
+            f"* bench.est_rss_mib: {40 + unknowns // 100}", f"* bench.tags: linear, tran, ibex, spef, {tags}",
             "* bench.note: extracted post-route RC of the final Ibex SG13G2/EZ130 layout; Thevenin ramp driver; "
             "coupling capacitance grounded; sink pins loaded with a fixed Liberty-scale capacitance"]
     if oracle:
         meta.insert(5, "* bench.oracle: tran_lti")
     body = [line for n in nets for line in n["lines"]]
-    path.write_text("\n".join([title] + meta + body + [".tran 1p 6n", ".end", ""]))
+    path.write_text("\n".join([title] + meta + body + [f".tran {tstep} 6n", ".end", ""]))
     return unknowns
 
 
@@ -162,7 +164,7 @@ def main() -> int:
     for count in args.bulk:
         ident = f"ibex_bulk_{count}"
         u = write_deck(args.out / f"{ident}.sp", ident, f"{count} extracted Ibex nets in one deck",
-                       built[:count], False, "bulk")
+                       built[:count], False, "bulk", tstep="10p")
         index.append(dict(id=ident, nets=min(count, len(built)), unknowns=u))
     import json
     (args.out / "index.json").write_text(json.dumps(dict(spef=str(args.spef.resolve()), decks=index), indent=2) + "\n")
