@@ -114,10 +114,10 @@ def main() -> int:
                     files=dict(def_=final["def"], tech_lef=files["tech_lef"], cell_lef=files["std_lef"],
                                ram_lef=files["ram_lef"], rules_nom=files["rules_nom"]),
                     tools={k: tools[k] for k in ("appimage", "gnu_time")},
-                    budgets=dict(threads=2, timeout_seconds=3600, max_spef_bytes=128 * MIB, max_nets=100000,
-                                 max_log_bytes=32 * MIB))
+                    budgets=dict(threads=2, timeout_seconds=900, max_spef_bytes=128 * MIB, max_nets=100000,
+                                 max_log_bytes=32 * MIB))  # exact recorded budget
         data["files"]["def"] = data["files"].pop("def_")
-        code = helper("extraction", "reference_extract.py", data, 3700)
+        code = helper("extraction", "reference_extract.py", data, 1000)
         result = work / "extraction/result.json"
         summary["gates"]["extraction"] = dict(exit_code=code, report=read(result) if result.exists() else None)
         if (work / "extraction/nom.spef").exists():
@@ -128,7 +128,7 @@ def main() -> int:
         data = dict(schema="rusteda.reference-timing-inputs.v1", top=TOP, files=tf,
                     tools={k: tools[k] for k in ("rusteda", "ruststa", "opensta", "gnu_time")},
                     policy=files["physical_policy"],
-                    budgets=dict(threads=2, timeout_seconds=900, max_input_bytes=128 * MIB, max_output_bytes=256 * MIB,
+                    budgets=dict(threads=2, timeout_seconds=180, max_input_bytes=128 * MIB, max_output_bytes=256 * MIB,
                                  max_state_gib=2, max_limit_rows=100000, max_checks=100000),
                     scope=dict(mode="single_reference_openrcx", rc_corner="nom", cppr="off", precision="f64",
                                backend="cpu", clock_model="propagated", wire_model="spef_rc", tolerance_ns=.001))
