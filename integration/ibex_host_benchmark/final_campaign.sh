@@ -14,7 +14,7 @@ idle() { # start a stage only when the 1-minute load average is below 0.5 (max 2
   for _ in $(seq 1 120); do awk '{exit !($1 < 0.5)}' /proc/loadavg && break; sleep 10; done
   log "idle check: loadavg $(cut -d' ' -f1-3 /proc/loadavg)"; }
 
-idle; log "native producer: start"
+idle; log "native producer: start (free disk $(df -h / | awk 'NR==2{print $4}'))"
 ./run_native.sh native-final > native-final.console 2>&1; log "native producer: exit $?"
 $PY - "$W" <<'PY'
 import json, sys

@@ -125,6 +125,8 @@ def main() -> int:
                 if rep:
                     rows[f"rustroad_extract_t{t}"].append(r1)
                     rows[f"openrcx_t{t}"].append(r2)
+                if rep < args.reps or t != threads[-1]:
+                    shutil.rmtree(work)  # disk budget: keep only the last outputs
         last = out / f"extract-r{args.reps}-t{threads[-1]}"
         result["extraction"] = dict(contenders={k: summarize(v) for k, v in rows.items()},
                                     spef=dict(rustroad=spef_totals(last / "native.spef"),
@@ -166,6 +168,8 @@ def main() -> int:
                 if rep:
                     rows[f"ruststa_t{t}"].append(total)
                     rows[f"opensta_t{t}"].append(sta)
+                if rep < args.reps or t != threads[-1]:
+                    shutil.rmtree(work)
         result["timing"] = dict(contenders={k: summarize(v) for k, v in rows.items()},
                                 scope="RustSTA: init+import+run (TT and SS in one run)+8 reports; "
                                       "OpenSTA: one process per corner (read, link, SDC, SPEF, full reports)")
@@ -192,6 +196,8 @@ def main() -> int:
             if rep:
                 rows["rustroad_export_gds"].append(r1)
                 rows["klayout_def2gds"].append(r2)
+            if rep < args.reps:
+                shutil.rmtree(work)
         last = out / f"gds-r{args.reps}"
         sizes = {k: (last / f).stat().st_size if (last / f).exists() else None
                  for k, f in (("rustroad", "rustroad.gds"), ("klayout", "klayout.gds"))}
