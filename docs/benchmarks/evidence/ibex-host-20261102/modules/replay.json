@@ -1,0 +1,381 @@
+{
+ "schema": "rusteda.host-module-bench.v1",
+ "producer_output": "/home/user/RustEDA/.work/ibex-host/native-final/output",
+ "reps": 3,
+ "threads": [
+  2,
+  4
+ ],
+ "host_cpus": 4,
+ "extraction": {
+  "contenders": {
+   "rustroad_extract_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 157.605,
+      "peak_rss_kib": 810452,
+      "cpu_seconds": 155.73
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 158.823,
+      "peak_rss_kib": 809992,
+      "cpu_seconds": 156.82
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 160.256,
+      "peak_rss_kib": 810060,
+      "cpu_seconds": 158.39
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 158.823,
+    "min_wall_seconds": 157.605,
+    "worst_peak_rss_kib": 810452
+   },
+   "rustroad_extract_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 157.79,
+      "peak_rss_kib": 810104,
+      "cpu_seconds": 156.11
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 161.041,
+      "peak_rss_kib": 810552,
+      "cpu_seconds": 158.9
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 158.823,
+      "peak_rss_kib": 810632,
+      "cpu_seconds": 157.06
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 158.823,
+    "min_wall_seconds": 157.79,
+    "worst_peak_rss_kib": 810632
+   },
+   "openrcx_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.237,
+      "peak_rss_kib": 290716,
+      "cpu_seconds": 17.0
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.649,
+      "peak_rss_kib": 295556,
+      "cpu_seconds": 17.37
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.889,
+      "peak_rss_kib": 295860,
+      "cpu_seconds": 17.69
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 17.649,
+    "min_wall_seconds": 17.237,
+    "worst_peak_rss_kib": 295860
+   },
+   "openrcx_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 15.904,
+      "peak_rss_kib": 295728,
+      "cpu_seconds": 15.7
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.114,
+      "peak_rss_kib": 295608,
+      "cpu_seconds": 16.88
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.164,
+      "peak_rss_kib": 295412,
+      "cpu_seconds": 16.93
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 17.114,
+    "min_wall_seconds": 15.904,
+    "worst_peak_rss_kib": 295728
+   }
+  },
+  "spef": {
+   "rustroad": {
+    "nets": 16329,
+    "total_cap_pf": 312.638,
+    "total_res_kohm": 6633.54
+   },
+   "openrcx": {
+    "nets": 16329,
+    "total_cap_pf": 290.705,
+    "total_res_kohm": 6691.924
+   }
+  }
+ },
+ "timing": {
+  "contenders": {
+   "ruststa_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 18.774,
+      "peak_rss_kib": 497564,
+      "cpu_seconds": 23.95
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.898,
+      "peak_rss_kib": 497680,
+      "cpu_seconds": 23.04
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 17.463,
+      "peak_rss_kib": 498004,
+      "cpu_seconds": 22.4
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 17.898,
+    "min_wall_seconds": 17.463,
+    "worst_peak_rss_kib": 498004
+   },
+   "ruststa_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 14.992,
+      "peak_rss_kib": 502876,
+      "cpu_seconds": 23.42
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 15.976,
+      "peak_rss_kib": 502772,
+      "cpu_seconds": 24.47
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 16.036,
+      "peak_rss_kib": 502500,
+      "cpu_seconds": 24.82
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 15.976,
+    "min_wall_seconds": 14.992,
+    "worst_peak_rss_kib": 502876
+   },
+   "opensta_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 14.746,
+      "peak_rss_kib": 266532,
+      "cpu_seconds": 17.26
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 15.253,
+      "peak_rss_kib": 266916,
+      "cpu_seconds": 17.98
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 15.287,
+      "peak_rss_kib": 266832,
+      "cpu_seconds": 17.9
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 15.253,
+    "min_wall_seconds": 14.746,
+    "worst_peak_rss_kib": 266916
+   },
+   "opensta_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 13.041,
+      "peak_rss_kib": 267704,
+      "cpu_seconds": 17.84
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 13.497,
+      "peak_rss_kib": 267260,
+      "cpu_seconds": 18.36
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 13.894,
+      "peak_rss_kib": 267332,
+      "cpu_seconds": 19.17
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 13.497,
+    "min_wall_seconds": 13.041,
+    "worst_peak_rss_kib": 267704
+   }
+  },
+  "scope": "RustSTA: init+import+run (TT and SS in one run)+8 reports; OpenSTA: one process per corner (read, link, SDC, SPEF, full reports)",
+  "agreement": {
+   "status": "failed",
+   "max_abs_difference_ps": 1.4052,
+   "tolerance_ps": 1.0,
+   "differences": [
+    {
+     "source": "native",
+     "corner": "tt",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 49.279521,
+     "opensta_ns": 49.280926,
+     "abs_difference_ps": 1.4052
+    },
+    {
+     "source": "native",
+     "corner": "tt",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.147036,
+     "opensta_ns": 0.147072,
+     "abs_difference_ps": 0.036
+    },
+    {
+     "source": "native",
+     "corner": "ss",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 48.840157,
+     "opensta_ns": 48.840347,
+     "abs_difference_ps": 0.1906
+    },
+    {
+     "source": "native",
+     "corner": "ss",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.268527,
+     "opensta_ns": 0.268436,
+     "abs_difference_ps": 0.0909
+    },
+    {
+     "source": "openrcx",
+     "corner": "tt",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 49.296423,
+     "opensta_ns": 49.297707,
+     "abs_difference_ps": 1.2838
+    },
+    {
+     "source": "openrcx",
+     "corner": "tt",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.142664,
+     "opensta_ns": 0.142711,
+     "abs_difference_ps": 0.0476
+    },
+    {
+     "source": "openrcx",
+     "corner": "ss",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 48.868532,
+     "opensta_ns": 48.868607,
+     "abs_difference_ps": 0.0746
+    },
+    {
+     "source": "openrcx",
+     "corner": "ss",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.265683,
+     "opensta_ns": 0.265467,
+     "abs_difference_ps": 0.2153
+    }
+   ]
+  }
+ },
+ "gds": {
+  "contenders": {
+   "rustroad_export_gds": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 2.942,
+      "peak_rss_kib": 379376,
+      "cpu_seconds": 2.82
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.134,
+      "peak_rss_kib": 379668,
+      "cpu_seconds": 3.02
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.019,
+      "peak_rss_kib": 379604,
+      "cpu_seconds": 2.96
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 3.019,
+    "min_wall_seconds": 2.942,
+    "worst_peak_rss_kib": 379668
+   },
+   "klayout_def2gds": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 2.286,
+      "peak_rss_kib": 275968,
+      "cpu_seconds": 2.26
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 2.564,
+      "peak_rss_kib": 275912,
+      "cpu_seconds": 2.53
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 2.226,
+      "peak_rss_kib": 276124,
+      "cpu_seconds": 2.19
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 2.286,
+    "min_wall_seconds": 2.226,
+    "worst_peak_rss_kib": 276124
+   }
+  },
+  "bytes": {
+   "rustroad": 48157358,
+   "klayout": 59716694
+  },
+  "note": "rerun after giving KLayout a .def path; the first replay failed before reading the DEF"
+ }
+}

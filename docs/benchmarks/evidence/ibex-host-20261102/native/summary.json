@@ -1,0 +1,40 @@
+{
+  "schema": "rusteda.ihp-rtl2gds.v1",
+  "status": "failed",
+  "implementation": "rusteda",
+  "error": "step failed: be_timing, exit=1",
+  "failed_items": [
+    "step failed: be_timing, exit=1"
+  ],
+  "unverified_items": [
+    "complete_flow"
+  ],
+  "capture_accounting": {
+    "mode": "explicit_stdout_artifacts",
+    "declared_bytes": 1358954496,
+    "aggregate_limit_bytes": 1610612736,
+    "files": 34,
+    "diagnostic_bytes": 1173497,
+    "diagnostic_limit_bytes": 67108864,
+    "stdout_artifact_bytes": 148693737,
+    "stderr_policy": "every stderr byte is diagnostic, without exemptions",
+    "raw_paths": "logs/<step>.stdout and logs/<step>.stderr; preserved and hashed",
+    "overflow_policy": "failed capture; bounded extra chunks retained, never a truncated success"
+  },
+  "resources": {
+    "wall_seconds": 1329.5596517059985,
+    "peak_reaped_process_rss_kib": 1080408,
+    "cgroup": {
+      "memory_peak_bytes": 8589934592,
+      "swap_peak_bytes": 2056192
+    },
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "threads": 4,
+    "scope": "whole worker including parsing, plans, tool I/O, extraction and signoff"
+  }
+}

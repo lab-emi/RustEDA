@@ -1,0 +1,1953 @@
+[
+  {
+    "id": "fe_context",
+    "kind": "render",
+    "wall_seconds": 0.0019032029995287303
+  },
+  {
+    "id": "fe_profiles",
+    "kind": "command",
+    "wall_seconds": 0.5174140809995151,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_profiles.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_profiles.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_caps_tt_std",
+    "kind": "command",
+    "wall_seconds": 0.14604640300058236,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_tt_std.stdout",
+      "sha256": "27124d0d2fa658c137bc6844c1ad3e4ef86bfaa89312bccc23b670b9c52da772",
+      "bytes": 36764
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_tt_std.stderr",
+      "sha256": "011468f02aaa70020ab56df81e49ba51c9def291f9de139eb7bc14cac4da5890",
+      "bytes": 1755
+    },
+    "stdout_artifact": {
+      "handle": "fe_caps_tt_std",
+      "path": "logs/fe_caps_tt_std.stdout",
+      "format": "pin_capacitance",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_caps_tt_ram",
+    "kind": "command",
+    "wall_seconds": 0.010441306001666817,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_tt_ram.stdout",
+      "sha256": "7ddca931488d8b58f2d04eca6fa4de2fa0abfab2a442be6eee8950d4a1afa7a3",
+      "bytes": 14856
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_tt_ram.stderr",
+      "sha256": "589ead57df41b0fe857e6e42eacffb04e28512943e1f3aea9f7b8374208d0d33",
+      "bytes": 5273
+    },
+    "stdout_artifact": {
+      "handle": "fe_caps_tt_ram",
+      "path": "logs/fe_caps_tt_ram.stdout",
+      "format": "pin_capacitance",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_caps_ss_std",
+    "kind": "command",
+    "wall_seconds": 0.1415457109997078,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_ss_std.stdout",
+      "sha256": "44a3611ef7948e316b6add5f461d7263c2d8735603947bda2df89821002e170e",
+      "bytes": 37107
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_ss_std.stderr",
+      "sha256": "64f9a7529e496ed2ab60a9af47d9ac532c79638b3bcb6390afe729e8b64fbf20",
+      "bytes": 1760
+    },
+    "stdout_artifact": {
+      "handle": "fe_caps_ss_std",
+      "path": "logs/fe_caps_ss_std.stdout",
+      "format": "pin_capacitance",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_caps_ss_ram",
+    "kind": "command",
+    "wall_seconds": 0.011520284000653191,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_ss_ram.stdout",
+      "sha256": "2b00657fe6dfe2b10d84308149dd5116912b4174065b0ce380929d9aaf385fff",
+      "bytes": 14858
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_caps_ss_ram.stderr",
+      "sha256": "7f11fc4edfeb0ba5af532bd1a55a9956e1dffced68baa3f007b340a799ab45a7",
+      "bytes": 5297
+    },
+    "stdout_artifact": {
+      "handle": "fe_caps_ss_ram",
+      "path": "logs/fe_caps_ss_ram.stdout",
+      "format": "pin_capacitance",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_synth_init",
+    "kind": "command",
+    "wall_seconds": 0.009005473999422975,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth_init.stdout",
+      "sha256": "87dbffdbe52d14be02d2e754979520381d030214005e1ff96d91508f29411996",
+      "bytes": 528
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_synth_import",
+    "kind": "command",
+    "wall_seconds": 0.31610546100091597,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth_import.stdout",
+      "sha256": "c49742749c500814ede9d5758a1f3e6a1e12dc42269a399342c185aa7eca934f",
+      "bytes": 9578
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_synth",
+    "kind": "command",
+    "wall_seconds": 2.012554020000607,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth.stdout",
+      "sha256": "d54683b273a81f3d03d7ddb04cf600c13fe7f3f221a82c6557b7465e46ed4524",
+      "bytes": 601
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth.stderr",
+      "sha256": "3dbc4b2f53e0fec7958be25554eb33469a4a2b17b314fdc2452cb440141da480",
+      "bytes": 637
+    }
+  },
+  {
+    "id": "fe_synth_export",
+    "kind": "command",
+    "wall_seconds": 0.0336867149999307,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth_export.stdout",
+      "sha256": "6ea9f40cca30740196ea7b5ea9ee49ec5f10467c227c25e45d6f5d6286f4359e",
+      "bytes": 209
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_synth_export.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_mapped_init",
+    "kind": "command",
+    "wall_seconds": 0.00963164200038591,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_init.stdout",
+      "sha256": "9ceb5c5be1b7491a98cdb7967fd3e53ae6c42665c7f8bc379cf59ad5079eae23",
+      "bytes": 543
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_mapped_import",
+    "kind": "command",
+    "wall_seconds": 0.7673737349996372,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_import.stdout",
+      "sha256": "2bd7c86351298dd89d60e4406ed09cddbf45f8f467bbc3fd62b8d711b00fc862",
+      "bytes": 19093
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_mapped_run",
+    "kind": "command",
+    "wall_seconds": 1.0677121539993095,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_run.stdout",
+      "sha256": "8417fcb34370c977a383fb9a7a4118e0a6b3c15cb758a16609bbeaf6618bedf5",
+      "bytes": 219058
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_mapped_graph",
+    "kind": "command",
+    "wall_seconds": 0.03450654399966879,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_graph.stdout",
+      "sha256": "15ab084e829ddc8667bad8cf3607b2d3bb2468c07e5caaff5429d9789b862bca",
+      "bytes": 1335
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_mapped_tt_drv",
+    "kind": "command",
+    "wall_seconds": 0.13653886899919598,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_tt_drv.stdout",
+      "sha256": "cb504660fa4f9baf77ca337b1fe7d259f2d642ddd16b0b03b87f7eee54c3846b",
+      "bytes": 1918031
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_tt_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_mapped_tt_drv",
+      "path": "logs/fe_mapped_tt_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_mapped_ss_drv",
+    "kind": "command",
+    "wall_seconds": 0.13035463899905153,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_ss_drv.stdout",
+      "sha256": "4f76a9b98c1c14b15cbe91793877c936b5c7596fba9d9e11d0c993e3cc466e44",
+      "bytes": 1848051
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_mapped_ss_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_mapped_ss_drv",
+      "path": "logs/fe_mapped_ss_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_bundle_reset",
+    "kind": "command",
+    "wall_seconds": 0.7672714039999846,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_reset.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_reset.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_eco_reset",
+    "kind": "command",
+    "wall_seconds": 0.8691905199993926,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_reset.stdout",
+      "sha256": "15d681f3161a85e73f76f248d85485c40269fdfa8388eb022c4bd68cf6096fd2",
+      "bytes": 377
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_reset.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_reset_init",
+    "kind": "command",
+    "wall_seconds": 0.018377334999968298,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_init.stdout",
+      "sha256": "3e5953a3cb97cc09bd753b41972717b42a65a66567274bf6c72251e29511a3c8",
+      "bytes": 540
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_reset_import",
+    "kind": "command",
+    "wall_seconds": 0.728200415000174,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_import.stdout",
+      "sha256": "74dfa5d179670c8c009435eb81b52580603821ce304e4e3f4ef999748f06f1e6",
+      "bytes": 19101
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_reset_run",
+    "kind": "command",
+    "wall_seconds": 1.0686387599998852,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_run.stdout",
+      "sha256": "09d9e6d9fc5b9561d664790ecee909b62bcd50cebd2bb32c4902c72d6d6465f7",
+      "bytes": 217688
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_reset_graph",
+    "kind": "command",
+    "wall_seconds": 0.06558547300119244,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_graph.stdout",
+      "sha256": "d7c1dd27d4e77debb0321d63b64122496f4b395bb58ce5496e656feb65f37b1a",
+      "bytes": 1343
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_reset_tt_drv",
+    "kind": "command",
+    "wall_seconds": 0.0934461269989697,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_tt_drv.stdout",
+      "sha256": "ddd66f4aa05532c358171248b0f79f87ba29d5d4c89c758d4f8d8646fcbf2c8e",
+      "bytes": 1268207
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_tt_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_reset_tt_drv",
+      "path": "logs/fe_reset_tt_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_reset_ss_drv",
+    "kind": "command",
+    "wall_seconds": 0.09289504300068074,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_ss_drv.stdout",
+      "sha256": "e4482937ecb870632987e173f535a61083abef2e58b006d9c09580f9afec18ee",
+      "bytes": 1194825
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_reset_ss_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_reset_ss_drv",
+      "path": "logs/fe_reset_ss_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_bundle_fanout",
+    "kind": "command",
+    "wall_seconds": 0.8031677690014476,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_fanout.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_fanout.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_eco_fanout",
+    "kind": "command",
+    "wall_seconds": 1.3180778629994165,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_fanout.stdout",
+      "sha256": "d1fd40d41dad9009bc7137cf934a7831249f1e7e90ee80842f20b428b84b5273",
+      "bytes": 378
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_fanout.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_fanout_init",
+    "kind": "command",
+    "wall_seconds": 0.009397802999956184,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_init.stdout",
+      "sha256": "6a8d1ce739579035c966baef64f1a74ca5a5a98f1a49026191846a1099151384",
+      "bytes": 543
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_fanout_import",
+    "kind": "command",
+    "wall_seconds": 0.768757715000902,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_import.stdout",
+      "sha256": "72d67cad945e508e5fb3f269ca50f1c1500ead23644da10f47acda5519f46eb5",
+      "bytes": 19105
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_fanout_run",
+    "kind": "command",
+    "wall_seconds": 1.2059230489994661,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_run.stdout",
+      "sha256": "3d1f561869a59911383d75d4f15b8e81f686509102fd044b0d304ab209320a37",
+      "bytes": 66376
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_fanout_graph",
+    "kind": "command",
+    "wall_seconds": 0.06664196299971081,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_graph.stdout",
+      "sha256": "3daf6684cee45a903c04805c6c36754b7ccaa1547241a001b0c5b93c11e38102",
+      "bytes": 1347
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_fanout_tt_drv",
+    "kind": "command",
+    "wall_seconds": 0.07521680999889213,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_tt_drv.stdout",
+      "sha256": "3392927b6d8d52f7d01d2ba3d4f5a14f66012a7bb22652ef987f36ca5aabd244",
+      "bytes": 765470
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_tt_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_fanout_tt_drv",
+      "path": "logs/fe_fanout_tt_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_fanout_ss_drv",
+    "kind": "command",
+    "wall_seconds": 0.06444989000010537,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_ss_drv.stdout",
+      "sha256": "410584ce740b914a6c61079418da8ff84f016c6318dbf3a5df27c65abe8c7bc3",
+      "bytes": 769454
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_fanout_ss_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_fanout_ss_drv",
+      "path": "logs/fe_fanout_ss_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_bundle_primary-clock",
+    "kind": "command",
+    "wall_seconds": 0.9172859219997918,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_primary-clock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_primary-clock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_eco_primary-clock",
+    "kind": "command",
+    "wall_seconds": 0.9682249449997471,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_primary-clock.stdout",
+      "sha256": "4f40323b0f7a2acf10cf50f303189ddb723e5d355798476ac981a5711251d667",
+      "bytes": 375
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_primary-clock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_primary_init",
+    "kind": "command",
+    "wall_seconds": 0.009616015000574407,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_primary_init.stdout",
+      "sha256": "a126f5ed565e7873c363daf02dfbd4dfacac1b7aa7fb02fb2b49bf9a9375eb90",
+      "bytes": 546
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_primary_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_primary_import",
+    "kind": "command",
+    "wall_seconds": 0.770495116001257,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_primary_import.stdout",
+      "sha256": "ccf3610175f9e7abf8b596d7a4925f26d8bed630b203e76e28592d88514fac8e",
+      "bytes": 19115
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_primary_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_primary_graph",
+    "kind": "command",
+    "wall_seconds": 0.0671141559996613,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_primary_graph.stdout",
+      "sha256": "486dd2c2a5171bdb0f7e3d7d7fe87f36d8bf90b934377d9e0da0c1376054c5d9",
+      "bytes": 1357
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_primary_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_physical_config",
+    "kind": "command",
+    "wall_seconds": 0.31640634699942893,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_physical_config.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_physical_config.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_pins_pdk_import",
+    "kind": "command",
+    "wall_seconds": 0.5181090500009304,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins_pdk_import.stdout",
+      "sha256": "4fc9daa9d9d3285f91532eb38be2dc08032777d36a94f37b6dcd285149fa7b58",
+      "bytes": 8805
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins_pdk_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_pins_place",
+    "kind": "command",
+    "wall_seconds": 2.471367354999529,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins_place.stdout",
+      "sha256": "92235138b3e87b73fa3ff446d3df96260669d7ad24b62ba20afd0d84c806f17c",
+      "bytes": 8962
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins_place.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_pins_def",
+    "kind": "command",
+    "wall_seconds": 0.5707667910010059,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins_def.stdout",
+      "sha256": "fd9ac84471228006738bf8e1d421bf227c69faad0b83229039b0047491f80987",
+      "bytes": 9533877
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins_def.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_pins_def",
+      "path": "logs/fe_pins_def.stdout",
+      "format": "def",
+      "max_bytes": 134217728
+    }
+  },
+  {
+    "id": "fe_pins",
+    "kind": "command",
+    "wall_seconds": 0.5177701299999171,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_pins.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_pdk_import",
+    "kind": "command",
+    "wall_seconds": 0.4190586959994107,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_pdk_import.stdout",
+      "sha256": "4fc9daa9d9d3285f91532eb38be2dc08032777d36a94f37b6dcd285149fa7b58",
+      "bytes": 8805
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_pdk_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_place",
+    "kind": "command",
+    "wall_seconds": 2.822175672999947,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_place.stdout",
+      "sha256": "c5f2a2ae5919ad2c37379f74601332639422b0f34a2131ef01002f7813b85ee5",
+      "bytes": 8962
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_place.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_cts",
+    "kind": "command",
+    "wall_seconds": 3.1717277289990307,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_cts.stdout",
+      "sha256": "b461c699a122004308a453ffe0004c12cd6b7842c7ae88539e4926075a66cfbc",
+      "bytes": 8981
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_cts.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_export",
+    "kind": "command",
+    "wall_seconds": 0.4407507119994989,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_export.stdout",
+      "sha256": "6cdeaa674fc59e471efbb7d6136c80f051541008505068f833ff229ef58ec940",
+      "bytes": 2049983
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_export.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_export",
+      "path": "logs/fe_temporary_export.stdout",
+      "format": "verilog",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_temporary_seed",
+    "kind": "command",
+    "wall_seconds": 0.41448913299973356,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_seed.stdout",
+      "sha256": "3a37295ce5688dd845b9d5b460f052f75327570777a399e008523d8689eca241",
+      "bytes": 1525509
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_seed.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_seed",
+      "path": "logs/fe_temporary_seed.stdout",
+      "format": "placement_seed",
+      "max_bytes": 67108864
+    }
+  },
+  {
+    "id": "fe_temporary_def",
+    "kind": "command",
+    "wall_seconds": 0.591753389000587,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_def.stdout",
+      "sha256": "7ebe26af619e869e854fbf5371def581c410b3130ae6e697b77bbd4b3754598e",
+      "bytes": 9630121
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_def.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_def",
+      "path": "logs/fe_temporary_def.stdout",
+      "format": "def",
+      "max_bytes": 134217728
+    }
+  },
+  {
+    "id": "fe_temporary_estimate",
+    "kind": "command",
+    "wall_seconds": 0.7674079410007835,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_estimate.stdout",
+      "sha256": "f769e55d39a911b1c6d2d78f1f162aa2677dcbd3dc13890e5d925991d6f97bec",
+      "bytes": 218
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_estimate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_init",
+    "kind": "command",
+    "wall_seconds": 0.009304612000050838,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_init.stdout",
+      "sha256": "3d1abae113f4616798bafba655d913870ccdb7e141c2531f80f8ed7ed7bdd3ab",
+      "bytes": 552
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_import",
+    "kind": "command",
+    "wall_seconds": 1.1678983540004992,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_import.stdout",
+      "sha256": "12eb54ce1a179a4ffc5c2a5f2ef062cecf42a2a34b16963723af9b7bb305f5a3",
+      "bytes": 20176
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_run",
+    "kind": "command",
+    "wall_seconds": 8.216669819001254,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_run.stdout",
+      "sha256": "b8614167eac90bcfd4b41c625779d5121cffb4db38dda8564003912b4218a51c",
+      "bytes": 293507
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_graph",
+    "kind": "command",
+    "wall_seconds": 0.06607862899909378,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_graph.stdout",
+      "sha256": "a6ff0af17e23ebba8ed7a7a267e347f8d1c708d4eb34c075d32d39727a09b5d2",
+      "bytes": 1746
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_temporary_tt_drv",
+    "kind": "command",
+    "wall_seconds": 0.3913172939992364,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_tt_drv.stdout",
+      "sha256": "8311931507dcd0549dbb47d9d4b5c024d6eeb0c35f863b94ab7915e6f3c06d2c",
+      "bytes": 4834060
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_tt_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_tt_drv",
+      "path": "logs/fe_temporary_tt_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_temporary_tt_endpoints",
+    "kind": "command",
+    "wall_seconds": 0.20672293300049205,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_tt_endpoints.stdout",
+      "sha256": "0d458cc1719bf978837852ede90a6bac8097ca0c5ae2c4d6e07d77caa42b41a3",
+      "bytes": 2495865
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_tt_endpoints.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_tt_endpoints",
+      "path": "logs/fe_temporary_tt_endpoints.stdout",
+      "format": "timing_endpoints",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_temporary_ss_drv",
+    "kind": "command",
+    "wall_seconds": 0.24604179199923237,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_ss_drv.stdout",
+      "sha256": "60e38762e4415e1ffab1395d1f76ddb8ee8a421d3d9d355a4273bb45c0c4a70e",
+      "bytes": 3350443
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_ss_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_ss_drv",
+      "path": "logs/fe_temporary_ss_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_temporary_ss_endpoints",
+    "kind": "command",
+    "wall_seconds": 0.18804734999866923,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_ss_endpoints.stdout",
+      "sha256": "f9ef326a96573db4dc1dad9c75ac33e514814722c97abbbdc1030d3493f9e09f",
+      "bytes": 2495309
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_ss_endpoints.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_ss_endpoints",
+      "path": "logs/fe_temporary_ss_endpoints.stdout",
+      "format": "timing_endpoints",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_temporary_hold",
+    "kind": "command",
+    "wall_seconds": 1.2526163160000579,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_hold.stdout",
+      "sha256": "6141ded04175311278f457890908443f3c7d2bfa0cf1d97b45e37bc21e4c71cb",
+      "bytes": 14393518
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_temporary_hold.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_temporary_hold",
+      "path": "logs/fe_temporary_hold.stdout",
+      "format": "timing_hold_fix",
+      "max_bytes": 67108864
+    }
+  },
+  {
+    "id": "fe_bundle_electrical",
+    "kind": "command",
+    "wall_seconds": 1.003238743998736,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_electrical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_electrical.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_eco_electrical",
+    "kind": "command",
+    "wall_seconds": 7.076924196999244,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_electrical.stdout",
+      "sha256": "bb4aa906e2646f13f1085f8b1586c377cf111498fdf7bd6af5d38877ff36d15e",
+      "bytes": 374
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_electrical.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_electrical_init",
+    "kind": "command",
+    "wall_seconds": 0.00993532600114122,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_electrical_init.stdout",
+      "sha256": "ac4a41023609bc73b86f06fd023f7b34b283b9d4cb4f153e2abf9c4683acde32",
+      "bytes": 555
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_electrical_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_electrical_import",
+    "kind": "command",
+    "wall_seconds": 0.8357707830000436,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_electrical_import.stdout",
+      "sha256": "665b777ec3d7f3cf3e908ee2850cb33575f1cb31a8a735036619eec0054eb9d0",
+      "bytes": 19121
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_electrical_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_electrical_graph",
+    "kind": "command",
+    "wall_seconds": 0.06956057700153906,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_electrical_graph.stdout",
+      "sha256": "9844d7a5b32b921978c7ae5f52844c1ae27c8e587e06d90100663ddfacb1c322",
+      "bytes": 1363
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_electrical_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_pdk_import",
+    "kind": "command",
+    "wall_seconds": 0.5168465490005474,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_pdk_import.stdout",
+      "sha256": "490212635ed10bf10c41e898f65a912550a9af27c149a347213ad3211cf7834f",
+      "bytes": 8805
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_pdk_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_place",
+    "kind": "command",
+    "wall_seconds": 1.0462624720003078,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_place.stdout",
+      "sha256": "1e2a955ca8a7e7310b493d5a73f79b1f3dd8edf0442ea36b6b72186f8a11a48e",
+      "bytes": 9237
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_place.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_cts",
+    "kind": "command",
+    "wall_seconds": 1.4118511649994616,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_cts.stdout",
+      "sha256": "054c3e707336bfca19d9a4aef964762ff0d90aa98238e95351fdb32e88087298",
+      "bytes": 9256
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_cts.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_export",
+    "kind": "command",
+    "wall_seconds": 0.4968159199997899,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_export.stdout",
+      "sha256": "d974bb39a793cb5b21f7be85c5bcbc06c1dff36622d4f3b3209ab627a6c44064",
+      "bytes": 2227010
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_export.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_export",
+      "path": "logs/fe_repair_export.stdout",
+      "format": "verilog",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_repair_seed",
+    "kind": "command",
+    "wall_seconds": 0.48812591200112365,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_seed.stdout",
+      "sha256": "9a9b762edb067a22da4e0bd638fbcafc06a7857faca6103e78f414850fcf2377",
+      "bytes": 1606134
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_seed.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_seed",
+      "path": "logs/fe_repair_seed.stdout",
+      "format": "placement_seed",
+      "max_bytes": 67108864
+    }
+  },
+  {
+    "id": "fe_repair_def",
+    "kind": "command",
+    "wall_seconds": 0.526763548999952,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_def.stdout",
+      "sha256": "1aaac6c76fc9bc826700a9de143fa01bf3601eb38b46b7db2db1d30a1380d6e2",
+      "bytes": 10041827
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_def.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_def",
+      "path": "logs/fe_repair_def.stdout",
+      "format": "def",
+      "max_bytes": 134217728
+    }
+  },
+  {
+    "id": "fe_repair_estimate",
+    "kind": "command",
+    "wall_seconds": 0.867560461998437,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_estimate.stdout",
+      "sha256": "a6a2b39fc19fa37432330493bee6b46b236a4a13088044fffd96cc8a301ba24e",
+      "bytes": 218
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_estimate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_init",
+    "kind": "command",
+    "wall_seconds": 0.009435768000912503,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_init.stdout",
+      "sha256": "aeb9c5ae92ed33660beb48fbdd54e0e79d2f76fd928f20ac83d06753816d0d78",
+      "bytes": 543
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_import",
+    "kind": "command",
+    "wall_seconds": 1.3183444259993848,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_import.stdout",
+      "sha256": "26d1cea411a96086454baf8fe2fb0604d1490b4f3c87924c708e4a252c2952fe",
+      "bytes": 20158
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_run",
+    "kind": "command",
+    "wall_seconds": 8.79848236199905,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_run.stdout",
+      "sha256": "702289bf6582276b549092ea06c1b7010210280cdb23a58879db1b3d95ccd822",
+      "bytes": 13685
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_graph",
+    "kind": "command",
+    "wall_seconds": 0.06617804499910562,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_graph.stdout",
+      "sha256": "bcdd5f2a50df759be5560b7a724922bbdd31c6fba1f4b8b27968a58bc663e95d",
+      "bytes": 1728
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_repair_tt_drv",
+    "kind": "command",
+    "wall_seconds": 0.31867904600039765,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_tt_drv.stdout",
+      "sha256": "402d307c28b0c2dc5653c08f73ceae4845a0ac337620dc2de75f9a10a79e8fc9",
+      "bytes": 4411533
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_tt_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_tt_drv",
+      "path": "logs/fe_repair_tt_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_repair_tt_endpoints",
+    "kind": "command",
+    "wall_seconds": 0.19971789300143428,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_tt_endpoints.stdout",
+      "sha256": "df10f661002e6b92f0cbd9c0e8e3209de4f318d78d6b456ec1ca516cf66dfcec",
+      "bytes": 2496056
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_tt_endpoints.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_tt_endpoints",
+      "path": "logs/fe_repair_tt_endpoints.stdout",
+      "format": "timing_endpoints",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_repair_ss_drv",
+    "kind": "command",
+    "wall_seconds": 0.24132369300059509,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_ss_drv.stdout",
+      "sha256": "610c447e545870fd48943ddf453c2db37b5fb7a586dc36580bd434766677ca60",
+      "bytes": 2772290
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_ss_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_ss_drv",
+      "path": "logs/fe_repair_ss_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_repair_ss_endpoints",
+    "kind": "command",
+    "wall_seconds": 0.20143107900003088,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_ss_endpoints.stdout",
+      "sha256": "5105e508b0ca82730e2eb1887ab1aa6bc9c9f8b093b4933cd00f139c9dd026c6",
+      "bytes": 2494659
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_ss_endpoints.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_ss_endpoints",
+      "path": "logs/fe_repair_ss_endpoints.stdout",
+      "format": "timing_endpoints",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_repair_hold",
+    "kind": "command",
+    "wall_seconds": 0.9860331449999649,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_hold.stdout",
+      "sha256": "e218d18ba4cf6f0d43a957dac608fbfca8e2b414e464aefdaf7e1387fd4b7d38",
+      "bytes": 12548709
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_repair_hold.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_repair_hold",
+      "path": "logs/fe_repair_hold.stdout",
+      "format": "timing_hold_fix",
+      "max_bytes": 67108864
+    }
+  },
+  {
+    "id": "fe_bundle_hold",
+    "kind": "command",
+    "wall_seconds": 1.0382285420000699,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_hold.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_bundle_hold.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_eco_hold",
+    "kind": "command",
+    "wall_seconds": 2.069321962999311,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_hold.stdout",
+      "sha256": "9ae3bbc6b6b02985b4f0b5d74f4a91a1e9b1dd28c540ad7cd8c74913d2f30531",
+      "bytes": 373
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_eco_hold.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_pdk_import",
+    "kind": "command",
+    "wall_seconds": 0.5170460209992598,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_pdk_import.stdout",
+      "sha256": "93854fcaa5fe553e954806fecbd9c5e686bb003e209b854698e49e6afdb5587f",
+      "bytes": 8805
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_pdk_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_place",
+    "kind": "command",
+    "wall_seconds": 1.1681366200009506,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_place.stdout",
+      "sha256": "e78e8226781a0178d8b9ce3fa23bd620c9dbed0357f0522bf3b2803a81b99247",
+      "bytes": 9236
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_place.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_cts",
+    "kind": "command",
+    "wall_seconds": 1.604614447000131,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_cts.stdout",
+      "sha256": "0166b72b9414e1775d07aac7960c485022f8a1b42f6b69d3bea87eba607839ef",
+      "bytes": 9253
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_cts.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_export",
+    "kind": "command",
+    "wall_seconds": 0.5086374919992522,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_export.stdout",
+      "sha256": "d7826d8628bbd63a21d9e961a55ab259f5672747ad76018f113a0f6ec211906e",
+      "bytes": 2230514
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_export.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_final_export",
+      "path": "logs/fe_final_export.stdout",
+      "format": "verilog",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_final_inspect",
+    "kind": "command",
+    "wall_seconds": 0.519453816999885,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_inspect.stdout",
+      "sha256": "0166b72b9414e1775d07aac7960c485022f8a1b42f6b69d3bea87eba607839ef",
+      "bytes": 9253
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_inspect.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_def",
+    "kind": "command",
+    "wall_seconds": 0.6930019960000209,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_def.stdout",
+      "sha256": "bae70c840ae32585b93db2dd6f962deedee2daebf08684094a264da9958d41c9",
+      "bytes": 10052870
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_def.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_final_def",
+      "path": "logs/fe_final_def.stdout",
+      "format": "def",
+      "max_bytes": 134217728
+    }
+  },
+  {
+    "id": "fe_final_estimate",
+    "kind": "command",
+    "wall_seconds": 0.9685927589998755,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_estimate.stdout",
+      "sha256": "2f1a0f901a5373c2fddf89c187e1225275ba31050290c63ddef1405c56bce18e",
+      "bytes": 218
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_estimate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_init",
+    "kind": "command",
+    "wall_seconds": 0.00984004800011462,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_init.stdout",
+      "sha256": "fbed2d9613c8352c29190981a4ef29829a27def913f81a79856bc263747d5d94",
+      "bytes": 540
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_init.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_import",
+    "kind": "command",
+    "wall_seconds": 1.4217682470007276,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_import.stdout",
+      "sha256": "be5e9992dde26db23e3949201e8f45f7e76019c2e04c139bd097b57465dcec57",
+      "bytes": 20152
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_run",
+    "kind": "command",
+    "wall_seconds": 9.016923265000514,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_run.stdout",
+      "sha256": "35750e072356b5b4a32009f0ec74a9622de600632f12550a2cb29b05a51df8d3",
+      "bytes": 13224
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_graph",
+    "kind": "command",
+    "wall_seconds": 0.0675876489985967,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_graph.stdout",
+      "sha256": "721a4b25a487db8e5ce31d84def5a3566f950ef87f0dd018343d847152aa0d7d",
+      "bytes": 1722
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "fe_final_tt_drv",
+    "kind": "command",
+    "wall_seconds": 0.38855226799933007,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_tt_drv.stdout",
+      "sha256": "cfae2ace549313dd13cd8eeec0031dedae2d6e7321276bdcb0936e34d7c8b701",
+      "bytes": 4394328
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_tt_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_final_tt_drv",
+      "path": "logs/fe_final_tt_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_final_ss_drv",
+    "kind": "command",
+    "wall_seconds": 0.23561961899940798,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_ss_drv.stdout",
+      "sha256": "1a44436d5d976b557a32ea8cb312e8d19e3d5806ee893c28cec8d1c394ad393e",
+      "bytes": 2749372
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_final_ss_drv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "fe_final_ss_drv",
+      "path": "logs/fe_final_ss_drv.stdout",
+      "format": "timing_drv",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "fe_frontend_validate",
+    "kind": "command",
+    "wall_seconds": 0.366633935000209,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_frontend_validate.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/fe_frontend_validate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_physical_inputs",
+    "kind": "render",
+    "wall_seconds": 0.001070323998646927
+  },
+  {
+    "id": "be_profiles",
+    "kind": "command",
+    "wall_seconds": 0.1658890650014655,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_profiles.stdout",
+      "sha256": "3bf045e6a1a3437f03e43448746c007dbfbe79760d202d09fe87421de61f099d",
+      "bytes": 2297
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_profiles.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_route",
+    "kind": "command",
+    "wall_seconds": 389.62658761700004,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_route.stdout",
+      "sha256": "3918b4bf8bf0b5cbd18d646f7202d3a131f8c34da8161effa16c0f942366fc54",
+      "bytes": 9851
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_route.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_postroute_inputs",
+    "kind": "render",
+    "wall_seconds": 0.0017469270005676663
+  },
+  {
+    "id": "be_postroute",
+    "kind": "command",
+    "wall_seconds": 178.9937436780001,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_postroute.stdout",
+      "sha256": "8537f965255bb9d8ed4cee1de2f35b61b79b5cf7165f7dbe717d4f67d182c582",
+      "bytes": 209
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_postroute.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_antenna_inputs",
+    "kind": "render",
+    "wall_seconds": 0.001172456999483984
+  },
+  {
+    "id": "be_antenna_repair",
+    "kind": "command",
+    "wall_seconds": 387.9017233399991,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_antenna_repair.stdout",
+      "sha256": "26b29a49395aef3e8e1a665c25c7d2754ce08af6577cfccec9c63305657e1421",
+      "bytes": 232
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_antenna_repair.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_antenna_verify_inputs",
+    "kind": "render",
+    "wall_seconds": 0.0037149600011616712
+  },
+  {
+    "id": "be_antenna_verify",
+    "kind": "command",
+    "wall_seconds": 21.4397526190005,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_antenna_verify.stdout",
+      "sha256": "5882315258345fa32a14407e4fc6a28722729607e6e88af1c9effa29b698d4f7",
+      "bytes": 4644
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_antenna_verify.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_inspect",
+    "kind": "command",
+    "wall_seconds": 3.0421057459989242,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_inspect.stdout",
+      "sha256": "ad0bea193dda2bf804cc9c8ca6c94ce4182052ffe054dd99f553c1a78ed5034a",
+      "bytes": 9275
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_inspect.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_def",
+    "kind": "command",
+    "wall_seconds": 6.3014598740010115,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_def.stdout",
+      "sha256": "0ba057f191e11192ad853e1a6eb5835e4efe20bca9a24ef5514536eff14d513c",
+      "bytes": 24219433
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_def.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "be_def",
+      "path": "logs/be_def.stdout",
+      "format": "def",
+      "max_bytes": 134217728
+    }
+  },
+  {
+    "id": "be_netlist",
+    "kind": "command",
+    "wall_seconds": 3.0552276110011007,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_netlist.stdout",
+      "sha256": "d7826d8628bbd63a21d9e961a55ab259f5672747ad76018f113a0f6ec211906e",
+      "bytes": 2230514
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_netlist.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "be_netlist",
+      "path": "logs/be_netlist.stdout",
+      "format": "verilog",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "be_powered",
+    "kind": "command",
+    "wall_seconds": 3.027418233001299,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_powered.stdout",
+      "sha256": "dc0bc50b2e729e4e6bef3bf311c66acb4f80b7f9e1bd616d2532d1044a967f72",
+      "bytes": 6042180
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_powered.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stdout_artifact": {
+      "handle": "be_powered",
+      "path": "logs/be_powered.stdout",
+      "format": "verilog",
+      "max_bytes": 16777216
+    }
+  },
+  {
+    "id": "be_gds",
+    "kind": "command",
+    "wall_seconds": 3.6114231840001594,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_gds.stdout",
+      "sha256": "a948f201fc159130119698e771a47e7d54a2e7c4dd39604eacbf46eea527dda7",
+      "bytes": 7787
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_gds.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_extract",
+    "kind": "command",
+    "wall_seconds": 161.47595985899898,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_extract.stdout",
+      "sha256": "6ae99cce855f0769616931bb433b792bfcf6bf44e06d19572b5b40be68b17b44",
+      "bytes": 4817
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_extract.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_rcx_inputs",
+    "kind": "render",
+    "wall_seconds": 0.02495177499986312
+  },
+  {
+    "id": "be_openrcx",
+    "kind": "command",
+    "wall_seconds": 17.99092248800116,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_openrcx.stdout",
+      "sha256": "55e8b71c8f37fe5335bcde9db769778aa47c54735c4e9e2b1eb1a63928888da7",
+      "bytes": 1994
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_openrcx.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  {
+    "id": "be_timing_inputs",
+    "kind": "render",
+    "wall_seconds": 0.08998016499936057
+  },
+  {
+    "id": "be_timing",
+    "kind": "command",
+    "wall_seconds": 63.9985150829998,
+    "exit_code": 1,
+    "stdout": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_timing.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_timing.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+]

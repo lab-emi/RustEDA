@@ -1,0 +1,102 @@
+{
+ "configuration": "LibreLane 3.0.17 Classic, prepared contract config unchanged (RUN_POST_GRT_DESIGN_REPAIR=false), DRT_THREADS=4; bring-up run under shared host load, so its times are not benchmark measurements",
+ "gates": {
+  "drc": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_main",
+   "disabled_rules": [
+    "recommended"
+   ]
+  },
+  "antenna": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_antenna",
+   "disabled_rules": []
+  },
+  "lvs": {
+   "status": "passed",
+   "top_port_identity": true,
+   "macro_instances": 2,
+   "macro_devices_verified": true
+  },
+  "timing": {
+   "status": "failed",
+   "source": "OpenRCX nominal SPEF; min(RustSTA, OpenSTA)",
+   "corners": {
+    "tt": {
+     "setup_ws_ns": 48.506420135498,
+     "hold_ws_ns": 0.164636194706,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 7,
+     "cap_violations": 181,
+     "fanout_violations": 56,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    },
+    "ss": {
+     "setup_ws_ns": 47.695832053907985,
+     "hold_ws_ns": 0.29885494709,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 9,
+     "cap_violations": 140,
+     "fanout_violations": 56,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    }
+   }
+  },
+  "simulation": {
+   "status": "passed"
+  },
+  "synthesis_equivalence": {
+   "status": null,
+   "error": null
+  },
+  "final_equivalence": {
+   "status": null,
+   "error": null
+  },
+  "density": {
+   "status": null,
+   "max_percent": null,
+   "final_nonfiller_utilization_percent": null,
+   "macro_inclusive_core_utilization_percent": null,
+   "standard_cell_area_um2": null,
+   "filler_decap_area_um2": null
+  }
+ },
+ "detailed_routing_seconds_under_load": 3353.014,
+ "qor": {
+  "standard_cell_area_um2": null,
+  "routed_signal_wirelength_um": 969340.6,
+  "vias": 121948,
+  "timing_openrcx": {
+   "tt": {
+    "setup_ws_ns": 48.506420135498,
+    "hold_ws_ns": 0.164636194706,
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "slew_violations": 7,
+    "cap_violations": 181,
+    "fanout_violations": 56,
+    "active_unconstrained_endpoints": 0,
+    "unconstrained_endpoints": 156
+   },
+   "ss": {
+    "setup_ws_ns": 47.695832053907985,
+    "hold_ws_ns": 0.29885494709,
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "slew_violations": 9,
+    "cap_violations": 140,
+    "fanout_violations": 56,
+    "active_unconstrained_endpoints": 0,
+    "unconstrained_endpoints": 156
+   }
+  }
+ }
+}

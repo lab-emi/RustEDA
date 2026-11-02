@@ -1,0 +1,6101 @@
+{
+  "schema": 1,
+  "generated_unix": 1793645358,
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "threads": 4,
+    "loadavg_start": 0.36,
+    "loadavg_end": 0.99,
+    "pin_cpu": null,
+    "tmp_on_tmpfs": true,
+    "pin_status": "not_requested"
+  },
+  "ngspice": {
+    "version": "ngspice-45",
+    "path": "/nix/store/gy4jdjlgzqcyr9wprwrv8n7p7n52x3db-ngspice-45/bin/ngspice",
+    "installed": true,
+    "solvers_tested": [
+      "sparse",
+      "klu"
+    ],
+    "unusable_reason": null
+  },
+  "rustspice": {
+    "version": "0.1.0",
+    "git": "cc2426f",
+    "dirty": false,
+    "build_profile": "release",
+    "source_dir": "/home/user/RustEDA/modules/RustSpice/crates/rustspice-cli"
+  },
+  "tolerances": {
+    "tol_rel": 1e-6,
+    "tol_abs": 1e-9,
+    "tol_norm": 0.005,
+    "floor": 1e-6,
+    "tight_reference": "reltol=1e-9 vntol=1e-12 abstol=1e-15",
+    "tran_reference": "reltol=1e-6 abstol=1e-15 vntol=1e-9",
+    "noisy_threshold": 0.2
+  },
+  "args": [
+    "bench-suite",
+    "--cases",
+    "decks",
+    "--filter",
+    "ibex_",
+    "--no-fuzz",
+    "--reps",
+    "7",
+    "--ngspice",
+    "/opt/eda/ngspice/bin/ngspice",
+    "--json",
+    "suite.json",
+    "--report",
+    "suite.md",
+    "--artifacts",
+    "artifacts"
+  ],
+  "scale": "medium",
+  "seed": 1,
+  "startup_floor": {
+    "status": "ok",
+    "reps": 15,
+    "ngspice_us": {
+      "n": 15,
+      "min": 5395.544000000001,
+      "median": 6774.585,
+      "mean": 6750.631533333334,
+      "stddev": 939.675057649251,
+      "noisy": false,
+      "samples": [
+        7208.165,
+        6906.715,
+        9520.753999999999,
+        6721.067,
+        6801.978999999999,
+        7032.926,
+        6973.239,
+        7095.303,
+        6603.014,
+        6095.626,
+        6774.585,
+        5809.787,
+        5395.544000000001,
+        6568.666,
+        5752.103
+      ],
+      "spread_status": "ok",
+      "dropped_non_finite": 0
+    },
+    "rustspice_us": {
+      "n": 15,
+      "min": 2302.437,
+      "median": 2474.54,
+      "mean": 2510.2248000000004,
+      "stddev": 264.60992734783895,
+      "noisy": false,
+      "samples": [
+        2338.52,
+        2390.942,
+        2509.855,
+        2416.782,
+        2302.437,
+        2449.001,
+        2520.5969999999998,
+        2354.793,
+        2475.074,
+        2474.54,
+        3401.061,
+        2516.589,
+        2492.41,
+        2678.766,
+        2332.0049999999997
+      ],
+      "spread_status": "ok",
+      "dropped_non_finite": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "ibex_bulk_10",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "10 extracted Ibex nets in one deck",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "bulk"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 5843,
+      "probes": [
+        {
+          "name": "v(n_native_fanout_48_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.00022904208696639117,
+          "rel_err": 0.00019086840708209299,
+          "norm_err": 0.00019086840708209299,
+          "rms_norm_err": 0.000025854931033227453,
+          "worst_at": 5.169999999999999e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.000746316882669258,
+          "rs_err": 0.00019086840708209299,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.0954342035410465,
+          "interp_floor": 0.00012974838189463812,
+          "note": null,
+          "own_grid_err": 0.00019086840708209299,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_r1072_se)",
+          "analysis": "tran",
+          "abs_err": 0.00014292875338650646,
+          "rel_err": 0.00011910729553651278,
+          "norm_err": 0.00011910729553651278,
+          "rms_norm_err": 0.000025880446874001412,
+          "worst_at": 5.1599999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007597902022970804,
+          "rs_err": 0.00011910729553651278,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.05955364776825639,
+          "interp_floor": 0.00007513571098633471,
+          "note": null,
+          "own_grid_err": 0.00011910729553651278,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_native_fanout_103_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.00017505569370279694,
+          "rel_err": 0.00014587974878579375,
+          "norm_err": 0.00014587974878579375,
+          "rms_norm_err": 0.00002365282090116186,
+          "worst_at": 5.169999999999999e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0006823230581531204,
+          "rs_err": 0.00014587974878579375,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.07293987439289687,
+          "interp_floor": 0.00011215056762760283,
+          "note": null,
+          "own_grid_err": 0.00014587974878579375,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g2289_c)",
+          "analysis": "tran",
+          "abs_err": 0.00024374178698272075,
+          "rel_err": 0.00020311816246170624,
+          "norm_err": 0.00020311816246170624,
+          "rms_norm_err": 0.000029493326361529937,
+          "worst_at": 5.169999999999999e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0008388516423721956,
+          "rs_err": 0.00020311816246170624,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.10155908123085312,
+          "interp_floor": 0.00014098147366472784,
+          "note": null,
+          "own_grid_err": 0.00020311816246170624,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_native_fanout_93_0_0_y)",
+          "analysis": "tran",
+          "abs_err": 0.00020720319658851238,
+          "rel_err": 0.00017266953098053764,
+          "norm_err": 0.00017266953098053764,
+          "rms_norm_err": 0.00002677103346919251,
+          "worst_at": 5.169999999999999e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007480401811223251,
+          "rs_err": 0.00017266953098053764,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.08633476549026882,
+          "interp_floor": 0.00012464994725276256,
+          "note": null,
+          "own_grid_err": 0.00017266953098053764,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g2088_c)",
+          "analysis": "tran",
+          "abs_err": 0.00024967198654923806,
+          "rel_err": 0.0002080602801031206,
+          "norm_err": 0.0002080602801031206,
+          "rms_norm_err": 0.0000312624607826175,
+          "worst_at": 5.18e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0008860978109095146,
+          "rs_err": 0.0002080602801031206,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.1040301400515603,
+          "interp_floor": 0.00013937359583340793,
+          "note": null,
+          "own_grid_err": 0.0002080602801031206,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_native_electrical_650_y)",
+          "analysis": "tran",
+          "abs_err": 0.000947664182913921,
+          "rel_err": 0.0007897270161719512,
+          "norm_err": 0.0007897270161719512,
+          "rms_norm_err": 0.00006836294574558159,
+          "worst_at": 5.18e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.001621663888762141,
+          "rs_err": 0.0007897270161719512,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.3948635080859756,
+          "interp_floor": 0.0002929218617598778,
+          "note": null,
+          "own_grid_err": 0.0007897270161719512,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g9481_d)",
+          "analysis": "tran",
+          "abs_err": 0.0003693949921097506,
+          "rel_err": 0.0003078346934972113,
+          "norm_err": 0.0003078346934972113,
+          "rms_norm_err": 0.00003225568922326165,
+          "worst_at": 5.18e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007219834652899162,
+          "rs_err": 0.0003078346934972113,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.15391734674860566,
+          "interp_floor": 0.000059438185624482184,
+          "note": null,
+          "own_grid_err": 0.0003078346934972113,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.0007897270161719512,
+        "err_ng": 0.001621663888762141,
+        "within_ng_error": true,
+        "interp_floor": 0.0002929218617598778,
+        "points_rs": 601,
+        "points_ref": 3018
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 1128864.235,
+        "analysis_us": 1072960.0,
+        "elapsed_us": 1121000.0,
+        "rss_kib": 30668,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": true
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 204491.048,
+        "rss_kib": 46064,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 46064,
+        "rss_self_kib": 45928,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 20562.806,
+          "compile_us": 14262.086,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 134924.88999999998,
+          "write_us": 18567.982,
+          "peak_rss_kib": 45928,
+          "points": 601,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 134924.88999999998,
+              "points": 601
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 1011100.3990000001,
+              "median": 1107129.787,
+              "mean": 1082810.7767142856,
+              "stddev": 61798.408858648574,
+              "noisy": false,
+              "samples": [
+                1123094.326,
+                1107129.787,
+                1011100.3990000001,
+                1136249.2920000001,
+                1156621.085,
+                1018431.212,
+                1027049.3359999999
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 952946.0,
+              "median": 1040850.0,
+              "mean": 1022055.1428571428,
+              "stddev": 58369.45222582491,
+              "noisy": false,
+              "samples": [
+                1068720.0,
+                1040850.0,
+                952946.0,
+                1065980.0,
+                1092930.0,
+                968092.0,
+                964868.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 43908.00000000006,
+              "median": 53132.000000000065,
+              "mean": 53087.714285714326,
+              "stddev": 6585.098675906699,
+              "noisy": false,
+              "samples": [
+                46280.0000000001,
+                59150.00000000004,
+                51054.000000000044,
+                62019.99999999996,
+                56070.000000000065,
+                43908.00000000006,
+                53132.000000000065
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 50339.21200000006,
+              "median": 62181.335999999894,
+              "mean": 60755.633857142864,
+              "stddev": 6924.1704229069055,
+              "noisy": false,
+              "samples": [
+                54374.325999999885,
+                66279.78700000001,
+                58154.39900000009,
+                70269.29200000013,
+                63691.08499999996,
+                50339.21200000006,
+                62181.335999999894
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 30420.0,
+              "median": 30724.0,
+              "mean": 30689.714285714286,
+              "stddev": 143.58936159028204,
+              "noisy": false,
+              "samples": [
+                30608.0,
+                30724.0,
+                30748.0,
+                30804.0,
+                30420.0,
+                30852.0,
+                30672.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 1110457.7550000001,
+              "median": 1203118.494,
+              "mean": 1216139.6385714284,
+              "stddev": 73804.28599372906,
+              "noisy": false,
+              "samples": [
+                1347794.622,
+                1203118.494,
+                1171390.1330000001,
+                1231866.196,
+                1252742.679,
+                1195607.591,
+                1110457.7550000001
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 1039069.9999999999,
+              "median": 1137760.0,
+              "mean": 1141851.4285714286,
+              "stddev": 68681.98876672388,
+              "noisy": false,
+              "samples": [
+                1265910.0,
+                1137760.0,
+                1106230.0,
+                1167080.0,
+                1152660.0,
+                1124250.0,
+                1039069.9999999999
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 54920.00000000008,
+              "median": 63749.99999999997,
+              "mean": 65862.85714285713,
+              "stddev": 12377.10482340375,
+              "noisy": false,
+              "samples": [
+                73089.99999999988,
+                57239.999999999956,
+                57769.999999999876,
+                54920.00000000008,
+                90340.00000000009,
+                63749.99999999997,
+                63930.000000000044
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 64786.195999999996,
+              "median": 71357.59100000001,
+              "mean": 74288.21000000005,
+              "stddev": 12867.343424412753,
+              "noisy": false,
+              "samples": [
+                81884.62199999997,
+                65358.49399999995,
+                65160.13300000015,
+                64786.195999999996,
+                100082.679,
+                71357.59100000001,
+                71387.75500000024
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 31536.0,
+              "median": 31800.0,
+              "mean": 31786.285714285714,
+              "stddev": 141.64476021102263,
+              "noisy": false,
+              "samples": [
+                31800.0,
+                31700.0,
+                31768.0,
+                31972.0,
+                31536.0,
+                31904.0,
+                31824.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 159727.654,
+              "median": 196784.814,
+              "mean": 189406.66957142856,
+              "stddev": 20447.38934922859,
+              "noisy": false,
+              "samples": [
+                190325.833,
+                199650.092,
+                201838.541,
+                196784.814,
+                159727.654,
+                163146.084,
+                214373.669
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 105787.486,
+              "median": 134527.76,
+              "mean": 126651.05642857144,
+              "stddev": 12950.55313724751,
+              "noisy": false,
+              "samples": [
+                130041.184,
+                136704.452,
+                134657.909,
+                134527.76,
+                110243.896,
+                105787.486,
+                134594.708
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 22056.542,
+              "median": 31252.005,
+              "mean": 31373.35685714286,
+              "stddev": 5171.150987614698,
+              "noisy": false,
+              "samples": [
+                31011.470999999998,
+                32960.691999999995,
+                39773.053,
+                31729.356,
+                22056.542,
+                31252.005,
+                30830.379
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 49483.758000000016,
+              "median": 62257.054000000004,
+              "mean": 62755.613142857146,
+              "stddev": 9318.757166393127,
+              "noisy": false,
+              "samples": [
+                60284.64900000002,
+                62945.640000000014,
+                67180.63199999998,
+                62257.054000000004,
+                49483.758000000016,
+                57358.598,
+                79778.96099999998
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 12321.519,
+              "median": 17550.981,
+              "mean": 17984.699428571428,
+              "stddev": 3389.272389528214,
+              "noisy": false,
+              "samples": [
+                16950.714,
+                20108.94,
+                23510.883,
+                18176.643,
+                12321.519,
+                17273.216,
+                17550.981
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 9735.023,
+              "median": 13552.713,
+              "mean": 13388.657428571429,
+              "stddev": 1946.5016240163495,
+              "noisy": false,
+              "samples": [
+                14060.757,
+                12851.752,
+                16262.17,
+                13552.713,
+                9735.023,
+                13978.789,
+                13279.398
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 46168.0,
+              "median": 46232.0,
+              "mean": 46230.28571428572,
+              "stddev": 51.580727297813745,
+              "noisy": false,
+              "samples": [
+                46168.0,
+                46284.0,
+                46204.0,
+                46284.0,
+                46168.0,
+                46272.0,
+                46232.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 5.626093622244651,
+          "e2e_min": 6.330152441855811,
+          "solve_median": 7.737064825876829,
+          "solve_min": 9.008116517675823,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 5.626093622244651,
+              "e2e_min": 6.330152441855811,
+              "solve_median": 7.737064825876829,
+              "solve_min": 9.008116517675823
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 6.11387875692481,
+              "e2e_min": 6.952194733918774,
+              "solve_median": 8.457436591525793,
+              "solve_min": 9.822239276959468
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.62,
+        "loadavg_after": 0.7,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 30852,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 31972,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 30804,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 46284,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 46284,
+        "est_mib": 98,
+        "est_status": "within_estimate",
+        "rustspice_kib": 46284,
+        "ngspice_max_kib": 31972,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 25839.12524
+    },
+    {
+      "id": "ibex_bulk_40",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "40 extracted Ibex nets in one deck",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "bulk"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 20023,
+      "probes": [
+        {
+          "name": "v(n_native_fanout_48_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.00020727864898106851,
+          "rel_err": 0.00017273220863988197,
+          "norm_err": 0.00017273220863988197,
+          "rms_norm_err": 0.00002562907633603293,
+          "worst_at": 5.169999999999999e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007682386560223254,
+          "rs_err": 0.00017273220863988197,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.08636610431994098,
+          "interp_floor": 0.0002033448468732036,
+          "note": null,
+          "own_grid_err": 0.00017273220863988197,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_r1072_se)",
+          "analysis": "tran",
+          "abs_err": 0.0001637329017738498,
+          "rel_err": 0.00013644408601198329,
+          "norm_err": 0.00013644408601198329,
+          "rms_norm_err": 0.000026091807990495713,
+          "worst_at": 5.1599999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007762606206688325,
+          "rs_err": 0.00013644408601198329,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.06822204300599165,
+          "interp_floor": 0.00011288670091102237,
+          "note": null,
+          "own_grid_err": 0.00013644408601198329,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_native_fanout_103_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.00017616694490295987,
+          "rel_err": 0.00014680579147794808,
+          "norm_err": 0.00014680579147794808,
+          "rms_norm_err": 0.000023373673018011856,
+          "worst_at": 1.1e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0006985273523133111,
+          "rs_err": 0.00014680579147794808,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.07340289573897404,
+          "interp_floor": 0.00017531868921684223,
+          "note": null,
+          "own_grid_err": 0.00014680579147794808,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g2289_c)",
+          "analysis": "tran",
+          "abs_err": 0.00022224967710320846,
+          "rel_err": 0.00018520807030935046,
+          "norm_err": 0.00018520807030935046,
+          "rms_norm_err": 0.00002930122730494258,
+          "worst_at": 1.1e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0008600529486916371,
+          "rs_err": 0.00018520807030935046,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.09260403515467523,
+          "interp_floor": 0.00022056976307179498,
+          "note": null,
+          "own_grid_err": 0.00018520807030935046,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_native_fanout_93_0_0_y)",
+          "analysis": "tran",
+          "abs_err": 0.00019882129757790856,
+          "rel_err": 0.00016568460702410986,
+          "norm_err": 0.00016568460702410986,
+          "rms_norm_err": 0.000026401962182892525,
+          "worst_at": 1.1e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007660152475460336,
+          "rs_err": 0.00016568460702410986,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.08284230351205493,
+          "interp_floor": 0.00019599532312497081,
+          "note": null,
+          "own_grid_err": 0.00016568460702410986,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g2088_c)",
+          "analysis": "tran",
+          "abs_err": 0.00022838325269658455,
+          "rel_err": 0.0001903196437151115,
+          "norm_err": 0.0001903196437151115,
+          "rms_norm_err": 0.0000310418304286038,
+          "worst_at": 5.18e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0009082380765058826,
+          "rs_err": 0.0001903196437151115,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.09515982185755575,
+          "interp_floor": 0.00021689482565607658,
+          "note": null,
+          "own_grid_err": 0.0001903196437151115,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_native_electrical_650_y)",
+          "analysis": "tran",
+          "abs_err": 0.0009212441594032006,
+          "rel_err": 0.0007677101385604969,
+          "norm_err": 0.0007677101385604969,
+          "rms_norm_err": 0.00006804594287402803,
+          "worst_at": 5.18e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0016875114638293404,
+          "rs_err": 0.0007677101385604969,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.38385506928024843,
+          "interp_floor": 0.0004625878092636735,
+          "note": null,
+          "own_grid_err": 0.0007677101385604969,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g9481_d)",
+          "analysis": "tran",
+          "abs_err": 0.00038407731861966887,
+          "rel_err": 0.00032007018552697246,
+          "norm_err": 0.00032007018552697246,
+          "rms_norm_err": 0.000032683388261272164,
+          "worst_at": 5.18e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0007343247680777281,
+          "rs_err": 0.00032007018552697246,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.16003509276348624,
+          "interp_floor": 0.00008947385073857994,
+          "note": null,
+          "own_grid_err": 0.00032007018552697246,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.0007677101385604969,
+        "err_ng": 0.0016875114638293404,
+        "within_ng_error": true,
+        "interp_floor": 0.0004625878092636735,
+        "points_rs": 601,
+        "points_ref": 3018
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 4099075.6590000005,
+        "analysis_us": 3865030.0,
+        "elapsed_us": 4078999.9999999995,
+        "rss_kib": 71344,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": true
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 963751.222,
+        "rss_kib": 143792,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 143792,
+        "rss_self_kib": 143632,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 57217.39599999999,
+          "compile_us": 38634.765,
+          "solver_kind": "FaerSupernodal",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 771267.352,
+          "write_us": 52334.788,
+          "peak_rss_kib": 143632,
+          "points": 601,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 771267.352,
+              "points": 601
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 3780289.2890000003,
+              "median": 4072282.0039999997,
+              "mean": 4038238.4022857146,
+              "stddev": 181282.68243150992,
+              "noisy": false,
+              "samples": [
+                4184109.994,
+                4072282.0039999997,
+                4132235.072,
+                3936176.7580000004,
+                3874833.533,
+                4287742.166,
+                3780289.2890000003
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 3618240.0,
+              "median": 3821680.0,
+              "mean": 3809894.285714286,
+              "stddev": 132489.59630314913,
+              "noisy": false,
+              "samples": [
+                3962700.0,
+                3821680.0,
+                3915020.0,
+                3732770.0,
+                3690890.0,
+                3927960.0,
+                3618240.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 154760.0,
+              "median": 206979.9999999997,
+              "mean": 219677.14285714278,
+              "stddev": 64552.44294739117,
+              "noisy": true,
+              "samples": [
+                212299.99999999994,
+                241319.99999999953,
+                206979.9999999997,
+                195230.00000000003,
+                175110.0000000001,
+                352040.0000000001,
+                154760.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 162049.28900000034,
+              "median": 217215.07200000016,
+              "mean": 228344.11657142866,
+              "stddev": 64461.357825196115,
+              "noisy": true,
+              "samples": [
+                221409.99399999995,
+                250602.00399999972,
+                217215.07200000016,
+                203406.75800000038,
+                183943.53299999982,
+                359782.1660000002,
+                162049.28900000034
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 71372.0,
+              "median": 71608.0,
+              "mean": 71570.28571428571,
+              "stddev": 148.53699234614282,
+              "noisy": false,
+              "samples": [
+                71740.0,
+                71608.0,
+                71644.0,
+                71544.0,
+                71376.0,
+                71708.0,
+                71372.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 3934945.6580000003,
+              "median": 4097505.2060000002,
+              "mean": 4059780.6275714287,
+              "stddev": 91331.67374568502,
+              "noisy": false,
+              "samples": [
+                4104099.93,
+                4097505.2060000002,
+                4121691.9479999994,
+                3939211.827,
+                3934945.6580000003,
+                4049015.1550000003,
+                4171994.669
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 3765150.0,
+              "median": 3885930.0,
+              "mean": 3870590.0,
+              "stddev": 76328.34161262338,
+              "noisy": false,
+              "samples": [
+                3910350.0,
+                3885930.0,
+                3908240.0,
+                3779540.0,
+                3765150.0,
+                3863580.0,
+                3981340.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 151460.00000000015,
+              "median": 180660.00000000003,
+              "mean": 180124.28571428562,
+              "stddev": 19894.902912674836,
+              "noisy": false,
+              "samples": [
+                184649.99999999953,
+                202069.99999999997,
+                205759.9999999997,
+                151460.00000000015,
+                160849.99999999994,
+                175419.9999999999,
+                180660.00000000003
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 159671.82700000005,
+              "median": 190654.66900000023,
+              "mean": 189190.62757142866,
+              "stddev": 19892.375768911923,
+              "noisy": false,
+              "samples": [
+                193749.93000000017,
+                211575.20600000024,
+                213451.9479999994,
+                159671.82700000005,
+                169795.6580000003,
+                185435.15500000026,
+                190654.66900000023
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 75524.0,
+              "median": 75680.0,
+              "mean": 75688.0,
+              "stddev": 89.82946806774119,
+              "noisy": false,
+              "samples": [
+                75668.0,
+                75812.0,
+                75724.0,
+                75524.0,
+                75680.0,
+                75660.0,
+                75748.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 650492.5900000001,
+              "median": 704239.8709999999,
+              "mean": 727888.1911428572,
+              "stddev": 81797.84340249302,
+              "noisy": false,
+              "samples": [
+                853758.047,
+                657068.515,
+                804344.926,
+                655965.758,
+                704239.8709999999,
+                650492.5900000001,
+                769347.631
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 466793.633,
+              "median": 488712.327,
+              "mean": 502833.604,
+              "stddev": 35370.3033829929,
+              "noisy": false,
+              "samples": [
+                488712.327,
+                486249.019,
+                502145.162,
+                481800.426,
+                520829.018,
+                466793.633,
+                573305.6429999999
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 92373.188,
+              "median": 96396.908,
+              "mean": 99053.34685714287,
+              "stddev": 6520.430512906247,
+              "noisy": false,
+              "samples": [
+                110024.426,
+                92373.188,
+                101286.368,
+                96396.908,
+                94402.054,
+                94147.967,
+                104742.51699999999
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 170819.49600000004,
+              "median": 183698.9570000001,
+              "mean": 225054.5871428572,
+              "stddev": 76774.862029739,
+              "noisy": true,
+              "samples": [
+                365045.72000000003,
+                170819.49600000004,
+                302199.76399999997,
+                174165.33200000005,
+                183410.85299999994,
+                183698.9570000001,
+                196041.98800000013
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 51599.916000000005,
+              "median": 55900.958,
+              "mean": 57862.20585714286,
+              "stddev": 5482.892021313218,
+              "noisy": false,
+              "samples": [
+                68889.099,
+                51599.916000000005,
+                59464.549,
+                58444.639,
+                55900.958,
+                54938.007,
+                55798.273
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 37952.269,
+              "median": 40773.272,
+              "mean": 41191.140999999996,
+              "stddev": 3704.4523360684952,
+              "noisy": false,
+              "samples": [
+                41135.327,
+                40773.272,
+                41821.819,
+                37952.269,
+                38501.096,
+                39209.96,
+                48944.244
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 143992.0,
+              "median": 144152.0,
+              "mean": 144117.14285714287,
+              "stddev": 83.0008605807365,
+              "noisy": false,
+              "samples": [
+                144040.0,
+                143992.0,
+                144152.0,
+                144220.0,
+                144152.0,
+                144076.0,
+                144188.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 5.782521228480687,
+          "e2e_min": 5.811425598253163,
+          "solve_median": 7.81989687769836,
+          "solve_min": 7.751262537036362,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 5.782521228480687,
+              "e2e_min": 5.811425598253163,
+              "solve_median": 7.81989687769836,
+              "solve_min": 7.751262537036362
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 5.818337436904365,
+              "e2e_min": 6.049178297326953,
+              "solve_median": 7.951364811798578,
+              "solve_min": 8.06598405338575
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.82,
+        "loadavg_after": 0.94,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 71740,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 75812,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 71684,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 144220,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 144220,
+        "est_mib": 240,
+        "est_status": "within_estimate",
+        "rustspice_kib": 144220,
+        "ngspice_max_kib": 75812,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 91857.65482
+    },
+    {
+      "id": "ibex_net_00",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_fanout_48_0_1_n (649 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 649,
+      "probes": [
+        {
+          "name": "v(n_native_fanout_48_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.00010771869769476972,
+          "rel_err": 0.0000897655820131209,
+          "norm_err": 0.0000897655820131209,
+          "rms_norm_err": 4.42902831883624e-6,
+          "worst_at": 5.154e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00006618280386282656,
+          "rs_err": 0.0000897655820131209,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.04488279100656045,
+          "interp_floor": 0.00019613216813938041,
+          "note": null,
+          "own_grid_err": 0.0000897655820131209,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_r1072_se)",
+          "analysis": "tran",
+          "abs_err": 0.00004110622541249635,
+          "rel_err": 0.00003425518814522461,
+          "norm_err": 0.00003425518814522461,
+          "rms_norm_err": 2.8262664525520103e-6,
+          "worst_at": 1.08e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00002728930074024502,
+          "rs_err": 0.00003425518814522461,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.017127594072612305,
+          "interp_floor": 0.00006526223133555244,
+          "note": null,
+          "own_grid_err": 0.00003425518814522461,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.0000897655820131209,
+        "err_ng": 0.00006618280386282656,
+        "within_ng_error": true,
+        "interp_floor": 0.00019613216813938041,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 702969.2520000001,
+        "analysis_us": 650087.0,
+        "elapsed_us": 657000.0,
+        "rss_kib": 15740,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 161828.76700000002,
+        "rss_kib": 38572,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 38572,
+        "rss_self_kib": 38444,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 1531.192,
+          "compile_us": 1200.26,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 118453.24,
+          "write_us": 24481.039999999997,
+          "peak_rss_kib": 38444,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 118453.24,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 527880.812,
+              "median": 594496.2729999999,
+              "mean": 582516.4054285714,
+              "stddev": 35672.22697561417,
+              "noisy": false,
+              "samples": [
+                543974.12,
+                580385.314,
+                600559.124,
+                598430.3359999999,
+                631888.859,
+                594496.2729999999,
+                527880.812
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 516879.0,
+              "median": 580124.0,
+              "mean": 569099.5714285715,
+              "stddev": 34990.68041091868,
+              "noisy": false,
+              "samples": [
+                530597.0,
+                564631.0,
+                587720.0,
+                586058.0,
+                617688.0,
+                580124.0,
+                516879.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5121.000000000042,
+              "median": 7311.999999999985,
+              "mean": 6757.571428571427,
+              "stddev": 993.3356024262899,
+              "noisy": false,
+              "samples": [
+                7403.000000000048,
+                7368.999999999959,
+                6279.999999999953,
+                5942.000000000003,
+                7311.999999999985,
+                7875.9999999999945,
+                5121.000000000042
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11001.812000000034,
+              "median": 13377.119999999995,
+              "mean": 13416.833999999983,
+              "stddev": 1541.1037717671772,
+              "noisy": false,
+              "samples": [
+                13377.119999999995,
+                15754.314000000013,
+                12839.123999999953,
+                12372.335999999894,
+                14200.859000000055,
+                14372.272999999928,
+                11001.812000000034
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15432.0,
+              "median": 15652.0,
+              "mean": 15647.42857142857,
+              "stddev": 108.05994808879183,
+              "noisy": false,
+              "samples": [
+                15632.0,
+                15764.0,
+                15432.0,
+                15728.0,
+                15700.0,
+                15624.0,
+                15652.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 627967.8979999999,
+              "median": 665702.696,
+              "mean": 701308.116,
+              "stddev": 63376.74611050992,
+              "noisy": false,
+              "samples": [
+                665702.696,
+                660397.789,
+                793096.955,
+                659057.59,
+                735075.3319999999,
+                627967.8979999999,
+                767858.552
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 613545.0,
+              "median": 654532.0,
+              "mean": 688390.8571428572,
+              "stddev": 63308.50544602616,
+              "noisy": false,
+              "samples": [
+                654532.0,
+                647028.0,
+                779303.0,
+                646532.0,
+                723577.0,
+                613545.0,
+                754219.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5422.999999999955,
+              "median": 6697.000000000064,
+              "mean": 6466.2857142857265,
+              "stddev": 760.547985399505,
+              "noisy": false,
+              "samples": [
+                5468.000000000028,
+                6971.999999999978,
+                6697.000000000064,
+                6468.000000000029,
+                5422.999999999955,
+                7454.999999999989,
+                6781.000000000037
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11170.695999999996,
+              "median": 13369.78899999999,
+              "mean": 12917.25885714283,
+              "stddev": 1223.3339693466658,
+              "noisy": false,
+              "samples": [
+                11170.695999999996,
+                13369.78899999999,
+                13793.954999999958,
+                12525.589999999967,
+                11498.331999999937,
+                14422.897999999928,
+                13639.552000000025
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15704.0,
+              "median": 15756.0,
+              "mean": 15765.714285714286,
+              "stddev": 52.604544435230075,
+              "noisy": false,
+              "samples": [
+                15772.0,
+                15804.0,
+                15728.0,
+                15704.0,
+                15860.0,
+                15756.0,
+                15736.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 133177.178,
+              "median": 161446.984,
+              "mean": 159814.82514285712,
+              "stddev": 18419.906744391003,
+              "noisy": false,
+              "samples": [
+                161446.984,
+                191771.08000000002,
+                146638.184,
+                133177.178,
+                166791.644,
+                165753.842,
+                153124.864
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 101802.27,
+              "median": 126093.424,
+              "mean": 123403.92914285716,
+              "stddev": 16748.920719430444,
+              "noisy": false,
+              "samples": [
+                126093.424,
+                149236.022,
+                102634.594,
+                101802.27,
+                129400.73,
+                132011.972,
+                122648.492
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2867.737,
+              "median": 3308.098000000001,
+              "mean": 4275.0878571428575,
+              "stddev": 2563.589279872683,
+              "noisy": true,
+              "samples": [
+                3028.9610000000002,
+                3568.1459999999997,
+                10041.671,
+                3260.083,
+                3308.098000000001,
+                3850.919,
+                2867.737
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 30476.372000000003,
+              "median": 35353.56,
+              "mean": 36410.89600000001,
+              "stddev": 5243.03040725648,
+              "noisy": false,
+              "samples": [
+                35353.56,
+                42535.05800000002,
+                44003.59000000001,
+                31374.90800000001,
+                37390.914000000004,
+                33741.869999999995,
+                30476.372000000003
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1734.846,
+              "median": 2012.4700000000005,
+              "mean": 2597.7817142857143,
+              "stddev": 1612.3127636955467,
+              "noisy": true,
+              "samples": [
+                1819.714,
+                2119.221,
+                6220.371,
+                1882.6,
+                2012.4700000000005,
+                2395.25,
+                1734.846
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 1132.891,
+              "median": 1377.4830000000002,
+              "mean": 1677.306142857143,
+              "stddev": 952.9804090050732,
+              "noisy": true,
+              "samples": [
+                1209.247,
+                1448.925,
+                3821.3,
+                1377.4830000000002,
+                1295.6280000000002,
+                1455.669,
+                1132.891
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 38352.0,
+              "median": 38416.0,
+              "mean": 38417.142857142855,
+              "stddev": 59.85379010953434,
+              "noisy": false,
+              "samples": [
+                38372.0,
+                38520.0,
+                38420.0,
+                38372.0,
+                38352.0,
+                38416.0,
+                38468.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 3.682300271400548,
+          "e2e_min": 3.9637482932698873,
+          "solve_median": 4.600747458487605,
+          "solve_min": 5.077283640138869,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 3.682300271400548,
+              "e2e_min": 3.9637482932698873,
+              "solve_median": 4.600747458487605,
+              "solve_min": 5.077283640138869
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.123351700394725,
+              "e2e_min": 4.7152816077841795,
+              "solve_median": 5.190849603703362,
+              "solve_min": 6.026830246516114
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.94,
+        "loadavg_after": 0.95,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15764,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15860,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15624,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 38572,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 38572,
+        "est_mib": 46,
+        "est_status": "within_estimate",
+        "rustspice_kib": 38572,
+        "ngspice_max_kib": 15860,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 12409.885912
+    },
+    {
+      "id": "ibex_net_01",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_fanout_103_0_1_n (639 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 639,
+      "probes": [
+        {
+          "name": "v(n_native_fanout_103_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.00013309422785590108,
+          "rel_err": 0.0001109118596130922,
+          "norm_err": 0.0001109118596130922,
+          "rms_norm_err": 4.480105851813586e-6,
+          "worst_at": 5.1519999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00006170618378672535,
+          "rs_err": 0.0001109118596130922,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.055455929806546095,
+          "interp_floor": 0.00022742479814702235,
+          "note": null,
+          "own_grid_err": 0.0001109118596130922,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g2289_c)",
+          "analysis": "tran",
+          "abs_err": 0.00010672352968900899,
+          "rel_err": 0.00008893627764931457,
+          "norm_err": 0.00008893627764931457,
+          "rms_norm_err": 4.179473460924955e-6,
+          "worst_at": 1.04e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00006923839403291984,
+          "rs_err": 0.00008893627764931457,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.044468138824657284,
+          "interp_floor": 0.00017229656439450683,
+          "note": null,
+          "own_grid_err": 0.00008893627764931457,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.0001109118596130922,
+        "err_ng": 0.00006923839403291984,
+        "within_ng_error": true,
+        "interp_floor": 0.00022742479814702235,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 513966.154,
+        "analysis_us": 490166.0,
+        "elapsed_us": 496000.0,
+        "rss_kib": 15340,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 179407.42500000002,
+        "rss_kib": 38020,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 38020,
+        "rss_self_kib": 37928,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 2210.7419999999997,
+          "compile_us": 1560.854,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 139766.868,
+          "write_us": 19991.063,
+          "peak_rss_kib": 37928,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 139766.868,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 576210.208,
+              "median": 601562.807,
+              "mean": 606002.9334285714,
+              "stddev": 20976.88730397165,
+              "noisy": false,
+              "samples": [
+                624227.312,
+                576210.208,
+                601562.807,
+                596062.349,
+                617109.021,
+                636537.319,
+                590311.518
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 562673.0,
+              "median": 588889.0,
+              "mean": 591434.1428571428,
+              "stddev": 20717.753758781953,
+              "noisy": false,
+              "samples": [
+                610527.0,
+                562673.0,
+                588889.0,
+                582796.0,
+                604941.0,
+                618485.0,
+                571728.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 6059.000000000036,
+              "median": 7326.999999999973,
+              "mean": 7851.571428571418,
+              "stddev": 1827.2505627438259,
+              "noisy": true,
+              "samples": [
+                7472.999999999952,
+                7326.999999999973,
+                6110.999999999977,
+                7203.999999999988,
+                6059.000000000036,
+                10515.000000000053,
+                10271.999999999947
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 12168.02099999995,
+              "median": 13537.207999999984,
+              "mean": 14568.790571428586,
+              "stddev": 2617.9647179683348,
+              "noisy": false,
+              "samples": [
+                13700.312000000034,
+                13537.207999999984,
+                12673.80700000003,
+                13266.349000000046,
+                12168.02099999995,
+                18052.319000000018,
+                18583.51800000004
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15460.0,
+              "median": 15708.0,
+              "mean": 15682.857142857143,
+              "stddev": 103.89005177177869,
+              "noisy": false,
+              "samples": [
+                15460.0,
+                15688.0,
+                15736.0,
+                15684.0,
+                15720.0,
+                15708.0,
+                15784.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 665771.543,
+              "median": 727854.133,
+              "mean": 729347.642,
+              "stddev": 38262.228932273305,
+              "noisy": false,
+              "samples": [
+                766409.792,
+                727854.133,
+                665771.543,
+                721703.471,
+                774603.124,
+                699912.14,
+                749179.291
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 652523.0,
+              "median": 714244.0,
+              "mean": 715763.2857142857,
+              "stddev": 38541.8056431986,
+              "noisy": false,
+              "samples": [
+                755201.0,
+                714244.0,
+                652523.0,
+                706995.0,
+                760678.0,
+                685825.0,
+                734877.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5755.999999999984,
+              "median": 7122.999999999991,
+              "mean": 6808.142857142849,
+              "stddev": 833.1931405885312,
+              "noisy": false,
+              "samples": [
+                5798.999999999998,
+                5755.999999999984,
+                6477.000000000066,
+                8004.999999999929,
+                7322.000000000051,
+                7174.999999999932,
+                7122.999999999991
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11208.792000000016,
+              "median": 13925.123999999953,
+              "mean": 13584.356285714279,
+              "stddev": 1147.8036214674944,
+              "noisy": false,
+              "samples": [
+                11208.792000000016,
+                13610.13300000003,
+                13248.542999999947,
+                14708.47100000002,
+                13925.123999999953,
+                14087.140000000014,
+                14302.290999999968
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15524.0,
+              "median": 15784.0,
+              "mean": 15735.42857142857,
+              "stddev": 130.64820083320086,
+              "noisy": false,
+              "samples": [
+                15840.0,
+                15780.0,
+                15572.0,
+                15820.0,
+                15524.0,
+                15828.0,
+                15784.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 144151.34399999998,
+              "median": 152666.65800000002,
+              "mean": 154293.45257142858,
+              "stddev": 10152.290343387893,
+              "noisy": false,
+              "samples": [
+                167418.625,
+                144433.155,
+                160506.721,
+                145384.454,
+                165493.211,
+                144151.34399999998,
+                152666.65800000002
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 115938.439,
+              "median": 122773.205,
+              "mean": 123877.487,
+              "stddev": 7720.332414725543,
+              "noisy": false,
+              "samples": [
+                133508.15999999997,
+                116574.654,
+                129463.461,
+                116844.514,
+                132039.976,
+                115938.439,
+                122773.205
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2385.083,
+              "median": 3011.383,
+              "mean": 3501.358714285714,
+              "stddev": 893.6785876519428,
+              "noisy": true,
+              "samples": [
+                4536.999,
+                2977.456,
+                2846.6059999999998,
+                3011.383,
+                4383.995,
+                2385.083,
+                4367.989
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 27858.501000000004,
+              "median": 29893.453000000023,
+              "mean": 30415.96557142858,
+              "stddev": 2483.8351523933034,
+              "noisy": false,
+              "samples": [
+                33910.465000000026,
+                27858.501000000004,
+                31043.259999999995,
+                28539.940000000002,
+                33453.235000000015,
+                28212.904999999984,
+                29893.453000000023
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1427.227,
+              "median": 1828.631,
+              "mean": 1990.7348571428572,
+              "stddev": 491.73771722786944,
+              "noisy": true,
+              "samples": [
+                2661.654,
+                1780.9550000000002,
+                1691.532,
+                1845.671,
+                1828.631,
+                1427.227,
+                2699.4739999999997
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 957.856,
+              "median": 1196.501,
+              "mean": 1510.623857142857,
+              "stddev": 562.5890232545213,
+              "noisy": true,
+              "samples": [
+                1875.345,
+                1196.501,
+                1155.074,
+                1165.712,
+                2555.364,
+                957.856,
+                1668.515
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 37876.0,
+              "median": 38000.0,
+              "mean": 37989.142857142855,
+              "stddev": 71.54352654486772,
+              "noisy": false,
+              "samples": [
+                37876.0,
+                38080.0,
+                37960.0,
+                38000.0,
+                38020.0,
+                37932.0,
+                38056.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 3.9403679551300583,
+          "e2e_min": 3.9972586589272456,
+          "solve_median": 4.796559640191848,
+          "solve_min": 4.8532048978165045,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 3.9403679551300583,
+              "e2e_min": 3.9972586589272456,
+              "solve_median": 4.796559640191848,
+              "solve_min": 4.8532048978165045
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.76760376191637,
+              "e2e_min": 4.618559387139672,
+              "solve_median": 5.817588617972464,
+              "solve_min": 5.62818514401423
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.95,
+        "loadavg_after": 0.96,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15784,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15840,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15760,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 38080,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 38080,
+        "est_mib": 46,
+        "est_status": "within_estimate",
+        "rustspice_kib": 38080,
+        "ngspice_max_kib": 15840,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 12246.169378999999
+    },
+    {
+      "id": "ibex_net_02",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_fanout_93_0_0_n (610 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 610,
+      "probes": [
+        {
+          "name": "v(n_native_fanout_93_0_0_y)",
+          "analysis": "tran",
+          "abs_err": 0.00014139080209352173,
+          "rel_err": 0.00011782580521857692,
+          "norm_err": 0.00011782580521857692,
+          "rms_norm_err": 5.059545728229033e-6,
+          "worst_at": 5.1519999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00007325647412564345,
+          "rs_err": 0.00011782580521857692,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.058912902609288456,
+          "interp_floor": 0.00025240275350212055,
+          "note": null,
+          "own_grid_err": 0.00011782580521857692,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g2088_c)",
+          "analysis": "tran",
+          "abs_err": 0.00010660115923144531,
+          "rel_err": 0.0000888344237373933,
+          "norm_err": 0.0000888344237373933,
+          "rms_norm_err": 4.336462738927353e-6,
+          "worst_at": 5.154e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00006798183385110073,
+          "rs_err": 0.0000888344237373933,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.04441721186869665,
+          "interp_floor": 0.00017609782768604487,
+          "note": null,
+          "own_grid_err": 0.0000888344237373933,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.00011782580521857692,
+        "err_ng": 0.00007325647412564345,
+        "within_ng_error": true,
+        "interp_floor": 0.00025240275350212055,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 510932.155,
+        "analysis_us": 486217.0,
+        "elapsed_us": 493000.0,
+        "rss_kib": 15468,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 209027.913,
+        "rss_kib": 36688,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 36688,
+        "rss_self_kib": 36548,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 2589.5710000000004,
+          "compile_us": 1629.341,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 156582.426,
+          "write_us": 27428.221,
+          "peak_rss_kib": 36548,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 156582.426,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 525876.87,
+              "median": 618434.774,
+              "mean": 596325.2061428573,
+              "stddev": 50753.620505463376,
+              "noisy": false,
+              "samples": [
+                580596.57,
+                525876.87,
+                632007.765,
+                656246.601,
+                533677.867,
+                627435.996,
+                618434.774
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 509579.0,
+              "median": 604477.0,
+              "mean": 581580.1428571428,
+              "stddev": 52192.88669741811,
+              "noisy": false,
+              "samples": [
+                566902.0,
+                509579.0,
+                618312.0,
+                643476.0,
+                516026.0,
+                612289.0,
+                604477.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 6097.999999999937,
+              "median": 6688.000000000027,
+              "mean": 7276.999999999994,
+              "stddev": 1326.611472888749,
+              "noisy": false,
+              "samples": [
+                6097.999999999937,
+                6421.00000000001,
+                6688.000000000027,
+                6523.9999999999745,
+                9974.000000000038,
+                7711.000000000024,
+                7522.999999999946
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 12770.601000000024,
+              "median": 13957.773999999976,
+              "mean": 14745.063285714281,
+              "stddev": 1719.745872940306,
+              "noisy": false,
+              "samples": [
+                13694.569999999949,
+                16297.869999999995,
+                13695.765000000014,
+                12770.601000000024,
+                17651.86699999997,
+                15146.996000000043,
+                13957.773999999976
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15548.0,
+              "median": 15668.0,
+              "mean": 15646.285714285714,
+              "stddev": 73.02445774239908,
+              "noisy": false,
+              "samples": [
+                15692.0,
+                15604.0,
+                15568.0,
+                15548.0,
+                15668.0,
+                15708.0,
+                15736.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 596233.729,
+              "median": 702734.706,
+              "mean": 687102.1972857143,
+              "stddev": 63036.03989455555,
+              "noisy": false,
+              "samples": [
+                702734.706,
+                654337.678,
+                724511.975,
+                741503.0900000001,
+                596233.729,
+                625281.8570000001,
+                765112.346
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 582203.0,
+              "median": 686111.0,
+              "mean": 673352.1428571428,
+              "stddev": 63212.38439954777,
+              "noisy": false,
+              "samples": [
+                686111.0,
+                640239.0,
+                713502.0,
+                727844.0,
+                582203.0,
+                612199.0,
+                751367.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5498.000000000003,
+              "median": 6796.999999999942,
+              "mean": 6790.714285714253,
+              "stddev": 711.4161263015253,
+              "noisy": false,
+              "samples": [
+                7888.999999999924,
+                6761.000000000017,
+                5498.000000000003,
+                7155.99999999994,
+                6796.999999999942,
+                6800.999999999946,
+                6633.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11009.974999999977,
+              "median": 13745.34600000002,
+              "mean": 13750.054428571453,
+              "stddev": 1654.2709544143486,
+              "noisy": false,
+              "samples": [
+                16623.706000000006,
+                14098.677999999956,
+                11009.974999999977,
+                13659.090000000084,
+                14030.72900000005,
+                13082.857000000076,
+                13745.34600000002
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15544.0,
+              "median": 15776.0,
+              "mean": 15750.285714285714,
+              "stddev": 106.25396351150748,
+              "noisy": false,
+              "samples": [
+                15824.0,
+                15544.0,
+                15776.0,
+                15720.0,
+                15708.0,
+                15852.0,
+                15828.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 132475.138,
+              "median": 147952.747,
+              "mean": 156117.26057142857,
+              "stddev": 23610.11903360851,
+              "noisy": false,
+              "samples": [
+                171085.198,
+                147952.747,
+                153443.924,
+                201951.92500000002,
+                147460.074,
+                132475.138,
+                138451.818
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 106672.217,
+              "median": 118472.074,
+              "mean": 126471.69514285715,
+              "stddev": 22357.16874817824,
+              "noisy": false,
+              "samples": [
+                140343.373,
+                118472.074,
+                122588.507,
+                170611.128,
+                117815.559,
+                106672.217,
+                108799.008
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2384.506,
+              "median": 3130.4669999999996,
+              "mean": 3181.595285714286,
+              "stddev": 577.8826776462256,
+              "noisy": false,
+              "samples": [
+                3140.648,
+                3105.393,
+                3270.425,
+                3130.4669999999996,
+                2924.8129999999996,
+                2384.506,
+                4314.915
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 25802.921000000002,
+              "median": 29652.809999999998,
+              "mean": 29645.565428571434,
+              "stddev": 1840.8555645972424,
+              "noisy": false,
+              "samples": [
+                30741.82500000001,
+                29480.67300000001,
+                30855.417,
+                31340.79700000002,
+                29644.515,
+                25802.921000000002,
+                29652.809999999998
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1431.414,
+              "median": 1850.418,
+              "mean": 1886.9354285714285,
+              "stddev": 333.2664962568031,
+              "noisy": false,
+              "samples": [
+                1850.418,
+                1832.922,
+                2007.777,
+                1872.756,
+                1692.3159999999998,
+                1431.414,
+                2520.945
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 953.092,
+              "median": 1262.648,
+              "mean": 1294.659857142857,
+              "stddev": 249.24732919293146,
+              "noisy": false,
+              "samples": [
+                1290.23,
+                1272.471,
+                1262.648,
+                1257.7109999999998,
+                1232.4969999999998,
+                953.092,
+                1793.97
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 36536.0,
+              "median": 36640.0,
+              "mean": 36654.857142857145,
+              "stddev": 79.55591025903014,
+              "noisy": false,
+              "samples": [
+                36628.0,
+                36640.0,
+                36704.0,
+                36616.0,
+                36668.0,
+                36536.0,
+                36792.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 4.179947899176215,
+          "e2e_min": 3.969626889537567,
+          "solve_median": 5.102274144369247,
+          "solve_min": 4.7770545539519444,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 4.179947899176215,
+              "e2e_min": 3.969626889537567,
+              "solve_median": 5.102274144369247,
+              "solve_min": 4.7770545539519444
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.749723950715157,
+              "e2e_min": 4.500721705230457,
+              "solve_median": 5.791331043972439,
+              "solve_min": 5.457869128191082
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.96,
+        "loadavg_after": 0.97,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15736,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15852,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15732,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 36792,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 36792,
+        "est_mib": 46,
+        "est_status": "within_estimate",
+        "rustspice_kib": 36792,
+        "ngspice_max_kib": 15852,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 12105.257141
+    },
+    {
+      "id": "ibex_net_03",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_electrical_650_n (600 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 600,
+      "probes": [
+        {
+          "name": "v(n_native_electrical_650_y)",
+          "analysis": "tran",
+          "abs_err": 0.000254291379813143,
+          "rel_err": 0.00021191132496094252,
+          "norm_err": 0.00021191132496094252,
+          "rms_norm_err": 0.000010107197763449622,
+          "worst_at": 5.154e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00015856848388231368,
+          "rs_err": 0.00021191132496094252,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.10595566248047127,
+          "interp_floor": 0.0004217413835999767,
+          "note": null,
+          "own_grid_err": 0.00021191132496094252,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g9481_d)",
+          "analysis": "tran",
+          "abs_err": 0.00003557078992246117,
+          "rel_err": 0.000029642858011971647,
+          "norm_err": 0.000029642858011971647,
+          "rms_norm_err": 2.660298800379243e-6,
+          "worst_at": 1.32e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.000024364230550493958,
+          "rs_err": 0.000029642858011971647,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.014821429005985823,
+          "interp_floor": 0.00005239505093322408,
+          "note": null,
+          "own_grid_err": 0.000029642858011971647,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.00021191132496094252,
+        "err_ng": 0.00015856848388231368,
+        "within_ng_error": true,
+        "interp_floor": 0.0004217413835999767,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 552062.241,
+        "analysis_us": 529292.0,
+        "elapsed_us": 535000.0,
+        "rss_kib": 15524,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 150608.146,
+        "rss_kib": 36092,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 36092,
+        "rss_self_kib": 36068,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 1637.76,
+          "compile_us": 1155.021,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 108856.125,
+          "write_us": 22991.942000000003,
+          "peak_rss_kib": 36068,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 108856.125,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 538927.1479999999,
+              "median": 563417.6140000001,
+              "mean": 568104.6724285715,
+              "stddev": 25835.71737936997,
+              "noisy": false,
+              "samples": [
+                589487.549,
+                541480.678,
+                549992.158,
+                538927.1479999999,
+                597223.469,
+                596204.091,
+                563417.6140000001
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 527951.0,
+              "median": 548744.0,
+              "mean": 555114.5714285715,
+              "stddev": 24931.166544823252,
+              "noisy": false,
+              "samples": [
+                576789.0,
+                529189.0,
+                537903.0,
+                527951.0,
+                583089.0,
+                582137.0,
+                548744.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5049.000000000081,
+              "median": 6210.999999999966,
+              "mean": 6314.00000000001,
+              "stddev": 1086.5929934125732,
+              "noisy": false,
+              "samples": [
+                6210.999999999966,
+                5811.000000000011,
+                5097.000000000018,
+                5049.000000000081,
+                7911.000000000002,
+                6862.999999999953,
+                7256.00000000004
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 10976.147999999928,
+              "median": 12698.548999999999,
+              "mean": 12990.101000000008,
+              "stddev": 1338.1706313586333,
+              "noisy": false,
+              "samples": [
+                12698.548999999999,
+                12291.677999999956,
+                12089.158000000054,
+                10976.147999999928,
+                14134.469000000041,
+                14067.091000000015,
+                14673.61400000006
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15204.0,
+              "median": 15520.0,
+              "mean": 15434.285714285714,
+              "stddev": 169.4517770986919,
+              "noisy": false,
+              "samples": [
+                15396.0,
+                15588.0,
+                15556.0,
+                15204.0,
+                15204.0,
+                15520.0,
+                15572.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 527147.956,
+              "median": 630538.1599999999,
+              "mean": 623285.342,
+              "stddev": 71515.98879820688,
+              "noisy": false,
+              "samples": [
+                527147.956,
+                622396.749,
+                645411.8829999999,
+                691190.9630000001,
+                532904.417,
+                713407.2660000001,
+                630538.1599999999
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 514472.00000000006,
+              "median": 616703.0,
+              "mean": 608561.2857142857,
+              "stddev": 69733.28228259989,
+              "noisy": false,
+              "samples": [
+                514472.00000000006,
+                610669.0,
+                624374.0,
+                677487.0,
+                520786.0,
+                695438.0,
+                616703.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5330.9999999999745,
+              "median": 6296.999999999997,
+              "mean": 7295.857142857155,
+              "stddev": 2292.179416230423,
+              "noisy": true,
+              "samples": [
+                5527.999999999977,
+                5330.9999999999745,
+                10626.000000000024,
+                6513.000000000102,
+                6214.000000000053,
+                10561.99999999996,
+                6296.999999999997
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11727.748999999953,
+              "median": 13703.963000000105,
+              "mean": 14724.056285714274,
+              "stddev": 3468.6320311246404,
+              "noisy": true,
+              "samples": [
+                12675.955999999947,
+                11727.748999999953,
+                21037.882999999914,
+                13703.963000000105,
+                12118.417000000016,
+                17969.26600000006,
+                13835.159999999916
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15256.0,
+              "median": 15680.0,
+              "mean": 15638.857142857143,
+              "stddev": 177.02300092683677,
+              "noisy": false,
+              "samples": [
+                15636.0,
+                15256.0,
+                15652.0,
+                15756.0,
+                15708.0,
+                15680.0,
+                15784.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 112497.655,
+              "median": 140153.39700000003,
+              "mean": 134647.86700000003,
+              "stddev": 12849.858629654635,
+              "noisy": false,
+              "samples": [
+                112497.655,
+                135914.843,
+                147344.91,
+                143901.949,
+                140153.39700000003,
+                141353.839,
+                121368.47600000001
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 87668.679,
+              "median": 109575.147,
+              "mean": 105598.35128571428,
+              "stddev": 11684.493940998826,
+              "noisy": false,
+              "samples": [
+                87668.679,
+                105967.753,
+                114872.531,
+                115830.28,
+                109575.147,
+                114331.014,
+                90943.055
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2279.002,
+              "median": 2852.3900000000003,
+              "mean": 2831.7907142857143,
+              "stddev": 318.45650296061604,
+              "noisy": false,
+              "samples": [
+                2279.002,
+                2925.26,
+                3318.1450000000004,
+                2976.357,
+                2830.138,
+                2852.3900000000003,
+                2641.243
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 24828.975999999995,
+              "median": 29947.089999999997,
+              "mean": 29049.51571428572,
+              "stddev": 2569.96729779828,
+              "noisy": false,
+              "samples": [
+                24828.975999999995,
+                29947.089999999997,
+                32472.379,
+                28071.668999999994,
+                30578.25000000003,
+                27022.82500000001,
+                30425.421000000017
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1318.985,
+              "median": 1714.4840000000002,
+              "mean": 1688.497,
+              "stddev": 227.61592375461495,
+              "noisy": false,
+              "samples": [
+                1318.985,
+                1850.686,
+                2038.476,
+                1714.4840000000002,
+                1592.296,
+                1732.807,
+                1571.745
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 960.017,
+              "median": 1119.583,
+              "mean": 1143.2937142857143,
+              "stddev": 119.66578627955764,
+              "noisy": false,
+              "samples": [
+                960.017,
+                1074.574,
+                1279.669,
+                1261.873,
+                1237.842,
+                1119.583,
+                1069.498
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 36084.0,
+              "median": 36164.0,
+              "mean": 36174.28571428572,
+              "stddev": 56.46743688685921,
+              "noisy": false,
+              "samples": [
+                36180.0,
+                36084.0,
+                36164.0,
+                36236.0,
+                36152.0,
+                36252.0,
+                36152.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 4.020006835795781,
+          "e2e_min": 4.685857282980699,
+          "solve_median": 5.007923922748651,
+          "solve_min": 5.868367196453366,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 4.020006835795781,
+              "e2e_min": 4.790563394410309,
+              "solve_median": 5.007923922748651,
+              "solve_min": 6.022116518945152
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.498914571439177,
+              "e2e_min": 4.685857282980699,
+              "solve_median": 5.628128429524261,
+              "solve_min": 5.868367196453366
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.97,
+        "loadavg_after": 0.97,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15588,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15784,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15424,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 36252,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 36252,
+        "est_mib": 46,
+        "est_status": "within_estimate",
+        "rustspice_kib": 36252,
+        "ngspice_max_kib": 15784,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 11189.187368
+    },
+    {
+      "id": "ibex_net_04",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_electrical_293_n (580 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 580,
+      "probes": [
+        {
+          "name": "v(n_native_electrical_293_y)",
+          "analysis": "tran",
+          "abs_err": 0.0001421681453714907,
+          "rel_err": 0.00011847350171183502,
+          "norm_err": 0.00011847350171183502,
+          "rms_norm_err": 5.949198352204034e-6,
+          "worst_at": 5.1519999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.0000776301218663699,
+          "rs_err": 0.00011847350171183502,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.05923675085591751,
+          "interp_floor": 0.0002569205982264646,
+          "note": null,
+          "own_grid_err": 0.00011847350171183502,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g5847_a1)",
+          "analysis": "tran",
+          "abs_err": 0.00016282075647611194,
+          "rel_err": 0.00013568402046171607,
+          "norm_err": 0.00013568402046171607,
+          "rms_norm_err": 6.597367566785688e-6,
+          "worst_at": 5.1519999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00008411977457157035,
+          "rs_err": 0.00013568402046171607,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.06784201023085804,
+          "interp_floor": 0.00028841675416824836,
+          "note": null,
+          "own_grid_err": 0.00013568402046171607,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.00013568402046171607,
+        "err_ng": 0.00008411977457157035,
+        "within_ng_error": true,
+        "interp_floor": 0.00028841675416824836,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 541635.538,
+        "analysis_us": 517084.0,
+        "elapsed_us": 523000.0,
+        "rss_kib": 15348,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 143672.587,
+        "rss_kib": 35284,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 35284,
+        "rss_self_kib": 35068,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 2249.985,
+          "compile_us": 986.304,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 90259.109,
+          "write_us": 19275.028,
+          "peak_rss_kib": 35068,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 90259.109,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 450918.101,
+              "median": 558032.546,
+              "mean": 530182.4908571428,
+              "stddev": 50477.84491187304,
+              "noisy": false,
+              "samples": [
+                450918.101,
+                472613.299,
+                558032.546,
+                561003.0419999999,
+                575049.703,
+                573270.1059999999,
+                520390.639
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 440024.0,
+              "median": 547173.0,
+              "mean": 517807.85714285716,
+              "stddev": 49247.54517546558,
+              "noisy": false,
+              "samples": [
+                440024.0,
+                461200.0,
+                547173.0,
+                548445.0,
+                559153.0,
+                559238.0,
+                509422.00000000006
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 4800.000000000026,
+              "median": 5577.999999999972,
+              "mean": 6049.28571428571,
+              "stddev": 1473.072946178103,
+              "noisy": true,
+              "samples": [
+                4975.99999999998,
+                4800.000000000026,
+                4827.0000000000255,
+                6555.000000000088,
+                8846.999999999938,
+                6761.9999999999345,
+                5577.999999999972
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 10859.545999999973,
+              "median": 11413.298999999999,
+              "mean": 12374.63371428568,
+              "stddev": 1939.6854770851837,
+              "noisy": false,
+              "samples": [
+                10894.101000000024,
+                11413.298999999999,
+                10859.545999999973,
+                12558.0419999999,
+                15896.70299999998,
+                14032.105999999912,
+                10968.638999999966
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15376.0,
+              "median": 15580.0,
+              "mean": 15530.285714285714,
+              "stddev": 120.41831849254261,
+              "noisy": false,
+              "samples": [
+                15632.0,
+                15428.0,
+                15580.0,
+                15376.0,
+                15692.0,
+                15580.0,
+                15424.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 537831.6579999999,
+              "median": 642998.5059999999,
+              "mean": 618916.5948571429,
+              "stddev": 53061.278149102756,
+              "noisy": false,
+              "samples": [
+                537831.6579999999,
+                592175.852,
+                682066.779,
+                642998.5059999999,
+                569720.493,
+                663290.8979999999,
+                644331.978
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 526619.0,
+              "median": 630199.0,
+              "mean": 606636.2857142857,
+              "stddev": 52391.00753855342,
+              "noisy": false,
+              "samples": [
+                526619.0,
+                580638.0,
+                668873.0,
+                630199.0,
+                557695.0,
+                650569.0,
+                631861.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5361.999999999978,
+              "median": 6139.0000000000055,
+              "mean": 6078.000000000013,
+              "stddev": 532.8311177099187,
+              "noisy": false,
+              "samples": [
+                5381.00000000008,
+                5361.999999999978,
+                6126.999999999994,
+                6801.000000000057,
+                6304.999999999894,
+                6431.0000000000755,
+                6139.0000000000055
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11212.657999999938,
+              "median": 12470.978000000003,
+              "mean": 12280.309142857108,
+              "stddev": 717.7976417135129,
+              "noisy": false,
+              "samples": [
+                11212.657999999938,
+                11537.851999999955,
+                13193.77899999998,
+                12799.505999999936,
+                12025.493000000017,
+                12721.897999999928,
+                12470.978000000003
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15268.0,
+              "median": 15536.0,
+              "mean": 15476.57142857143,
+              "stddev": 136.80991331388375,
+              "noisy": false,
+              "samples": [
+                15268.0,
+                15536.0,
+                15304.0,
+                15560.0,
+                15476.0,
+                15596.0,
+                15596.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 112090.07,
+              "median": 137456.963,
+              "mean": 137092.80785714285,
+              "stddev": 22281.56681930161,
+              "noisy": false,
+              "samples": [
+                149442.51499999998,
+                150505.956,
+                121462.292,
+                115435.867,
+                173255.992,
+                112090.07,
+                137456.963
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 88851.761,
+              "median": 106516.596,
+              "mean": 108990.19357142856,
+              "stddev": 20359.360906925245,
+              "noisy": false,
+              "samples": [
+                119896.611,
+                122002.613,
+                92154.527,
+                90457.657,
+                143051.59,
+                88851.761,
+                106516.596
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2335.193,
+              "median": 2861.3940000000002,
+              "mean": 2747.9550000000004,
+              "stddev": 264.35097625316234,
+              "noisy": false,
+              "samples": [
+                2954.029,
+                2947.0640000000003,
+                2718.688,
+                2335.193,
+                2861.3940000000002,
+                2435.663,
+                2983.654
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 23238.30900000001,
+              "median": 29307.765,
+              "mean": 28102.614285714284,
+              "stddev": 2874.8848400859256,
+              "noisy": false,
+              "samples": [
+                29545.90399999998,
+                28503.343000000008,
+                29307.765,
+                24978.209999999992,
+                30204.402000000002,
+                23238.30900000001,
+                30940.366999999984
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1357.487,
+              "median": 1714.6170000000002,
+              "mean": 1628.8351428571427,
+              "stddev": 179.0196135357134,
+              "noisy": false,
+              "samples": [
+                1708.745,
+                1731.592,
+                1714.6170000000002,
+                1357.487,
+                1769.849,
+                1379.594,
+                1739.962
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 977.706,
+              "median": 1091.545,
+              "mean": 1119.1198571428572,
+              "stddev": 114.5201925476152,
+              "noisy": false,
+              "samples": [
+                1245.284,
+                1215.472,
+                1004.071,
+                977.706,
+                1091.545,
+                1056.069,
+                1243.692
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 35140.0,
+              "median": 35236.0,
+              "mean": 35225.142857142855,
+              "stddev": 70.34066763835501,
+              "noisy": false,
+              "samples": [
+                35304.0,
+                35140.0,
+                35180.0,
+                35292.0,
+                35280.0,
+                35144.0,
+                35236.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 4.059689184315821,
+          "e2e_min": 4.022819336271268,
+          "solve_median": 5.136974148141197,
+          "solve_min": 4.952338536092718,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 4.059689184315821,
+              "e2e_min": 4.022819336271268,
+              "solve_median": 5.136974148141197,
+              "solve_min": 4.952338536092718
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.677816910591862,
+              "e2e_min": 4.798209671918306,
+              "solve_median": 5.916439537741142,
+              "solve_min": 5.926939365895066
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.98,
+        "loadavg_after": 0.98,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15692,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15620,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15588,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 35304,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 35304,
+        "est_mib": 45,
+        "est_status": "within_estimate",
+        "rustspice_kib": 35304,
+        "ngspice_max_kib": 15692,
+        "ngspice_max_child": "ngspice_sparse"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 10836.345162000001
+    },
+    {
+      "id": "ibex_net_05",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_electrical_37_n (575 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 575,
+      "probes": [
+        {
+          "name": "v(n_native_electrical_37_y)",
+          "analysis": "tran",
+          "abs_err": 0.00013685276085251274,
+          "rel_err": 0.00011404397324107965,
+          "norm_err": 0.00011404397324107965,
+          "rms_norm_err": 5.635966077526694e-6,
+          "worst_at": 5.1519999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00008255037096696132,
+          "rs_err": 0.00011404397324107965,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.057021986620539825,
+          "interp_floor": 0.00025222100393386225,
+          "note": null,
+          "own_grid_err": 0.00011404397324107965,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_r490_d)",
+          "analysis": "tran",
+          "abs_err": 0.000032868356959349365,
+          "rel_err": 0.0000273902995729238,
+          "norm_err": 0.0000273902995729238,
+          "rms_norm_err": 2.455500381382506e-6,
+          "worst_at": 1.42e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.000022116948200043896,
+          "rs_err": 0.0000273902995729238,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.0136951497864619,
+          "interp_floor": 0.0000501197275615568,
+          "note": null,
+          "own_grid_err": 0.0000273902995729238,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.00011404397324107965,
+        "err_ng": 0.00008255037096696132,
+        "within_ng_error": true,
+        "interp_floor": 0.00025222100393386225,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 637574.521,
+        "analysis_us": 611867.0,
+        "elapsed_us": 619000.0,
+        "rss_kib": 15472,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 138287.96800000002,
+        "rss_kib": 34980,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 34980,
+        "rss_self_kib": 34892,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 1667.01,
+          "compile_us": 1193.723,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 96545.078,
+          "write_us": 20743.551,
+          "peak_rss_kib": 34892,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 96545.078,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 464098.85699999996,
+              "median": 534332.283,
+              "mean": 538079.6215714285,
+              "stddev": 65552.48439019333,
+              "noisy": false,
+              "samples": [
+                489477.50899999996,
+                618902.085,
+                464098.85699999996,
+                605505.672,
+                584629.8589999999,
+                469611.086,
+                534332.283
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 452444.0,
+              "median": 522669.99999999994,
+              "mean": 525720.2857142857,
+              "stddev": 64342.71061204029,
+              "noisy": false,
+              "samples": [
+                478183.0,
+                605090.0,
+                452444.0,
+                591826.0,
+                571032.0,
+                458797.0,
+                522669.99999999994
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5203.000000000013,
+              "median": 5816.999999999961,
+              "mean": 6279.714285714284,
+              "stddev": 1059.1233346948802,
+              "noisy": false,
+              "samples": [
+                5816.999999999961,
+                7909.999999999973,
+                5556.0000000000055,
+                7174.000000000014,
+                6967.9999999999745,
+                5203.000000000013,
+                5330.000000000057
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 10814.08600000001,
+              "median": 11662.283000000112,
+              "mean": 12359.335857142853,
+              "stddev": 1283.9738886301777,
+              "noisy": false,
+              "samples": [
+                11294.508999999962,
+                13812.084999999963,
+                11654.85699999996,
+                13679.67200000002,
+                13597.858999999939,
+                10814.08600000001,
+                11662.283000000112
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15148.0,
+              "median": 15496.0,
+              "mean": 15432.57142857143,
+              "stddev": 186.73944159608877,
+              "noisy": false,
+              "samples": [
+                15148.0,
+                15228.0,
+                15404.0,
+                15516.0,
+                15496.0,
+                15672.0,
+                15564.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 580735.6660000001,
+              "median": 656313.145,
+              "mean": 651967.194,
+              "stddev": 40817.79326371736,
+              "noisy": false,
+              "samples": [
+                656313.145,
+                674908.795,
+                623274.045,
+                674963.432,
+                580735.6660000001,
+                706730.8,
+                646844.475
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 562538.0,
+              "median": 645560.0,
+              "mean": 638017.1428571428,
+              "stddev": 42026.88134765086,
+              "noisy": false,
+              "samples": [
+                645560.0,
+                661827.0,
+                612152.0,
+                657577.0,
+                562538.0,
+                694485.0,
+                631981.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 4847.999999999964,
+              "median": 6514.999999999937,
+              "mean": 6697.142857142846,
+              "stddev": 1504.5782829496868,
+              "noisy": true,
+              "samples": [
+                5440.0,
+                6172.999999999984,
+                4847.999999999964,
+                7423.000000000068,
+                9461.99999999997,
+                6514.999999999937,
+                7018.999999999997
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 10753.145000000019,
+              "median": 13081.795000000042,
+              "mean": 13950.051142857177,
+              "stddev": 2959.770735225144,
+              "noisy": true,
+              "samples": [
+                10753.145000000019,
+                13081.795000000042,
+                11122.045000000042,
+                17386.43200000003,
+                18197.666000000085,
+                12245.800000000047,
+                14863.474999999977
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15312.0,
+              "median": 15592.0,
+              "mean": 15567.42857142857,
+              "stddev": 131.66479805786759,
+              "noisy": false,
+              "samples": [
+                15312.0,
+                15592.0,
+                15656.0,
+                15512.0,
+                15684.0,
+                15680.0,
+                15536.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 118130.439,
+              "median": 136284.367,
+              "mean": 133348.35671428574,
+              "stddev": 11527.313805725169,
+              "noisy": false,
+              "samples": [
+                127567.977,
+                144535.38499999998,
+                145020.08299999998,
+                118130.439,
+                142147.756,
+                136284.367,
+                119752.49
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 91562.487,
+              "median": 110341.218,
+              "mean": 105490.24985714287,
+              "stddev": 10211.664587478957,
+              "noisy": false,
+              "samples": [
+                102289.133,
+                117709.052,
+                113337.64,
+                92744.623,
+                110341.218,
+                110447.596,
+                91562.487
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2280.215,
+              "median": 2763.622,
+              "mean": 2736.2435714285716,
+              "stddev": 308.5737499603929,
+              "noisy": false,
+              "samples": [
+                2280.215,
+                2778.639,
+                3191.9770000000003,
+                2633.629,
+                2486.3289999999997,
+                3019.294,
+                2763.622
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 25278.843999999997,
+              "median": 26826.332999999984,
+              "mean": 27858.10685714285,
+              "stddev": 2835.5183353693574,
+              "noisy": false,
+              "samples": [
+                25278.843999999997,
+                26826.332999999984,
+                31682.442999999985,
+                25385.81599999999,
+                31806.538,
+                25836.770999999993,
+                28190.00300000001
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1344.03,
+              "median": 1676.023,
+              "mean": 1665.8692857142858,
+              "stddev": 238.87047658352034,
+              "noisy": false,
+              "samples": [
+                1344.03,
+                1676.023,
+                2050.8520000000003,
+                1512.211,
+                1490.888,
+                1836.144,
+                1750.937
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 936.185,
+              "median": 1102.616,
+              "mean": 1070.3742857142856,
+              "stddev": 89.73927940375255,
+              "noisy": false,
+              "samples": [
+                936.185,
+                1102.616,
+                1141.125,
+                1121.418,
+                995.441,
+                1183.15,
+                1012.685
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 34784.0,
+              "median": 34880.0,
+              "mean": 34877.142857142855,
+              "stddev": 69.96053309170958,
+              "noisy": false,
+              "samples": [
+                34916.0,
+                34880.0,
+                35004.0,
+                34836.0,
+                34840.0,
+                34880.0,
+                34784.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 3.9207158881253052,
+          "e2e_min": 3.9286983179669717,
+          "solve_median": 4.736851826304835,
+          "solve_min": 4.941368619661893,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 3.9207158881253052,
+              "e2e_min": 3.9286983179669717,
+              "solve_median": 4.736851826304835,
+              "solve_min": 4.941368619661893
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.815762507815736,
+              "e2e_min": 4.916054413376049,
+              "solve_median": 5.850578883405112,
+              "solve_min": 6.143760599250652
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.98,
+        "loadavg_after": 0.98,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15672,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15684,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15672,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 35004,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 35004,
+        "est_mib": 45,
+        "est_status": "within_estimate",
+        "rustspice_kib": 35004,
+        "ngspice_max_kib": 15684,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 11213.148216
+    },
+    {
+      "id": "ibex_net_06",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_electrical_937_n (570 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 570,
+      "probes": [
+        {
+          "name": "v(n_native_electrical_937_y)",
+          "analysis": "tran",
+          "abs_err": 0.00013107742895823726,
+          "rel_err": 0.00010923138289664019,
+          "norm_err": 0.00010923138289664019,
+          "rms_norm_err": 6.078187870769492e-6,
+          "worst_at": 5.154e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00008187202277680075,
+          "rs_err": 0.00010923138289664019,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.05461569144832009,
+          "interp_floor": 0.00022131060942688708,
+          "note": null,
+          "own_grid_err": 0.00010923138289664019,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_g7254_a)",
+          "analysis": "tran",
+          "abs_err": 0.00014736147028893143,
+          "rel_err": 0.00012280145509574407,
+          "norm_err": 0.00012280145509574407,
+          "rms_norm_err": 6.821829639771284e-6,
+          "worst_at": 5.154e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00009184048271894041,
+          "rs_err": 0.00012280145509574407,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.061400727547872035,
+          "interp_floor": 0.00024898738338521896,
+          "note": null,
+          "own_grid_err": 0.00012280145509574407,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.00012280145509574407,
+        "err_ng": 0.00009184048271894041,
+        "within_ng_error": true,
+        "interp_floor": 0.00024898738338521896,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 571176.305,
+        "analysis_us": 546379.0,
+        "elapsed_us": 553000.0,
+        "rss_kib": 15324,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 159215.012,
+        "rss_kib": 34772,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 34772,
+        "rss_self_kib": 34768,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 1700.917,
+          "compile_us": 1106.925,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 115172.757,
+          "write_us": 22748.497,
+          "peak_rss_kib": 34768,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 115172.757,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 515692.802,
+              "median": 564038.399,
+              "mean": 565976.2262857143,
+              "stddev": 30014.26309912771,
+              "noisy": false,
+              "samples": [
+                515692.802,
+                557931.618,
+                570190.102,
+                553394.49,
+                564038.399,
+                588526.786,
+                612059.387
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 501878.00000000006,
+              "median": 550074.0,
+              "mean": 552420.1428571428,
+              "stddev": 30479.942997696966,
+              "noisy": false,
+              "samples": [
+                501878.00000000006,
+                544107.0,
+                557492.0,
+                538518.0,
+                550074.0,
+                575735.0,
+                599137.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 6264.999999999965,
+              "median": 6893.000000000038,
+              "mean": 7008.428571428567,
+              "stddev": 710.4803204271689,
+              "noisy": false,
+              "samples": [
+                7121.999999999962,
+                6893.000000000038,
+                6507.999999999958,
+                8481.999999999989,
+                6926.000000000099,
+                6264.999999999965,
+                6862.999999999953
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 12698.101999999955,
+              "median": 13814.801999999967,
+              "mean": 13556.083428571408,
+              "stddev": 792.7899143400487,
+              "noisy": false,
+              "samples": [
+                13814.801999999967,
+                13824.618000000017,
+                12698.101999999955,
+                14876.48999999999,
+                13964.398999999976,
+                12791.785999999964,
+                12922.386999999988
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15200.0,
+              "median": 15604.0,
+              "mean": 15542.857142857143,
+              "stddev": 163.91403089366548,
+              "noisy": false,
+              "samples": [
+                15200.0,
+                15632.0,
+                15512.0,
+                15604.0,
+                15708.0,
+                15604.0,
+                15540.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 533722.397,
+              "median": 649142.997,
+              "mean": 636564.4797142858,
+              "stddev": 56033.5219636012,
+              "noisy": false,
+              "samples": [
+                533722.397,
+                602825.5160000001,
+                679853.422,
+                669598.9500000001,
+                622564.608,
+                649142.997,
+                698243.468
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 522225.99999999994,
+              "median": 630265.0,
+              "mean": 617573.5714285715,
+              "stddev": 52486.02868337805,
+              "noisy": false,
+              "samples": [
+                522225.99999999994,
+                586962.0,
+                630265.0,
+                658341.0,
+                609009.0,
+                632432.0,
+                683780.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5659.000000000081,
+              "median": 7037.999999999989,
+              "mean": 11855.000000000013,
+              "stddev": 13636.146547564946,
+              "noisy": true,
+              "samples": [
+                5774.000000000057,
+                7037.999999999989,
+                42735.00000000008,
+                5659.000000000081,
+                6990.999999999969,
+                7568.000000000019,
+                7219.999999999894
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11257.95000000007,
+              "median": 14463.467999999993,
+              "mean": 18990.90828571431,
+              "stddev": 13645.469159347756,
+              "noisy": true,
+              "samples": [
+                11496.397000000055,
+                15863.516000000061,
+                49588.42200000002,
+                11257.95000000007,
+                13555.608000000007,
+                16710.996999999974,
+                14463.467999999993
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15468.0,
+              "median": 15716.0,
+              "mean": 15640.0,
+              "stddev": 122.68115856425005,
+              "noisy": false,
+              "samples": [
+                15732.0,
+                15716.0,
+                15496.0,
+                15580.0,
+                15468.0,
+                15760.0,
+                15728.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 135190.257,
+              "median": 141346.14,
+              "mean": 142662.989,
+              "stddev": 5511.694375224615,
+              "noisy": false,
+              "samples": [
+                143792.338,
+                143976.993,
+                141346.14,
+                141071.971,
+                140011.05599999998,
+                135190.257,
+                153252.168
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 106993.628,
+              "median": 112701.067,
+              "mean": 112670.0247142857,
+              "stddev": 4478.212564707216,
+              "noisy": false,
+              "samples": [
+                110659.919,
+                112701.067,
+                113825.94,
+                112921.649,
+                110175.015,
+                106993.628,
+                121412.955
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2767.219,
+              "median": 2867.3450000000003,
+              "mean": 2875.8375714285717,
+              "stddev": 88.06196632269273,
+              "noisy": false,
+              "samples": [
+                2908.177,
+                2908.371,
+                2867.3450000000003,
+                2824.9539999999997,
+                2816.383,
+                2767.219,
+                3038.414
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 27520.20000000001,
+              "median": 29836.040999999983,
+              "mean": 29992.964285714286,
+              "stddev": 2147.5621900379406,
+              "noisy": false,
+              "samples": [
+                33132.418999999994,
+                31275.925999999992,
+                27520.20000000001,
+                28150.321999999986,
+                29836.040999999983,
+                28196.629000000015,
+                31839.213000000003
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1661.398,
+              "median": 1677.416,
+              "mean": 1707.312857142857,
+              "stddev": 47.60576284592927,
+              "noisy": false,
+              "samples": [
+                1670.67,
+                1674.419,
+                1763.374,
+                1729.129,
+                1661.398,
+                1677.416,
+                1774.784
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 1089.803,
+              "median": 1154.985,
+              "mean": 1168.5247142857143,
+              "stddev": 75.18550777624259,
+              "noisy": false,
+              "samples": [
+                1237.507,
+                1233.952,
+                1103.971,
+                1095.8249999999998,
+                1154.985,
+                1089.803,
+                1263.63
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 34688.0,
+              "median": 34744.0,
+              "mean": 34769.71428571428,
+              "stddev": 78.68442091823574,
+              "noisy": false,
+              "samples": [
+                34860.0,
+                34744.0,
+                34900.0,
+                34688.0,
+                34716.0,
+                34744.0,
+                34736.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 3.9904761389309953,
+          "e2e_min": 3.8145707645189253,
+          "solve_median": 4.8808233554700955,
+          "solve_min": 4.69072793755531,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 3.9904761389309953,
+              "e2e_min": 3.8145707645189253,
+              "solve_median": 4.8808233554700955,
+              "solve_min": 4.69072793755531
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.592576755191192,
+              "e2e_min": 3.947935367857167,
+              "solve_median": 5.592360540827888,
+              "solve_min": 4.880907487313169
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.98,
+        "loadavg_after": 0.99,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15708,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15760,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15208,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 34900,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 34900,
+        "est_mib": 45,
+        "est_status": "within_estimate",
+        "rustspice_kib": 34900,
+        "ngspice_max_kib": 15760,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 11356.217403
+    },
+    {
+      "id": "ibex_net_07",
+      "group": "performance",
+      "family": "static",
+      "origin": "static",
+      "title": "Ibex extracted net native_fanout_49_0_1_n (548 unknowns)",
+      "tags": [
+        "linear",
+        "tran",
+        "ibex",
+        "spef",
+        "single_net"
+      ],
+      "expect": "match",
+      "known_gap": null,
+      "gap_note": null,
+      "status": "pass",
+      "harness_failure": null,
+      "outcome": "match",
+      "analysis": "tran",
+      "size": 548,
+      "probes": [
+        {
+          "name": "v(n_native_fanout_49_0_1_y)",
+          "analysis": "tran",
+          "abs_err": 0.0001616329351787904,
+          "rel_err": 0.0001346941148905844,
+          "norm_err": 0.0001346941148905844,
+          "rms_norm_err": 5.995751689018153e-6,
+          "worst_at": 5.1519999999999996e-9,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00009353050307737363,
+          "rs_err": 0.0001346941148905844,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.06734705744529221,
+          "interp_floor": 0.0002948411353344333,
+          "note": null,
+          "own_grid_err": 0.0001346941148905844,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        },
+        {
+          "name": "v(n_r1103_se)",
+          "analysis": "tran",
+          "abs_err": 0.000059046538975595156,
+          "rel_err": 0.00004920545016538579,
+          "norm_err": 0.00004920545016538579,
+          "rms_norm_err": 4.128548122729294e-6,
+          "worst_at": 1.12e-10,
+          "vacuous": false,
+          "pass": true,
+          "ng_err": 0.00003898017683538783,
+          "rs_err": 0.00004920545016538579,
+          "within_ng_error": true,
+          "oracle_rs_err": null,
+          "oracle_ng_err": null,
+          "edge_shift": null,
+          "edge_shift_at_rows": null,
+          "edge_row_floor": null,
+          "tol_ratio": 0.024602725082692893,
+          "interp_floor": 0.00009440259271294723,
+          "note": null,
+          "own_grid_err": 0.00004920545016538579,
+          "oracle_own_grid_err": null,
+          "aligned_points": null,
+          "aligned_abs_err": null,
+          "aligned_worst_at": null
+        }
+      ],
+      "ngspice_status": "ok",
+      "ref_status": "options",
+      "ref_options": "reltol=1e-6 abstol=1e-15 vntol=1e-9 tmax=2.000e-12",
+      "accuracy": {
+        "pass": true,
+        "err_rs": 0.0001346941148905844,
+        "err_ng": 0.00009353050307737363,
+        "within_ng_error": true,
+        "interp_floor": 0.0002948411353344333,
+        "points_rs": 6001,
+        "points_ref": 3021
+      },
+      "oracle": null,
+      "ngspice": {
+        "solver": "sparse",
+        "status": "ok",
+        "wall_us": 574983.1140000001,
+        "analysis_us": 543291.0,
+        "elapsed_us": 553000.0,
+        "rss_kib": 15488,
+        "rss_status": "measured_vmhwm",
+        "rss_lower_bound": true,
+        "output_truncated": false
+      },
+      "rustspice": {
+        "class": "ok",
+        "message": null,
+        "wall_us": 200429.673,
+        "rss_kib": 33504,
+        "rss_status": "measured_vmhwm",
+        "rss_poll_kib": 31624,
+        "rss_self_kib": 33504,
+        "termination": "exit_0",
+        "stats": {
+          "parse_us": 1755.598,
+          "compile_us": 1532.309,
+          "solver_kind": "UnrolledSymbolic",
+          "solver_compile_us": null,
+          "analysis": "tran",
+          "analysis_us": 153005.27899999998,
+          "write_us": 23531.471,
+          "peak_rss_kib": 33504,
+          "points": 6001,
+          "status": "ok",
+          "analyses": [
+            {
+              "analysis": "tran",
+              "analysis_us": 153005.27899999998,
+              "points": 6001
+            }
+          ]
+        },
+        "caught_panic_noise": false
+      },
+      "timing": {
+        "reps_requested": 7,
+        "reps_done": 7,
+        "reps_attempted": 7,
+        "min_samples": 7,
+        "contenders": [
+          {
+            "name": "ngspice_sparse",
+            "e2e_us": {
+              "n": 7,
+              "min": 484007.817,
+              "median": 571047.057,
+              "mean": 561125.3628571428,
+              "stddev": 41114.81841287655,
+              "noisy": false,
+              "samples": [
+                614636.9310000001,
+                484007.817,
+                589643.751,
+                571047.057,
+                551104.249,
+                571133.019,
+                546304.716
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 468510.0,
+              "median": 558064.0,
+              "mean": 546828.2857142857,
+              "stddev": 40355.132080543306,
+              "noisy": false,
+              "samples": [
+                596551.0,
+                468510.0,
+                571815.0,
+                560381.0,
+                538052.0,
+                558064.0,
+                534425.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 4618.999999999929,
+              "median": 6948.0000000000655,
+              "mean": 7171.714285714265,
+              "stddev": 1898.2496950511886,
+              "noisy": true,
+              "samples": [
+                9448.999999999929,
+                8489.999999999998,
+                9184.999999999998,
+                4618.999999999929,
+                6948.0000000000655,
+                5935.999999999941,
+                5574.999999999996
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 10666.05700000003,
+              "median": 13069.018999999971,
+              "mean": 14297.077142857157,
+              "stddev": 2896.997758279589,
+              "noisy": true,
+              "samples": [
+                18085.9310000001,
+                15497.81699999998,
+                17828.751000000047,
+                10666.05700000003,
+                13052.248999999953,
+                13069.018999999971,
+                11879.716000000015
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15212.0,
+              "median": 15404.0,
+              "mean": 15391.42857142857,
+              "stddev": 139.14843051319593,
+              "noisy": false,
+              "samples": [
+                15340.0,
+                15576.0,
+                15228.0,
+                15468.0,
+                15404.0,
+                15212.0,
+                15512.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "ngspice_klu",
+            "e2e_us": {
+              "n": 7,
+              "min": 578440.066,
+              "median": 644966.762,
+              "mean": 646090.992,
+              "stddev": 41162.11687648855,
+              "noisy": false,
+              "samples": [
+                643197.812,
+                651274.8640000001,
+                647762.856,
+                636966.3829999999,
+                578440.066,
+                644966.762,
+                720028.201
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 564673.0,
+              "median": 632665.0,
+              "mean": 632509.7142857143,
+              "stddev": 41086.303020651074,
+              "noisy": false,
+              "samples": [
+                629609.0,
+                635824.0,
+                632728.0,
+                625665.0,
+                564673.0,
+                632665.0,
+                706404.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 5334.999999999979,
+              "median": 6595.999999999935,
+              "mean": 6776.000000000005,
+              "stddev": 938.1901015608365,
+              "noisy": false,
+              "samples": [
+                7391.000000000036,
+                7176.000000000071,
+                8272.000000000056,
+                5334.999999999979,
+                6326.999999999972,
+                6334.99999999998,
+                6595.999999999935
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 11301.382999999914,
+              "median": 13624.201000000001,
+              "mean": 13581.277714285718,
+              "stddev": 1442.2054606741576,
+              "noisy": false,
+              "samples": [
+                13588.812000000034,
+                15450.86400000006,
+                15034.856000000029,
+                11301.382999999914,
+                13767.065999999992,
+                12301.761999999988,
+                13624.201000000001
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": null,
+            "compile_us": null,
+            "rss_kib": {
+              "n": 7,
+              "min": 15424.0,
+              "median": 15608.0,
+              "mean": 15597.714285714286,
+              "stddev": 84.91115805301894,
+              "noisy": false,
+              "samples": [
+                15652.0,
+                15608.0,
+                15424.0,
+                15576.0,
+                15592.0,
+                15656.0,
+                15676.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          },
+          {
+            "name": "rustspice",
+            "e2e_us": {
+              "n": 7,
+              "min": 131554.28999999998,
+              "median": 139602.119,
+              "mean": 139123.08385714286,
+              "stddev": 4424.9377517085495,
+              "noisy": false,
+              "samples": [
+                140898.147,
+                136196.75400000002,
+                131554.28999999998,
+                139602.119,
+                143544.77099999998,
+                144304.227,
+                137761.27899999998
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "analysis_us": {
+              "n": 7,
+              "min": 99598.7,
+              "median": 110188.373,
+              "mean": 109760.0372857143,
+              "stddev": 4968.533692481876,
+              "noisy": false,
+              "samples": [
+                110188.373,
+                108442.569,
+                99598.7,
+                113151.833,
+                113300.73,
+                114102.263,
+                109535.793
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "setup_us": {
+              "n": 7,
+              "min": 2283.06,
+              "median": 2729.428,
+              "mean": 2960.6544285714285,
+              "stddev": 636.9081926216832,
+              "noisy": true,
+              "samples": [
+                3135.014,
+                2690.174,
+                2283.06,
+                2729.428,
+                4282.008,
+                2698.242,
+                2906.655
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "overhead_us": {
+              "n": 7,
+              "min": 26450.286000000007,
+              "median": 30201.964000000007,
+              "mean": 29363.046571428564,
+              "stddev": 1931.3873936968882,
+              "noisy": false,
+              "samples": [
+                30709.77399999999,
+                27754.185000000012,
+                31955.589999999982,
+                26450.286000000007,
+                30244.040999999983,
+                30201.964000000007,
+                28225.485999999975
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "parse_us": {
+              "n": 7,
+              "min": 1280.383,
+              "median": 1592.105,
+              "mean": 1711.7585714285713,
+              "stddev": 428.32466062550304,
+              "noisy": true,
+              "samples": [
+                1732.605,
+                1545.037,
+                1280.383,
+                1592.105,
+                2631.891,
+                1583.108,
+                1617.181
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "compile_us": {
+              "n": 7,
+              "min": 1002.677,
+              "median": 1145.1370000000002,
+              "mean": 1248.8958571428573,
+              "stddev": 219.05921539957222,
+              "noisy": false,
+              "samples": [
+                1402.409,
+                1145.1370000000002,
+                1002.677,
+                1137.323,
+                1650.117,
+                1115.134,
+                1289.4740000000002
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_kib": {
+              "n": 7,
+              "min": 33552.0,
+              "median": 33728.0,
+              "mean": 33726.28571428572,
+              "stddev": 89.58741408202806,
+              "noisy": false,
+              "samples": [
+                33828.0,
+                33792.0,
+                33696.0,
+                33716.0,
+                33772.0,
+                33552.0,
+                33728.0
+              ],
+              "spread_status": "ok",
+              "dropped_non_finite": 0
+            },
+            "rss_status": "measured_vmhwm",
+            "failed_reps": 0
+          }
+        ],
+        "headline": {
+          "e2e_median": 4.090532873644991,
+          "e2e_min": 3.6791488669810772,
+          "solve_median": 5.064635993853907,
+          "solve_min": 4.703977059941545,
+          "e2e_vs": "ngspice_sparse",
+          "solve_vs": "ngspice_sparse",
+          "per_solver": [
+            {
+              "solver": "ngspice_sparse",
+              "e2e_median": 4.090532873644991,
+              "e2e_min": 3.6791488669810772,
+              "solve_median": 5.064635993853907,
+              "solve_min": 4.703977059941545
+            },
+            {
+              "solver": "ngspice_klu",
+              "e2e_median": 4.620035617081141,
+              "e2e_min": 4.396968475904512,
+              "solve_median": 5.741667498802255,
+              "solve_min": 5.669481629780308
+            }
+          ]
+        },
+        "order_trace": [
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice",
+          "ngspice_klu>rustspice>ngspice_sparse",
+          "rustspice>ngspice_sparse>ngspice_klu",
+          "ngspice_sparse>ngspice_klu>rustspice"
+        ],
+        "loadavg_before": 0.99,
+        "loadavg_after": 0.99,
+        "noisy": false,
+        "notes": []
+      },
+      "timing_status": "measured",
+      "rss": {
+        "children": [
+          {
+            "child": "ngspice_sparse",
+            "peak_kib": 15576,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_klu",
+            "peak_kib": 15676,
+            "status": "measured_vmhwm",
+            "runs": 2
+          },
+          {
+            "child": "ngspice_ref",
+            "peak_kib": 15416,
+            "status": "measured_vmhwm",
+            "runs": 1
+          },
+          {
+            "child": "rustspice",
+            "peak_kib": 33828,
+            "status": "measured_vmhwm",
+            "runs": 2
+          }
+        ],
+        "max_child": "rustspice",
+        "max_kib": 33828,
+        "est_mib": 45,
+        "est_status": "within_estimate",
+        "rustspice_kib": 33828,
+        "ngspice_max_kib": 15676,
+        "ngspice_max_child": "ngspice_klu"
+      },
+      "teeth": null,
+      "signature": null,
+      "series": null,
+      "failures": [],
+      "notes": [],
+      "artifacts": null,
+      "case_wall_ms": 11451.321125
+    }
+  ],
+  "series": [],
+  "fuzz": [],
+  "scaling": [],
+  "slower_than_ngspice": [],
+  "slower_than_ngspice_noisy": [],
+  "teeth": null,
+  "corpus": {
+    "path": "decks",
+    "git": "1a8442d",
+    "dirty": false
+  },
+  "summary": {
+    "counts": {
+      "both_error": 0,
+      "fail_accuracy": 0,
+      "fail_robustness": 0,
+      "fail_silent": 0,
+      "gap_closed": 0,
+      "info": 0,
+      "known_gap_confirmed": 0,
+      "ngspice_error": 0,
+      "panic": 0,
+      "pass": 10,
+      "skipped_budget": 0,
+      "timeout": 0,
+      "unverified": 0
+    },
+    "by_group": {
+      "performance": {
+        "pass": 10
+      }
+    },
+    "total": 10,
+    "verdict": "PASS",
+    "verdict_line": "PASS",
+    "unverified_count": 0,
+    "unverified": []
+  }
+}

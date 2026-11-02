@@ -1,0 +1,262 @@
+[
+ {
+  "step": "01-verilator-lint",
+  "seconds": 0.786
+ },
+ {
+  "step": "02-checker-linttimingconstructs",
+  "seconds": 0.0
+ },
+ {
+  "step": "03-checker-linterrors",
+  "seconds": 0.0
+ },
+ {
+  "step": "04-checker-lintwarnings",
+  "seconds": 0.0
+ },
+ {
+  "step": "05-yosys-jsonheader",
+  "seconds": 2.021
+ },
+ {
+  "step": "06-yosys-synthesis",
+  "seconds": 108.588
+ },
+ {
+  "step": "07-checker-yosysunmappedcells",
+  "seconds": 0.001
+ },
+ {
+  "step": "08-checker-yosyssynthchecks",
+  "seconds": 0.001
+ },
+ {
+  "step": "09-checker-netlistassignstatements",
+  "seconds": 0.022
+ },
+ {
+  "step": "10-openroad-checksdcfiles",
+  "seconds": 0.0
+ },
+ {
+  "step": "11-openroad-checkmacroinstances",
+  "seconds": 0.511
+ },
+ {
+  "step": "12-openroad-staprepnr",
+  "seconds": 12.57
+ },
+ {
+  "step": "13-openroad-floorplan",
+  "seconds": 1.115
+ },
+ {
+  "step": "14-openroad-dumprcvalues",
+  "seconds": 0.717
+ },
+ {
+  "step": "15-odb-checkmacroantennaproperties",
+  "seconds": 1.011
+ },
+ {
+  "step": "16-odb-setpowerconnections",
+  "seconds": 0.809
+ },
+ {
+  "step": "17-odb-manualmacroplacement",
+  "seconds": 0.814
+ },
+ {
+  "step": "18-openroad-cutrows",
+  "seconds": 0.813
+ },
+ {
+  "step": "19-openroad-tapendcapinsertion",
+  "seconds": 0.916
+ },
+ {
+  "step": "20-odb-addpdnobstructions",
+  "seconds": 0.001
+ },
+ {
+  "step": "21-openroad-generatepdn",
+  "seconds": 1.825
+ },
+ {
+  "step": "22-odb-removepdnobstructions",
+  "seconds": 0.001
+ },
+ {
+  "step": "23-odb-addroutingobstructions",
+  "seconds": 0.001
+ },
+ {
+  "step": "24-openroad-globalplacementskipio",
+  "seconds": 5.303
+ },
+ {
+  "step": "25-openroad-ioplacement",
+  "seconds": 1.116
+ },
+ {
+  "step": "26-odb-customioplacement",
+  "seconds": 0.001
+ },
+ {
+  "step": "27-odb-applydeftemplate",
+  "seconds": 0.001
+ },
+ {
+  "step": "28-openroad-globalplacement",
+  "seconds": 9.675
+ },
+ {
+  "step": "29-odb-writeverilogheader",
+  "seconds": 0.91
+ },
+ {
+  "step": "30-checker-powergridviolations",
+  "seconds": 0.002
+ },
+ {
+  "step": "31-openroad-stamidpnr",
+  "seconds": 21.337
+ },
+ {
+  "step": "32-openroad-repairdesignpostgpl",
+  "seconds": 10.981
+ },
+ {
+  "step": "33-odb-manualglobalplacement",
+  "seconds": 0.002
+ },
+ {
+  "step": "34-openroad-detailedplacement",
+  "seconds": 1.319
+ },
+ {
+  "step": "35-openroad-cts",
+  "seconds": 20.166
+ },
+ {
+  "step": "36-openroad-stamidpnr-1",
+  "seconds": 21.199
+ },
+ {
+  "step": "37-openroad-resizertimingpostcts",
+  "seconds": 6.056
+ },
+ {
+  "step": "38-openroad-stamidpnr-2",
+  "seconds": 19.905
+ },
+ {
+  "step": "39-openroad-globalrouting",
+  "seconds": 4.034
+ },
+ {
+  "step": "40-openroad-checkantennas",
+  "seconds": 10.07
+ },
+ {
+  "step": "41-openroad-repairdesignpostgrt",
+  "seconds": 12.091
+ },
+ {
+  "step": "42-odb-diodesonports",
+  "seconds": 0.002
+ },
+ {
+  "step": "43-openroad-repairantennas",
+  "seconds": 48.083
+ },
+ {
+  "step": "44-openroad-resizertimingpostgrt",
+  "seconds": 10.792
+ },
+ {
+  "step": "45-openroad-stamidpnr-3",
+  "seconds": 22.136
+ },
+ {
+  "step": "46-openroad-detailedrouting",
+  "seconds": 1796.831
+ },
+ {
+  "step": "47-odb-removeroutingobstructions",
+  "seconds": 0.001
+ },
+ {
+  "step": "48-openroad-checkantennas-1",
+  "seconds": 6.788
+ },
+ {
+  "step": "49-checker-trdrc",
+  "seconds": 0.002
+ },
+ {
+  "step": "50-odb-reportdisconnectedpins",
+  "seconds": 1.62
+ },
+ {
+  "step": "51-checker-disconnectedpins",
+  "seconds": 0.002
+ },
+ {
+  "step": "52-odb-reportwirelength",
+  "seconds": 1.01
+ },
+ {
+  "step": "53-checker-wirelength",
+  "seconds": 0.001
+ },
+ {
+  "step": "54-openroad-fillinsertion",
+  "seconds": 2.022
+ },
+ {
+  "step": "55-odb-cellfrequencytables",
+  "seconds": 1.926
+ },
+ {
+  "step": "56-openroad-rcx",
+  "seconds": 3.618
+ },
+ {
+  "step": "57-openroad-stapostpnr",
+  "seconds": 17.2
+ },
+ {
+  "step": "58-openroad-irdropreport",
+  "seconds": 24.459
+ },
+ {
+  "step": "59-magic-streamout",
+  "seconds": 42.731
+ },
+ {
+  "step": "60-klayout-streamout",
+  "seconds": 1.519
+ },
+ {
+  "step": "61-klayout-render",
+  "seconds": 1.239
+ },
+ {
+  "step": "62-magic-writelef",
+  "seconds": 129.782
+ },
+ {
+  "step": "63-odb-checkdesignantennaproperties",
+  "seconds": 1.01
+ },
+ {
+  "step": "64-klayout-xor",
+  "seconds": 54.405
+ },
+ {
+  "step": "65-checker-xor",
+  "seconds": 0.001
+ }
+]

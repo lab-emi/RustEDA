@@ -1,0 +1,131 @@
+{
+ "gates": {
+  "drc": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_main",
+   "disabled_rules": [
+    "recommended"
+   ]
+  },
+  "antenna": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_antenna",
+   "disabled_rules": []
+  },
+  "lvs": {
+   "status": "passed",
+   "top_port_identity": true,
+   "macro_instances": 2,
+   "macro_devices_verified": true
+  },
+  "timing": {
+   "status": "failed",
+   "source": "OpenRCX nominal SPEF; min(RustSTA, OpenSTA)",
+   "corners": {
+    "tt": {
+     "setup_ws_ns": 48.602638244629,
+     "hold_ws_ns": 0.171842768788,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 0,
+     "cap_violations": 28,
+     "fanout_violations": 30,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    },
+    "ss": {
+     "setup_ws_ns": 47.843684408958296,
+     "hold_ws_ns": 0.312215387821,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 0,
+     "cap_violations": 24,
+     "fanout_violations": 30,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    }
+   }
+  },
+  "simulation": {
+   "status": "passed"
+  },
+  "synthesis_equivalence": {
+   "status": "unverified",
+   "error": "synthesis: missing or oversized JSON: /home/user/RustEDA/.work/ibex-host/signoff-librelane/logic/synthesis/obligations/manifest.json; final: missing or oversized JSON: /home/user/RustEDA/.work/ibex-host/signoff-librelane/logic/final/obligations/manifest.json"
+  },
+  "final_equivalence": {
+   "status": "unverified",
+   "error": "synthesis: missing or oversized JSON: /home/user/RustEDA/.work/ibex-host/signoff-librelane/logic/synthesis/obligations/manifest.json; final: missing or oversized JSON: /home/user/RustEDA/.work/ibex-host/signoff-librelane/logic/final/obligations/manifest.json"
+  },
+  "density": {
+   "status": "passed",
+   "max_percent": 70,
+   "final_nonfiller_utilization_percent": 28.1350868583515,
+   "macro_inclusive_core_utilization_percent": 47.13361551586722,
+   "standard_cell_area_um2": 197913.7,
+   "filler_decap_area_um2": 472691.3
+  }
+ },
+ "resources": {
+  "drc": {
+   "exit_code": 0,
+   "wall_seconds": 417.548,
+   "peak_rss_kib": 2290552
+  },
+  "antenna": {
+   "exit_code": 0,
+   "wall_seconds": 205.074,
+   "peak_rss_kib": 1700476
+  },
+  "extraction": {
+   "exit_code": 0,
+   "wall_seconds": 3.884,
+   "peak_rss_kib": 215244
+  },
+  "timing": {
+   "exit_code": 1,
+   "wall_seconds": 27.881,
+   "peak_rss_kib": 312344
+  },
+  "lvs": {
+   "exit_code": 0,
+   "wall_seconds": 162.513,
+   "peak_rss_kib": 873272
+  },
+  "simulation": {
+   "exit_code": 0,
+   "wall_seconds": 5.302,
+   "peak_rss_kib": 308044
+  },
+  "logic": {
+   "exit_code": 1,
+   "wall_seconds": 16.414,
+   "peak_rss_kib": 307956
+  },
+  "density": {
+   "exit_code": 0,
+   "wall_seconds": 0.205,
+   "peak_rss_kib": null
+  }
+ },
+ "measure": {
+  "schema": "rusteda.host-measured-run.v1",
+  "name": "signoff-librelane",
+  "command": "/usr/local/bin/python3 /home/user/RustEDA/integration/ibex_host_benchmark/signoff_layout.py --host /home/user/RustEDA/.work/ibex-host/host.json --layout /home/user/RustEDA/.work/ibex-host/layout-librelane.json --workspace /home/user/RustEDA/.work/ibex-host/signoff-librelane",
+  "started": "2026-11-02T17:53:33+00:00",
+  "wall_seconds": 839.288,
+  "exit_code": 0,
+  "gnu_time_max_rss_kib": 2290552,
+  "cgroup_v1_memory_max_usage_bytes": 2268311552,
+  "cgroup_v1_memsw_max_usage_bytes": 2268311552,
+  "cgroup_v1_failcnt": 0,
+  "cgroup_limit_bytes": 8589934592,
+  "sampled_peak_total_rss_bytes": 2261458944,
+  "loadavg_1m_mean": 1.12,
+  "loadavg_1m_max": 1.68,
+  "samples": 168,
+  "cpus_online": 4
+ }
+}

@@ -118,11 +118,9 @@ def librelane_steps(run):
 def native_stage_times(receipts):
     groups = {
         "synthesis (RustSys)": lambda i: i in ("fe_synth_init", "fe_synth_import", "fe_synth", "fe_synth_export"),
-        "frontend STA/ECO rounds (RustSTA, ECO helpers)": lambda i: i.startswith("fe_") and any(
-            t in i for t in ("_init", "_import", "_run", "_graph", "_drv", "_endpoints", "_hold", "bundle", "eco_",
-                             "estimate", "caps_", "profiles", "context", "physical_config", "validate", "pins")),
         "placement and CTS (RustROAD)": lambda i: i.startswith("fe_") and any(
             t in i for t in ("pdk_import", "_place", "_cts", "_export", "_seed", "_def", "inspect")),
+        "frontend STA, ECO rounds and planning helpers (RustSTA, Python)": lambda i: i.startswith("fe_"),
         "routing (RustROAD)": lambda i: i == "be_route",
         "post-route repair": lambda i: i in ("be_postroute", "be_postroute_inputs"),
         "antenna repair and verification": lambda i: i.startswith("be_antenna"),
