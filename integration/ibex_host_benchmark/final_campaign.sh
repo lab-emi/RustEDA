@@ -31,6 +31,9 @@ $PY - "$W" <<'PY'
 import json, sys
 w = sys.argv[1]
 c = json.load(open(f"{w}/prep/config.json")); c["DRT_THREADS"] = 4
+# The historical reference replaced LibreLane's post-GRT design repair with a RustEDA-authored
+# DRV ECO loop. Without that loop, enable LibreLane's own built-in repair step instead.
+c["RUN_POST_GRT_DESIGN_REPAIR"] = True
 json.dump(c, open(f"{w}/ll-final/config.json", "w"), indent=1)
 PY
 cat > ll-final/run.sh <<EOF
