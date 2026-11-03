@@ -6,6 +6,12 @@ No imports from the controller, legacy helper or its field reader. Peak estimate
 +128MiB names/IDs +64MiB decoder and bounded file/operation maps.
 Only one connectivity model is decoded at a time; raw check rows are streamed.
 Caller:2GiB/512MiB/180s/2CPU. Metadata fixtures cannot qualify an EDA engine.
+Lineage v4 (native summary v2): only the initial and the committed final
+revision are materialized; attempt children are logical revisions, chained by
+name and bound to distinct physical-source fingerprints by their check reports.
+Check reports may hold only their violated rows (check_rows='violated'); the
+coverage row counts, worst-net summary and verdict counts are then checked
+against the complete evaluated inventory they report.
 """
 from pathlib import Path
 import argparse,collections,fcntl,hashlib,json,math,re,resource,sys,time
@@ -115,6 +121,7 @@ class Verifier:
   self.cfg=cfg;self.start=time.monotonic();self.records={};self.report_summaries={};self.repair_costs={}
   self.group_reports=0;self.reported_work=0;self.validation_upper_bound=0;self.work_budget_charge=0
   self.workspace=Path(cfg['design_workspace']).resolve(strict=True);self.operation_map={}
+  self.logical=False;self.check_rows='all'
  def check_time(self):need(time.monotonic()-self.start<=170,'VERIFIER_DEADLINE')
  def file(self,record,cap=4<<30):
   self.check_time();need(isinstance(record,dict)and set(record)=={'path','sha256','bytes'},'FILE_ID_SCHEMA')
@@ -196,10 +203,16 @@ class Verifier:
   def row(r):
    self.check_time();need(isinstance(r,dict)and r.get('net')in ns_set,'CHECK_ROW_NET_SCOPE')
    need(type(r.get('violated'))is bool and type(r.get('exceeds_lef_limit'))is bool,'CHECK_ROW_VERDICT')
+   need(r['violated']or not violated_only,'NONVIOLATED_ROW_IN_VIOLATED_ONLY_REPORT')
+   need(r['violated']or not r['exceeds_lef_limit'],'LEF_EXCESS_WITHOUT_VIOLATION')
    counts[r['net']]+=1;bad[r['net']]+=r['violated'];lef[r['net']]+=r['exceeds_lef_limit']
    for key in['gate_area_um2','diff_area_um2','metal_um2','denominator_um2','ratio','limit','effective_limit']:
     value=r.get(key);need(type(value)in[int,float]and math.isfinite(value)and value>=0,'CHECK_ROW_NUMERICS')
+  # Rows stream before the metadata is read: they are checked against the
+  # session's declared row scope, which the report must then repeat.
+  violated_only=self.check_rows=='violated'
   raw=Reader(self.file(record,128<<20));d,nrows=raw.scan(row)
+  need(d.get('check_rows')==('violated'if violated_only else None),'CHECK_ROW_SCOPE')
   need(d['schema']=='rustroad.antenna-check.v1'and d['workspace_revision']==revision,'REPORT_REVISION')
   need(d['sources']==inv['sources']and d['scope']['routing_scope']==self.route_scope,'REPORT_SOURCE_SCOPE')
   need(d['scope']['extra_shapes']==0 and d['scope']['drc_status']=='unchecked'and d['safety_margin']['fraction']==.1,'REPORT_MODEL_SCOPE')
@@ -211,27 +224,28 @@ class Verifier:
   for expected,c in zip(ns,coverage,strict=True):
    need(set(c)=={'net','shapes','rows','gate_terminals','observation','model_partial'}and c['net']==expected,'REPORT_COVERAGE_IDENTITY')
    need(type(c['model_partial'])is bool and all(integer(c[k])for k in['shapes','rows','gate_terminals']),'REPORT_COVERAGE_TYPES')
-   need(c['shapes']<=LIMITS['max_shapes_per_net']and c['rows']==counts[expected],'REPORT_ROW_COUNT_MISMATCH')
+   need(c['shapes']<=LIMITS['max_shapes_per_net']and(c['rows']>=counts[expected]if violated_only else c['rows']==counts[expected]),'REPORT_ROW_COUNT_MISMATCH')
    observation=c['observation'];need(observation in['observed','no_geometry','no_gate_area','no_applicable_rule_observation'],'OBSERVATION_KIND')
    if observation=='observed':need(c['rows']>0,'OBSERVED_WITH_NO_ROWS')
    else:need(c['rows']==0,'UNOBSERVED_WITH_ROWS')
    if observation=='no_geometry':need(c['shapes']==0,'NO_GEOMETRY_HAS_SHAPES')
    if observation=='no_gate_area':need(c['gate_terminals']==0,'NO_GATE_HAS_TERMINALS')
    partial|=c['model_partial']or observation!='observed';rows[expected]=c
-  need(sum(counts.values())==nrows<=LIMITS['max_rows'],'REPORT_TOTAL_ROWS')
+  evaluated=sum(c['rows']for c in coverage)
+  need(sum(counts.values())==nrows<=evaluated<=LIMITS['max_rows'],'REPORT_TOTAL_ROWS')
   need(integer(d['violations'])and integer(d['lef_violations'])and d['violations']==sum(bad.values())and d['lef_violations']==sum(lef.values()),'REPORT_VERDICT_COUNT_MISMATCH')
   need(isinstance(d['unsupported'],list)and len(d['unsupported'])<=100000,'UNSUPPORTED_BUDGET');partial|=bool(d['unsupported'])
   worst=d['nets'];need(isinstance(worst,list)and len(worst)<=len(ns),'WORST_NET_BUDGET');seen=set()
   for r in worst:
    name=r['net'];need(name in rows and name not in seen and type(r['violated'])is bool,'WORST_NET_IDENTITY')
    seen.add(name);need(r['violated']==bool(bad[name]),'WORST_NET_HIDES_ROW_VIOLATION')
-  need(set(counts)<=seen,'WORST_NET_OMITS_OBSERVED_NET')
+  need(set(counts)<=seen and{n for n,c in rows.items()if c['rows']}==seen,'WORST_NET_OMITS_OBSERVED_NET')
   violated={n for n in ns if bad[n]}
   partial|=d['status']=='subset_partial'
   expected_status='subset_violated'if violated else'subset_partial'if partial else'subset_clean'
   need(d['status']==expected_status,'REPORT_STATUS')
   stats=d['stats'];work=stats['work'];need(integer(work)and work<=LIMITS['max_work'],'REPORT_WORK')
-  if'partial_nets_checked'in stats:need(stats['partial_nets_checked']==nrows,'STATS_CHECK_ROW_COUNT')
+  if'partial_nets_checked'in stats:need(stats['partial_nets_checked']==evaluated,'STATS_CHECK_ROW_COUNT')
   memory=stats['report_memory'];need(all(integer(memory[k])for k in['limit_bytes','live_bytes','peak_live_bytes','cumulative_reserved_bytes','cumulative_row_bytes']),'REPORT_MEMORY_TYPE')
   need(memory['limit_bytes']==128<<20 and memory['live_bytes']<=memory['peak_live_bytes']<=memory['limit_bytes']and memory['peak_live_bytes']<=memory['cumulative_reserved_bytes'],'REPORT_MEMORY_LEDGER')
   compact=dict(revision=revision,source=s['source_sha256'],work=work,selection=selection,
@@ -246,7 +260,8 @@ class Verifier:
  def run(self):
   cfg=self.cfg;lineage=self.data(cfg['lineage'],16<<20);self.route_scope=lineage['route_scope']
   need(self.route_scope=='all_signal_nets','FULL_ROUTED_SCOPE_REQUIRED')
-  need(lineage['schema']=='rusteda.native-antenna-lineage.v3'and lineage['scope']=='supported_standard_cell_subset','LINEAGE_SCHEMA')
+  need(lineage['schema']in('rusteda.native-antenna-lineage.v3','rusteda.native-antenna-lineage.v4')and lineage['scope']=='supported_standard_cell_subset','LINEAGE_SCHEMA')
+  self.logical=lineage['schema'].endswith('.v4')
   need(lineage['workspace']==str(self.workspace)and lineage['tool']==cfg['tool']and lineage['policy']==POLICY,'LINEAGE_IDENTITY_POLICY')
   self.file(cfg['tool']);source_manifest=self.data(cfg['source_manifest'],4<<20)
   need(isinstance(source_manifest['sources'],list)and len(source_manifest['sources'])<=128,'SOURCE_COUNT_BUDGET')
@@ -257,7 +272,7 @@ class Verifier:
   need(controller['design_workspace']==str(self.workspace)and controller['tool']==cfg['tool']and controller['initial_revision']==lineage['initial_revision']and controller['grouping']==POLICY,'CONTROLLER_INPUT_BINDING')
   limits=controller['limits']
   need(set(limits)=={'threads','max_rounds','max_selected_nets','max_work','max_expansions','deadline_seconds'},'CONTROLLER_LIMIT_SCHEMA')
-  need(all(integer(v)for v in limits.values())and limits['threads']in[2,16]and 1<=limits['max_rounds']<=3 and limits['max_selected_nets']==100000 and limits['max_work']==200000000 and limits['max_expansions']==8000000 and limits['deadline_seconds']==1800,'CONTROLLER_LIMIT_BINDING')
+  need(all(integer(v)for v in limits.values())and limits['threads']in[2,4,16]and 1<=limits['max_rounds']<=3 and limits['max_selected_nets']==100000 and limits['max_work']==200000000 and limits['max_expansions']==8000000 and limits['deadline_seconds']==1800,'CONTROLLER_LIMIT_BINDING')
   if 'controller_inputs'in lineage:need(lineage['controller_inputs']==controller_id,'LINEAGE_CONTROLLER_INPUT_BINDING')
   need(lineage['execution_mode']=='single_native_process'and type(lineage['actual_native_processes'])is int and lineage['actual_native_processes']==1,'NATIVE_EXECUTION_MODE')
   commands=lineage['commands'];need(isinstance(commands,list)and len(commands)==1,'COMMAND_COUNT_EXACTLY_ONE')
@@ -287,8 +302,12 @@ class Verifier:
     need(left==right,'NATIVE_STDOUT_SUMMARY_RAW_BYTES')
     if not left:break
   native_summary=self.data(lineage['native_summary'],16<<20)
-  need(native_summary['schema']=='rustroad.antenna-group-repair-result.v1','NATIVE_SUMMARY_SCHEMA')
+  need(native_summary['schema']==('rustroad.antenna-group-repair-result.v2'if self.logical else'rustroad.antenna-group-repair-result.v1'),'NATIVE_SUMMARY_SCHEMA')
   shared=['status','initial_revision','final_revision','scope','route_scope','inventory_status','native_analysis_status','observations','excluded_macro_touch','unresolved_supported_nets','requires_full_revalidation','whole_layout_antenna_status','total_jumpers','stop_reason','skipped_futile_groups','reported_work','unreported_validation_work_upper_bound','work_budget_charge','report_bytes']
+  if self.logical:
+   shared+=['logical_revisions','committed_revision','check_rows']
+   need(native_summary['check_rows']in['violated','all']and integer(native_summary['logical_revisions']),'NATIVE_LOGICAL_SUMMARY')
+   self.check_rows=native_summary['check_rows']
   need(all(native_summary[k]==lineage[k]for k in shared),'NATIVE_SUMMARY_LINEAGE_ACCOUNTING')
   need(native_summary['whole_layout_antenna_status']=='unchecked'and native_summary['drc_status']=='unchecked'and native_summary['corner']=='not_applicable'and native_summary['wire_model']=='none'and native_summary['unconstrained_endpoints']is None and native_summary['requires_full_revalidation']is True,'NATIVE_SUMMARY_TRUTHFULNESS')
   need(type(native_summary['wall_seconds'])in[int,float]and math.isfinite(native_summary['wall_seconds'])and 0<=native_summary['wall_seconds']<=command['wall_seconds']<=1800,'NATIVE_SUMMARY_DEADLINE')
@@ -321,10 +340,14 @@ class Verifier:
   model_names,touches=self.model(lineage['initial_model']);self.operation(lineage['initial_model'],'export-connectivity',revision=initial)
   need(set(inv['names'])<=model_names and inv['counts']['model_logical_net_count']==len(model_names),'INVENTORY_MODEL_MEMBERSHIP')
   attempts=lineage['attempts'];need(isinstance(attempts,list)and len(attempts)<=64,'ATTEMPT_COUNT');jumpers=0;mutating=[]
+  states={};pending_child=None
   for number,attempt in enumerate(attempts):
    need(integer(attempt['round'])and attempt['round']<limits['max_rounds']and integer(attempt['group'])and attempt['group']<native_summary['groups'],'ATTEMPT_ROUND_GROUP_BUDGET')
    base=attempt['base_revision'];need(base==current,'BROKEN_ATTEMPT_CHAIN')
    plan=self.group_record(attempt['planning'],base,inv)
+   if pending_child is not None:
+    # The first check of a new logical revision: a different physical state.
+    need(pending_child[0]==base and plan['source']!=pending_child[1],'LOGICAL_REVISION_UNCHANGED_SOURCE');pending_child=None
    eligible=sorted(n for n in plan['violating']-touches if not plan['coverage'][n]['model_partial']and plan['coverage'][n]['observation']=='observed')
    before=self.group_record(attempt['before'],base,inv)
    selected=names(self.data(attempt['selected'],1<<20),128)
@@ -350,13 +373,36 @@ class Verifier:
     unreported_validation_work_upper_bound=LIMITS['max_work'],budget_charge=sum(costs)+LIMITS['max_work'])
    need(attempt['work_accounting']==accounting and all(integer(x)for x in attempt['work_accounting'].values()),'UNREPORTED_VALIDATION_MISLABELED')
    self.repair_costs[attempt['repair_report']['path']]=dict(accounting=accounting,base=base,child=attempt['revision'])
-   child=attempt['revision'];self.revision(attempt['child'],child,base if child!=base else None)
+   child=attempt['revision']
+   if self.logical and not attempt['child'].get('materialized'):
+    row=attempt['child'];need(set(row)=={'revision','parent_revision','materialized'}and row['materialized']is False,'LOGICAL_REVISION_SCHEMA')
+    need(REV.fullmatch(child)is not None and row['revision']==child and child!=lineage['final_revision']and child!=initial,'LOGICAL_REVISION_IDENTITY')
+    need(not(self.workspace/'revisions'/child).exists(),'LOGICAL_REVISION_MATERIALIZED')
+    if child!=base:need(row['parent_revision']==base,'BROKEN_PARENT_CHAIN')
+   elif self.logical:
+    need(attempt['child']['materialized']is True and child in(initial,lineage['final_revision']),'MATERIALIZED_REVISION_SCOPE')
+    self.revision({k:attempt['child'][k]for k in('revision','parent_revision','design_file')},child,initial if child!=initial else None)
+    if child!=base:need(attempt['child']['logical_parent_revision']==base,'BROKEN_PARENT_CHAIN')
+   else:self.revision(attempt['child'],child,base if child!=base else None)
+   if self.logical:
+    # A logical revision is one physical state: each check names its source.
+    known=states.setdefault(base,plan['source'])
+    need(known==plan['source']==before['source'],'LOGICAL_REVISION_SOURCE')
+    if child!=base:need(child not in states,'LOGICAL_REVISION_REUSED');pending_child=(child,known)
+    else:pending_child=None
    if child==base:need(not js and repair['before']==repair['after'],'NOOP_REPAIR_CHANGED')
    else:need(js,'MUTATING_REPAIR_HAS_NO_JUMPER');mutating.append(attempt)
    current=child
   need(lineage['rounds']==mutating and lineage['total_jumpers']==jumpers,'ROUND_OR_JUMPER_LEDGER')
   need(current==lineage['final_revision'],'FINAL_REVISION_CHAIN')
   final=self.inventory(lineage['final_inventory'],current,self.route_scope);self.operation(lineage['final_inventory'],'antenna-inventory',revision=current)
+  if self.logical:
+   if pending_child is not None:need(pending_child[0]==current and final['source']!=pending_child[1],'LOGICAL_REVISION_UNCHANGED_SOURCE')
+   need(states.get(current,final['source'])==final['source'],'LOGICAL_REVISION_SOURCE')
+   committed=lineage['committed_revision'];need(lineage['logical_revisions']==len(mutating)and committed==(current if mutating else None),'COMMITTED_REVISION_LEDGER')
+   need(lineage['materialized_revisions']==sorted({initial,current})and lineage['check_rows']==self.check_rows,'MATERIALIZED_REVISION_LEDGER')
+   need(lineage['final']['materialized']is True and lineage['final']['parent_revision']==(initial if mutating else lineage['initial']['parent_revision']),'FINAL_REVISION_PARENT')
+   need(lineage['final']['logical_parent_revision']==(mutating[-1]['base_revision']if mutating else None),'FINAL_LOGICAL_PARENT')
   need(final['names']==inv['names']and final['ids']==inv['ids']and final['counts']==inv['counts']and final['sources']==inv['sources'],'ROUTED_INVENTORY_CHANGED')
   self.operation(lineage['final_model'],'export-connectivity',revision=current);self.file(lineage['final_model'],64<<20)
   need(lineage['initial_model']['sha256']==lineage['final_model']['sha256'],'LOGICAL_CONNECTIVITY_CHANGED')
@@ -410,7 +456,7 @@ class Verifier:
   need(all(integer(lineage[k])for k in['reported_work','unreported_validation_work_upper_bound','work_budget_charge'])
    and lineage['reported_work']==self.reported_work and lineage['unreported_validation_work_upper_bound']==self.validation_upper_bound
    and lineage['work_budget_charge']==self.work_budget_charge<=POLICY['max_cumulative_work'],'WORK_BUDGET_LEDGER')
-  self.revision(lineage['final'],current)
+  self.revision({k:lineage['final'][k]for k in('revision','parent_revision','design_file')}if self.logical else lineage['final'],current)
   snapshot=self.file(lineage['workspace_head'],128);actual_head=self.workspace/'HEAD'
   need(actual_head.stat().st_size<=128,'WORKSPACE_HEAD_BYTE_BUDGET')
   need(snapshot.read_text()==current+'\n'and actual_head.read_text().strip()==current,'STALE_FINAL_HEAD')

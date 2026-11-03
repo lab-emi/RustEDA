@@ -116,7 +116,7 @@ class Run:
         require(identity(self.tool['path']) == self.tool, 'native tool identity differs')
         limits = config['limits']
         require(set(limits) == {'threads', 'max_rounds', 'max_selected_nets', 'max_work', 'max_expansions', 'deadline_seconds'}, 'antenna limits')
-        require(type(limits['threads']) is int and limits['threads'] in (2, 16)
+        require(type(limits['threads']) is int and limits['threads'] in (2, 4, 16)
             and type(limits['max_rounds']) is int and 1 <= limits['max_rounds'] <= 3
             and limits['max_selected_nets'] == 100000 and limits['max_work'] == 200000000
             and limits['max_expansions'] == 8000000 and limits['deadline_seconds'] == 1800, 'antenna work/memory bounds')

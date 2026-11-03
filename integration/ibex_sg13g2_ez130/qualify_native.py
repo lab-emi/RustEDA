@@ -404,7 +404,10 @@ def single_process_antenna(files):
 
 def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, tools, lineage_path):
     """Consume the standalone verifier result; never import/run its large IR reader."""
-    session = lineage['schema'] == 'rusteda.native-antenna-lineage.v3'
+    # v3: one native session with a real revision per attempt; v4: the same
+    # session committing only its final logical revision (RustROAD summary v2).
+    session = lineage['schema'] in {'rusteda.native-antenna-lineage.v3', 'rusteda.native-antenna-lineage.v4'}
+    logical = lineage['schema'] == 'rusteda.native-antenna-lineage.v4'
     require(session == single_process_antenna(files), 'antenna declared execution/lineage protocol differs')
     expected_review = ('rusteda.antenna-v3-independent-lineage-review.v1' if session
                        else 'rusteda.antenna-v2-independent-lineage-review.v1')
@@ -485,7 +488,8 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
     if session:
         expected_config['controller_inputs'] = identity(dynamic('backend/antenna-inputs.json'))
     require(config == expected_config, 'v2/v3 verifier config differs')
-    require(lineage['schema'] in {'rusteda.native-antenna-lineage.v2', 'rusteda.native-antenna-lineage.v3'}
+    require(lineage['schema'] in {'rusteda.native-antenna-lineage.v2', 'rusteda.native-antenna-lineage.v3',
+                                  'rusteda.native-antenna-lineage.v4'}
             and lineage['scope'] == 'supported_standard_cell_subset'
             and lineage['route_scope'] == 'all_signal_nets'
             and lineage['status'] in {'complete', 'unresolved'}
@@ -498,6 +502,15 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
                 and 0 < verification['logical_operations'] <= policy['max_commands'],
                 'v3 actual process/logical operation scope differs')
     initial, final = lineage['initial_revision'], lineage['final_revision']
+    if logical:
+        # Only the initial and the committed final revision exist on disk; the
+        # verifier has already chained the logical attempt revisions.
+        require(lineage['materialized_revisions'] == sorted({initial, final})
+                and lineage['committed_revision'] == (None if final == initial else final)
+                and lineage['check_rows'] in {'violated', 'all'}
+                and natural(lineage['logical_revisions'])
+                and (final == initial or lineage['final'].get('materialized') is True),
+                'v4 logical revision ledger differs')
     workspace = Path(lineage['workspace']).resolve(strict=True)
     require(workspace.is_relative_to(root) and verification['workspace'] == str(workspace)
             and initial == verification['initial_revision'] == route['revision']

@@ -7,6 +7,11 @@ Estimate: <=256 MiB adapter metadata plus serial native child <1.5 GiB; caller
 provides4GiB/1800s scope. One <=4MiB header decoded at a time; raw check rows stream.
 All original group/work/jumper/report budgets remain. Native foundry signoff is
 separate. No graph/path enumeration or fabricated per-operation process receipt.
+
+A v2 native summary (lineage v4) commits only its last logical revision: attempt
+children are logical revisions bound by their check reports' source fingerprints,
+and only the initial and the committed final revision have design files. Check
+reports then hold their violated rows (check_rows); coverage counts all rows.
 """
 from __future__ import annotations
 import argparse
@@ -88,12 +93,30 @@ class Run(groups.Run):
         stdout = self.command('native-session', ['repair-antenna-groups','--base-rev',current,
             '--plan',plan], 16 << 20)
         summary = read(stdout,16 << 20)
-        require(summary['schema']=='rustroad.antenna-group-repair-result.v1'
+        require(summary['schema'] in ('rustroad.antenna-group-repair-result.v1',
+            'rustroad.antenna-group-repair-result.v2')
             and identity(stdout)['sha256']==identity(native/'summary.json')['sha256'],
             'native stdout/summary binding differs')
         require(summary['initial_revision']==current and summary['final_revision']==head(self.design),
             'native session actual revision differs')
         final = summary['final_revision']
+        logical = summary['schema'].endswith('.v2')
+        if logical:
+            committed = summary['committed_revision']
+            require(summary['check_rows'] in ('violated','all') and type(summary['logical_revisions']) is int
+                and committed in (None, final) and (committed is None) == (final == current)
+                and (committed is None) == (summary['logical_revisions'] == 0),
+                'native logical revision summary differs')
+            materialized = {current, final}
+
+        def revision_record(revision, logical_parent):
+            # Logical revisions exist only in reports; materialized ones are read.
+            if not logical:
+                return metadata(self.design, revision)
+            if revision in materialized:
+                return dict(metadata(self.design, revision), materialized=True,
+                            logical_parent_revision=logical_parent)
+            return dict(revision=revision, parent_revision=logical_parent, materialized=False)
         operations, check_records = [], {}
         report_bytes = 0
 
@@ -133,6 +156,7 @@ class Run(groups.Run):
         require(len(planning)<=POLICY['max_groups']*self.c['limits']['max_rounds'],
                 'native planning operation budget')
         attempts, rounds = [], []
+        parents = {}
         for iteration,index in sorted(planning):
             planning_record = check(f'round-{iteration}-group-{index}',current)
             if (iteration,index) not in attempts_by_group:continue
@@ -147,10 +171,12 @@ class Run(groups.Run):
             record = operation(f'repair-{number}','repair-antenna',current,identity(selection),
                                before['report'],current)
             child = row['revision']
+            if child != current:
+                parents[child] = current
             costs = repair['stats']
             attempt = dict(round=iteration,group=index,base_revision=current,revision=child,
                 planning=planning_record,before=before,selected=identity(selection),repair_report=record,
-                child=metadata(self.design,child),work_accounting=dict(
+                child=revision_record(child, parents.get(child)),work_accounting=dict(
                     reported_antenna_work=costs['antenna_work'],reported_planner_work=costs['planner_work'],
                     unreported_validation_work_upper_bound=LIMITS['max_work'],
                     budget_charge=costs['antenna_work']+costs['planner_work']+LIMITS['max_work']))
@@ -166,7 +192,8 @@ class Run(groups.Run):
         require(report_bytes==summary['report_bytes'],'native logical report byte ledger differs')
         require(identity(self.tool['path'])==self.tool,'native tool changed')
         snapshot=self.output/'final-head.txt';snapshot.write_text(final+'\n')
-        result = dict(schema='rusteda.native-antenna-lineage.v3',status=summary['status'],
+        result = dict(schema='rusteda.native-antenna-lineage.v4' if logical
+            else 'rusteda.native-antenna-lineage.v3',status=summary['status'],
             scope=summary['scope'],route_scope=summary['route_scope'],workspace=str(self.design),
             tool=self.tool,initial_revision=self.c['initial_revision'],final_revision=final,
             initial=self.initial,final=metadata(self.design,final),workspace_head=identity(snapshot),
@@ -185,6 +212,11 @@ class Run(groups.Run):
             work_budget_charge=summary['work_budget_charge'],total_jumpers=summary['total_jumpers'],
             stop_reason=summary['stop_reason'],skipped_futile_groups=summary['skipped_futile_groups'],
             wall_seconds=time.monotonic()-self.started)
+        if logical:
+            result.update(final=revision_record(final, parents.get(final)),
+                logical_revisions=summary['logical_revisions'],
+                committed_revision=summary['committed_revision'],check_rows=summary['check_rows'],
+                materialized_revisions=sorted(materialized))
         # Include generated metadata in the disk admission; no child timings are invented.
         total,count=0,0
         for directory in (self.output,native):
