@@ -26,5 +26,19 @@ checkpoint retention at the evaluation horizon, Metal2 access, heuristic weight
 2, via cost 1680 and RC detour 1.08. Frontend STA uses eight workers. These values
 are recipe inputs, not library-specific engine heuristics.
 
+**Not recomposable from a fresh checkout.** The R20 and R21 frozen-input records
+bind three recipe inputs that are not in the repository: `physical.json`
+(`0c7a4e6a…`), `routing.json` (`fe59328a…`) and `native_frontend_inputs.py`
+(`ed7e7c08…`), all taken from the original host's local `.work/` directories.
+The repository's `native-physical.json`, `native-routing.json` and
+`native_frontend_inputs.py` are run16's helper set and hash differently
+(`5fe299cf…`, `aba6ee1d…`, `ef7d5550…`). The same records also bind other files
+with no byte-identical repository copy, for example `rc-policy.json`
+(`611de51a…`) and the backend composer `native_backend.py` (`957bdc4b…`). This
+campaign therefore cannot be recomposed from a fresh checkout. The
+[2026-11-02 host reproduction](../../../ibex_host_benchmark/README.md) composed
+the repository recipe instead and reproduced run16-class QoR, not R20/R21's.
+Record: [R20 frozen inputs](../../../../docs/benchmarks/evidence/ibex-20261101/R20-early-sta/gates/inputs_frozen.json).
+
 [Native results and scope](https://lab-emi.github.io/RustEDA/benchmarks/) ·
 [Portable evidence inventory](https://lab-emi.github.io/RustEDA/benchmarks/ibex-sg13g2-ez130-development.json)

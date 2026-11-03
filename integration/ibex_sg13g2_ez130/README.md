@@ -144,6 +144,59 @@ longer clock-gate enable or clock-port net can cross it. A clock-only antenna re
 the complete original Ant.a..i deck on the final all-signal GDS is mandatory.
 Resumed LibreLane attempts and local route replays remain repair diagnostics.
 
+## Host reproduction · 2026-11-02
+
+[`../ibex_host_benchmark`](../ibex_host_benchmark/README.md) reran this recipe on
+a 4-vCPU cloud host that had none of the first campaign host's local artifacts
+(cgroup v1, no swap, no systemd user manager), next to LibreLane 3.0.17's
+Classic flow from the same prepared inputs, and applied the same gate scripts
+to both final layouts. The host needed these deviations; the harness README
+lists each edit:
+
+- **EZ130 collateral.** 5 of the 7 EZ130 files that `contract.json` pins are
+  byte-identical; all IHP and SRAM collateral matches. The SG13G2 tech LEF and the cell GDS are reconstructed from
+  public sources and differ from the pinned files, so a host copy of
+  `contract.json` pins the reconstructed hashes; with the repository copy,
+  `prepare.py` stops at its collateral identity check.
+- **Tools.** nixpkgs builds (OpenROAD 26Q3, OpenSTA 3.1.0, Yosys 0.70, KLayout
+  0.30.12, Magic 8.3.689, Netgen 1.5.325) replace the LibreLane devshell
+  AppImage. The converted RTL is `da905268…` instead of `8a8fe84b…`.
+- **Composition.** `compose_native.py` writes the composer inputs and stops at
+  the backend prefix manifest. The component-qualification evidence that
+  `native_flow.py` and `qualify_native.py` require is not published and was not
+  fabricated, so the run is `unqualified`.
+- **Hardware.** 4 vCPUs instead of 16 logical CPUs of an i9-13900HX. Routing
+  and extraction use 4 threads instead of the template's 16 router workers, so
+  this run does not meet the 16-core requirement above.
+- **Helper patches.** Host-local copies accept 4 threads, read the cgroup-v1
+  memory controller, accept the host executor's owned memory cgroup instead of
+  a systemd user scope (LVS helper), pass the RC calibration rules path
+  explicitly and parse LibreLane's DEF in the density gate.
+- **Antenna repair.** The grouped single-process session in `antenna_session/`
+  replaces the legacy path, whose complete antenna report for this layout
+  exceeded RustROAD's 128 MiB report cap.
+- **LibreLane.** Classic flow with `DRT_THREADS=4`, without the
+  `reference_flow.py` repair loop of the
+  [matched LibreLane reference](#matched-librelane-reference); LibreLane's own
+  post-GRT design repair is enabled instead (`RUN_POST_GRT_DESIGN_REPAIR=true`).
+
+With these deviations the repository recipe reproduces run16-class QoR
+(run16 values from the [2026-10-30 receipt](../../docs/benchmarks/ibex-sg13g2-ez130.json)):
+233,909.2 µm² standard-cell area and 33.25 % final non-filler density (run16:
+233,909.222 µm², 33.2521 %), 1,679,076.6 µm of routed signal wire (run16:
+1,678,598.6 µm) and 301,099 vias (run16: 301,859). The layout passes every
+design gate on the shared scripts. The producer stops at `timing_accuracy`:
+RustSTA and OpenSTA differ by 1.4052 ps in TT setup worst slack on identical
+native SPEF, against the 1 ps gate (run16's largest difference: 0.806 ps). GDS, DEF, all netlists and the native SPEF were
+byte-identical across two complete native runs on the host. The run does not
+reach R20/R21's QoR; those recipe inputs are not in the repository
+([campaign note](campaigns/early-20261101/README.md)).
+
+[Host results](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-02) ·
+[Receipt](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json) ·
+[run16 receipt](../../docs/benchmarks/ibex-sg13g2-ez130.json) ·
+[Harness and reproduction commands](../ibex_host_benchmark/README.md)
+
 ## Optional concurrent signoff
 
 Set `parallel_signoff: true` in a new `rusteda.native-backend-inputs.v1`

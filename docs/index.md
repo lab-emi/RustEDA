@@ -27,18 +27,25 @@ guides the next iteration.
 ## Ibex SG13G2 / EZ130
 
 The 2026-11-02 host campaign built Ibex with EZ130 cells and **two real IHP
-SRAM macros** on a 4-vCPU cloud host: the native recipe and LibreLane 3.0.17
-read the same prepared inputs, and the same independent scripts checked both
-layouts. RustEDA's layout passes DRC, antenna, LVS, TT/SS timing, simulation,
-equivalence and density; on identical SPEF, RustSTA and OpenSTA differ by up
-to **1.405 ps**, failing the 1 ps parity gate, and the run is `unqualified`.
-LibreLane fails timing on capacitance and fanout violations, and its equivalence
-is `unverified`. Neither flow passes every gate, so no cross-tool ratio is
-published. Module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice
-(on extracted RC nets, not transistor level).
+SRAM macros** on a 4-vCPU cloud host, one timed sample per flow: the native
+recipe and LibreLane 3.0.17 read the same prepared inputs, and the same
+independent scripts checked both layouts. **Neither flow passes every gate.**
+RustEDA's layout passes DRC, antenna, LVS, TT/SS timing, simulation, equivalence
+and density, but on identical SPEF RustSTA and OpenSTA differ by up to 1.405 ps,
+failing the 1 ps parity gate. Separately, the run is `unqualified` because the
+recipe was composed without component-qualification evidence. LibreLane fails
+the timing gate on max-capacitance and fanout checks (setup and hold met); its
+equivalence is `unverified` because the checker cannot name-match 433 renamed
+registers, a checker limitation rather than evidence of non-equivalence.
+Standard-cell area is 233,909.2 µm² for RustEDA and 197,913.7 µm² for LibreLane.
+The end-to-end times, 2,609.93 s and 3,286.87 s, cover different work (RustEDA's
+producer stopped at the parity gate), so no cross-tool ratio is published.
+Module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice (on
+extracted RC nets, not transistor level).
 
-The retained R20/R21 native runs complete **129/129 steps and all 16 gates in
-472.2 s and 472.6 s** on 16 logical CPUs.
+The retained R20/R21 native runs complete **129/129 steps and all 16 gates**, in
+472.2 s and 472.6 s on 16 logical CPUs of an i9-13900HX; times from different
+hosts are not comparable.
 
 [Latest Ibex campaign →](benchmarks.md) · [Engine capabilities →](engine-status.md)
 

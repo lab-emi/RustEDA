@@ -426,6 +426,13 @@ def main() -> int:
     mb = read(w / names["modules"] / "module-bench.json")
     for key in ("extraction", "timing", "gds"):
         modules[key] = mb.get(key)
+    pool_note = ("RustROAD sizes its thread pool from --threads (default 2); the recorded extract and export-gds "
+                 "commands pass none, so every RustROAD run used a 2-thread pool and the _t4 rows are a second "
+                 "2-thread sample. RAYON_NUM_THREADS does not size it. OpenRCX used set_thread_count 2 and 4.")
+    if modules.get("extraction"):
+        modules["extraction"]["thread_note"] = pool_note
+    if modules.get("gds"):
+        modules["gds"]["thread_note"] = "RustROAD export-gds ran on its default 2-thread pool; KLayout's LEF/DEF reader is single-process."
     if parity:
         modules["timing"]["agreement"] = producer_gates["timing_accuracy"]
     keep("modules/replay.json", data=mb)
@@ -469,16 +476,16 @@ def main() -> int:
         ngspice=tool("/opt/eda/ngspice/bin/ngspice", None) | dict(version="ngspice-45"),
         sv2v=tool("/opt/eda/sv2v/bin/sv2v", ["/opt/eda/sv2v/bin/sv2v", "--version"]),
         librelane=dict(version="3.0.17", source="PyPI wheel; OpenROAD/Yosys/KLayout/Magic/Netgen from nixpkgs"))
-    engines = {m: subprocess.run(["git", "-C", str(ROOT / "modules" / m), "rev-parse", "HEAD"], capture_output=True,
-                                 text=True).stdout.strip() for m in ("RustSys", "RustSTA", "RustROAD", "RustSpice",
-                                                                     "RustEDA-Common")}
+    # Host facts and engine build commits are captured once on the campaign host (host-facts.json);
+    # sampling the machine that merely regenerates the receipt would misreport the measurement host.
+    facts = read(w / "host-facts.json")
+    engines = facts["engine_commits"]
+    keep("host-facts.json", source=w / "host-facts.json")
     contract = read(ROOT / "integration/ibex_sg13g2_ez130/contract.json")
     ez = Path(host["ez130_root"])
     ez_files = {k: dict(contract_sha256=v, host_sha256=sha(ez / k.split("/", 1)[1]),
                         byte_identical=sha(ez / k.split("/", 1)[1]) == v)
                 for k, v in contract["files"].items() if k.startswith("ez130/")}
-    mem = int(re.search(r"MemTotal:\s+(\d+)", Path("/proc/meminfo").read_text())[1]) * 1024
-    cpu = re.search(r"model name\s*:\s*(.+)", Path("/proc/cpuinfo").read_text())[1].strip()
     receipt = dict(
         schema="rusteda.ibex-host-benchmark.v1", date=args.date,
         status="completed" if complete else "comparison_incomplete",
@@ -497,10 +504,7 @@ def main() -> int:
                                        "the catalog-pinned FF Liberty is also byte-identical"),
                         corners=["tt_1p20v_25c", "ss_1p08v_125c"], rc_corner="nominal",
                         clock_period_ns=100, contract_sha256_repository=sha(ROOT / "integration/ibex_sg13g2_ez130/contract.json")),
-        host=dict(cpu=cpu, logical_cpus=os.cpu_count(), memory_bytes=mem, kernel=platform.release(),
-                  cgroup="v1 memory controller; each timed stage alone in its own child group",
-                  allocation="all 4 vCPUs to each flow; RustEDA 8 GiB cap (+2 GiB memsw), LibreLane 10 GiB cap; no swap device",
-                  sampling="one timed sample per flow; module stages one warm-up plus three measured repetitions"),
+        host=facts["host"] | dict(facts_source=facts["source"]),
         preparation=dict(seconds=prep["wall_seconds"], peak_rss_kib=prep["peak_rss_kib"], tool="sv2v 0.0.13.1"),
         tools=tools, engine_commits=engines,
         implementations=dict(RustEDA=native, LibreLane=librelane),

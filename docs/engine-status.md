@@ -4,17 +4,30 @@ Updated **2026-11-02**. RustEDA’s five engine repositories keep independent
 Git histories. The superproject pins their source revisions; flow, CLI and
 workbench live directly in `apps/`. Version labels describe source previews.
 
-The 2026-11-02 host campaign built Ibex on SG13G2/EZ130 with two real IHP SRAMs
-on a 4-vCPU cloud host (Xeon 2.1 GHz, 15.7 GiB RAM), using engine binaries built
-from the 2026-11-01 publication's module commits. The repository's run16-class
-native recipe and LibreLane 3.0.17 read the same prepared inputs, and the same
-independent gate scripts checked both layouts; each flow has one timed sample.
-RustEDA's layout passes every design gate, but the run is `unqualified` and its
-RustSTA/OpenSTA parity gate `failed` at **1.405 ps** against a 1 ps tolerance.
-LibreLane `failed` timing on capacitance and fanout checks, and its equivalence
-is `unverified`. Neither flow passes every gate, so no end-to-end ratio is
-published. Each section below summarizes its part of the campaign and the
-scope of each comparison.
+The [2026-11-02 host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
+built Ibex on SG13G2/EZ130 with two real IHP SRAMs on a 4-vCPU cloud host
+(Xeon 2.1 GHz in the measurement-time evidence, 15.7 GiB RAM, no swap). The
+receipt lists the engine submodule revisions (`engine_commits`, the 2026-11-01
+publication's commits) and identifies each executable by SHA-256. The
+repository's run16-class native recipe and LibreLane 3.0.17 read the same
+prepared inputs, and the same independent gate scripts checked both layouts.
+Each flow has one timed sample, under an 8 GiB memory cap (+2 GiB memsw) for
+RustEDA, whose cgroup peak reached the cap through page cache, and a 10 GiB cap
+for LibreLane.
+
+The EZ130 SG13G2 tech LEF and cell GDS are reconstructed; 5 of the 7
+contract-pinned EZ130 files are byte-identical. LibreLane ran nixpkgs OpenROAD
+26Q3 and Yosys 0.70 instead of its pinned OpenROAD `dcf36133` and Yosys 0.62,
+with its own post-GRT design repair enabled. RustEDA's layout passes every
+design gate, but the run is `unqualified` and its RustSTA/OpenSTA parity gate
+`failed` at **1.405 ps** against a 1 ps tolerance. LibreLane `failed` timing on
+capacitance and fanout checks, and its equivalence is `unverified`: the checker
+cannot name-match 433 renamed registers, a checker limitation rather than
+evidence of non-equivalence, and its vendor-model simulation `passed`. Neither
+flow passes every gate, so no end-to-end ratio is published. Each section below
+summarizes its part of the campaign and the scope of each comparison;
+[method and deviations](benchmarks.md#host-campaign-method-and-deviations)
+lists every deviation.
 
 The retained R20/R21 native runs completed all 129 steps and all 16 gates in
 **472.2 s and 472.6 s** on 16 logical CPUs, with frozen executables and an
@@ -37,11 +50,14 @@ The [G1 crossing-query CPU/CUDA session](https://github.com/lab-emi/RustEDA-Comm
 comparisons on captured geometry do not qualify a GPU-enabled RTL-to-GDS flow;
 production Road integration and its runtime-image gate remain unchecked.
 
-**2026-11-02 host campaign.** Common `06a9cdac2336` is included transitively in
-every engine binary the campaign timed. It has no separate head-to-head.
+**2026-11-02 host campaign.** Common `06a9cdac2336` is compiled into the
+RustSys and RustSTA binaries the campaign timed, including the `rusteda`
+workspace CLI built in RustSTA's tree; RustROAD and RustSpice do not depend on
+it. Its `export_pin_caps` example is one of the native frontend's declared
+tools. It has no separate head-to-head.
 
 [Module source and qualification](../modules/RustEDA-Common/docs/development-status.md) ·
-[Host campaign](benchmarks.md)
+[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustSys
 
@@ -51,8 +67,8 @@ unsupported or inconsistent interfaces produce diagnostics. The macro's behavior
 continues to come from its original vendor model for independent checking.
 
 The retained Ibex campaign uses two real IHP SRAMs and proves both synthesis and
-final equivalence against the original RTL. The newer native flow records
-472.2 s and 472.6 s with all 16 gates; those are whole-flow measurements, not
+final equivalence against the original RTL. The retained R20/R21 native runs
+record 472.2 s and 472.6 s with all 16 gates; those are whole-flow measurements, not
 synthesis-only timings. Sky130 HD and GF180 7T/9T remain the baseline library
 coverage; one successful IHP design does not qualify other SRAM configurations.
 
@@ -62,14 +78,18 @@ state and explicit work limits. A budget exhaustion is not an equivalence proof.
 **2026-11-02 host campaign.** Synthesizing the prepared Ibex RTL to an EZ130 TT
 plus SRAM Liberty netlist (three measured runs each), RustSys took a median
 2.12 s in the flow's two-thread workspace sequence and 1.36 s in single-command
-direct mode, against 102.83 s for Yosys + ABC running LibreLane's synthesis
-script: 48.5× and 75.6× shorter wall time. Its netlist is 2.2 % larger in
-standard-cell area (151,095.8 µm² against 147,866.9 µm²) and deeper (55 against
-40 logic cells on the deepest path, excluding buffers); its equivalence is
-`proven`, and the Yosys netlist's is `unverified`.
+direct mode (all 4 CPUs), against 102.83 s for Yosys 0.70 + ABC running
+LibreLane 3.0.17's synthesis script: 48.5× and 75.6× shorter wall time. Its
+netlist is 2.2 % larger in standard-cell area (151,095.773 µm² against
+147,866.947 µm²) and deeper (55 against 40 logic cells on the deepest path,
+excluding buffers). In each flow's shared synthesis-equivalence gate, the
+native synthesis netlist is `proven`; LibreLane's, byte-identical to the Yosys
+benchmark netlist, is `unverified` because the checker cannot name-match its
+renamed registers, a checker limitation rather than evidence of
+non-equivalence.
 
 [Module source and qualification](../modules/RustSys/docs/development-status.md) ·
-[Host campaign](benchmarks.md)
+[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustSTA
 
@@ -85,7 +105,7 @@ and 332 OpenSTA black-box comparison values retained the previous maxima
 (0.036 ps Sky130, 0.049 ps GF180; 1 ps gate). Full/incremental and 1/2/8-thread
 replays retained bit-identical timing tables on the recorded extracted designs.
 The retained R20/R21 Ibex native runs measured 472.2 s and 472.6 s; their maximum
-same-SPEF RustSTA/OpenSTA difference is 0.476 ps.
+same-SPEF RustSTA/OpenSTA difference is 0.475 ps.
 
 These are retained identity-bound results, not a new campaign run during the
 publication. GPU, Ngspice and scale tests listed as unchecked in that source QA
@@ -101,7 +121,7 @@ OpenRCX SPEF, above the 1 ps tolerance; the other six compared values agree
 within 0.22 ps.
 
 [Module source and qualification](../modules/RustSTA/docs/development-status.md) ·
-[Host campaign](benchmarks.md)
+[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustROAD
 
@@ -121,23 +141,25 @@ The qualifier requires the early checked GDS to equal the final GDS byte for byt
 
 The spacing-aware placer and diagnostic settings are opt-in. Dual-PDK physical
 smokes cover Sky130 and GF180. OpenC910 physical closure, general macro flows
-and GPU-integrated extraction remain unverified. The latest measurements use a
+and GPU-integrated extraction remain unverified. The R20/R21 measurements use a
 pinned campaign recipe, not every default CLI configuration.
 
 **2026-11-02 host campaign.** On the same final routed DEF (three measured
 runs), RustROAD extraction took a median 158.823 s at both 2 and 4 threads and
 OpenRCX 17.114 s at 4 threads, 9.3× shorter; RustROAD's GDS
 export took 3.019 s against 2.286 s for KLayout's LEF/DEF streamout, and the two
-GDS files are not byte-equivalent, so that comparison covers time only. In the
-two single-sample flows, RustROAD global and detailed routing took 389.63 s
-against 1,796.83 s for OpenROAD detailed routing alone, but RustEDA also spent
-179.0 s on post-route repair and 409.35 s on antenna repair and verification,
-and its run16-class layout (the R20/R21 recipe inputs are not published) has
-1,679,076.6 µm of routed signal wire and 301,099 vias against LibreLane's
-969,571.6 µm and 122,194.
+GDS files are not byte-equivalent, so that comparison covers time only. The two
+single-sample flows route different netlists and placements, so their routing
+times are not an identical-task comparison and form no quotient: RustROAD global
+and detailed routing took 389.63 s, against 68.98 s of OpenROAD global routing
+with antenna repair plus 1,796.83 s of detailed routing in LibreLane. RustEDA
+also spent 179.0 s on post-route repair and 409.35 s on antenna repair and
+verification, and its run16-class layout (the R20/R21 recipe inputs are not
+published) has 1,679,076.6 µm of routed signal wire and 301,099 vias against
+LibreLane's 969,571.6 µm and 122,194.
 
 [Module source and qualification](../modules/RustROAD/docs/development-status.md) ·
-[Host campaign](benchmarks.md)
+[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustSpice
 
@@ -167,7 +189,7 @@ than the faster ngspice solver (seven repetitions per case), at higher peak RSS
 (144,152 KiB against 71,608 KiB on the 40-net deck).
 
 [Module source and qualification](../modules/RustSpice/docs/development-status.md) ·
-[Host campaign](benchmarks.md)
+[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## Flow, CLI and workbench
 
@@ -184,13 +206,16 @@ selection; the latest optimized schedule is recorded as a campaign recipe.
 component-qualification evidence, so `unqualified`, the native producer
 completed 114 of 119 manifest steps in 1,329.616 s and stopped at its first
 failed gate, RustSTA/OpenSTA parity; the remaining gates ran separately with
-the same recipe scripts. End to end, including preparation and every
-independent gate, RustEDA measured 2,609.93 s and LibreLane 3,286.87 s in one
-sample each; the receipt derives no ratio from them, because neither flow
-passed every gate.
+the same recipe scripts. End to end, in one sample each, RustEDA measured
+2,609.93 s (sv2v preparation + producer, including its own native and OpenRCX
+extraction and RustSTA/OpenSTA signoff timing, + the DRC, antenna, LVS,
+simulation, equivalence and density gates it did not reach) and LibreLane
+3,286.87 s (sv2v preparation + flow through `Checker.XOR` + all eight shared
+gates). The receipt derives no ratio from them, because neither flow passed
+every gate.
 
 [Flow operation](flows.md) · [Workbench](workbench/index.md) ·
-[Qualification boundaries](verification.md) · [Host campaign](benchmarks.md)
+[Qualification boundaries](verification.md) · [Host campaign](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## Experimental source branches
 

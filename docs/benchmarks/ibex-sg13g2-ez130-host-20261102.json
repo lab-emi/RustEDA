@@ -69,13 +69,14 @@
   "contract_sha256_repository": "a58f53feb169724d987f774c3143083eee373806df251eb4164ca1ec82566ed8"
  },
  "host": {
-  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
   "logical_cpus": 4,
-  "memory_bytes": 16872804352,
-  "kernel": "6.18.44-fc-v230",
+  "memory_bytes": 16872808448,
+  "kernel": "6.18.44-fc-v185",
   "cgroup": "v1 memory controller; each timed stage alone in its own child group",
   "allocation": "all 4 vCPUs to each flow; RustEDA 8 GiB cap (+2 GiB memsw), LibreLane 10 GiB cap; no swap device",
-  "sampling": "one timed sample per flow; module stages one warm-up plus three measured repetitions"
+  "sampling": "one timed sample per flow; module stages one warm-up plus three measured repetitions",
+  "facts_source": "captured on the campaign host by make_receipt.py at commit 752f68e (2026-11-02); corroborated by the RustSpice suite run-time host record"
  },
  "preparation": {
   "seconds": 3.2,
@@ -938,7 +939,8 @@
      "total_cap_pf": 290.705,
      "total_res_kohm": 6691.924
     }
-   }
+   },
+   "thread_note": "RustROAD sizes its thread pool from --threads (default 2); the recorded extract and export-gds commands pass none, so every RustROAD run used a 2-thread pool and the _t4 rows are a second 2-thread sample. RAYON_NUM_THREADS does not size it. OpenRCX used set_thread_count 2 and 4."
   },
   "timing": {
    "contenders": {
@@ -1185,7 +1187,8 @@
     "rustroad": 48157358,
     "klayout": 59716694
    },
-   "note": "rerun after giving KLayout a .def path; the first replay failed before reading the DEF"
+   "note": "rerun after giving KLayout a .def path; the first replay failed before reading the DEF",
+   "thread_note": "RustROAD export-gds ran on its default 2-thread pool; KLayout's LEF/DEF reader is single-process."
   },
   "spice": {
    "decks": {
@@ -1895,8 +1898,8 @@
   },
   {
    "path": "benchmarks/evidence/ibex-host-20261102/modules/replay.json",
-   "sha256": "885bc827bae7a8b6286415e1030885c55f4a138dd78a421b111021bc077ab50f",
-   "bytes": 7945
+   "sha256": "a1e44cbbd2aecc5ab1cae770d4c4e6c2ffdc81efb1b0988565e4bc5fc207792d",
+   "bytes": 8363
   },
   {
    "path": "benchmarks/evidence/ibex-host-20261102/modules/spice-suite.json",
@@ -1907,6 +1910,11 @@
    "path": "benchmarks/evidence/ibex-host-20261102/modules/spice-suite.md",
    "sha256": "7b47874cfc14707b67b37f00c9b3616b06921bc2ab2fce7a9ad1e7326b9737c6",
    "bytes": 7808
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261102/host-facts.json",
+   "sha256": "1d6aaa2cd712a42b3d3aa1e21ac7eae8b1dc4c966132d154e7f74711853f6e2b",
+   "bytes": 920
   }
  ]
 }

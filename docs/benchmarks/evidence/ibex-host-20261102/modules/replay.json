@@ -129,7 +129,8 @@
     "total_cap_pf": 290.705,
     "total_res_kohm": 6691.924
    }
-  }
+  },
+  "thread_note": "RustROAD sizes its thread pool from --threads (default 2); the recorded extract and export-gds commands pass none, so every RustROAD run used a 2-thread pool and the _t4 rows are a second 2-thread sample. RAYON_NUM_THREADS does not size it. OpenRCX used set_thread_count 2 and 4."
  },
  "timing": {
   "contenders": {
@@ -376,6 +377,7 @@
    "rustroad": 48157358,
    "klayout": 59716694
   },
-  "note": "rerun after giving KLayout a .def path; the first replay failed before reading the DEF"
+  "note": "rerun after giving KLayout a .def path; the first replay failed before reading the DEF",
+  "thread_note": "RustROAD export-gds ran on its default 2-thread pool; KLayout's LEF/DEF reader is single-process."
  }
 }

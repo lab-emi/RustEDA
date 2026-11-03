@@ -30,11 +30,21 @@ published benchmark is the [Ibex SG13G2/EZ130 campaign](benchmarks.md).
 
 ## Known limits
 
-- The Ibex SG13G2/EZ130 results are repeated runs of one design. They do not
-  qualify other designs, SRAM configurations or the IHP `sg13g2_stdcell` library.
-- The 2026-11-02 host reproduction is `unqualified`: its native composition lacks
-  the component-qualification evidence, its RustSTA/OpenSTA parity exceeded 1 ps,
-  and its EZ130 tech LEF and cell GDS are reconstructed.
+- The Ibex SG13G2/EZ130 results cover one design: R20/R21 are two runs on one
+  host, and the 2026-11-02 host campaign is one timed sample per flow. They do
+  not qualify other designs, SRAM configurations or the IHP `sg13g2_stdcell`
+  library.
+- The 2026-11-02 host reproduction is `unqualified` because its native recipe was
+  composed without component-qualification evidence. Separately, its
+  RustSTA/OpenSTA parity exceeded 1 ps, and its EZ130 tech LEF and cell GDS are
+  reconstructed.
+- The R20/R21 recipe inputs are not published, so R20/R21 cannot be reproduced
+  from the repository.
+- The independent equivalence checker cannot name-match registers that a flow
+  renames without a unique RTL counterpart (433 in LibreLane's Ibex netlist); such
+  results are `unverified`, not evidence of non-equivalence.
+- RustSpice does not support IHP's PSP103 transistor models, so it cannot simulate
+  Ibex at transistor level; its Ibex comparison uses extracted RC networks only.
 - OpenC910 placement, routing, GDS and end-to-end performance are unverified.
 - The original failing OpenC910 independent timing-checker case is unavailable
   for reproduction; it has not been reclassified as passing.
@@ -50,8 +60,8 @@ provenance remain authoritative; publication is not a legal certification.
 
 ## Ibex host campaign · 2026-11-02
 
-This campaign reproduced Ibex with two real SRAMs on a 4-vCPU cloud host (Xeon
-2.1 GHz, 15.7 GiB RAM). The repository's native recipe (run16-class) and
+This campaign reproduced Ibex with two real SRAMs on a 4-vCPU Xeon cloud host
+(15.7 GiB RAM). The repository's native recipe (run16-class) and
 LibreLane 3.0.17 Classic read the same prepared inputs; the same independent
 gate scripts checked both final layouts. Each flow has one timed sample.
 
@@ -64,7 +74,7 @@ separately with the same recipe scripts.
 
 | Gate | RustEDA | LibreLane 3.0.17 |
 | --- | --- | --- |
-| Foundry main / antenna DRC | `passed`, 0 / 0 | `passed`, 0 / 0 |
+| Foundry main DRC (`recommended` rules disabled) / antenna DRC | `passed`, 0 / 0 | `passed`, 0 / 0 |
 | Full-device LVS | `passed` | `passed` |
 | Timing on OpenRCX SPEF, TT and SS | `passed`; 0 setup, hold, slew, capacitance and fanout violations | `failed`; setup and hold met; 28 / 24 capacitance and 30 / 30 fanout violations (TT / SS) |
 | Vendor-model simulation | `passed` | `passed` |
@@ -85,7 +95,8 @@ with 7 slew, 181 capacitance and 56 fanout violations at TT.
 cgroup v1 with no swap device (RustEDA 8 GiB cap, LibreLane 10 GiB cap);
 nixpkgs OpenROAD 26Q3 and Yosys 0.70 instead of LibreLane's pinned OpenROAD
 `dcf36133` and Yosys 0.62; EZ130 tech LEF and cell GDS reconstructed from public
-sources (6 of 8 pinned files byte-identical); host-local helper patches for
+sources (5 of the 7 contract-pinned files byte-identical; the catalog-pinned FF
+Liberty also matches); host-local helper patches for
 thread allow-lists, cgroup-v1 ownership, the RC-profile rules path and the
 density DEF parser. The R20/R21 recipe inputs are not published, so this
 campaign does not reproduce R20/R21. Neither flow passes every gate, so the

@@ -47,26 +47,40 @@ so agents and engineers can act on the same design state.
 
 ## Latest development · 2026-11-02
 
-On a 4-vCPU cloud host (Xeon 2.1 GHz), the repository's native recipe and
-LibreLane 3.0.17 built Ibex on IHP SG13G2 with EZ130 cells and **two real SRAM
-macros** from the same prepared inputs, and the same independent scripts checked
-both layouts (one sample per flow). **RustEDA's layout passes every design gate**:
-foundry main and antenna DRC, LVS, TT/SS timing with zero violations, simulation,
-both equivalence checks and density. On identical SPEF, RustSTA and OpenSTA
-differ by up to 1.405 ps, failing the 1 ps parity gate, and the run is
-`unqualified` because the recipe was composed without unpublished
-component-qualification evidence. **LibreLane fails timing** on capacitance and
-fanout violations; its equivalence is `unverified`.
+On a 4-vCPU Xeon cloud host, the repository's native recipe and LibreLane 3.0.17
+built Ibex on IHP SG13G2 with EZ130 cells and **two real SRAM macros** from the
+same prepared inputs, and the same independent scripts checked both layouts (one
+timed sample per flow). **Neither flow passes every gate.** RustEDA's layout
+passes foundry main and antenna DRC, LVS, TT/SS timing with zero violations,
+simulation, both equivalence checks and density, but fails the 1 ps
+RustSTA/OpenSTA parity gate: on identical SPEF the two engines differ by up to
+1.405 ps. Separately, the run is `unqualified` because the recipe was composed
+without component-qualification evidence, which is not published. LibreLane
+fails the timing gate on max-capacitance and fanout checks (setup and hold met);
+its equivalence is `unverified` because the checker cannot name-match 433
+renamed registers, a checker limitation rather than evidence of non-equivalence.
+
+Each flow had all 4 vCPUs, with an 8 GiB memory cap for RustEDA (its cgroup
+peak reached the cap with page cache; largest process 1.03 GiB) and 10 GiB for
+LibreLane. Both flows used nixpkgs tool builds, so LibreLane ran on OpenROAD 26Q3
+and Yosys 0.70 rather than its pinned OpenROAD `dcf36133` and Yosys 0.62, and
+the EZ130 tech LEF and cell GDS were reconstructed from public sources.
 
 RustEDA: 233,909.2 µm² standard-cell area, 1,679,076.6 µm routed signal wire,
-301,099 vias, 2,609.9 s end to end. LibreLane: 197,913.7 µm², 969,571.6 µm,
-122,194 vias, 3,286.9 s. Both times include sv2v preparation, implementation and
-every gate. Neither flow passes every gate, so the receipt's ratios are null and
-**no cross-tool speedup or QoR ratio is published**.
+301,099 vias. Its 2,609.93 s end to end covers sv2v preparation, the producer
+through its own extractions and RustSTA/OpenSTA signoff timing, where it stopped
+at the parity gate after 114 of 119 manifest steps, and the shared DRC, antenna,
+LVS, simulation, equivalence and density gates it did not reach. LibreLane:
+197,913.7 µm², 969,571.6 µm, 122,194 vias. Its 3,286.87 s covers sv2v
+preparation, the flow through `Checker.XOR` (including Magic LEF writing, the
+KLayout XOR and an IR-drop report) and all eight shared gates. The two times
+cover different work. The receipt's ratios are null and **no cross-tool speedup
+or QoR ratio is published**.
 
 The retained R20/R21 native runs (129/129 steps and all 16 gates in 472.2 s and
-472.6 s on 16 logical CPUs of an i9-13900HX) remain on the benchmark page; their
-recipe inputs are not in the repository, so this host ran the run16-class recipe.
+472.6 s on 16 logical CPUs of an i9-13900HX) remain on the benchmark page; times
+from different hosts are not comparable. Their recipe inputs are not in the
+repository, so this host ran the run16-class recipe.
 
 [Published source versions](docs/development-snapshot.md) ·
 [Current modules and remaining limits](docs/engine-status.md) ·
