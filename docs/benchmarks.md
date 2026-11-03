@@ -22,7 +22,7 @@ section forms none.
 
 | | RustEDA | LibreLane 3.0.17 |
 | --- | --- | --- |
-| Configuration | Published native recipe (run16-class) composed by `compose_native.py`; routing at 4 threads, other RustROAD steps on its default 2-thread pool; `unqualified` | Classic flow through `Checker.XOR`, prepared contract config, its own post-GRT design repair (`RUN_POST_GRT_DESIGN_REPAIR=true`), `DRT_THREADS=4` |
+| Configuration | Published native recipe (run16-class) composed by `compose_native.py`; RustROAD route, post-route repair and antenna repair at `--threads 4`, frontend placement/CTS at `--threads 2`, `extract`, `export-gds` and the other export/inspect steps on its default 2-thread pool; `unqualified` | Classic flow through `Checker.XOR`, prepared contract config, its own post-GRT design repair (`RUN_POST_GRT_DESIGN_REPAIR=true`), `DRT_THREADS=4` |
 | Flow outcome | **Producer `failed`** at `be_timing` (`timing_accuracy`) after 114 of 119 manifest steps; the remaining gates ran separately with the recipe's scripts | Exit 0 after 65 steps |
 | Foundry main DRC (complete main deck, `recommended` rules disabled) | `passed`, 0 | `passed`, 0 |
 | Foundry antenna DRC | `passed`, 0 | `passed`, 0 |
@@ -130,9 +130,7 @@ logic depth.
 
 QoR rows describe the netlist of the first measured sequence run. The
 equivalence row comes from each flow's shared synthesis-equivalence gate, not
-from the benchmark netlists: Yosys's benchmark netlist is byte-identical to
-LibreLane's synthesis netlist, while RustSys's differs in bytes from the native
-flow's synthesis netlist and was not checked separately. The receipt
+from the benchmark netlists, which were not checked separately. The receipt
 also holds ideal-wire OpenSTA timing of both netlists as a diagnostic only:
 LibreLane defers fanout buffering to placement, so timing is compared on the
 final layouts.
@@ -150,9 +148,13 @@ SPEF, full reports). Wall time sums each contender's processes.
 | Median wall, 4 threads | 15.976 s (14.992 s) | 13.497 s (13.041 s) |
 | Quotient, RustSTA ÷ OpenSTA | 1.17× (2 threads), 1.18× (4 threads) | — |
 | Worst peak RSS, 2 / 4 threads | 498,004 / 502,876 KiB | 266,916 / 267,704 KiB |
-| Maximum parity difference, identical SPEF | **1.4052 ps**: TT setup worst slack on native SPEF (49.279521 vs 49.280926 ns) | — |
+| Maximum parity difference, identical SPEF (producer `timing_accuracy` gate) | **1.4052 ps**: TT setup worst slack on native SPEF (49.279521 vs 49.280926 ns) | — |
 | Other values above 1 ps | 1.2838 ps: TT setup worst slack on OpenRCX SPEF | — |
 | Remaining six compared values | 0.036–0.2153 ps | — |
+
+The parity rows come from the producer's `timing_accuracy` gate on the native
+and OpenRCX SPEF (receipt `modules.timing.agreement`), not from the timed
+replays above.
 
 #### RustROAD extraction vs OpenRCX
 
@@ -169,13 +171,13 @@ default of 2 threads in both settings; the harness's `RAYON_NUM_THREADS` of 2 or
 | Median wall, 4-thread setting | 158.823 s (157.790 s) | 17.114 s (15.904 s) |
 | Quotient, RustROAD ÷ OpenRCX | 9.0× (2 threads), 9.3× (4-thread setting) | — |
 | CPU time per run | 155.73–158.90 s | 15.70–17.69 s |
-| Worst peak RSS, 2 / 4 threads | 810,452 / 810,632 KiB | 295,860 / 295,728 KiB |
+| Worst peak RSS, 2-thread / 4-thread setting | 810,452 / 810,632 KiB | 295,860 / 295,728 KiB |
 | SPEF nets | 16,329 | 16,329 |
 | SPEF total capacitance | 312.638 pF | 290.705 pF |
 | SPEF total resistance | 6,633.54 kΩ | 6,691.924 kΩ |
 
 RustROAD's total capacitance is 7.5 % above OpenRCX's and its total resistance
-0.9 % below. Its CPU time tracks its wall time at both thread counts.
+0.9 % below. Its CPU time tracks its wall time in both settings (both on its 2-thread pool).
 
 #### RustROAD GDS export vs KLayout
 
@@ -244,9 +246,10 @@ not the headline.
 | Median peak RSS, ngspice SPARSE (lower bound) / RustSpice | 15,404–15,708 / 33,728–38,416 KiB | 30,724 / 46,232 KiB | 71,608 / 144,152 KiB |
 
 **The suite verdict is `PASS`: 10 of 10 cases pass.** SPARSE is the faster
-ngspice solver in every case. On the single nets, default-tolerance ngspice is
-closer to the reference than RustSpice; on the two multi-net decks, RustSpice
-is closer. RustSpice's median peak RSS is 1.5–2.5× ngspice's; ngspice's peak is
+ngspice solver in every case. On the single nets, default-tolerance ngspice's measured
+error is lower, but both errors are below the reference's own resampling error
+(`interp_floor`), so the difference is not resolved; on the two multi-net
+decks, RustSpice is closer. RustSpice's median peak RSS is 1.5–2.5× ngspice's; ngspice's peak is
 the maximum of `/proc` polls, which the suite flags as a lower bound of the
 true peak (`rss_lower_bound`). Process start-up medians are 6.77 ms for
 ngspice and 2.47 ms for RustSpice. The suite records a shared host, with a
@@ -256,7 +259,8 @@ within this session only.
 #### RustEDA-Common
 
 RustEDA-Common is compiled into RustSys and RustSTA, including the `rusteda`
-workspace CLI used by both flows' timing steps; RustROAD and RustSpice do not
+workspace CLI used by the native producer's timing steps and by the shared
+timing gate applied to both layouts; RustROAD and RustSpice do not
 link it. It has no separate head-to-head.
 
 ### Reading the host result
@@ -341,9 +345,10 @@ link it. It has no separate head-to-head.
   campaign host; the RustSpice suite records the same CPU), cgroup v1 memory controller, no swap device and no systemd user
   manager. Each flow had all 4 vCPUs, and each
   timed stage ran alone in its own child cgroup. Memory caps: RustEDA
-  8 GiB RAM with a 2 GiB memory+swap allowance, as in the recipe; LibreLane
-  10 GiB RAM, because its historical host had 8 GiB plus 2 GiB swap and this
-  host has no swap.
+  producer 8 GiB RAM plus a 2 GiB swap allowance in memory+swap accounting
+  (10 GiB memsw), as in the recipe; LibreLane flow 10 GiB RAM, because its
+  historical host had 8 GiB plus 2 GiB swap and this host has no swap; the
+  shared gates on both layouts ran under an 8 GiB cap.
 - **Samples.** One timed sample per flow. Module head-to-heads use one warm-up
   plus three interleaved measured repetitions; RustSpice uses a correctness
   warm-up plus seven interleaved repetitions. Peak RSS is GNU time's maximum
@@ -371,9 +376,11 @@ link it. It has no separate head-to-head.
   SHA-256.
 - **Unqualified native composition.** The run uses the repository's
   run16-class recipe, composed by `compose_native.py` with every file and tool
-  pinned by path, SHA-256 and size, a grouped single-process antenna session
-  and 4 threads for routing (other RustROAD steps on its default 2-thread
-  pool). The 16-gate composer needs
+  pinned by path, SHA-256 and size, a grouped single-process antenna session,
+  RustROAD route, post-route repair and antenna repair at `--threads 4`,
+  frontend placement/CTS at `--threads 2`, and `extract`, `export-gds` and the
+  other export/inspect steps, which pass no `--threads`, on RustROAD's default
+  2-thread pool. The 16-gate composer needs
   component-qualification evidence that is not published and was not
   fabricated, so the eight derived qualification gates are not produced and the
   run is `unqualified`. The producer runs the backend prefix manifest and stops
@@ -563,7 +570,7 @@ This help favours LibreLane; without it, the earlier attempts failed sooner. Eve
 | RustSys | RTL synthesis, real-SRAM preservation, technology mapping and equivalence |
 | RustSTA | Constraints, extracted timing and independent numerical checks |
 | RustROAD | Floorplan, placement, CTS, routing, extraction and streamout |
-| RustEDA Common | Shared models, formats, disk workspaces and compute used by the engines; included transitively |
+| RustEDA Common | Shared models, formats, disk workspaces and compute used by RustSys and RustSTA; included transitively |
 | RustSpice | Not timed in the RTL-to-GDS main flow. The 2026-11-02 host campaign compares it with ngspice-45 on RC networks extracted from the Ibex layout ([module head-to-heads](#module-head-to-heads)); no transistor-level Ibex claim |
 
 Older synthesis-only, small-block, OpenC910 and circuit-simulation performance tables are retired from current publication. Their source snapshots, licenses, regression fixtures and immutable qualification receipts are preserved. Sky130/GF180 correctness coverage remains required; it is not an additional current public performance campaign.

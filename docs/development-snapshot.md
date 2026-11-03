@@ -20,10 +20,10 @@ are preserved.
 | Module | Published source | Current scope |
 | --- | --- | --- |
 | RustEDA-Common | [`06a9cdac2336`](https://github.com/lab-emi/RustEDA-Common/commit/06a9cdac2336b054b79b4d3647421dcae6cb6a1c) | SRAM-aware formats, connectivity export and f64 RC charge fitting |
-| RustSys | [`d0b93232689b`](https://github.com/lab-emi/RustSys/commit/d0b93232689bf9e201d942622937c276f8f1d3a0) (sources of `0f8a2d80654d`, documentation updated) | Opaque SRAM preservation and bounded interface validation |
-| RustSTA | [`41020bcffe6c`](https://github.com/lab-emi/RustSTA/commit/41020bcffe6c7d737dcd001ad0b2df9253673419) (sources of `0c2bcc6a5395`, documentation updated) | Mixed libraries, global derates and deterministic parallel RC preparation |
-| RustROAD | [`29e9aceb4330`](https://github.com/lab-emi/RustROAD/commit/29e9aceb4330f3f8a790e418ace0d67e666aa223) (sources of `07e1626f220e`, documentation updated) | Spacing-aware placement, bounded routing/extraction and tap/antenna work |
-| RustSpice | [`15ff6a7835d7`](https://github.com/lab-emi/RustSpice/commit/15ff6a7835d78d4e6e6481e27af6c26376fb86d2) (sources of `cc2426f3e6cb`, documentation updated) | Adaptive simulation, supported device kernels and current accuracy scope |
+| RustSys | [`cf913e571502`](https://github.com/lab-emi/RustSys/commit/cf913e5715023337224f70422b3c5579fecb1c60) (sources of `0f8a2d80654d`, documentation updated) | Opaque SRAM preservation and bounded interface validation |
+| RustSTA | [`bfa7aa5fe4d8`](https://github.com/lab-emi/RustSTA/commit/bfa7aa5fe4d8408ea3752a82d4a94bb4762b5a02) (sources of `0c2bcc6a5395`, documentation updated) | Mixed libraries, global derates and deterministic parallel RC preparation |
+| RustROAD | [`f844cb819f3c`](https://github.com/lab-emi/RustROAD/commit/f844cb819f3c599f396944cd0d952b1b01aa6717) (sources of `07e1626f220e`, documentation updated) | Spacing-aware placement, bounded routing/extraction and tap/antenna work |
+| RustSpice | [`1d190789caa2`](https://github.com/lab-emi/RustSpice/commit/1d190789caa2466713a84b3bf8277cac9b24add2) (sources of `cc2426f3e6cb`, documentation updated) | Adaptive simulation, supported device kernels and current accuracy scope |
 
 The isolated publication checks pass **1,955 Rust tests** with 55 ignored,
 and 311 Python controls with nine skipped. Ignored/skipped checks are not

@@ -59,7 +59,7 @@ no quotient.
 | `def_metrics.py` | Routed signal wirelength and vias from a final DEF, with the published receipt's definition. |
 | `spef_spice_decks.py` | Transient decks for `rustspice bench-suite` built from extracted Ibex RC nets. |
 | `synth_bench.sh` | Synthesis head-to-head on the prepared RTL: RustSys running the native frontend's workspace sequence (2 threads) and its single-command direct mode (all CPUs), against Yosys running LibreLane 3.0.17's own synthesis script with the run's step configuration. One warm-up plus `REPS` interleaved runs per contender under GNU time. |
-| `module_bench.py` | Replays commands recorded by a completed native producer, on the same inputs: RustROAD `extract` against OpenRCX, the RustSTA pipeline of `signoff_timing.py` against its two OpenSTA processes, RustROAD `export-gds` against KLayout's LEF/DEF reader. One warm-up plus `--reps` interleaved runs at each `--threads` value; writes `module-bench.json`. |
+| `module_bench.py` | Replays commands recorded by a completed native producer, on the same inputs: RustROAD `extract` against OpenRCX, the RustSTA pipeline of `signoff_timing.py` against its two OpenSTA processes, RustROAD `export-gds` against KLayout's LEF/DEF reader. One warm-up plus `--reps` interleaved runs at each `--threads` value; writes `module-bench.json`. RustROAD sizes its pool only from `--threads` (default 2); the recorded `extract` and `export-gds` commands pass none, so every RustROAD replay runs on 2 threads and the 4-thread extraction rows are a second 2-thread sample. The GDS replay is not repeated per thread count. |
 | `final_campaign.sh` | The timed campaign, one stage at a time: native producer, shared gates on its layout, LibreLane through `Checker.XOR`, shared gates on its layout, then the synthesis, module and SPICE head-to-heads. Each stage starts once the one-minute load average is below 0.5 (at most 20 min wait). |
 | `make_receipt.py` | Builds `docs/benchmarks/ibex-sg13g2-ez130-host-<YYYYMMDD>.json` (the `--date` value without dashes) and its evidence directory (each file at most 2 MiB) from a completed campaign directory, recomputing DEF, density and netlist QoR. Ratios are filled only when both flows pass every gate; missing values stay null. |
 | `ez130/restore.sh` | Rebuilds the EZ130 8T v1.1 tree from public mirrors: restores the citation placeholder in the mirrored files, rebuilds the tech LEF, strips the cell GDS, then checks every file with `sha256sum -c reconstructed.sha256`. |
@@ -77,9 +77,10 @@ Each deviation applies to both flows unless stated otherwise.
    mirror that differs only in a citation placeholder, verified by SHA-256 after
    restoring it (the FF Liberty, pinned by the library catalog, also matches),
    and the TT Liberty also matches the `pulp-platform/croc` mirror. The SG13G2 tech LEF and the cell GDS are **reconstructed** from the
-   public SG13CMOS5L retarget by reversing its six documented edits (Metal5,
-   Via4, TopVia2 and TopMetal2 from IHP's SG13G2 tech LEF; 74 `Via4_*` vias;
-   the 220 added `189/4` boundary shapes removed). They are not byte-identical
+   public SG13CMOS5L retarget: `rebuild_tech_lef.py` reverses the documented
+   OpenBLAU tech-LEF edits using IHP's SG13G2 stdcell tech LEF at `3b59002e`,
+   and separately `strip_prboundary.py` removes the added `189/4` boundary
+   shapes from the cell GDS. They are not byte-identical
    to the pinned files (`375ae19d…`, `62876764…`), so this is not a
    reproduction of the 2026-10-30 inputs. All IHP and SRAM collateral matches.
 2. **Tools.** nixpkgs builds: OpenROAD 26Q3 (LibreLane pins `dcf36133`),

@@ -72,8 +72,9 @@ LVS, or RustEDA RTL-to-GDS integration. The qualified SKY130/GF180 small-block
 to the [Ibex SG13G2/EZ130 campaigns](benchmarks.md) with two IHP
 `RM_IHPSG13_1P_1024x32_c2_bm_bist` macros. The IHP flow takes an explicit
 `ihp_sg13g2_ez130` worker configuration. The 2026-11-02 host reproduction is
-`unqualified`: it ran a host-local copy of the Ibex recipe with a reconstructed
-EZ130 tech LEF and cell GDS; 5 of the 7 contract-pinned EZ130 files are
-byte-identical.
+`unqualified` because its recipe was composed without the unpublished
+component-qualification evidence. Separately, it ran a host-local copy of the
+Ibex recipe with a reconstructed EZ130 tech LEF and cell GDS; 5 of the 7
+contract-pinned EZ130 files are byte-identical.
 These campaigns do not qualify other designs, SRAM configurations or the
 SKY130/GF180 SRAM collateral above.

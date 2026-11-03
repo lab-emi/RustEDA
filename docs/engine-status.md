@@ -83,8 +83,7 @@ LibreLane 3.0.17's synthesis script: 48.5× and 75.6× shorter wall time. Its
 netlist is 2.2 % larger in standard-cell area (151,095.773 µm² against
 147,866.947 µm²) and deeper (55 against 40 logic cells on the deepest path,
 excluding buffers). In each flow's shared synthesis-equivalence gate, the
-native synthesis netlist is `proven`; LibreLane's, byte-identical to the Yosys
-benchmark netlist, is `unverified` because the checker cannot name-match its
+native synthesis netlist is `proven`; LibreLane's is `unverified` because the checker cannot name-match its
 renamed registers, a checker limitation rather than evidence of
 non-equivalence.
 
@@ -145,8 +144,10 @@ and GPU-integrated extraction remain unverified. The R20/R21 measurements use a
 pinned campaign recipe, not every default CLI configuration.
 
 **2026-11-02 host campaign.** On the same final routed DEF (three measured
-runs), RustROAD extraction took a median 158.823 s at both 2 and 4 threads and
-OpenRCX 17.114 s at 4 threads, 9.3× shorter; RustROAD's GDS
+runs), RustROAD extraction took a median 158.823 s on its default 2-thread pool
+(the recorded `extract` command passes no `--threads`, so the 4-thread setting is
+a second 2-thread sample); OpenRCX took 17.649 s at 2 threads (9.0× shorter) and
+17.114 s at 4 threads. RustROAD's GDS
 export took 3.019 s against 2.286 s for KLayout's LEF/DEF streamout, and the two
 GDS files are not byte-equivalent, so that comparison covers time only. The two
 single-sample flows route different netlists and placements, so their routing

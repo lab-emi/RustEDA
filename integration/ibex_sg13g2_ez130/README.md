@@ -166,8 +166,9 @@ lists each edit:
   `native_flow.py` and `qualify_native.py` require is not published and was not
   fabricated, so the run is `unqualified`.
 - **Hardware.** 4 vCPUs instead of 16 logical CPUs of an i9-13900HX. Routing
-  and extraction use 4 threads instead of the template's 16 router workers, so
-  this run does not meet the 16-core requirement above.
+  uses 4 threads instead of the template's 16 router workers; native extraction
+  and GDS export pass no `--threads` and run on RustROAD's default 2-thread
+  pool. This run does not meet the 16-core requirement above.
 - **Helper patches.** Host-local copies accept 4 threads, read the cgroup-v1
   memory controller, accept the host executor's owned memory cgroup instead of
   a systemd user scope (LVS helper), pass the RC calibration rules path

@@ -298,7 +298,9 @@ def main() -> int:
     nqor_def = run_json([sys.executable, str(HERE / "def_metrics.py"), str(o / "logs/be_def.stdout")])
     native = dict(
         configuration="published repository recipe (run16-class), composed by compose_native.py; grouped single-process "
-                      "antenna session; 4 threads (routing/extraction), 2-thread helper stages as recorded; unqualified",
+                      "antenna session; RustROAD route, post-route and antenna repair at --threads 4, "
+                      "frontend placement/CTS at --threads 2, extract, export-gds and other export/inspect "
+                      "steps on the default 2-thread pool; unqualified",
         producer=dict(status=nsum["status"], error=nsum.get("error"), failed_items=nsum.get("failed_items"),
                       steps_completed=len(receipts), manifest_steps=len(read(w / "compose/be/prefix-manifest.json")["steps"]),
                       wall_seconds=nmeasure["wall_seconds"], peak_rss_kib=nmeasure["gnu_time_max_rss_kib"],
