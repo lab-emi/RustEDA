@@ -967,8 +967,13 @@ def electrical(planner, reports, geo, hold_round=False):
         geo.place(inst, cell, pts[0]); planner.weights[name] = HEAVY; planner.repaired.add(name)
         planner.checks.append(dict(net=name, action='tree_feed', tree=tree, driver=d['pin'] if d['instance'] is None else d['instance']+'/'+d['pin'],
                                    bound_load_pf=round(load, 6), sink_box_um=round(span, 1), cell=cell))
+    level_members = {}
+    for i in g.cells:
+        parts = i.rsplit('_', 2)
+        if len(parts) == 3 and parts[1].isascii() and parts[1].isdigit() and parts[2].isascii() and parts[2].isdigit():
+            level_members.setdefault((parts[0], parts[1]), []).append(i)
     for (tree, depth), load in sorted(trees.items()):
-        cell = choose(load); members = sorted(i for i in g.cells if re.fullmatch(re.escape(tree)+'_'+str(depth)+'_[0-9]+', i))
+        cell = choose(load); members = sorted(level_members.get((tree, str(depth)), []))
         require(members, 'NETLIST', 'tree level has no buffers: '+tree)
         planner.repaired.update(inst+'_n' for inst in members)
         for inst in members:
