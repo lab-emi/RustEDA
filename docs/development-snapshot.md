@@ -8,7 +8,9 @@ receipt's `engine_commits` lists the engine submodule revisions: RustSys
 `cc2426f3e6cb`, with RustEDA-Common `06a9cdac2336`, which RustSys and RustSTA
 include transitively (RustROAD and RustSpice do not depend on it). These are
 the revisions of this 2026-11-01 publication; the receipt identifies each
-executable by SHA-256.
+executable by SHA-256. The superproject then advanced the RustSys, RustSTA,
+RustROAD and RustSpice gitlinks to documentation-only commits that describe the
+campaign (table below); their engine sources are unchanged.
 
 The superproject records the following exact module versions. Flow, CLI and
 workbench remain in `apps/`; no standalone application repositories or root
@@ -18,10 +20,10 @@ are preserved.
 | Module | Published source | Current scope |
 | --- | --- | --- |
 | RustEDA-Common | [`06a9cdac2336`](https://github.com/lab-emi/RustEDA-Common/commit/06a9cdac2336b054b79b4d3647421dcae6cb6a1c) | SRAM-aware formats, connectivity export and f64 RC charge fitting |
-| RustSys | [`0f8a2d80654d`](https://github.com/lab-emi/RustSys/commit/0f8a2d80654def4d91d08d6f3791c12726339a53) | Opaque SRAM preservation and bounded interface validation |
-| RustSTA | [`0c2bcc6a5395`](https://github.com/lab-emi/RustSTA/commit/0c2bcc6a539580ed43aac1bad6badb82db4976c4) | Mixed libraries, global derates and deterministic parallel RC preparation |
-| RustROAD | [`07e1626f220e`](https://github.com/lab-emi/RustROAD/commit/07e1626f220ef1b7f3029ef827fae4b1491c3373) | Spacing-aware placement, bounded routing/extraction and tap/antenna work |
-| RustSpice | [`cc2426f3e6cb`](https://github.com/lab-emi/RustSpice/commit/cc2426f3e6cbb1ad05843b22a71632f118f62ddc) | Adaptive simulation, supported device kernels and current accuracy scope |
+| RustSys | [`d0b93232689b`](https://github.com/lab-emi/RustSys/commit/d0b93232689bf9e201d942622937c276f8f1d3a0) (sources of `0f8a2d80654d`, documentation updated) | Opaque SRAM preservation and bounded interface validation |
+| RustSTA | [`41020bcffe6c`](https://github.com/lab-emi/RustSTA/commit/41020bcffe6c7d737dcd001ad0b2df9253673419) (sources of `0c2bcc6a5395`, documentation updated) | Mixed libraries, global derates and deterministic parallel RC preparation |
+| RustROAD | [`29e9aceb4330`](https://github.com/lab-emi/RustROAD/commit/29e9aceb4330f3f8a790e418ace0d67e666aa223) (sources of `07e1626f220e`, documentation updated) | Spacing-aware placement, bounded routing/extraction and tap/antenna work |
+| RustSpice | [`15ff6a7835d7`](https://github.com/lab-emi/RustSpice/commit/15ff6a7835d78d4e6e6481e27af6c26376fb86d2) (sources of `cc2426f3e6cb`, documentation updated) | Adaptive simulation, supported device kernels and current accuracy scope |
 
 The isolated publication checks pass **1,955 Rust tests** with 55 ignored,
 and 311 Python controls with nine skipped. Ignored/skipped checks are not
