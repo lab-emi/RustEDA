@@ -117,12 +117,26 @@ def emit_net(net, names, index, driver_ohm, sink_ff, rise_ps):
     return dict(lines=lines, unknowns=len(nodes) + 2, probes=probes, sinks=len(sinks))
 
 
+def ref_tmax(tstep: str) -> str:
+    """`bench.ref.tmax` of a deck: a tenth of its output step.
+
+    The suite reads the converged ngspice reference by linear interpolation at both simulators' rows, so the
+    reference's own interpolation error must stay well below theirs. A 2p limit (the earlier value) is coarser than
+    the 1p output step of the single-net decks and than ngspice's own default step limit there: its error
+    (2-4e-4 of the swing) dominated, and inverted, the published single-net accuracy ranking. The error falls with
+    the square of the step: tstep/10 is 20x finer on those decks and 2x on the 10p bulk decks. The suite saves only
+    `time` and the probes in such a reference run, so the finer reference stays small.
+    """
+    value, suffix = re.fullmatch(r"([0-9.]+)([a-z]*)", tstep.lower()).groups()
+    return f"{float(value) / 10:g}{suffix}"
+
+
 def write_deck(path, ident, title, nets, oracle, tags, tstep="1p"):
     unknowns = sum(n["unknowns"] for n in nets)
     probes = [f"v({p})" for n in nets[:4] for p in n["probes"][:2]]
     meta = [f"* bench.id: {ident}", "* bench.group: performance", f"* bench.title: {title}",
             f"* bench.probes: {', '.join(probes)}", "* bench.tol.norm: 2e-3", "* bench.expect: match",
-            "* bench.ref: reltol=1e-6 abstol=1e-15 vntol=1e-9", "* bench.ref.tmax: 2p",
+            "* bench.ref: reltol=1e-6 abstol=1e-15 vntol=1e-9", f"* bench.ref.tmax: {ref_tmax(tstep)}",
             "* bench.ng.solver: both", "* bench.timing: yes", f"* bench.size: {unknowns}",
             f"* bench.est_rss_mib: {40 + unknowns // 100}", f"* bench.tags: linear, tran, ibex, spef, {tags}",
             "* bench.note: extracted post-route RC of the final Ibex SG13G2/EZ130 layout; Thevenin ramp driver; "
