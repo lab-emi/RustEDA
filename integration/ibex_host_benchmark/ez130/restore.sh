@@ -1,8 +1,9 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # Rebuild the EZ130 8T v1.1 SG13G2 library tree from public mirrors when the ETH
-# archive host is unreachable. Six of the eight contract files come out
-# byte-identical; the SG13G2 tech LEF and the cell GDS are reconstructed and are
+# archive host is unreachable. Five of the seven contract-pinned files (and the
+# catalog-pinned FF Liberty) come out byte-identical; the SG13G2 tech LEF and the
+# cell GDS are reconstructed and are
 # NOT the pinned archive members. `reconstructed.sha256` lists every result.
 #
 # Sources (public, Apache-2.0):

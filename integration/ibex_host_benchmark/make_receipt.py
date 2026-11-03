@@ -323,6 +323,18 @@ def main() -> int:
                         netlist_synth=o / "frontend/mapped.v", netlist_final=o / "logs/be_netlist.stdout",
                         spef_native_nom=o / "backend/native.nom.spef").items()},
     )
+    bring = maybe(w / "bringup-native-record.json")
+    if bring:
+        # An earlier complete native run (bring-up, under shared host load) recorded its artifact hashes.
+        pairs = dict(gds=o / "backend/ibex_sram_bench.gds", def_=o / "logs/be_def.stdout",
+                     netlist_synth=o / "frontend/mapped.v", netlist_final=o / "logs/be_netlist.stdout",
+                     netlist_powered=o / "logs/be_powered.stdout", spef_native=o / "backend/native.nom.spef",
+                     spef_openrcx=o / "backend/openrcx/nom.spef")
+        native["determinism"] = dict(
+            reference_run=bring["run"],
+            identical={k: sha(p) == bring["artifacts"][k]["sha256"] for k, p in pairs.items() if k in bring["artifacts"]},
+            note="artifact identity across two complete native runs; the OpenRCX SPEF is written by OpenROAD")
+        keep("native/bringup-artifacts.json", data=dict(run=bring["run"], artifacts=bring["artifacts"]))
     keep("native/summary.json", source=o / "summary.json")
     keep("native/step-receipts.json", source=o / "step-receipts.json")
     keep("native/producer-resources.json", source=w / names["native"] / "measure/resources.json")
@@ -479,7 +491,11 @@ def main() -> int:
                     sram_instances=["u_imem", "u_dmem"], sram_macro="RM_IHPSG13_1P_1024x32_c2_bm_bist"),
         technology=dict(process="IHP SG13G2", pdk_commit="5cccb161f7492697cfa52eb14dc03beb00bdca9e",
                         standard_cell_library="EZ130 8T v1.1 (tech LEF and GDS reconstructed; see ez130_files)",
-                        ez130_files=ez_files, corners=["tt_1p20v_25c", "ss_1p08v_125c"], rc_corner="nominal",
+                        ez130_files=ez_files,
+                        ez130_summary=(f"{sum(v['byte_identical'] for v in ez_files.values())} of {len(ez_files)} "
+                                       "contract-pinned EZ130 files byte-identical; SG13G2 tech LEF and GDS reconstructed; "
+                                       "the catalog-pinned FF Liberty is also byte-identical"),
+                        corners=["tt_1p20v_25c", "ss_1p08v_125c"], rc_corner="nominal",
                         clock_period_ns=100, contract_sha256_repository=sha(ROOT / "integration/ibex_sg13g2_ez130/contract.json")),
         host=dict(cpu=cpu, logical_cpus=os.cpu_count(), memory_bytes=mem, kernel=platform.release(),
                   cgroup="v1 memory controller; each timed stage alone in its own child group",

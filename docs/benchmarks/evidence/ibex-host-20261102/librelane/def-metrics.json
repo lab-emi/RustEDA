@@ -2,12 +2,7 @@
  "def_path": "/home/user/RustEDA/.work/ibex-host/ll-final/runs/final/55-odb-cellfrequencytables/ibex_sram_bench.def",
  "dbu_per_micron": 1000,
  "routed_signal_wirelength_um": 969571.6,
- "wirelength_by_layer_um": {
-  "Metal2": 377968.7,
-  "Metal3": 441215.1,
-  "Metal4": 87915.4,
-  "Metal5": 62472.3
- },
+ "wirelength_by_layer_um": null,
  "vias": 122194,
  "vias_by_name_top": {
   "Via2_XY_so": 59113,

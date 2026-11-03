@@ -59,6 +59,7 @@
     "byte_identical": true
    }
   },
+  "ez130_summary": "5 of 7 contract-pinned EZ130 files byte-identical; SG13G2 tech LEF and GDS reconstructed; the catalog-pinned FF Liberty is also byte-identical",
   "corners": [
    "tt_1p20v_25c",
    "ss_1p08v_125c"
@@ -68,10 +69,10 @@
   "contract_sha256_repository": "a58f53feb169724d987f774c3143083eee373806df251eb4164ca1ec82566ed8"
  },
  "host": {
-  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
   "logical_cpus": 4,
-  "memory_bytes": 16872808448,
-  "kernel": "6.18.44-fc-v185",
+  "memory_bytes": 16872804352,
+  "kernel": "6.18.44-fc-v230",
   "cgroup": "v1 memory controller; each timed stage alone in its own child group",
   "allocation": "all 4 vCPUs to each flow; RustEDA 8 GiB cap (+2 GiB memsw), LibreLane 10 GiB cap; no swap device",
   "sampling": "one timed sample per flow; module stages one warm-up plus three measured repetitions"
@@ -411,6 +412,19 @@
      "sha256": "520683c7f381ecc1ce5b9dc8e01d70d7d40373e5f85c42d41e58186e788e671f",
      "bytes": 60855293
     }
+   },
+   "determinism": {
+    "reference_run": "native bring-up #3 (shared host load)",
+    "identical": {
+     "gds": true,
+     "def_": true,
+     "netlist_synth": true,
+     "netlist_final": true,
+     "netlist_powered": true,
+     "spef_native": true,
+     "spef_openrcx": false
+    },
+    "note": "artifact identity across two complete native runs; the OpenRCX SPEF is written by OpenROAD"
    }
   },
   "LibreLane": {
@@ -1815,6 +1829,11 @@
  "publication_rule": "Only complete independently checked runs with frozen matching inputs may populate end-to-end comparative ratios. Module head-to-heads report each contender's measured time on the identical task. Failed runs are preserved and reported; missing values stay null.",
  "evidence_inventory": [
   {
+   "path": "benchmarks/evidence/ibex-host-20261102/native/bringup-artifacts.json",
+   "sha256": "0e1919ea79abbce9bab86feb4e23620ce8f238169ad8ecbbb8903a1cf93d7341",
+   "bytes": 944
+  },
+  {
    "path": "benchmarks/evidence/ibex-host-20261102/native/summary.json",
    "sha256": "0fdca78450fb59f04835022d0d0a33274cc4786b7a6f74d635c82918f31c5679",
    "bytes": 1155
@@ -1841,8 +1860,8 @@
   },
   {
    "path": "benchmarks/evidence/ibex-host-20261102/native/def-metrics.json",
-   "sha256": "476f40d1df4639d4d8c6f4f6148e0a8cd06badb45643299fb9d9210748bc248c",
-   "bytes": 952
+   "sha256": "c0e034848e6331e20ff29e520839a7fdfaf7319210a32f81d7d57e6b1c8e4f80",
+   "bytes": 803
   },
   {
    "path": "benchmarks/evidence/ibex-host-20261102/librelane/step-runtimes.json",
@@ -1861,8 +1880,8 @@
   },
   {
    "path": "benchmarks/evidence/ibex-host-20261102/librelane/def-metrics.json",
-   "sha256": "db18dea0c96c54e06b45fddf106e39c8aed29afb46037c80d478ba24c150161f",
-   "bytes": 841
+   "sha256": "f3f32583d139754a7fb15c02d29c8944146e07844e5f9e1aabfd5a6d11c7fbb7",
+   "bytes": 756
   },
   {
    "path": "benchmarks/evidence/ibex-host-20261102/librelane-prepared-config-diagnostic.json",

@@ -29,11 +29,11 @@ Results, scope and the module-by-module comparison are published on the
 Each deviation applies to both flows unless stated otherwise.
 
 1. **EZ130 collateral.** The ETH archive host is unreachable from the benchmark
-   host. Six of the eight pinned EZ130 files are byte-identical to the contract:
+   host. Five of the seven EZ130 files pinned by the contract are byte-identical:
    TT/SS Liberty, cell LEF, CDL and Verilog come from a public pre-release
    mirror that differs only in a citation placeholder, verified by SHA-256 after
-   restoring it, and the TT Liberty also matches the `pulp-platform/croc`
-   mirror. The SG13G2 tech LEF and the cell GDS are **reconstructed** from the
+   restoring it (the FF Liberty, pinned by the library catalog, also matches),
+   and the TT Liberty also matches the `pulp-platform/croc` mirror. The SG13G2 tech LEF and the cell GDS are **reconstructed** from the
    public SG13CMOS5L retarget by reversing its six documented edits (Metal5,
    Via4, TopVia2 and TopMetal2 from IHP's SG13G2 tech LEF; 74 `Via4_*` vias;
    the 220 added `189/4` boundary shapes removed). They are not byte-identical

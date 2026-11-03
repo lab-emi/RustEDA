@@ -2,15 +2,7 @@
  "def_path": "/home/user/RustEDA/.work/ibex-host/native-final/output/logs/be_def.stdout",
  "dbu_per_micron": 1000,
  "routed_signal_wirelength_um": 1679076.6,
- "wirelength_by_layer_um": {
-  "Metal1": 1466045.4,
-  "Metal2": 149434.9,
-  "Metal3": 46990.3,
-  "Metal4": 13496.7,
-  "Metal5": 2430.5,
-  "TopMetal1": 645.2,
-  "TopMetal2": 33.6
- },
+ "wirelength_by_layer_um": null,
  "vias": 301099,
  "vias_by_name_top": {
   "Via2_XY_so": 104237,

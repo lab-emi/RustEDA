@@ -7,7 +7,7 @@ Definition (identical to the published Ibex receipt's `wirelength_scope`):
 regular NETS only; SPECIALNETS excluded; Manhattan segment lengths between
 consecutive path points of ROUTED/FIXED/COVER/NEW paths; RECT patches and
 VIRTUAL jumps excluded. Vias are counted per occurrence on regular nets.
-Also reports per-layer wirelength, the routed-net count and the placed
+Per-layer wirelength is not computed. Also reports the routed-net count and the placed
 standard-cell instance count by class. Streams the file; bounded to 2 GiB.
 """
 from __future__ import annotations
@@ -116,7 +116,7 @@ def main() -> int:
     result = dict(
         def_path=str(args.def_file.resolve()), dbu_per_micron=units,
         routed_signal_wirelength_um=round(total / units, 1),
-        wirelength_by_layer_um={k: round(v / units, 1) for k, v in sorted(layer_length.items())},
+        wirelength_by_layer_um=None,  # not computed: a via switches the path layer, which this reader does not track
         vias=sum(via_count.values()), vias_by_name_top=dict(via_count.most_common(12)),
         nets=nets, routed_nets=routed_nets, components=dict(components),
         scope="regular NETS only; SPECIALNETS excluded; Manhattan segments between consecutive path points; "

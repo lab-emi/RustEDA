@@ -1,0 +1,33 @@
+{
+ "run": "native bring-up #3 (shared host load)",
+ "artifacts": {
+  "gds": {
+   "sha256": "9af6cc6e40799cda843d86d219b7adbe9991ae6b1cc1bffcedc2583863d281d1",
+   "bytes": 48157358
+  },
+  "def_": {
+   "sha256": "0ba057f191e11192ad853e1a6eb5835e4efe20bca9a24ef5514536eff14d513c",
+   "bytes": 24219433
+  },
+  "netlist_synth": {
+   "sha256": "0cc1704499268b63f9f42080cf60c17986fd48f4167d8a8bd481d564a221d561",
+   "bytes": 1585397
+  },
+  "netlist_final": {
+   "sha256": "d7826d8628bbd63a21d9e961a55ab259f5672747ad76018f113a0f6ec211906e",
+   "bytes": 2230514
+  },
+  "netlist_powered": {
+   "sha256": "dc0bc50b2e729e4e6bef3bf311c66acb4f80b7f9e1bd616d2532d1044a967f72",
+   "bytes": 6042180
+  },
+  "spef_native": {
+   "sha256": "520683c7f381ecc1ce5b9dc8e01d70d7d40373e5f85c42d41e58186e788e671f",
+   "bytes": 60855293
+  },
+  "spef_openrcx": {
+   "sha256": "ced4991f8d856cced87b47c7b1329d67d03fe8c72517216ad14fc77d455c6f97",
+   "bytes": 42127012
+  }
+ }
+}
