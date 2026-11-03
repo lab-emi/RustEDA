@@ -67,5 +67,11 @@ documentation does not support GF180 SRAM generation, and the installed IHP and
 GF180 macro libraries are prebuilt IP rather than open SRAM compilers.
 
 None of these selectors proves macro pin consistency, timing accuracy, DRC,
-LVS, or RustEDA RTL-to-GDS integration. The qualified `./rusteda flow` remains
-limited to its existing SKY130/GF180 small-block cases without SRAM macros.
+LVS, or RustEDA RTL-to-GDS integration. The qualified SKY130/GF180 small-block
+`./rusteda flow` cases use no SRAM macros. SRAM RTL-to-GDS evidence is limited
+to the [Ibex SG13G2/EZ130 campaigns](benchmarks.md) with two IHP
+`RM_IHPSG13_1P_1024x32_c2_bm_bist` macros, run from the recipe that
+`./rusteda flow` accepts as the explicit `ihp_sg13g2_ez130` producer contract;
+the 2026-11-02 host reproduction is `unqualified`. These campaigns do not
+qualify other designs, SRAM configurations or the SKY130/GF180 SRAM collateral
+above.

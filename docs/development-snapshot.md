@@ -1,5 +1,14 @@
 # Development publication · 2026-11-01
 
+**2026-11-02 host campaign.** An Ibex SG13G2/EZ130 benchmark campaign on a
+4-vCPU cloud host is [published](benchmarks.md) with its
+[receipt](benchmarks/ibex-sg13g2-ez130-host-20261102.json). Its engine binaries
+were built from the module commits in the receipt's `engine_commits`: RustSys
+`0f8a2d80654d`, RustSTA `0c2bcc6a5395`, RustROAD `07e1626f220e` and RustSpice
+`cc2426f3e6cb`, with RustEDA-Common `06a9cdac2336` included transitively. These
+are the revisions of this 2026-11-01 publication; the receipt records each
+executable's SHA-256.
+
 The superproject records the following exact module versions. Flow, CLI and
 workbench remain in `apps/`; no standalone application repositories or root
 Cargo workspace are restored. Original local experiments and historical evidence
@@ -26,4 +35,5 @@ reported separately by GitHub CI; local application checks use the headless buil
 The 472.2/472.6-second native measurements retain their original frozen ELFs.
 Publication-time builds do not replace their qualification identities or establish
 an end-to-end result for every new checkout. No new matched LibreLane or GPU
-whole-flow comparison was run.
+whole-flow comparison was run for this publication; the 2026-11-02 host campaign
+above is recorded separately.

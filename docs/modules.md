@@ -30,4 +30,11 @@ Each engine README and development-status page records its supported scope.
 The G1 CPU/CUDA crossing session is published separately as experimental work;
 GPU-integrated RTL-to-GDS remains unchecked.
 
-[All engine updates](engine-status.md) · [Measured native runs](benchmarks.md)
+The newest results are the 2026-11-02 host campaign, built from that
+publication's module revisions: Ibex on SG13G2/EZ130 with two real SRAMs on a
+4-vCPU cloud host, against LibreLane 3.0.17 on the same prepared inputs, plus
+module head-to-heads for RustSys, RustSTA, RustROAD and RustSpice. The native run is `unqualified`,
+and neither flow passes every gate, so no end-to-end ratio is published.
+
+[All engine updates](engine-status.md) · [Host campaign and retained runs](benchmarks.md) ·
+[Receipt](benchmarks/ibex-sg13g2-ez130-host-20261102.json)
