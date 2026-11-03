@@ -213,7 +213,10 @@ def build(config):
                 prects_netlist=prects,
                 recipe={'import': stage_import, 'place': final_stage('fe_final_place'),
                         'cts': final_stage('fe_final_cts'), 'route': steps[-1]['arguments'][2:],
-                        'extract': ['--max-expansions', '8000000', 'extract', '--rc-profile',
+                        # --threads is a global option: it must precede the
+                        # subcommand (foundry_first/protocol.py), and it sizes
+                        # extraction's strip pool like the route step's.
+                        'extract': ['--threads', '{threads}', '--max-expansions', '8000000', 'extract', '--rc-profile',
                                     output + 'profiles/ihp-rc-nom.json', '--corner', 'nom', '--out', '@SPEF@',
                                     '--max-spef-mib', '256', '--extract-memory-mib', '3584',
                                     '--max-extract-shapes', '4000000', '--max-rc-nodes', '2000000',
@@ -260,7 +263,7 @@ def build(config):
     command('gds', 'rustroad', ['--workspace', road, 'export-gds', '--cell-gds',
             output + 'profiles/combined-cells.gds', '--layer-map', output + 'profiles/gds-map.json',
             '--out', gds], 300)
-    command('extract', 'rustroad', ['--workspace', road, '--max-expansions', '8000000',
+    command('extract', 'rustroad', ['--workspace', road, '--threads', '{threads}', '--max-expansions', '8000000',
             'extract', '--rc-profile', output + 'profiles/ihp-rc-nom.json', '--corner', 'nom',
             '--out', native_spef, '--max-spef-mib', '256', '--extract-memory-mib', '3584',
             '--max-extract-shapes', '4000000',

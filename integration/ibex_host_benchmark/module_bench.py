@@ -34,6 +34,17 @@ TIME = "/opt/eda/time/bin/time"
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def with_threads(argv, threads):
+    """RustROAD's pool size is the global --threads option (it overrides
+    RAYON_NUM_THREADS); set it before the subcommand, replacing any value."""
+    argv = list(argv)
+    if "--threads" in argv:
+        argv[argv.index("--threads") + 1] = str(threads)
+    else:
+        argv[3:3] = ["--threads", str(threads)]  # after [binary, --workspace, path]
+    return argv
+
+
 def strip_time(argv):
     argv = [str(a) for a in argv]
     if argv and argv[0].endswith("/time") and argv[1] == "-v" and argv[2] == "-o":
@@ -117,6 +128,7 @@ def main() -> int:
                 shutil.rmtree(work, ignore_errors=True)
                 work.mkdir(parents=True)
                 argv = [a if not a.endswith("native.nom.spef") else str(work / "native.spef") for a in native]
+                argv = with_threads(argv, t)
                 r1 = measure(argv, work, env={"RAYON_NUM_THREADS": str(t), "OMP_NUM_THREADS": str(t)})
                 script = tcl.replace("set_thread_count 2", f"set_thread_count {t}")
                 script = re.sub(r'write_spef "[^"]+"', f'write_spef "{work / "openrcx.spef"}"', script)
