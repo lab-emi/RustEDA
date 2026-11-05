@@ -166,6 +166,11 @@
     "length_per_via": 1680,
     "net_expansions": 10000,
     "max_connection_length": 20000
+   },
+   "dedupe_vias": true,
+   "straighten": {
+    "passes": 2,
+    "turn_at_ends": true
    }
   }
  },

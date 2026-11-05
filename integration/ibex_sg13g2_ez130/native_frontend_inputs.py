@@ -15,6 +15,7 @@ The temporary, repair and final rounds all import that plan.
 """
 from __future__ import annotations
 import argparse,csv,fcntl,gc,hashlib,importlib.util,json,os,re,resource,signal,sys,time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -81,6 +82,25 @@ def digest(p):
     return h
 
 
+def workers(count):
+    """Threads for hashing count files: the CPUs this process may use, at most four (hashlib
+    releases the interpreter lock while it hashes)."""
+    return max(1, min(4, len(os.sched_getaffinity(0)), count))
+
+
+def prefetch(paths):
+    """digest() of every existing path, on several threads: the digests land in MEMO (and the
+    flow cache) exactly as the serial calls would leave them, so the checks that follow find
+    them. A path that cannot be hashed here is left to the serial code, which reports it."""
+    paths = [Path(x) for x in dict.fromkeys(str(x) for x in paths)]
+    def one(path):
+        try:digest(path)
+        except OSError:pass
+    if workers(len(paths)) > 1:
+        with ThreadPoolExecutor(max_workers=workers(len(paths))) as pool:
+            list(pool.map(one, paths))
+
+
 def flow_entries(path):
     """Valid entries of a flow digest cache file, {} when it is missing or malformed."""
     try:
@@ -99,14 +119,21 @@ def open_flow(root):
 
 def save_flow():
     """Merge this process's new entries into the flow digest cache (atomic replace). An entry
-    already in the file stays as it is, so the final check sees every digest that was shared."""
+    already in the file stays as it is, so the final check sees every digest that was shared.
+    The merge holds an exclusive lock on the cache's directory: helpers that run beside each
+    other (a four-CPU frontend runs its steps as a dependency graph) never drop each other's
+    entries."""
     if FLOW is None or not FLOW['dirty']:return
-    entries={**FLOW['entries'],**flow_entries(FLOW['path'])};tmp=FLOW['path'].with_name(f'.sha256-cache.json.tmp-{os.getpid()}')
+    tmp=FLOW['path'].with_name(f'.sha256-cache.json.tmp-{os.getpid()}');guard=None
     try:
+        guard=os.open(FLOW['path'].parent,os.O_RDONLY|os.O_DIRECTORY);fcntl.flock(guard,fcntl.LOCK_EX)
+        entries={**FLOW['entries'],**flow_entries(FLOW['path'])}
         tmp.write_text(json.dumps(dict(schema=FLOW_SCHEMA,root=str(FLOW['root']),entries=dict(sorted(entries.items()))),indent=1)+'\n');os.replace(tmp,FLOW['path'])
         FLOW['dirty']=False
     except OSError:
         tmp.unlink(missing_ok=True)
+    finally:
+        if guard is not None:os.close(guard)
 
 
 def check_flow(out):
@@ -119,11 +146,14 @@ def check_flow(out):
         data=read(path,4<<20);require(data.get('schema')==FLOW_SCHEMA and data.get('root')==str(FLOW['root']),'flow digest cache malformed')
     # What this process loaded and used, and what the file holds now (an entry is never replaced).
     entries={**FLOW['entries'],**flow_entries(path)};differ=[]
-    for name,e in sorted(entries.items()):
+    def full(name):
         try:
-            with open(name,'rb')as f:h=hashlib.file_digest(f,'sha256').hexdigest()
-        except OSError:h=None
-        if h!=e['sha256']:differ.append(name)
+            with open(name,'rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+        except OSError:return None
+    names=sorted(entries)
+    with ThreadPoolExecutor(max_workers=workers(len(names)))as pool:digests=dict(zip(names,pool.map(full,names)))
+    for name,e in sorted(entries.items()):
+        if digests[name]!=e['sha256']:differ.append(name)
     require(not differ,'flow digest cache differs from the files: '+', '.join(differ))
     cache=None
     if path.exists():
@@ -152,6 +182,11 @@ def context(path):
         for name,item in c[group].items():
             cap=256<<20 if group=='tools'else (2<<20 if name in ['sdc','interfaces','floorplan','physical','routing','ecos','frontend','prepare','producer','delay_helper','sizing_helper','liberty_reader','pin_caps_source','estimator','rc_policy']else 64<<20)
             require(item['bytes']<=cap,'input byte budget: '+name)
+    # Every pinned input within its budget is hashed (or found in the flow cache) on several
+    # threads first; the checks below then take its digest from MEMO.
+    prefetch(Path(item['path']).resolve(strict=True) for group in ['files','tools'] for item in c[group].values())
+    for group in ['files','tools']:
+        for name,item in c[group].items():
             require(rec(Path(item['path']))==item,'pinned input changed: '+name)
     require(sum(c['files'][k]['bytes']for k in ['std_tt','std_ss','ram_tt','ram_ss'])<=64<<20,'aggregate Liberty budget')
     c['root']=Path(c['run_root']).resolve();return c
@@ -231,6 +266,11 @@ def profiles(c,out):
 def bundle(c,args,out):
     f=paths(c);root=c['root'];tag=args.timing_tag;require(re.fullmatch('[a-zA-Z0-9_-]+',tag),'unsafe timing tag')
     source=dynamic(c,args.source);timed=dynamic(c,args.timed or args.source);graph=dynamic(c,args.graph);profile=root/'frontend/profiles'
+    # The run-tree files this bundle records, hashed on several threads first (prefetch).
+    logs=[root/f'logs/fe_{tag}_{x}.stdout' for x in ['seed','def','hold']+[f'{co}_{k}' for co in ['tt','ss'] for k in ['drv','endpoints']]]
+    prefetch([source,timed,graph,*(profile/x for x in ['io.json','delay.json','sizing.json','cell-buses.json']),*logs,
+              *(root/f'logs/fe_caps_{co}_{k}.stdout' for co in ['tt','ss'] for k in ['std','ram']),
+              root/f'frontend/estimate-{tag}/estimate.spef',root/'frontend/eco-electrical/weights.json'])
     inputs=dict(schema='rusteda.native-eco-inputs.v1',netlist=rec(source),netlist_json={**rec(graph),'source_sha256':rec(source)['sha256']},sdc=rec(f['sdc']),io=rec(profile/'io.json'),profiles=dict(delay=rec(profile/'delay.json'),lef=rec(f['cell_lef']),sizing=rec(profile/'sizing.json'),cell_buses=rec(profile/'cell-buses.json')),tools=dict(rustroad=c['tools']['rustroad'],xxhsum=c['tools']['xxhsum'],liberty_reader=c['files']['liberty_reader']),corners={})
     if timed!=source:inputs['timed_netlist']=rec(timed)
     estimated=args.operation in ('electrical','hold')
@@ -248,7 +288,8 @@ def bundle(c,args,out):
             inputs['corners'][co].update(endpoints=rec(dynamic(c,root/f'logs/fe_{tag}_{co}_endpoints.stdout')),hold_fix=rec(dynamic(c,root/f'logs/fe_{tag}_hold.stdout')))
     write(out/'inputs.json',inputs)
     ecos=module('frontend_ecos',f['ecos']);ecos.DIGEST_MEMO=MEMO;ecos.DIGEST_FLOW=FLOW;a=SimpleNamespace(max_work=10000000,max_cells=100000,max_connections=500000,max_rows=200000)
-    parsed=ecos.Inputs(out/'inputs.json',a);corners=['tt','ss'];io=ecos.io_projection(parsed,f['sdc']);pins=ecos.pin_views(parsed,corners);g=ecos.Graph(parsed,parsed.document(inputs['netlist_json']),c['selection']['top'],pins,io)
+    parsed=ecos.Inputs(out/'inputs.json',a);corners=['tt','ss'];io=ecos.io_projection(parsed,f['sdc']);pins=ecos.pin_views(parsed,corners)
+    document=parsed.document(inputs['netlist_json']);before=parsed.work;g=ecos.Graph(parsed,document,c['selection']['top'],pins,io);work=(before,parsed.work)
     reports=[parsed.report(co,'drv',timed,f['sdc'])for co in corners]
     initial=root/'frontend/bundle-reset/roots.json'
     if args.operation=='reset':
@@ -272,6 +313,7 @@ def bundle(c,args,out):
     policy.update(schema='rusteda.native-eco-policy.v1',clock_roots=[selection['primary_clock'],roots['clock_root']],reset={**selection['reset'],'net':roots['reset_root']},scope='estimated_rc' if estimated else 'ideal_diagnostic',prefix='native_'+args.operation.replace('-','_'))
     if estimated:policy.update(electrical=selection['electrical'],launch_chain_max=selection['launch_chain_max'])
     write(out/'policy.json',policy)
+    return dict(module=ecos,inputs=parsed,graph=g,work=work,top=c['selection']['top'])
 
 
 def routing_capture(routing,root):
@@ -382,16 +424,33 @@ def validate(c,out):
 
 def main():
     gc.set_threshold(100_000,50,100)  # large acyclic structures live to the end (see native_ecos.py main)
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['profiles','bundle','physical','pins','validate']);p.add_argument('--context',type=Path,required=True);p.add_argument('--workspace',type=Path,required=True);p.add_argument('--base-rev',required=True);p.add_argument('--operation',choices=['reset','fanout','primary-clock','electrical','hold']);p.add_argument('--timing-tag');p.add_argument('--source');p.add_argument('--timed');p.add_argument('--graph');p.add_argument('--roots');p.add_argument('--def',dest='def_');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['profiles','bundle','physical','pins','validate']);p.add_argument('--context',type=Path,required=True);p.add_argument('--workspace',type=Path,required=True);p.add_argument('--base-rev',required=True);p.add_argument('--operation',choices=['reset','fanout','primary-clock','electrical','hold']);p.add_argument('--timing-tag');p.add_argument('--source');p.add_argument('--timed');p.add_argument('--graph');p.add_argument('--roots');p.add_argument('--def',dest='def_')
+    # bundle --eco-workspace NEW --digest-cache CACHE: after the bundle, run the ECO stage of the
+    # operation in this process (native_ecos.py OP --workspace NEW --base-rev empty --inputs/--policy
+    # of this bundle --digest-cache CACHE), reusing what the bundle read; its outputs are the same.
+    p.add_argument('--eco-workspace',type=Path);p.add_argument('--digest-cache',type=Path);a=p.parse_args()
+    require((a.eco_workspace is None)==(a.digest_cache is None) and (a.eco_workspace is None or a.command=='bundle'),'--eco-workspace and --digest-cache go together with bundle')
     resource.setrlimit(resource.RLIMIT_AS,(2<<30,2<<30));signal.alarm(180);c=context(a.context)
     with fresh(a.workspace,a.base_rev):
         if a.command=='profiles':profiles(c,a.workspace)
-        elif a.command=='bundle':bundle(c,a,a.workspace)
+        elif a.command=='bundle':reuse=bundle(c,a,a.workspace)
         elif a.command=='physical':physical(c,a,a.workspace)
         elif a.command=='pins':pins(c,a,a.workspace)
         else:validate(c,a.workspace)
         (a.workspace/'HEAD').write_text('rev1\n')
     save_flow()
+    if a.eco_workspace is not None:eco(reuse,a)
+
+
+def eco(reuse,a):
+    """The ECO stage after this process's bundle, as `native_ecos.py OP --workspace W --base-rev empty
+    --inputs B/inputs.json --policy B/policy.json --digest-cache C` would run it (same outputs and
+    stdout; its errors are reported in its own format)."""
+    ecos=reuse.pop('module')
+    argv=[a.operation,'--workspace',str(a.eco_workspace),'--base-rev','empty','--inputs',str(a.workspace/'inputs.json'),'--policy',str(a.workspace/'policy.json'),'--digest-cache',str(a.digest_cache)]
+    try:ecos.main(argv,reuse)
+    except (ecos.Failure,OSError,ValueError,KeyError,TypeError,MemoryError,ecos.subprocess.SubprocessError) as error:
+        print(json.dumps({'status':'error','code':getattr(error,'code','INPUT'),'message':str(error)}),file=sys.stderr);raise SystemExit(2) from error
 
 
 if __name__=='__main__':

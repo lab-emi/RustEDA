@@ -30,6 +30,7 @@ import os
 from pathlib import Path
 import re
 import resource
+import select
 import selectors
 import signal
 import subprocess
@@ -262,6 +263,34 @@ def validate_stdout_artifacts(steps, registry, scope):
                 aggregate_limit_bytes=cap, files=len(registry))
 
 
+def exit_waiter(process):
+    """A descriptor that becomes readable when `process` exits (a Linux pidfd), or None.
+
+    It only wakes the waits below; the producer still reaps the child itself (`poll`).
+    Without it a wait sleeps for its whole polling tick: subprocess's timed wait
+    sleeps up to 50 ms between checks, and every step's wall time and start of
+    the next step absorbed that latency. With it an exit is seen at once, and the
+    deadline and byte-budget checks still run at their tick. Platforms without
+    pidfds keep the polling waits.
+    """
+    try:
+        return os.pidfd_open(process.pid)
+    except (AttributeError, OSError):
+        return None
+
+
+def wait_exit(process, waiter, seconds):
+    """Wait at most `seconds` for `process` to exit, returning at its exit when `waiter` is a
+    pidfd; returns the exit code, or None while it runs."""
+    if waiter is None:
+        try:
+            return process.wait(timeout=seconds)
+        except subprocess.TimeoutExpired:
+            return None
+    select.select([waiter], [], [], seconds)
+    return process.poll()
+
+
 def capture_artifact(command, output, environment, out, err, started, seconds,
                      log_bytes, log_budget, artifact_bytes, artifact_budget, file_budget):
     """Stream both raw pipes; all stderr remains diagnostic, including failures.
@@ -273,6 +302,7 @@ def capture_artifact(command, output, environment, out, err, started, seconds,
     """
     process = subprocess.Popen(command, cwd=output, env=environment, stdin=subprocess.DEVNULL,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+    waiter = exit_waiter(process)
     try:
         sizes = {"stdout": 0, "stderr": 0}
         failure = None
@@ -280,6 +310,9 @@ def capture_artifact(command, output, environment, out, err, started, seconds,
             for stream, name, target in ((process.stdout, "stdout", out), (process.stderr, "stderr", err)):
                 os.set_blocking(stream.fileno(), False)
                 selector.register(stream, selectors.EVENT_READ, (name, target))
+            if waiter is not None:
+                # Wakes the loop at the exit once both pipes are drained (see exit_waiter).
+                selector.register(waiter, selectors.EVENT_READ, ("exit", None))
             failure, drain_end, drained = None, None, 0
             while selector.get_map() or process.poll() is None:
                 if failure is None and time.monotonic() - started > seconds:
@@ -295,6 +328,9 @@ def capture_artifact(command, output, environment, out, err, started, seconds,
                     break
                 for key, _ in selector.select(.1):
                     name, target = key.data
+                    if name == "exit":
+                        selector.unregister(key.fileobj)
+                        continue
                     data = os.read(key.fileobj.fileno(), CAPTURE_CHUNK)
                     if not data:
                         selector.unregister(key.fileobj)
@@ -314,13 +350,16 @@ def capture_artifact(command, output, environment, out, err, started, seconds,
                 if failure is not None and drain_end is None:
                     continue
             for key in list(selector.get_map().values()):
-                key.fileobj.close()
+                if key.data[0] != "exit":
+                    key.fileobj.close()
             if failure is not None:
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
     finally:
+        if waiter is not None:
+            os.close(waiter)
         if process.poll() is None:
             try:
                 os.killpg(process.pid, signal.SIGKILL)
@@ -554,6 +593,8 @@ def main():
                 except ProcessLookupError:
                     pass
                 code = job['process'].wait(timeout=10)
+                if job['waiter'] is not None:
+                    os.close(job['waiter'])
                 job['out'].close()
                 job['err'].close()
                 stdout_id = identity(job['log'].with_suffix('.stdout'))
@@ -649,7 +690,7 @@ def main():
                             out.close()
                             err.close()
                             raise
-                        running[tag] = dict(process=process, log=log, out=out, err=err,
+                        running[tag] = dict(process=process, waiter=exit_waiter(process), log=log, out=out, err=err,
                             cpus=selected, tick=tick, seconds=step['timeout_s'],
                             artifact=stdout_artifacts[step['stdout_artifact']] if 'stdout_artifact' in step else None,
                             handle=step.get('stdout_artifact'))
@@ -657,7 +698,12 @@ def main():
                     if pending and not running:
                         raise ValueError('parallel dependency/resource admission made no progress')
                     if running:
-                        time.sleep(.05)
+                        # Wake at the first exit (exit_waiter), else after the 50 ms budget tick.
+                        waiters = [job['waiter'] for job in running.values()]
+                        if None in waiters:
+                            time.sleep(.05)
+                        else:
+                            select.select(waiters, [], [], .05)
                 if log_bytes > log_budget:
                     raise ValueError('aggregate log byte budget exceeded during parallel execution')
             except BaseException as error:
@@ -718,6 +764,7 @@ def main():
                             # stdout/stderr byte is charged, irrespective of file suffix.
                             process = subprocess.Popen(command, cwd=output, env=environment, stdin=subprocess.DEVNULL,
                                                        stdout=out, stderr=err)
+                            waiter = exit_waiter(process)
                             try:
                                 while process.poll() is None:
                                     if time.monotonic() - tick > seconds:
@@ -725,14 +772,14 @@ def main():
                                     if log_bytes + sum(p.stat().st_size for p in (log.with_suffix(".stdout"), log.with_suffix(".stderr"))) > log_budget:
                                         raise ValueError("aggregate log byte budget exceeded")
                                     # Wake on exit; the bound checks still run every 0.2 s.
-                                    try:
-                                        process.wait(timeout=.2)
-                                    except subprocess.TimeoutExpired:
-                                        pass
+                                    wait_exit(process, waiter, .2)
                             except BaseException:
                                 process.kill()
                                 process.wait(timeout=10)
                                 raise
+                            finally:
+                                if waiter is not None:
+                                    os.close(waiter)
                             code = process.returncode
                 except BaseException as error:
                     capture_error = str(error)

@@ -255,11 +255,12 @@ unknown, so these files and the module pins change together.
 - **Routing.** Metal2 pin access, `via_cost` 2520, `wrong_way_factor` 3,
   `heuristic_weight` 2 and `track_router.qor` (`prim_order`, `drop_portals`,
   `net_aware_access`, `small_net_terminals` 10, `small_net_weight` 1,
-  `notch_bridge`, `strict_wide_cycles`, `via_reduction`). Metal2 access
-  needs `notch_bridge`. With vias priced higher (2520 instead of 1680) and
-  wrong-way steps lower (3 instead of 4), a short wrong-way Metal2 jog often
-  costs less than a pair of vias. Such jogs can close small loops through a
-  pin's own escape that cleanup fills into wide metal; `strict_wide_cycles`
+  `notch_bridge`, `strict_wide_cycles`, `via_reduction`, `dedupe_vias`,
+  `straighten`). Metal2 access needs `notch_bridge`. With vias priced
+  higher (2520 instead of 1680) and wrong-way steps lower (3 instead of 4),
+  a short wrong-way Metal2 jog often costs less than a pair of vias. Such
+  jogs can close small loops through a pin's own escape that cleanup fills
+  into wide metal; `strict_wide_cycles`
   cuts them (without it, routing the placement of the RustSys published on
   2026-11-02 ends with an unresolved wide-metal pair). `via_reduction`
   re-routes, after repair, every net with at most 10 terminals and at most
@@ -268,7 +269,21 @@ unknown, so these files and the module pins change together.
   at 10,000 expansions per net, and keeps a route only when it removes vias
   for at most 1.68 µm of extra wire each. In a post-route ECO it re-routes
   only the nets the ECO routed; the nets kept from the prior routing stay as
-  they were (RustROAD `docs/routing-budget.md`).
+  they were (RustROAD `docs/routing-budget.md`). `dedupe_vias` keeps one via
+  per net, layer pair and point: on 24 nets, two neighbouring pins' escapes
+  reached one shared top through the same via point with two Via1 variants,
+  which OpenRCX could put in series; their escapes now share one via right
+  after pin access. `straighten` (two passes, `turn_at_ends`) then rewrites
+  same-layer staircases and zigzags (chains of three or more runs joined at
+  plain corners, which carry most of the extra DEF pieces the OpenRCX
+  extraction pays for) into fewer-bend paths of at most their length,
+  without touching a via, where the router's clearance probe, the wide-metal
+  spacing, the same-net contact rule, the same-net rule check and the
+  connectivity check accept them (`turn_at_ends` lets a rewritten chain
+  leave a junction along the other axis). Its optional bend-priced re-route
+  stays off: it cost 25 to 31 s more per `be_route` for about 1 % fewer
+  pieces (RustROAD `docs/routing-budget.md`, "Coincident same-net vias" and
+  "Post-route topology cleanup").
 - **Repair margins.** `target_fanout` 9 against the SDC limit of 10
   (`native_ecos.py` admits 2 to 9), `drv_margin` 0.15, `hold_drv_margin` 0.1.
 - **Frontend STA and ECO helpers.** Every `rusteda import` of the frontend
@@ -285,6 +300,80 @@ unknown, so these files and the module pins change together.
   (57.56 s CPU) before; the frontend outputs differed only in provenance
   fields (argument lists, helper hashes, timings), not in netlists, timing
   tables or ECO plans.
+- **Frontend helpers and schedule.** Each ECO round is one helper process
+  (`native_frontend_inputs.py bundle --eco-workspace`): after the bundle, the
+  ECO stage of `native_ecos.py` runs on the documents and netlist graph the
+  bundle already read (bundle, plan, netlist, seed, weights and receipt as
+  from two processes, but for the receipt's elapsed time and peak RSS). The
+  five bundle steps are part of their ECO steps (114 producer steps instead of
+  119 in the host composition), and an ECO step has the 360 s deadline of the
+  two steps it replaces. The helpers hash pinned inputs and run-tree files on
+  up to four threads (every file is still read in full; the flow digest cache
+  is merged under a lock), `estimate_spef.py` compiles its DEF patterns once,
+  escapes each name once and runs Prim's tree without generator scans
+  (byte-identical SPEF), and the producer wakes at a child's exit (a Linux
+  pidfd) instead of at its polling tick of up to 50 ms. These changes apply to
+  every allocation. Two more need a four-CPU allocation (`threads: 4`), which
+  only the host adaptation admits (`native_frontend.py` accepts 2 or 16): the
+  six `ruststa run` steps take all four CPUs (`--threads 4`; the timing tables
+  are the same), and the prefix is one producer parallel group
+  (`frontend_parallel_group`: every step but validate, which runs after it) in
+  which each step waits only for the steps whose files and workspaces it uses
+  (`recipe`). `tests/test_frontend_parallel_group.py` derives those files and
+  workspaces from the step arguments and the helpers' file conventions on its
+  own and checks that any two steps that may run together leave alone what the
+  other writes (the ECO helpers read an STA workspace under a non-blocking
+  shared lock and fail rather than wait). Commands, arguments (but the STA
+  thread counts), outputs and the step order are those of the serial prefix.
+
+  On the final configuration's inputs, in five interleaved repetitions per arm
+  (frontend-only producer runs; LibreLane's resizer steps replayed as a black
+  box from their published inputs, as in the *Repair* item below; 1-minute
+  load 1.0 to 1.5), on four CPUs the receipt's frontend STA/ECO stage took a
+  median 26.96 s (43.18 s CPU), against 36.89 s (43.52 s CPU) before these
+  changes and 27.73 s (42.41 s CPU) with the same commands run one after
+  another. The changes inside the steps (four-thread STA runs, one-process ECO
+  rounds, threaded hashing, the estimator, exit-woken waits) give about 9.2 s
+  of the stage and the dependency graph about 0.8 s. The graph saves more
+  outside this stage (placement exports run side by side, frontend helpers
+  beside synthesis and placement steps): the producer reached the end of the
+  frontend in 55.2 s instead of 60.1 s (68.9 s before). On four CPUs the CPU
+  time is unchanged: the gain is wall time on CPUs that were idle, and it
+  shrinks on a busy host. The stage is still 1.19x LibreLane's two repair
+  steps before global routing (32 + 37: 22.62 s, 23.14 s CPU; no repetition
+  below 1.0x; 1.63x before these changes) and 0.49x its four repair steps
+  (55.16 s); the native side of that ratio leaves out the repair after routing
+  (`be_postroute`, 5.3 to 8.2 s in the complete runs), with which it is about
+  0.6x. Both follow the stage table's grouping, in which the native stage also
+  holds all six pre-route RustSTA runs with their imports and reports, while
+  LibreLane's pre-route STA steps are in its STA row. More concurrency cannot
+  close the gap: started as early as the graph allows on unlimited CPUs, the
+  serial runs' step times give a stage of 25.8 s (27.7 s serial), because the
+  rounds form a chain of STA runs on the estimated SPEF (about 7 s CPU each,
+  most of it preparing the RC waveforms, three quarters of that for the
+  drivers of the cell arcs), ECO, estimate and import helpers and hold
+  reports. In another five interleaved repetitions (1-minute load 1.1 to 3.3),
+  on a two-CPU allocation, which the repository admits, the changes that apply
+  to every allocation took the stage from 39.34 s (44.88 s CPU) to 32.79 s
+  (42.13 s CPU; 0.81x to 0.88x per repetition), 1.46x LibreLane's steps 32 +
+  37 (22.40 s) in the same repetitions; four CPUs gave 26.78 s there (1.20x).
+  The sixteen-CPU allocation was not measured (this host has four CPUs).
+
+  A complete run on four CPUs (all 114 steps) passed every producer gate and
+  all nine shared gates with the same OpenRCX timing values, and its GDS, DEF,
+  all netlists and native SPEF are byte-identical to the three runs of the
+  last item below. Of the 464 frontend files (`frontend/**`, the steps'
+  stdout), all but the provenance records (hashes of the changed recipe files
+  in `context.json`, the profiles receipt, the two estimated bundles' tool
+  records and the ECO receipts; the STA command lines with `--threads 4`) and
+  the fields that differ between any two runs (timestamps, run times, file
+  identities) are byte-identical to those before these changes, among them
+  every netlist, ECO plan, seed, weight file, DEF, SPEF, timing table, report
+  and graph. The foundry-first joint tap proof (`native_flow.py`,
+  `qualify_native.py`) pins the 125 + 3 steps of its T1 composition; a
+  sixteen-CPU composition now has five steps fewer, so that proof, which
+  already rejects this recipe's contract and lattice (*Taps* above), would
+  also reject the step count.
 - **GDS stream.** `be_gds` (and every export that must reproduce its bytes:
   `qualify_native.py`'s early export, the foundry-first initial export) passes
   `--merge-shapes rectangles --vias flat` (`native_backend.GDS_STYLE`): each
@@ -414,6 +503,36 @@ brackets:
   LibreLane's 2,919.3 s with its shared DRC, antenna and LVS on the same
   schedule: 3.88x, 3.17x and 3.04x (3.21x, 2.60x and 2.52x with both flows'
   checks one after another).
+
+- **Plus `dedupe_vias` and `straighten`** (two passes, `turn_at_ends`, no
+  re-route; RustROAD `661c045`, the other binaries as in the previous item),
+  two complete runs with byte-identical GDS, DEF, netlists and native SPEF:
+  118,525 vias (Via1 53,239, Via2 49,179, Via3 13,170, Via4 2,701, TopVia1
+  232, TopVia2 4) against 118,610, 897,357.3 µm of routed signal wire against
+  897,717.5 and 26,180.9 µm of wrong-way wire against 26,279.3 (LibreLane
+  17,301), with the same area, cells and netlists; no net has two vias of one
+  cut at one point. The final DEF has 192,328 wire pieces (RustROAD
+  `scripts/def_pieces.py`) against 198,916 (LibreLane 129,901), staircase and
+  zigzag pieces 42,789 and 39,398 against 51,249 and 41,652. Every shared
+  gate passed, including `latchup`; the producer completed all 119 steps
+  (`timing_accuracy` 0.16 ps); on OpenRCX SPEF the TT and SS worst slacks are
+  49.636/0.111 ns and 49.442/0.211 ns (setup/hold), with no setup, hold,
+  slew, capacitance or fanout violation. `be_route` took 310.4 s (308.6 s
+  CPU). In three interleaved pairs of route replays the cleanup cost no
+  measurable time (paired CPU differences -2.6, +11.8 and -5.9 s): the
+  rewrites take 1.6 to 1.9 s, and the route after the via reduction took
+  13.3 to 13.9 s with them against 15.5 to 18.2 s without, as rule repair
+  has less to do. OpenRCX is still slower
+  than on LibreLane's layout: in interleaved runs `be_openrcx` took a median
+  7.65 s wall and 7.36 s CPU on this DEF, 8.02 and 7.86 s on the previous
+  one and 5.83 and 5.73 s on LibreLane's (nine runs per DEF in two batches,
+  load 0.6 to 1.0; 1.31x and 1.28x LibreLane against 1.38x and 1.37x; faster
+  than the previous DEF in 7 of 9 pairs, median 0.57 s), and the shared
+  `extraction` gate 7.15 and 7.04 s against 7.37 and 7.23 s and 5.24 and
+  5.06 s (six runs each, load 0.8 to 1.0; 1.37x and 1.39x; the two native
+  DEFs are not separated there). The optional re-route, which the recipe
+  leaves off, made OpenRCX about 0.25 s faster per run in the same batches
+  (DEF of a run with it) for 25 to 31 s more `be_route` time.
 
 `timing_accuracy` passing is a property of these layouts, not a fix: the same
 RustSTA and OpenSTA binaries still differ by 1.405 ps in TT setup worst slack on

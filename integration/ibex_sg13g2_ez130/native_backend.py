@@ -410,10 +410,16 @@ def build(config):
     prefix = dict(schema='rusteda.ihp-flow.v1', name='fresh native physical/signoff prefix',
                   pdk='ihp-sg13g2', library='ez130_8t', corners=['tt', 'ss'], files=files, tools=tools,
                   steps=steps, scope=front['scope'], gates={}, artifacts=artifacts, stdout_artifacts=stdout_artifacts)
+    # The frontend's own groups (native_frontend.frontend_parallel_group on a four-CPU allocation)
+    # cover only its steps, which this prefix keeps in order; the foundry-check group follows.
+    groups = list(front.get('parallel_groups', []))
+    require(all(tag.startswith('fe_') for group in groups for tag in group['steps']),
+            'frontend parallel groups must stay inside the frontend prefix')
     if config.get('parallel_signoff', False):
         require(front['scope']['threads'] >= 4 and front['scope'].get('memory_mib') == 8192,
                 'parallel signoff requires four physical CPUs and the matched 8192 MiB cgroup')
-        groups = [policy.signoff_parallel_group(front['scope']['threads'])]
+        groups.append(policy.signoff_parallel_group(front['scope']['threads']))
+    if groups:
         policy.validate_parallel_groups(steps, groups, front['scope'])
         fragment['parallel_groups'] = groups
         prefix['parallel_groups'] = groups

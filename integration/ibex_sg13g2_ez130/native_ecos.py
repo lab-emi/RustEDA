@@ -103,6 +103,7 @@ The receipt records source/tool hashes, budgets, scope and unverified gates.
 Planner/apply/report time belongs to the caller's end-to-end measurement.
 """
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import csv
 import fcntl
 import gc
@@ -114,6 +115,7 @@ import os
 from pathlib import Path
 import re
 import resource
+import select
 import signal
 import subprocess
 import sys
@@ -142,6 +144,38 @@ def sha_fresh(path):
     """SHA-256 of the file's current content, always read in full."""
     with Path(path).open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def fresh_digests(paths):
+    """{path: sha_fresh(path)} for every path, each read in full. The files are hashed on the
+    CPUs this process may use (at most four threads; hashlib releases the interpreter lock while
+    it hashes), so a final check of large tools and libraries costs a fraction of its serial time;
+    every byte is still read and hashed."""
+    paths = list(dict.fromkeys(paths))
+    workers = max(1, min(4, len(os.sched_getaffinity(0)), len(paths)))
+    if workers == 1:
+        return {path: sha_fresh(Path(path)) for path in paths}
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        return dict(zip(paths, pool.map(lambda path: sha_fresh(Path(path)), paths)))
+
+
+def wait_child(proc, seconds):
+    """`proc.wait(timeout=seconds)`, woken at the child's exit through a Linux pidfd instead of
+    the polling wait (which sleeps up to 50 ms per check); the polling wait elsewhere."""
+    try:
+        fd = os.pidfd_open(proc.pid)
+    except (AttributeError, OSError):
+        return proc.wait(timeout=seconds)
+    try:
+        end = time.monotonic() + seconds
+        while proc.poll() is None:
+            left = end - time.monotonic()
+            if left <= 0:
+                raise subprocess.TimeoutExpired(proc.args, seconds)
+            select.select([fd], [], [], left)
+        return proc.returncode
+    finally:
+        os.close(fd)
 
 
 # Digests of this process, by resolved path: (identity, SHA-256). native_frontend_inputs.py
@@ -289,7 +323,7 @@ class Inputs:
             proc = subprocess.Popen(argv, stdout=out, stderr=err, start_new_session=True,
                                     env={**os.environ, 'RAYON_NUM_THREADS': '2'})
             try:
-                code = proc.wait(timeout=self.args.timeout_seconds)
+                code = wait_child(proc, self.args.timeout_seconds)
             except BaseException:
                 os.killpg(proc.pid, signal.SIGKILL)
                 proc.wait()
@@ -1346,7 +1380,16 @@ def estimated_hold(planner, reports, setups, corners, drvs, geo):
             'launch_groups': count, 'worst_setup_ns': worst_setup, 'bounds': bounds}
 
 
-def main():
+def main(argv=None, reuse=None):
+    """The ECO stage for the command line `argv` (default: sys.argv[1:]).
+
+    `reuse` is set when native_frontend_inputs.py bundles and plans in one process: the bundle's
+    `Inputs` read the same inputs.json, so its decoded documents are taken instead of decoding
+    those files again (each file is still checked against its record), and its graph (built from the same
+    netlist JSON, pin tables and IO projection, with the same budgets) instead of building it
+    again; the work units that graph cost are charged as if it was built here. The XXH3 checks
+    run as in a process of their own, and every input is hashed again in full at the end.
+    """
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('operation', choices=['reset', 'fanout', 'primary-clock', 'hold', 'electrical'])
     parser.add_argument('--workspace', type=Path, required=True); parser.add_argument('--base-rev', required=True)
@@ -1358,7 +1401,7 @@ def main():
                           ('max-combinations', 200000), ('max-hold-chain', 4), ('max-total-hold-chain', 8),
                           ('timeout-seconds', 180)]:
         parser.add_argument('--'+name, type=int, default=default)
-    args = parser.parse_args(); started = time.monotonic()
+    args = parser.parse_args(argv); started = time.monotonic()
     # A planner run builds large, acyclic JSON and graph structures that live to the end: the
     # cyclic collector would traverse them again and again and free nothing (the peak RSS is the
     # same), so it runs only every 100,000 allocations and almost never on the old generations.
@@ -1379,6 +1422,10 @@ def main():
         require(args.base_rev == 'empty' and not any(p.name != 'workspace.lock' for p in args.workspace.iterdir()), 'REVISION_CONFLICT', 'ECO stage requires a fresh empty workspace')
         staging = args.workspace/'.pending'; staging.mkdir()
         inputs = Inputs(args.inputs, args); policy = read_json(args.policy, 1 << 20)
+        if reuse is not None:
+            require(reuse['inputs'].manifest == inputs.manifest and reuse['inputs'].base == inputs.base,
+                    'INPUT', 'reused bundle state belongs to another input bundle')
+            inputs.cache.update(reuse['inputs'].cache)
         require(policy.get('schema') == 'rusteda.native-eco-policy.v1', 'SCHEMA', 'policy schema')
         known = {'schema', 'top', 'clock_roots', 'primary_clock', 'buffers', 'primary_buffer', 'reset', 'delay_cells',
                  'target_fanout', 'cap_fraction', 'hold_margin_ns', 'setup_margin_ns', 'scope', 'prefix', 'setup_corner',
@@ -1407,7 +1454,16 @@ def main():
         available = next((int(x.split()[1])*1024 for x in Path('/proc/meminfo').read_text().splitlines() if x.startswith('MemAvailable:')), limit)
         require(available >= estimate, 'BUDGET', 'insufficient host memory for policy estimate')
         io = io_projection(inputs, sdc); pins = pin_views(inputs, corners)
-        graph = Graph(inputs, inputs.document(source_json), policy['top'], pins, io)
+        document = inputs.document(source_json)
+        budgets = ('max_work', 'max_cells', 'max_connections', 'max_rows')
+        if (reuse is not None and reuse['top'] == policy['top'] and reuse['graph'].modules is document['modules']
+                and reuse['work'][0] == inputs.work and all(getattr(reuse['inputs'].args, k) == getattr(args, k) for k in budgets)):
+            # The bundle built this graph from the same decoded netlist JSON, pin tables and IO
+            # projection, with the same budgets, after the same work: charge its work as Graph does.
+            graph = reuse['graph']; graph.inputs, graph.pins = inputs, pins
+            inputs.work += reuse['work'][1] - reuse['work'][0]
+        else:
+            graph = Graph(inputs, document, policy['top'], pins, io)
         reports = [inputs.report(c, 'drv', timed, sdc) for c in corners]
         require(all(policy['primary_clock'] in x['completeness']['clock_domains'] for x in reports), 'REPORT_SCOPE', 'primary clock differs from compiled reports')
         scope = {x['scope']['wire_model'] for x in reports}
@@ -1483,7 +1539,8 @@ def main():
             if 'cell_buses' in bundle['profiles']:
                 cmd += ['--cell-buses', str(inputs.file(bundle['profiles']['cell_buses'], 2 << 20))]
             inputs.command(cmd, staging, 'apply-native')
-        require(all(sha_fresh(Path(p)) == h for p, h in inputs.files.items()), 'STALE_INPUT', 'an input changed during planning/apply')
+        fresh = fresh_digests(inputs.files)
+        require(all(fresh[p] == h for p, h in inputs.files.items()), 'STALE_INPUT', 'an input changed during planning/apply')
         receipt = dict(schema='rusteda.native-eco-receipt.v1', rev='rev1', operation=args.operation,
             planner_sha256=sha_fresh(Path(__file__)),
             status='planned_unverified' if args.plan_only else 'applied_requires_retiming', scope=expected,

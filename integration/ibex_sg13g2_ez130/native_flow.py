@@ -175,10 +175,17 @@ def verify_record(record):
 def check_parallel_groups(backend, steps, policy):
     """The backend's parallel groups must be the producer policy's group for the backend's own CPU
     allocation (`signoff_parallel_group(threads)`: the sixteen-CPU B4 group, or the two-lane
-    foundry-check group of a four-CPU host), valid over the composed steps."""
-    require(backend['parallel_groups'] == [policy.signoff_parallel_group(backend['scope']['threads'])],
+    foundry-check group of a four-CPU host), valid over the composed steps. Groups of the
+    frontend prefix (`native_frontend.frontend_parallel_group`, four-CPU allocations) may precede
+    it (or stand alone when the backend runs its checks serially); they hold frontend steps only."""
+    groups = backend['parallel_groups']
+    front = 0
+    while front < len(groups) and all(tag.startswith('fe_') for tag in groups[front]['steps']):
+        front += 1
+    require(groups[front:] == [policy.signoff_parallel_group(backend['scope']['threads'])]
+            or front > 0 and front == len(groups),
             'native signoff concurrency differs from the explicit B4 policy')
-    policy.validate_parallel_groups(steps, backend['parallel_groups'], backend['scope'])
+    policy.validate_parallel_groups(steps, groups, backend['scope'])
 
 
 def capture_policy(record):

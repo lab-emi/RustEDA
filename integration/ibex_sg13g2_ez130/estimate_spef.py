@@ -51,8 +51,19 @@ def sha(path):
         return hashlib.file_digest(f, 'sha256').hexdigest()
 
 
+# A name made of ASCII letters, digits, '_', '[' and ']' only escapes to itself.
+PLAIN = re.compile(r'[A-Za-z0-9_\[\]]*').fullmatch
+ESCAPED = {}
+
+
 def escape(name):
-    return ''.join(c if c.isascii() and (c.isalnum() or c in '_[]') else '\\'+c for c in name)
+    """The SPEF form of name: every character other than an ASCII letter or digit, '_', '['
+    or ']' gets a backslash. Names repeat (pins, masters), so each is escaped once."""
+    hit = ESCAPED.get(name)
+    if hit is None:
+        hit = ESCAPED[name] = name if PLAIN(name) else ''.join(
+            c if c.isascii() and (c.isalnum() or c in '_[]') else '\\'+c for c in name)
+    return hit
 
 
 def read_lef(path):
@@ -89,7 +100,17 @@ def read_lef(path):
     return macros
 
 
+COMPONENT = re.compile(r'\s*- (\S+) (\S+) \+ (?:PLACED|FIXED|COVER) \( (-?\d+) (-?\d+) \) (\S+)').match
+PORT_NAME = re.compile(r'\s*- (\S+)').match
+PORT_DIRECTION = re.compile(r'DIRECTION (\w+)').search
+PORT_LAYER = re.compile(r'LAYER \S+ \( (-?\d+) (-?\d+) \) \( (-?\d+) (-?\d+) \)').search
+PORT_PLACED = re.compile(r'(?:PLACED|FIXED) \( (-?\d+) (-?\d+) \)').search
+NET_PINS = re.compile(r'\( (\S+) (\S+) \)').findall
+
+
 def read_def(path, max_nets, max_pins):
+    """Components, ports, nets (name, [(instance or PIN, pin)]), DBU per micron and design name
+    of a placed DEF. The patterns are compiled once; a section line is matched as before."""
     comps, ports, nets, scale, design = {}, {}, [], None, None
     section, cur, port = None, None, None
     with open(path) as f:
@@ -112,22 +133,23 @@ def read_def(path, max_nets, max_pins):
                 section, cur = None, None
                 continue
             if section == 'C':
-                m = re.match(r'\s*- (\S+) (\S+) \+ (?:PLACED|FIXED|COVER) \( (-?\d+) (-?\d+) \) (\S+)', line)
+                m = COMPONENT(line)
                 if m:
-                    comps[m.group(1)] = (m.group(2), int(m.group(3)), int(m.group(4)), m.group(5))
+                    name, master, x, y, orient = m.groups()
+                    comps[name] = (master, int(x), int(y), orient)
             elif section == 'P':
-                m = re.match(r'\s*- (\S+)', line)
+                m = PORT_NAME(line)
                 if m:
                     port = [m.group(1), 'INPUT', None, None]
                     ports[port[0]] = port
                 if port:
-                    d = re.search(r'DIRECTION (\w+)', line)
+                    d = PORT_DIRECTION(line)
                     if d:
                         port[1] = d.group(1)
-                    r = re.search(r'LAYER \S+ \( (-?\d+) (-?\d+) \) \( (-?\d+) (-?\d+) \)', line)
+                    r = PORT_LAYER(line)
                     if r:
                         port[2] = tuple(int(x) for x in r.groups())
-                    p = re.search(r'(?:PLACED|FIXED) \( (-?\d+) (-?\d+) \)', line)
+                    p = PORT_PLACED(line)
                     if p:
                         port[3] = (int(p.group(1)), int(p.group(2)))
             elif section == 'N':
@@ -135,11 +157,11 @@ def read_def(path, max_nets, max_pins):
                     if cur:
                         nets.append(cur)
                     head = line[2:].split(None, 1)
-                    cur = [head[0], re.findall(r'\( (\S+) (\S+) \)', head[1].split('+')[0] if len(head) > 1 else '')]
+                    cur = [head[0], NET_PINS(head[1].split('+')[0] if len(head) > 1 else '')]
                     if len(nets) >= max_nets:
                         fail('BUDGET: net count')
                 elif cur and line.lstrip().startswith('(') and 'ROUTED' not in line and 'NEW' not in line:
-                    cur[1] += re.findall(r'\( (\S+) (\S+) \)', line.split('+')[0])
+                    cur[1] += NET_PINS(line.split('+')[0])
                 if cur and len(cur[1]) > max_pins:
                     fail('BUDGET: pins of net '+cur[0])
     if scale is None or design is None:
@@ -303,19 +325,30 @@ def tree_length(points, edges, blockages):
 
 
 def mst(points):
-    """Prim's rectilinear MST rooted at point 0; returns [(parent, child)]."""
-    n = len(points); best = [math.inf]*n; parent = [0]*n; used = [False]*n; best[0] = 0; edges = []
-    for _ in range(n):
-        i = min((j for j in range(n) if not used[j]), key=lambda j: (best[j], j))
-        used[i] = True
+    """Prim's rectilinear MST rooted at point 0; returns [(parent, child)].
+
+    Each round takes the unused point of the smallest distance to the tree, the lowest index
+    among equals, and a point's distance and parent change only on a strictly smaller distance.
+    """
+    n = len(points)
+    if n < 3:
+        return [(0, 1)] if n == 2 else []
+    best = [math.inf]*n; parent = [0]*n; best[0] = 0; edges = []
+    todo = list(range(n))  # the unused points, in index order
+    while todo:
+        k = 0; low = best[todo[0]]
+        for m in range(1, len(todo)):
+            if best[todo[m]] < low:
+                k, low = m, best[todo[m]]
+        i = todo.pop(k)
         if i:
             edges.append((parent[i], i))
         xi, yi = points[i]
-        for j in range(n):
-            if not used[j]:
-                d = abs(xi-points[j][0])+abs(yi-points[j][1])
-                if d < best[j]:
-                    best[j], parent[j] = d, i
+        for j in todo:
+            x, y = points[j]
+            d = abs(xi-x)+abs(yi-y)
+            if d < best[j]:
+                best[j], parent[j] = d, i
     return edges
 
 
