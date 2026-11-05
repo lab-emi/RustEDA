@@ -40,10 +40,15 @@
   "strap_spacing": 1000,
   "max_added_cells": 250000,
   "max_tie_fanout": 1,
-  "cell_spacing_sites": 7,
+  "cell_spacing_sites": 2,
   "tap": {
     "cell": "WELLTAP",
-    "max_gap": 15000,
+    "max_gap": 42000,
+    "pattern": {
+      "kind": "staggered",
+      "phase": 21000,
+      "unpaired": "cell_top"
+    },
     "well_layer": "NWell",
     "substrate_layer": "PSub",
     "body_view": "gds"
@@ -60,7 +65,15 @@
   "placer": {
     "retarget_isolated": true,
     "new_cells_first": true,
-    "local_detail": true
+    "local_detail": true,
+    "electrostatic": {
+      "target_density_milli": 600,
+      "max_iterations": 200,
+      "max_evaluations": 512,
+      "max_backtracks": 4,
+      "workers": 2,
+      "spacing_aware_density": true
+    }
   },
   "clock": {
     "port": "clk_i",
@@ -82,7 +95,8 @@
       "native_fanout_",
       "native_reset_"
     ],
-    "root_at_driver": true
+    "root_at_driver": true,
+    "seed_from_placement": true
   },
   "io_min_area": true,
   "rail_via_stack": [

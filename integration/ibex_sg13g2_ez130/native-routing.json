@@ -1,6 +1,6 @@
 {
  "grid_step": 420,
- "access_layer": "Metal3",
+ "access_layer": "Metal2",
  "layers": [
   {
    "name": "Metal1",
@@ -123,11 +123,11 @@
  },
  "track_router": {
   "gcell": 13440,
-  "via_cost": 840,
+  "via_cost": 2520,
   "memory_mib": 6144,
   "min_routing_layer": "Metal2",
   "max_routing_layer": "TopMetal2",
-  "heuristic_weight": 4,
+  "heuristic_weight": 2,
   "tracks": [],
   "global_iterations": 20,
   "capacity_percent": 80,
@@ -135,7 +135,7 @@
   "expand_margin": 4,
   "max_ripups_per_net": 256,
   "max_repair_rounds": 2000000,
-  "wrong_way_factor": 4,
+  "wrong_way_factor": 3,
   "max_history_entries": 4000000,
   "repair_heuristic_weight": 2,
   "single_owner_repair": {
@@ -150,7 +150,24 @@
   },
   "own_pin_index": "layer_ranges",
   "instance_index": "template_layers",
-  "area_stacks": true
+  "area_stacks": true,
+  "qor": {
+   "prim_order": true,
+   "drop_portals": true,
+   "net_aware_access": true,
+   "small_net_terminals": 10,
+   "small_net_weight": 1,
+   "notch_bridge": true,
+   "strict_wide_cycles": true,
+   "via_reduction": {
+    "passes": 1,
+    "via_milli": 2000,
+    "max_terminals": 10,
+    "length_per_via": 1680,
+    "net_expansions": 10000,
+    "max_connection_length": 20000
+   }
+  }
  },
  "batch_terminals": 100000
 }

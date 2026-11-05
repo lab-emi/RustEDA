@@ -183,15 +183,24 @@ class JointAdmission(unittest.TestCase):
             path = folder / (role + '.json')
             path.write_text(json.dumps(data))
             self.files[role] = p.identity(path)
+        # The joint proof pins its own original T1 contract (30 um native clear gap), frozen as a
+        # fixture: it is not the native recipe's contract.json, which declares the recipe's own
+        # tap lattice and may change without touching the T1 proof.
         contract = folder / 'contract.json'
-        original = Path(flow.__file__).with_name('contract.json').read_text()
-        self.assertIn('"native_tap_max_gap_um": 15', original)
-        contract.write_text(original.replace('"native_tap_max_gap_um": 15', '"native_tap_max_gap_um": 30'))
+        shutil.copyfile(self.t1_contract(), contract)
         self.files['contract'] = p.identity(contract)
         self.assertEqual((self.files['contract']['sha256'], self.files['contract']['bytes']), flow.TAP_CONTRACT)
+        self.assertEqual(json.loads(contract.read_text())['common']['native_tap_max_gap_um'], 30)
         deck = folder / 'opaque-maximal-byte-fixture'
         deck.write_bytes(b'only a metadata byte fixture; not a reference deck')
         self.files['tap_latchup_deck'] = p.identity(deck)
+
+    def t1_contract(self):
+        # Own-source frozen copy of the T1 contract, checked against its provenance record.
+        folder = Path(__file__).parent / 'fixtures/foundry_first_t1'
+        record = json.loads((folder / 'provenance.json').read_text())['files']['contract.json']
+        self.assertEqual((record['sha256'], record['bytes']), flow.TAP_CONTRACT)
+        return folder / 'contract.json'
 
     def legacy_source(self, name):
         # Own-source compatibility baseline, independent of Git clone depth/history.
@@ -265,6 +274,20 @@ class JointAdmission(unittest.TestCase):
             for suffix, raw in [('4596', old_raw), ('candidate', new_raw)]:
                 with (dest / ('pure-compose-' + suffix + '.json')).open('xb') as stream:
                     stream.write(raw)
+
+    def test_native_recipe_contract_is_not_the_t1_contract(self):
+        # The native recipe's contract.json declares the native lattice of native-physical.json;
+        # the joint proof never accepts it in place of its pinned T1 contract.
+        recipe = Path(flow.__file__).parent
+        native = json.loads((recipe / 'contract.json').read_text())['common']
+        physical = json.loads((recipe / 'native-physical.json').read_text())['tap']
+        self.assertEqual(native['native_tap_max_gap_um'] * 1000, physical['max_gap'])
+        self.assertEqual(native['tap_rule_max_distance_um'], 20)
+        self.files['contract'] = p.identity(recipe / 'contract.json')
+        with self.assertRaisesRegex(ValueError, 'exact original T1 contract'):
+            self.assembled()
+        self.files['contract'] = p.identity(self.t1_contract())
+        self.assertEqual(len(self.assembled()['steps']), 128)
 
     def test_wrong_frozen_worker_and_source_sibling_reject(self):
         worker = Path(self.files['tap_coverage_worker']['path'])

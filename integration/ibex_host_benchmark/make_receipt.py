@@ -27,7 +27,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-GATES = ("drc", "antenna", "lvs", "timing", "simulation", "synthesis_equivalence",
+GATES = ("drc", "antenna", "latchup", "lvs", "timing", "simulation", "synthesis_equivalence",
          "final_equivalence", "density")
 
 
@@ -68,6 +68,15 @@ def shared_gates(summary):
         r = (g.get(name) or {}).get("report") or {}
         out[name] = dict(status=r.get("status"), violations=r.get("violations"), scope=r.get("scope"),
                          disabled_rules=r.get("disabled_rules"))
+    lu = g.get("latchup") or {}
+    controller, coverage = ((lu.get("report") or {}).get(k) or {} for k in ("controller", "summary"))
+    # The controller passes only on a zero exit with both rules passed and the report bound to the GDS.
+    out["latchup"] = dict(status=(controller.get("status") if lu.get("exit_code") == 0 else "unverified") if lu
+                          else None,
+                          scope="tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate",
+                          rules={k: dict(status=v.get("status"), target_polygons=v.get("target_polygons"),
+                                         uncertified_boxes=len(v.get("uncertified_boxes") or []))
+                                 for k, v in (coverage.get("rules") or {}).items()})
     r = (g.get("lvs") or {}).get("report") or {}
     out["lvs"] = dict(status=r.get("status"), top_port_identity=r.get("top_port_identity"),
                       macro_instances=r.get("macro_instances"), macro_devices_verified=r.get("macro_devices_verified"))
@@ -93,6 +102,156 @@ def shared_gates(summary):
                           standard_cell_area_um2=round(a["final_nonfiller_standard_cells"] / 1e6, 1) if a else None,
                           filler_decap_area_um2=round(a["reported_separately_filler_decap"] / 1e6, 1) if a else None)
     return out
+
+
+# Shared gates the native producer can run itself, as the step that runs the same script.
+PRODUCER_CHECKS = {"drc": ("be_main", "main"), "antenna": ("be_antenna", "antenna"), "lvs": ("be_lvs", "lvs")}
+# Shared gates whose time the end-to-end total adds unless the producer ran the identical check.
+# extraction and timing are covered by the producer's own be_openrcx/be_timing steps, as before.
+COMPLETION_GATES = ("drc", "antenna", "latchup", "lvs", "simulation", "logic", "density")
+DRC_FIELDS = ("status", "complete", "violations", "categories", "deck_sha256", "disabled_rules", "scope")
+LVS_JOB_FIELDS = ("top", "macro", "macro_count", "qualified_frozen_hashes")
+LVS_SOURCES = ("gds", "powered_netlist", "deck", "interfaces", "macro_qualification", "tool_appimage",
+               "tool_yosys", "tool_time", "source_signoff_lvs.py", "source_build_lvs_reference.py",
+               "source_check_lvs.py", "python")
+
+
+def _normalized(command, replacements):
+    """A command line with run-specific paths (workspace, input file) replaced by placeholders."""
+    out = []
+    for arg in command:
+        for old, new in replacements:
+            arg = arg.replace(old, new)
+        out.append(arg)
+    return out
+
+
+def _same_drc(producer, shared):
+    """Identical foundry DRC/antenna check: same deck, profile, tool, switches and GDS bytes, both complete."""
+    a, b = (maybe(d / "summary.json") for d in (producer, shared))
+    ca, cb = (maybe(d / "command.json") for d in (producer, shared))
+    if not (a and b and ca and cb) or a.get("complete") is not True or b.get("complete") is not True:
+        return "missing or incomplete report"
+    for field in DRC_FIELDS:
+        if a.get(field) != b.get(field):
+            return f"{field} differs"
+    for field in ("profile", "gds", "tool"):
+        if (a.get(field) or {}).get("sha256") != (b.get(field) or {}).get("sha256"):
+            return f"{field} sha256 differs"
+    na = _normalized(ca, [(str(producer), "<workspace>"), (a["gds"]["path"], "<gds>")])
+    nb = _normalized(cb, [(str(shared), "<workspace>"), (b["gds"]["path"], "<gds>")])
+    return None if na == nb else "command differs"
+
+
+def _same_lvs(producer, shared):
+    """Identical device LVS: same deck, CDL, netlist, GDS, helpers and KLayout switches, both complete.
+
+    The producer's job may carry a shorter deadline and expected-hash preconditions; those bound or
+    guard the run but do not change what is compared, so they are not part of the identity.
+    """
+    a, b = (maybe(d / "summary.json") for d in (producer, shared))
+    ja, jb = (maybe(d / "job.json") for d in (producer, shared))
+    ca, cb = (maybe(d / "klayout-command.json") for d in (producer, shared))
+    if not (a and b and ja and jb and ca and cb) or a.get("complete") is not True or b.get("complete") is not True:
+        return "missing or incomplete report"
+    if a.get("status") != b.get("status") or a.get("reference_cdl_sha256") != b.get("reference_cdl_sha256"):
+        return "verdict or reference netlist differs"
+    for field in LVS_JOB_FIELDS:
+        if ja.get(field) != jb.get(field):
+            return f"{field} differs"
+    if (ja.get("limits") or {}).get("threads") != (jb.get("limits") or {}).get("threads"):
+        return "threads differ"
+    sa, sb = ja.get("sources") or {}, jb.get("sources") or {}
+    cdl = sorted(k for k in set(sa) | set(sb) if k.startswith("cdl_"))
+    for key in (*LVS_SOURCES, *cdl):
+        if (sa.get(key) or {}).get("sha256") != (sb.get(key) or {}).get("sha256"):
+            return f"{key} sha256 differs"
+    na = _normalized(ca, [(ja["output"], "<workspace>"), (ja["gds"], "<gds>")])
+    nb = _normalized(cb, [(jb["output"], "<workspace>"), (jb["gds"], "<gds>")])
+    return None if na == nb else "command differs"
+
+
+def producer_identical_checks(output, signoff, receipts):
+    """Shared gates the producer ran itself as the identical check on the same final layout.
+
+    `output` is the producer's output directory, `signoff` the shared-gate workspace and
+    `receipts` the producer's step receipts. A gate counts as covered only when the producer
+    step exited 0 and both runs used the same script, deck, rule selection, switches and input
+    bytes (`_same_drc`, `_same_lvs`); every other shared gate keeps its completion time.
+    Returns {gate: {"step", "identical", "reason"}}.
+    """
+    exits = {r.get("id"): r.get("exit_code") for r in receipts if r.get("kind") == "command"}
+    out = {}
+    for gate, (step, folder) in PRODUCER_CHECKS.items():
+        if exits.get(step) != 0:
+            reason = "producer step not run" if step not in exits else "producer step failed"
+        else:
+            same = _same_lvs if gate == "lvs" else _same_drc
+            reason = same(Path(output) / "backend" / folder, Path(signoff) / gate)
+        out[gate] = dict(step=step, identical=reason is None, reason=reason)
+    return out
+
+
+def completion_seconds(resources, identical):
+    """Wall seconds of the shared gates the producer did not run identically, and their names."""
+    gates = [g for g in COMPLETION_GATES if g in resources and not (identical.get(g) or {}).get("identical")]
+    return round(sum(resources[g]["wall_seconds"] for g in gates), 2), gates
+
+
+def _union_seconds(intervals):
+    """Length of the union of [start, end) intervals."""
+    total, end = 0.0, None
+    for lo, hi in sorted(intervals):
+        if end is None or lo > end:
+            total, end = total + hi - lo, hi
+        elif hi > end:
+            total, end = total + hi - end, hi
+    return total
+
+
+def check_schedule(receipts, identical):
+    """How the producer ran the foundry checks that cover shared gates (`producer_identical_checks`).
+
+    Steps of a producer parallel group carry `started_seconds` and `cpu_affinity`: steps on the
+    same CPU slots form one lane and run one after another, lanes run side by side. Steps without
+    them ran serially. Returns the lanes and serial gates (shared-gate names), the serial sum of
+    the steps' wall seconds, their elapsed span, and `mode` ("concurrent" when two or more lanes
+    overlapped, "serial" otherwise, "none" when the producer covered no shared gate).
+    """
+    rows = {r.get("id"): r for r in receipts if r.get("kind") == "command"}
+    lanes, serial, intervals, walls = {}, [], [], 0.0
+    for gate, check in identical.items():
+        if not check.get("identical"):
+            continue
+        row = rows[check["step"]]
+        wall = row.get("wall_seconds") or 0.0
+        walls += wall
+        if row.get("started_seconds") is not None and row.get("cpu_affinity"):
+            lanes.setdefault(tuple(row["cpu_affinity"]), []).append((row["started_seconds"], gate))
+            intervals.append((row["started_seconds"], row["started_seconds"] + wall))
+        else:
+            serial.append(gate)
+    span = _union_seconds(intervals) + sum(rows[identical[g]["step"]].get("wall_seconds") or 0.0 for g in serial)
+    lanes = sorted([g for _, g in sorted(lane)] for lane in lanes.values())
+    mode = "none" if not (lanes or serial) else ("concurrent" if len(lanes) > 1 and walls - span > 1e-6 else "serial")
+    return dict(mode=mode, lanes=lanes, serial_gates=serial, serial_sum_seconds=round(walls, 2),
+                span_seconds=round(span, 2))
+
+
+def scheduled_seconds(seconds, schedule):
+    """Wall seconds of the checks in `schedule` with durations `seconds` (by shared-gate name) under
+    that schedule: lanes side by side (the longest lane), each lane's checks and the serial checks
+    one after another. With every check serial this is their plain sum."""
+    lanes = max((sum(seconds[g] for g in lane) for lane in schedule["lanes"]), default=0.0)
+    return round(lanes + sum(seconds[g] for g in schedule["serial_gates"]), 2)
+
+
+def shared_gate_seconds_on_schedule(resources, schedule):
+    """All shared gates' wall seconds, with the gates in `schedule` charged under that schedule
+    (`scheduled_seconds`) and every other gate one after another."""
+    seconds = {g: v["wall_seconds"] for g, v in resources.items()}
+    scheduled = {g for lane in schedule["lanes"] for g in lane} | set(schedule["serial_gates"])
+    return round(sum(v for g, v in seconds.items() if g not in scheduled) + scheduled_seconds(seconds, schedule), 2)
 
 
 def passed(gates):
@@ -123,25 +282,38 @@ def native_stage_times(receipts):
         "frontend STA, ECO rounds and planning helpers (RustSTA, Python)": lambda i: i.startswith("fe_"),
         "routing (RustROAD)": lambda i: i == "be_route",
         "post-route repair": lambda i: i in ("be_postroute", "be_postroute_inputs"),
-        "antenna repair and verification": lambda i: i.startswith("be_antenna"),
+        # be_antenna is the foundry antenna table (a signoff check, like be_main), not repair.
+        "antenna repair and verification": lambda i: i.startswith("be_antenna") and i not in (
+            "be_antenna", "be_antenna_table"),
         "GDS/DEF/netlist export": lambda i: i in ("be_inspect", "be_def", "be_netlist", "be_powered", "be_gds"),
         "native extraction (RustROAD)": lambda i: i == "be_extract",
         "OpenRCX extraction": lambda i: i in ("be_openrcx", "be_rcx_inputs"),
         "signoff timing (RustSTA + OpenSTA)": lambda i: i in ("be_timing", "be_timing_inputs"),
-        "foundry DRC, LVS, macro contract": lambda i: i in ("be_main", "be_antenna_table", "be_lvs", "be_lvs_inputs",
-                                                            "be_macro_contract"),
+        "foundry DRC, LVS, macro contract": lambda i: i in ("be_main", "be_antenna", "be_antenna_table", "be_lvs",
+                                                            "be_lvs_inputs", "be_macro_contract"),
     }
+    other_key = "other (renders, profiles, physical inputs)"
     out = {k: 0.0 for k in groups}
-    other = 0.0
+    out[other_key] = 0.0
+    spans = {}
     for row in receipts:
         sid, wall = row["id"], row.get("wall_seconds") or 0.0
-        for key, test in groups.items():
-            if test(sid):
-                out[key] += wall
-                break
+        key = next((k for k, test in groups.items() if test(sid)), other_key)
+        if row.get("started_seconds") is None:
+            out[key] += wall
         else:
-            other += wall
-    out["other (renders, profiles, physical inputs)"] = other
+            # Steps of a producer parallel group carry their start offset; overlapping steps of
+            # one stage count their elapsed span once (the stage table stays a wall-clock table).
+            spans.setdefault(key, []).append((row["started_seconds"], row["started_seconds"] + wall))
+    for key, intervals in spans.items():
+        end = None
+        for lo, hi in sorted(intervals):
+            if end is None or lo > end:
+                out[key] += hi - lo
+                end = hi
+            elif hi > end:
+                out[key] += hi - end
+                end = hi
     return {k: round(v, 2) for k, v in out.items()}
 
 
@@ -290,10 +462,14 @@ def main() -> int:
                                                                    opensta_ns=round(d["opensta_ns"], 6),
                                                                    abs_difference_ps=round(d["abs_difference_ns"] * 1e3, 4))
                                                               for d in parity["differences"]])
-    producer_ran = set(Path(p).name.replace(".command.json", "") for p in glob.glob(str(o / "logs/*.command.json")))
-    # Gates the producer did not reach are completed by the shared scripts; their time is added.
-    completion = [g for g in ("drc", "antenna", "lvs", "simulation", "logic", "density")]
-    completion_seconds = round(sum(sn["resources"][g]["wall_seconds"] for g in completion if g in sn["resources"]), 2)
+    # Each check is counted once: a shared gate the producer already ran as the identical check
+    # (same script, deck, switches and input bytes) is covered by the producer's own step time;
+    # the other shared gates complete the flow and their time is added.
+    covered = producer_identical_checks(o, w / names["signoff_native"], receipts)
+    completion, completion_gates = completion_seconds(sn["resources"], covered)
+    # The producer may run the covered checks concurrently (a parallel group); LibreLane's shared
+    # gates are run one at a time. Both end-to-end conventions are reported below.
+    schedule = check_schedule(receipts, covered)
     prep = gnu_time(w / "prep/sv2v-time.txt")
     nqor_def = run_json([sys.executable, str(HERE / "def_metrics.py"), str(o / "logs/be_def.stdout")])
     native = dict(
@@ -309,11 +485,19 @@ def main() -> int:
                       stage_seconds=native_stage_times(receipts)),
         shared_gates=ngates, shared_gate_seconds={k: v["wall_seconds"] for k, v in sn["resources"].items()},
         shared_gate_peak_rss_kib=max((v.get("peak_rss_kib") or 0) for v in sn["resources"].values()),
-        completion_gate_seconds=completion_seconds,
-        end_to_end_seconds=round(prep["wall_seconds"] + nmeasure["wall_seconds"] + completion_seconds, 2),
+        completion_gate_seconds=completion, completion_gates=completion_gates,
+        producer_identical_checks=covered,
+        foundry_check_schedule=schedule,
+        end_to_end_seconds=round(prep["wall_seconds"] + nmeasure["wall_seconds"] + completion, 2),
+        end_to_end_seconds_serial_checks=round(prep["wall_seconds"] + nmeasure["wall_seconds"] + completion
+                                               + schedule["serial_sum_seconds"] - schedule["span_seconds"], 2),
         end_to_end_scope="sv2v preparation + producer (synthesis through extraction, OpenRCX and RustSTA/OpenSTA "
-                         "signoff timing) + shared gates the producer did not reach (foundry main and antenna DRC, "
-                         "LVS, vendor simulation, synthesis/final equivalence, density)",
+                         "signoff timing, and the foundry main/antenna DRC and LVS when it reaches them, on the "
+                         "producer's own schedule: see foundry_check_schedule) + shared gates the producer did "
+                         "not run as the identical check (see completion_gates: of foundry main and antenna DRC, "
+                         "latch-up, LVS, vendor simulation, synthesis/final equivalence, density); "
+                         "end_to_end_seconds_serial_checks charges the producer's covered checks their serial "
+                         "sum instead of their elapsed span",
         qor=dict(standard_cell_area_um2=ngates["density"]["standard_cell_area_um2"],
                  final_nonfiller_utilization_percent=ngates["density"]["final_nonfiller_utilization_percent"],
                  macro_inclusive_core_utilization_percent=ngates["density"]["macro_inclusive_core_utilization_percent"],
@@ -368,8 +552,13 @@ def main() -> int:
         shared_gate_peak_rss_kib=max((v.get("peak_rss_kib") or 0) for v in sl["resources"].values()),
         equivalence_checker_note=checker_reason(w / names["signoff_librelane"] / "logic/synthesis/checker-result.json"),
         end_to_end_seconds=round(prep["wall_seconds"] + lmeasure["wall_seconds"] + lsum_seconds, 2),
+        end_to_end_seconds_native_check_schedule=round(
+            prep["wall_seconds"] + lmeasure["wall_seconds"] + shared_gate_seconds_on_schedule(sl["resources"], schedule), 2),
         end_to_end_scope="sv2v preparation + LibreLane flow through Checker.XOR + every shared gate (foundry main and "
-                         "antenna DRC, OpenRCX, RustSTA/OpenSTA timing, LVS, vendor simulation, equivalence, density)",
+                         "antenna DRC, OpenRCX, RustSTA/OpenSTA timing, latch-up, LVS, vendor simulation, "
+                         "equivalence, density), one gate at a time; end_to_end_seconds_native_check_schedule "
+                         "charges the shared gates the native producer covered under the producer's schedule "
+                         "(RustEDA foundry_check_schedule: lanes side by side) instead of their serial sum",
         qor=dict(standard_cell_area_um2=lgates["density"]["standard_cell_area_um2"],
                  final_nonfiller_utilization_percent=lgates["density"]["final_nonfiller_utilization_percent"],
                  macro_inclusive_core_utilization_percent=lgates["density"]["macro_inclusive_core_utilization_percent"],
@@ -456,7 +645,14 @@ def main() -> int:
     ratios = dict(
         eligibility=("both flows completed every gate" if complete else
                      "not eligible: a flow failed or left a gate unverified; see gates"),
-        end_to_end_speedup=(round(librelane["end_to_end_seconds"] / native["end_to_end_seconds"], 3) if complete else None),
+        # Like for like: both flows' foundry checks on the native producer's schedule, and both serial.
+        end_to_end_convention=("end_to_end_speedup charges LibreLane's shared main/antenna DRC and LVS on the native "
+                               "producer's check schedule (foundry_check_schedule); end_to_end_speedup_serial_checks "
+                               "charges both flows those checks one after another"),
+        end_to_end_speedup=(round(librelane["end_to_end_seconds_native_check_schedule"] / native["end_to_end_seconds"], 3)
+                            if complete else None),
+        end_to_end_speedup_serial_checks=(round(librelane["end_to_end_seconds"]
+                                                / native["end_to_end_seconds_serial_checks"], 3) if complete else None),
         standard_cell_area_ratio=(round(native["qor"]["standard_cell_area_um2"] / librelane["qor"]["standard_cell_area_um2"], 4)
                                   if complete else None),
         wirelength_ratio=(round(native["qor"]["routed_signal_wirelength_um"] / librelane["qor"]["routed_signal_wirelength_um"], 4)

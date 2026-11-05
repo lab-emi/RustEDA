@@ -51,7 +51,7 @@ MAX_STDOUT_ARTIFACT_BYTES = 1536 << 20
 CAPTURE_CHUNK = 64 << 10
 
 
-def signoff_parallel_group():
+def signoff_parallel_group(threads=16):
     """Explicit B4 policy; existing recipes opt in and retain their commands.
 
     Run16 RSS: main 1.82 GiB, antenna 2.16 GiB, LVS 1.51 GiB,
@@ -59,10 +59,25 @@ def signoff_parallel_group():
     max(2304 + 2560 + 1024) = 5888 MiB, plus <128 MiB controller,
     below the 7168 MiB scheduling cap and enclosing 8192 MiB cgroup.
     <=8 nodes/28 edges, no path materialization; state is O(nodes + edges).
+
+    Four-CPU allocations (4 <= threads < 6) get two disjoint two-core lanes
+    over the foundry checks only: `be_main`, and `be_antenna` followed by
+    `be_lvs`; OpenRCX and signoff timing stay serial before the group, so
+    `timing_accuracy` still gates the checks. Measured 2026-11-04 on the
+    electrostatic-placement Ibex layout: main 2.21 GiB, antenna 1.64 GiB, LVS 0.78 GiB peak
+    RSS; reservations 2560 + 2304 (or 2560 + 2048) <= 4864 MiB under the same
+    7168 MiB cap. Commands, two-thread tool limits and decks are unchanged.
     """
     def command(dependencies, slots, memory):
         return dict(depends_on=dependencies, cpu_slots=slots, memory_mib=memory)
 
+    if 4 <= threads < 6:
+        return dict(max_parallel=2, max_memory_mib=7168, steps={
+            'be_main': command([], [0, 1], 2560),
+            'be_antenna': command([], [2, 3], 2304),
+            'be_lvs_inputs': dict(depends_on=[]),
+            'be_lvs': command(['be_lvs_inputs', 'be_antenna'], [2, 3], 2048),
+        })
     return dict(max_parallel=3, max_memory_mib=7168, steps={
         'be_rcx_inputs': dict(depends_on=[]),
         'be_openrcx': command(['be_rcx_inputs'], [4, 5], 768),

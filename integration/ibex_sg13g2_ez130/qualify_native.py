@@ -34,7 +34,9 @@ DERIVED = {'inputs_frozen', 'macros', 'placement', 'cts', 'power_connectivity',
            'routing', 'extraction', 'controls'}
 REPORTS = {'drc', 'antenna', 'lvs', 'timing', 'timing_accuracy',
            'synthesis_equivalence', 'final_equivalence', 'simulation'}
-CONTRACT_SHA256 = 'a58f53feb169724d987f774c3143083eee373806df251eb4164ca1ec82566ed8'
+# The recipe's contract.json (native_tap_max_gap_um 42); tests/test_recipe_pins.py checks the
+# pin against the file. The joint tap proof pins its own T1 contract (TAP_CONTRACT_SHA256).
+CONTRACT_SHA256 = '36fedd932cdc2b1dfa8369ae44ce672db972e169e9af76a3e836d10872321105'
 CONTRACT_BYTES = 5666
 TAP_CONTRACT_SHA256 = '96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282'
 TAP_SCHEMA = 'rusteda.native-foundry-first-tap-qualification-inputs.v2'
@@ -53,6 +55,8 @@ TAP_OVERLAP_ALL_EXECUTION = 'overlap_all_same_immutable_gds'
 TAP_EARLY_EXECUTION = 'early_maximal_same_immutable_gds'
 TAP_INITIAL_GDS = 'backend/foundry-first/initial.gds'
 TAP_EARLY_GDS = 'backend/tap-early.gds'
+# The final stream's export-gds options (native_backend.GDS_STYLE); the early export must match its bytes.
+GDS_STYLE = ('--merge-shapes', 'rectangles', '--vias', 'flat')
 TAP_LIMITS = dict(cells=16384, hierarchy_edges=250000, instance_visits=4000000,
     input_shapes=2000000, vertices=8000000, shape_visits=8000000,
     vertex_visits=32000000, domains=4096, anchors=250000, bin_entries=1000000,
@@ -204,8 +208,12 @@ def calibration_evidence(files, root, extracted, external, joint_tap=False):
                 native_profile_sources=actual_sources, rc_corner='nom', resistance_model='openrcx-pdk')
 
 
-def antenna_lineage(lineage, root, route, inspect, cts, files, tools):
-    """Verify actual revision ancestry; native antenna results stay diagnostic."""
+def antenna_lineage(lineage, root, route, inspect, cts, files, tools, final_revision=None):
+    """Verify actual revision ancestry; native antenna results stay diagnostic.
+
+    final_revision: the revision the lineage must end at when it is not the
+    final inspect revision (the screen order repairs the trial before the
+    post-route runner materializes the final workspace)."""
     require(lineage.get('schema') == 'rusteda.native-antenna-lineage.v1'
             and lineage.get('status') in {'complete', 'unresolved'}
             and lineage.get('scope') == 'supported_standard_cell_subset'
@@ -215,7 +223,8 @@ def antenna_lineage(lineage, root, route, inspect, cts, files, tools):
             'native antenna lineage scope/status differs')
     require(lineage.get('tool') == tools['rustroad'], 'antenna lineage used another native tool')
     initial, final = lineage['initial_revision'], lineage['final_revision']
-    require(initial == route['revision'] and final == inspect['revision'],
+    require(initial == route['revision']
+            and final == (inspect['revision'] if final_revision is None else final_revision),
             'route/antenna/final revision binding differs')
     workspace = Path(lineage['workspace']).resolve(strict=True)
     require(workspace.is_dir() and workspace.is_relative_to(root), 'antenna workspace outside current run')
@@ -402,8 +411,33 @@ def single_process_antenna(files):
     return True
 
 
-def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, tools, lineage_path):
-    """Consume the standalone verifier result; never import/run its large IR reader."""
+LINEAGE_METADATA = {'schema', 'status', 'scope', 'route_scope', 'workspace', 'tool', 'initial_revision',
+                    'final_revision', 'initial', 'final', 'workspace_head'}
+LOGICAL_LEDGER = ('logical_revisions', 'committed_revision', 'check_rows', 'materialized_revisions')
+
+
+def antenna_lineage_metadata(path):
+    """The lineage fields antenna_lineage_v2 reads, without decoding v2/v3 attempt arrays.
+
+    Lineage v4 writes its logical-revision ledger after the attempt and
+    operation arrays, beyond the 64 KiB metadata prefix; for v4 only, the
+    bounded document (<= 16 MiB, the same file cap) supplies those four keys."""
+    value = metadata_prefix(path, LINEAGE_METADATA, file_cap=16 << 20)
+    if value['schema'] == 'rusteda.native-antenna-lineage.v4':
+        whole = read(path, 16 << 20)
+        require(whole['schema'] == value['schema'] and all(key in whole for key in LOGICAL_LEDGER),
+                'v4 lineage logical revision ledger missing')
+        value.update({key: whole[key] for key in LOGICAL_LEDGER})
+    return value
+
+
+def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, tools, lineage_path,
+                       screen=False, final_revision=None):
+    """Consume the standalone verifier result; never import/run its large IR reader.
+
+    screen: the producer ran antenna repair, its verifier and be_extract on the
+    trial route before be_postroute (the screen order); the lineage then ends
+    at final_revision, the trial HEAD the post-route runner screened."""
     # v3: one native session with a real revision per attempt; v4: the same
     # session committing only its final logical revision (RustROAD summary v2).
     session = lineage['schema'] in {'rusteda.native-antenna-lineage.v3', 'rusteda.native-antenna-lineage.v4'}
@@ -512,9 +546,10 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
                 and (final == initial or lineage['final'].get('materialized') is True),
                 'v4 logical revision ledger differs')
     workspace = Path(lineage['workspace']).resolve(strict=True)
+    final_expected = inspect['revision'] if final_revision is None else final_revision
     require(workspace.is_relative_to(root) and verification['workspace'] == str(workspace)
             and initial == verification['initial_revision'] == route['revision']
-            and final == verification['final_revision'] == inspect['revision'], 'v2 route/final workspace differs')
+            and final == verification['final_revision'] == final_expected, 'v2 route/final workspace differs')
     for key, expected, parent in [('initial', initial, cts['revision']), ('final', final, None)]:
         value = lineage[key]
         require(verification[key] == value and value['revision'] == expected
@@ -542,10 +577,20 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
         positions[tag], by_id[tag] = index, receipt
     needed = {'fe_final_cts', 'be_route', 'be_antenna_repair', 'be_antenna_verify_inputs',
               'be_antenna_verify', 'be_inspect', 'be_def', 'be_netlist', 'be_powered', 'be_gds', 'be_extract'}
+    exports = ('be_inspect', 'be_def', 'be_netlist', 'be_powered', 'be_gds')
+    require(not screen or 'be_postroute' in by_id, 'screen order requires the post-route receipt')
     if 'be_postroute' in by_id:
         needed.add('be_postroute')
-        require(positions['be_route'] < positions['be_postroute'] < positions['be_antenna_repair'],
-                'post-route repair must sit between the trial route and antenna repair')
+        require(needed <= set(by_id), 'producer receipt set incomplete')
+        if screen:
+            # Antenna repair, its verifier and the one full extraction run on the
+            # trial; be_postroute screens that SPEF before any final export.
+            require(positions['be_antenna_verify'] < positions['be_extract'] < positions['be_postroute']
+                    < min(positions[tag] for tag in exports),
+                    'screen order: verified antenna repair, extraction, post-route, then final exports')
+        else:
+            require(positions['be_route'] < positions['be_postroute'] < positions['be_antenna_repair'],
+                    'post-route repair must sit between the trial route and antenna repair')
     require(needed <= set(by_id)
             and positions['fe_final_cts'] < positions['be_route'] < positions['be_antenna_repair']
             < positions['be_antenna_verify_inputs'] < positions['be_antenna_verify']
@@ -625,6 +670,133 @@ def postroute_lineage(result, root, route, cts, tools, foundry_first=False):
             'post-route rebuild did not route its own CTS revision')
     return records['route'], records['cts'], dict(source='eco_rebuild', status=result['status'],
                                                   resized=len(result['resized']), builds=len(builds))
+
+
+def postroute_screen_lineage(result, root, route, cts, tools, artifacts, current):
+    """Bind the v2 (screen order) post-route runner.
+
+    Screen 0 is the trial route as the producer left it: be_antenna_repair's
+    lineage (and verification) end at its HEAD, and be_extract's actual argv,
+    report and SPEF are the extraction the runner timed. Each ECO rebuild is a
+    fresh import/place/CTS/route with the previous screen as route prior, then
+    antenna-repaired, verified when the trial was, and extracted with the same
+    argv template; the next screen binds those. The final workspace holds the
+    last screen's revision bytes, and the final SPEF is its SPEF. Returns the
+    route/CTS records of the final layout, a summary, the final extraction
+    report and the screened trial revision (where the producer's own antenna
+    lineage ends)."""
+    require(result['schema'] == 'rusteda.native-postroute-result.v2' and result['order'] == 'screen_after_extract'
+            and result['status'] in {'clean', 'repaired', 'residual_violations', 'round_budget_exhausted'}
+            and result['tools']['rustroad'] == tools['rustroad']
+            and result['trial']['revision'] == route['revision'] == 'rev4'
+            and Path(result['final_workspace']).resolve() == (root / 'backend/postroute/road').resolve(),
+            'post-route result does not bind the trial route and final workspace')
+    trial = Path(result['trial']['workspace']).resolve(strict=True)
+    require(trial.is_relative_to(root) and str(trial) == result['trial']['workspace'], 'post-route trial path')
+    screens, rounds = result['screens'], result['rounds']
+    require(isinstance(screens, list) and isinstance(rounds, list) and 1 <= len(screens) == len(rounds) <= 3,
+            'post-route screen/round count')
+
+    def record(value, cap=1 << 40):
+        require(isinstance(value, dict) and set(value) == {'path', 'sha256', 'bytes'}
+                and natural(value['bytes']) and value['bytes'] <= cap, 'post-route file identity/budget')
+        path = Path(value['path']).resolve(strict=True)
+        require(path.is_relative_to(root) and identity(path) == value, 'post-route evidence stale/external')
+        return path
+
+    def extraction(screen, argv):
+        value = screen['extraction']
+        require(isinstance(argv, list) and argv[:3] == [tools['rustroad']['path'], '--workspace', screen['workspace']]
+                and argv.count('extract') == 1 and argv[argv.index('--out') + 1] == value['spef']['path']
+                and hashlib.sha256(json.dumps(argv).encode()).hexdigest() == value['argv_sha256'],
+                'post-route extraction argv differs')
+        report = read(record(value['report'], 2 << 20))
+        record(value['spef'])
+        require(report['schema'] == 'rustroad.extract.v1' and report['status'] == 'ok'
+                and report['workspace_revision'] == screen['revision'] and report['output'] == value['spef'],
+                'post-route extraction does not bind its SPEF to the screened HEAD')
+        return report
+
+    first = screens[0]
+    require(first['source'] == 'trial' and first['workspace'] == str(trial)
+            and first['antenna']['lineage'] == identity(current('backend/antenna-repair/lineage.json'))
+            and first['extraction']['report'] == identity(current('logs/be_extract.stdout')),
+            'post-route screen 0 is not the producer antenna lineage and be_extract result')
+    verified = first['antenna']['verification'] is not None
+    if verified:
+        require(first['antenna']['verification'] == identity(current('backend/antenna-verification/result.json')),
+                'post-route screen 0 is not the producer antenna verification')
+    for screen in screens:
+        # Every screened revision's design and route tables are still the recorded bytes.
+        require(set(screen['revision_files']) == {'design.json', 'routes.rbin'}, 'post-route screened file set')
+        for name, value in screen['revision_files'].items():
+            require(record(value) == Path(screen['workspace']) / 'revisions' / screen['revision'] / name,
+                    'post-route screened revision file path')
+    command = read(current('logs/be_extract.command.json'))['argv']
+    require(isinstance(command, list) and len(command) > 4 and command[1:3] == ['-v', '-o'],
+            'be_extract command record')
+    report = extraction(first, command[4:])
+    names = {row['name']: row for row in result['commands']}
+    require(len(names) == len(result['commands']) <= 256, 'post-route command names')
+    for index, row in enumerate(rounds):
+        screen = screens[index]
+        require(row['workspace'] == screen['workspace'] and row['revision'] == screen['revision']
+                and row['source'] == screen['source'], 'post-route round/screen binding')
+        if index + 1 == len(screens):
+            require('build' not in row, 'post-route rebuild without a screen')
+            continue
+        build, after = row['build'], screens[index + 1]
+        require(row['resizes'] and build['revisions'] == ['rev1', 'rev2', 'rev3', 'rev4']
+                and build['eco_prior']['workspace'] == screen['workspace']
+                and build['eco_prior']['revision'] == screen['revision'], 'post-route rebuild chain differs')
+        workspace = Path(build['workspace']).resolve(strict=True)
+        require(workspace.is_relative_to(root / 'backend/postroute') and str(workspace) == build['workspace']
+                == after['workspace'] and after['source'] == 'eco_rebuild', 'post-route rebuild workspace')
+        stage = {}
+        for name in ('cts', 'route'):
+            path = record(build['stage_stdout'][name], 1 << 20)
+            require(path.is_relative_to(root / 'backend/postroute'), 'post-route stage record path')
+            stage[name] = read(path, 1 << 20)
+        require(stage['route']['revision'] == 'rev4' and stage['cts']['revision'] == 'rev3'
+                and stage['route']['routing_status'] == 'signal_geometry_checked',
+                'post-route rebuild did not route its own CTS revision')
+        lineage = metadata_prefix(record(after['antenna']['lineage']), {'schema', 'status', 'workspace', 'tool',
+                                  'initial_revision', 'final_revision', 'initial', 'final'}, 16 << 20)
+        require(lineage['workspace'] == str(workspace) and lineage['tool'] == tools['rustroad']
+                and lineage['status'] in {'complete', 'unresolved'}
+                and lineage['initial_revision'] == lineage['initial']['revision'] == 'rev4'
+                and lineage['initial']['parent_revision'] == stage['cts']['revision']
+                and lineage['final_revision'] == lineage['final']['revision'] == after['revision']
+                and lineage['final']['design_file'] == after['revision_files']['design.json'],
+                'post-route rebuild antenna lineage differs')
+        require((after['antenna']['verification'] is not None) == verified,
+                'post-route rebuild must be verified exactly when the trial was')
+        if verified:
+            review = read(record(after['antenna']['verification'], 1 << 20), 1 << 20)
+            require(review['status'] == 'metadata_lineage_verified_requires_full_signoff'
+                    and review['workspace'] == str(workspace) and review['final_revision'] == after['revision']
+                    and review['lineage'] == after['antenna']['lineage'], 'post-route rebuild verification differs')
+        row = names.get(f'check{index + 1}-extract')
+        require(row is not None and row['exit_code'] == 0, 'post-route rebuild extraction command')
+        report = extraction(after, row['argv'])
+        route, cts = stage['route'], stage['cts']
+    last = screens[-1]
+    final = (root / 'backend/postroute/road').resolve(strict=True)
+    require(result['final_revision'] == last['revision'] and (final / 'HEAD').read_text() == last['revision'] + '\n'
+            and result['final_source'] == ('trial_link' if len(screens) == 1 else 'eco_rebuild')
+            and (result['resized'] == {}) == (len(screens) == 1)
+            and result['final_link']['source'] == last['workspace'] and result['final_extraction'] == last['extraction']
+            and result['final_antenna'] == last['antenna'], 'post-route final selection differs')
+    for name, value in last['revision_files'].items():
+        actual = identity(final / 'revisions' / last['revision'] / name)
+        require(actual['sha256'] == value['sha256'] and actual['bytes'] == value['bytes'],
+                'final workspace differs from the screened revision: ' + name)
+    spef = last['extraction']['spef']
+    require(result['final_spef'] == artifacts['spef_native_nom']
+            and (result['final_spef']['sha256'], result['final_spef']['bytes']) == (spef['sha256'], spef['bytes']),
+            'final native SPEF is not the screened SPEF')
+    return route, cts, dict(source=result['final_source'], status=result['status'], resized=len(result['resized']),
+                            screens=len(screens), trial_revision=first['revision']), report
 
 
 def placed_macros(path, macros):
@@ -913,7 +1085,7 @@ def tap_early_export():
     return dict(id='be_tap_export', kind='command', tool='rustroad', timeout_s=300, arguments=[
         '--workspace', '{output}/frontend/road-final', 'export-gds', '--cell-gds',
         '{output}/backend/profiles/combined-cells.gds', '--layer-map', '{output}/backend/profiles/gds-map.json',
-        '--out', '{output}/' + TAP_EARLY_GDS, '--cell-lef', '{files:cell_lef}'])
+        '--out', '{output}/' + TAP_EARLY_GDS, '--cell-lef', '{files:cell_lef}', *GDS_STYLE])
 
 
 def tap_maximal_gds(context, artifacts):
@@ -1091,7 +1263,7 @@ def tap_producer_proof(context, artifacts, c, inputs, helper):
         written = helper.p.read(helper.producer_command(c, inputs, 'be_tap_export', [c['tools']['rustroad']['path'],
             '--workspace', str(root / 'frontend/road-final'), 'export-gds', '--cell-gds',
             str(root / 'backend/profiles/combined-cells.gds'), '--layer-map', str(root / 'backend/profiles/gds-map.json'),
-            '--out', str(root / TAP_EARLY_GDS), '--cell-lef', files['cell_lef']['path']])['stdout']['path'])
+            '--out', str(root / TAP_EARLY_GDS), '--cell-lef', files['cell_lef']['path'], *GDS_STYLE])['stdout']['path'])
         require(written['status'] == 'written' and written['revision'] == 'rev4'
                 and written['workspace_mutated'] is False
                 and written['output'] == tap_maximal_gds(context, artifacts),
@@ -1452,15 +1624,23 @@ def qualify(context, output):
                     if foundry_first else 'backend/antenna-verification/result.json'),
                 'v2/explicit foundry evidence must use the current producer output paths')
     require(set(context['native_reports']) == native_names, 'native evidence set')
-    native = {name: (metadata_prefix(current(path), {'schema', 'status', 'scope', 'route_scope',
-                'workspace', 'tool', 'initial_revision', 'final_revision', 'initial', 'final', 'workspace_head'}, file_cap=16 << 20)
+    native = {name: (antenna_lineage_metadata(current(path))
                 if v2 and not foundry_first and name == 'antenna_lineage' else read(current(path), 1 << 20)
                 if v2 and name == 'antenna_verification' else read(current(path)))
               for name, path in context['native_reports'].items()}
     route, inspect, cts = native['route'], native['inspect'], native['cts']
-    postroute = None
+    trial_route, trial_cts = route, cts
+    postroute, screen, screened_extraction, screened_trial = None, False, None, None
     if 'postroute' in native:
-        route, cts, postroute = postroute_lineage(native['postroute'], root, route, cts, context['tools'], foundry_first)
+        screen = native['postroute']['schema'] == 'rusteda.native-postroute-result.v2'
+        require(not (screen and foundry_first), 'foundry-first capture requires the earlier post-route order')
+        if screen:
+            route, cts, postroute, screened_extraction = postroute_screen_lineage(
+                native['postroute'], root, route, cts, context['tools'], artifacts, current)
+            screened_trial = postroute['trial_revision']
+        else:
+            route, cts, postroute = postroute_lineage(native['postroute'], root, route, cts, context['tools'],
+                                                      foundry_first)
     require(inspect['stage'] == 'placed'
             and route['routing_status'] == inspect['routing_status'] == 'signal_geometry_checked'
             and natural(inspect['routed_nets']) and inspect['routed_nets'] > 0,
@@ -1474,22 +1654,28 @@ def qualify(context, output):
         else:
             lineage, actual_extracted, extract_execution = reviewed
     elif v2:
+        # The screen order repairs the trial: its lineage starts at be_route and ends at the screened HEAD.
         lineage = antenna_lineage_v2(native['antenna_lineage'], native['antenna_verification'],
-            root, route, inspect, cts, context['files'], context['tools'],
-            current(context['native_reports']['antenna_lineage']))
+            root, trial_route if screen else route, inspect, trial_cts if screen else cts, context['files'],
+            context['tools'], current(context['native_reports']['antenna_lineage']),
+            screen=screen, final_revision=screened_trial)
     else:
-        lineage = antenna_lineage(native['antenna_lineage'], root, route, inspect, cts,
-                                  context['files'], context['tools'])
+        lineage = antenna_lineage(native['antenna_lineage'], root, trial_route if screen else route, inspect,
+                                  trial_cts if screen else cts, context['files'], context['tools'],
+                                  final_revision=screened_trial)
     require(cts['clock_topology_status'] == 'unrouted_topology_checked'
             and inspect['clock_topology_status'] == 'routed_geometry_checked'
             and cts['clock_buffers'] == inspect['clock_buffers'] and inspect['clock_buffers'] > 0,
             'single-CTS topology/routed evidence differs')
-    extracted, external = (actual_extracted if foundry_first else native['native_extraction']), native['openrcx_extraction']
+    extracted = (actual_extracted if foundry_first else screened_extraction if screen
+                 else native['native_extraction'])
+    external = native['openrcx_extraction']
+    # Screen order: the final SPEF path is the runner's link of the screened SPEF (checked above).
     require(extracted['schema'] == 'rustroad.extract.v1' and extracted['status'] == 'ok'
             and extracted['design'] == 'ibex_sram_bench'
             and extracted['workspace_revision'] == inspect['revision']
-            and (extracted['output'] == artifacts['spef_native_nom'] or foundry_first
-                 and extract_execution['mode'] == 'artifact_reuse'
+            and (extracted['output'] == artifacts['spef_native_nom'] or (foundry_first
+                 and extract_execution['mode'] == 'artifact_reuse' or screen)
                  and extracted['output']['sha256'] == artifacts['spef_native_nom']['sha256']
                  and extracted['output']['bytes'] == artifacts['spef_native_nom']['bytes'])
             and extracted['scope']['corner'] == 'nom'

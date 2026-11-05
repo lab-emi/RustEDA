@@ -14,7 +14,7 @@ Road floorplan derivation does) with the centroid as its along-side target.
 The temporary, repair and final rounds all import that plan.
 """
 from __future__ import annotations
-import argparse,csv,fcntl,hashlib,importlib.util,json,os,re,resource,signal,sys
+import argparse,csv,fcntl,gc,hashlib,importlib.util,json,os,re,resource,signal,sys,time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -27,9 +27,113 @@ def read(p,cap=64<<20):
     require(p.is_file() and p.stat().st_size<=cap,'JSON byte budget: '+str(p));return json.loads(p.read_text())
 
 
+# SHA-256 digests. MEMO: this process's digests by resolved path, (identity, SHA-256),
+# shared with native_ecos.py when bundle loads it. FLOW: the run's flow digest cache
+# <run root>/frontend/sha256-cache.json, which keeps the digests of pinned inputs outside the
+# run tree (tools, PDK libraries, recipe files; they never change during a run) for the next
+# helper of the same run. A digest is reused only while the file keeps its identity (device,
+# inode, size, mtime_ns, ctime_ns), which every write, rename or replacement changes; files
+# inside the run tree are hashed by every process, and a file is cached across processes only
+# when its status changed at least a second before it was hashed, so that a change within the
+# same timestamp tick cannot go unseen. Only files on a local file system, whose status is
+# exact, are memoized or shared (FS_LOCAL); others are hashed every time. An entry is never
+# replaced during the run (the first digest of a path stays), and validate, the last helper,
+# hashes every entry again in full and fails on any difference (check_flow), so no digest
+# taken from the cache goes unchecked. The producer still hashes every pinned input in full.
+MEMO={};FLOW=None;FLOW_SCHEMA='rusteda.frontend-digests.v1'
+FS_LOCAL={'ext2','ext3','ext4','xfs','btrfs','tmpfs','f2fs','zfs','overlay'};FS_TYPES={};MOUNTINFO='/proc/self/mountinfo'
+
+
+def identity(st):return [st.st_dev,st.st_ino,st.st_size,st.st_mtime_ns,st.st_ctime_ns]
+
+
+def local(st):
+    """Whether the file of status ST is on a local file system (FS_LOCAL), by its device in
+    MOUNTINFO; False when that cannot be told."""
+    if st.st_dev not in FS_TYPES:
+        kind=None
+        try:
+            dev=f'{os.major(st.st_dev)}:{os.minor(st.st_dev)}'
+            with open(MOUNTINFO)as f:
+                for line in f:
+                    left,_,right=line.partition(' - ')
+                    if left.split()[2]==dev and right.split():kind=right.split()[0];break
+        except (OSError,IndexError):kind=None
+        FS_TYPES[st.st_dev]=kind
+    return FS_TYPES[st.st_dev] in FS_LOCAL
+
+
+def digest(p):
+    name=str(p);st=os.stat(p);key=identity(st)
+    if not local(st):
+        with p.open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+    hit=MEMO.get(name)
+    if hit is not None and hit[0]==key:return hit[1]
+    outside=FLOW is not None and not p.is_relative_to(FLOW['root'])
+    if outside:
+        e=FLOW['entries'].get(name)
+        if e is not None and e['identity']==key:MEMO[name]=(key,e['sha256']);return e['sha256']
+    started=time.time_ns()
+    with p.open('rb')as f:h=hashlib.file_digest(f,'sha256').hexdigest();same=identity(os.fstat(f.fileno()))==key
+    if same:
+        MEMO[name]=(key,h)
+        if outside and st.st_ctime_ns<started-1_000_000_000:FLOW['entries'][name]=dict(identity=key,sha256=h);FLOW['dirty']=True
+    return h
+
+
+def flow_entries(path):
+    """Valid entries of a flow digest cache file, {} when it is missing or malformed."""
+    try:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size>4<<20:return {}
+        data=json.loads(path.read_text())
+        if data.get('schema')!=FLOW_SCHEMA or data.get('root')!=str(path.parent.parent):return {}
+        return {k:v for k,v in data['entries'].items() if isinstance(v,dict) and set(v)=={'identity','sha256'} and isinstance(v['identity'],list) and len(v['identity'])==5 and all(type(x) is int for x in v['identity']) and isinstance(v['sha256'],str) and re.fullmatch('[0-9a-f]{64}',v['sha256'])}
+    except (OSError,ValueError,KeyError,TypeError,AttributeError):return {}
+
+
+def open_flow(root):
+    global FLOW
+    path=root/'frontend'/'sha256-cache.json'
+    if path.parent.is_dir():FLOW=dict(root=root,path=path,entries=flow_entries(path),dirty=False)
+
+
+def save_flow():
+    """Merge this process's new entries into the flow digest cache (atomic replace). An entry
+    already in the file stays as it is, so the final check sees every digest that was shared."""
+    if FLOW is None or not FLOW['dirty']:return
+    entries={**FLOW['entries'],**flow_entries(FLOW['path'])};tmp=FLOW['path'].with_name(f'.sha256-cache.json.tmp-{os.getpid()}')
+    try:
+        tmp.write_text(json.dumps(dict(schema=FLOW_SCHEMA,root=str(FLOW['root']),entries=dict(sorted(entries.items()))),indent=1)+'\n');os.replace(tmp,FLOW['path'])
+        FLOW['dirty']=False
+    except OSError:
+        tmp.unlink(missing_ok=True)
+
+
+def check_flow(out):
+    """The final check of the flow digest cache (validate): every entry is hashed again in full
+    and must equal the digest that the run's helpers took from the cache; digest-check.json
+    records the cache file and every digest checked."""
+    if FLOW is None:write(out/'digest-check.json',dict(schema='rusteda.frontend-digest-check.v1',cache=None,checked={}));return
+    save_flow();path=FLOW['path']
+    if path.exists():
+        data=read(path,4<<20);require(data.get('schema')==FLOW_SCHEMA and data.get('root')==str(FLOW['root']),'flow digest cache malformed')
+    # What this process loaded and used, and what the file holds now (an entry is never replaced).
+    entries={**FLOW['entries'],**flow_entries(path)};differ=[]
+    for name,e in sorted(entries.items()):
+        try:
+            with open(name,'rb')as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+        except OSError:h=None
+        if h!=e['sha256']:differ.append(name)
+    require(not differ,'flow digest cache differs from the files: '+', '.join(differ))
+    cache=None
+    if path.exists():
+        with path.open('rb')as f:cache=dict(path=str(path),sha256=hashlib.file_digest(f,'sha256').hexdigest(),bytes=os.fstat(f.fileno()).st_size)
+    write(out/'digest-check.json',dict(schema='rusteda.frontend-digest-check.v1',cache=cache,checked={k:e['sha256'] for k,e in sorted(entries.items())}))
+
+
 def rec(p):
     p=p.resolve(strict=True)
-    with p.open('rb')as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+    h=digest(p)
     return dict(path=str(p),sha256=h,bytes=p.stat().st_size)
 
 
@@ -43,6 +147,7 @@ def module(name,path):
 
 def context(path):
     c=read(path,2<<20);require(c['schema']=='rusteda.native-frontend-context.v1','context schema')
+    open_flow(Path(c['run_root']).resolve())
     for group in ['files','tools']:
         for name,item in c[group].items():
             cap=256<<20 if group=='tools'else (2<<20 if name in ['sdc','interfaces','floorplan','physical','routing','ecos','frontend','prepare','producer','delay_helper','sizing_helper','liberty_reader','pin_caps_source','estimator','rc_policy']else 64<<20)
@@ -142,7 +247,7 @@ def bundle(c,args,out):
         if args.operation in ('electrical','hold'):
             inputs['corners'][co].update(endpoints=rec(dynamic(c,root/f'logs/fe_{tag}_{co}_endpoints.stdout')),hold_fix=rec(dynamic(c,root/f'logs/fe_{tag}_hold.stdout')))
     write(out/'inputs.json',inputs)
-    ecos=module('frontend_ecos',f['ecos']);a=SimpleNamespace(max_work=10000000,max_cells=100000,max_connections=500000,max_rows=200000)
+    ecos=module('frontend_ecos',f['ecos']);ecos.DIGEST_MEMO=MEMO;ecos.DIGEST_FLOW=FLOW;a=SimpleNamespace(max_work=10000000,max_cells=100000,max_connections=500000,max_rows=200000)
     parsed=ecos.Inputs(out/'inputs.json',a);corners=['tt','ss'];io=ecos.io_projection(parsed,f['sdc']);pins=ecos.pin_views(parsed,corners);g=ecos.Graph(parsed,parsed.document(inputs['netlist_json']),c['selection']['top'],pins,io)
     reports=[parsed.report(co,'drv',timed,f['sdc'])for co in corners]
     initial=root/'frontend/bundle-reset/roots.json'
@@ -187,9 +292,16 @@ def routing_capture(routing,root):
     return dict(template=template,snapshot_path=str(capture),max_bytes=replay['max_bytes'],phase=replay['phase'],scope='failure diagnostic only; no route or signoff pass')
 
 
+TAP_LATTICES=((15000,None),(28980,{'kind':'staggered','phase':14490}),
+    (42000,{'kind':'staggered','phase':21000,'unpaired':'cell_top'}))
+
 def physical(c,args,out):
     f=paths(c);roots=read(dynamic(c,args.roots),1<<20);data=read(f['physical'],1<<20);data['clock']['root_net']=roots['clock_root']
-    require(len(data['filler_cells'])==9 and data['tap']['max_gap']==15000 and data['tap']['body_view']=='gds','matched decap/tap template differs')
+    # Only lattices with out-of-flow LU.a/LU.b evidence on this floorplan (tap_coverage.py 20 um L1
+    # certificate, maximal-deck LU.a, main-deck LU.b): the legacy aligned 15 um, the 28.98 um stagger,
+    # and the 42 um stagger with unpaired n-well edge densification. No in-flow step checks LU.a.
+    tap=data['tap'];lattice=(tap['max_gap'],tap.get('pattern'))
+    require(len(data['filler_cells'])==9 and lattice in TAP_LATTICES and tap['body_view']=='gds','matched decap/tap template differs')
     write(out/'physical.json',data);routing=read(f['routing'],1<<20);layers=routing['track_router'];require(layers['min_routing_layer']=='Metal2' and layers['max_routing_layer']=='TopMetal2','matched routing layer policy differs');capture=routing_capture(routing,c['root']);write(out/'routing.json',routing)
     receipt=dict(inputs={k:rec(f[k])for k in ['physical','floorplan','routing']},roots=rec(Path(args.roots)),scope='route policy prepared, route not executed')
     if capture is not None:receipt['routing_capture']={**capture,'materialized_routing':rec(out/'routing.json')}
@@ -265,9 +377,11 @@ def validate(c,out):
         require(all(m[k]==0 for k in ['max_transition_violating','max_capacitance_violating','max_fanout_violating']),'final estimated-RC DRV not closed: '+co)
     result=dict(schema='rusteda.native-frontend-result.v1',status='frontend_completed',scope='original RTL, dynamic native ECO, temporary CTS, two placement-estimated RC repair rounds, fresh final one CTS; placement RC estimate, not extraction',tools=c['tools'],original_inputs=c['files'],final_workspace=str(root/'frontend/road-final'),final_netlist=rec(root/'logs/fe_final_export.stdout'),prects_netlist=rec(root/'frontend/eco-hold/netlist.v'),same_run_seed=rec(root/'logs/fe_temporary_seed.stdout'),pin_plan=dict(physical=rec(root/'frontend/physical-pins/physical.json'),receipt=rec(root/'frontend/physical-pins/receipt.json'),side_counts=pin_plan['side_counts']),seed_source=seed['source'],final_estimate=dict(result=rec(root/'frontend/estimate-final/result.json'),timing=final),plans={op:dict(operations=p['operations'],receipt=rec(root/f'frontend/eco-{op}/receipt.json'))for op,p in plans.items()},unverified=['route','extracted RC','GDS','DRC','antenna','LVS','extracted_timing','CEC','benchmark'])
     write(out/'result.json',result)
+    check_flow(out)
 
 
 def main():
+    gc.set_threshold(100_000,50,100)  # large acyclic structures live to the end (see native_ecos.py main)
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['profiles','bundle','physical','pins','validate']);p.add_argument('--context',type=Path,required=True);p.add_argument('--workspace',type=Path,required=True);p.add_argument('--base-rev',required=True);p.add_argument('--operation',choices=['reset','fanout','primary-clock','electrical','hold']);p.add_argument('--timing-tag');p.add_argument('--source');p.add_argument('--timed');p.add_argument('--graph');p.add_argument('--roots');p.add_argument('--def',dest='def_');a=p.parse_args()
     resource.setrlimit(resource.RLIMIT_AS,(2<<30,2<<30));signal.alarm(180);c=context(a.context)
     with fresh(a.workspace,a.base_rev):
@@ -277,6 +391,7 @@ def main():
         elif a.command=='pins':pins(c,a,a.workspace)
         else:validate(c,a.workspace)
         (a.workspace/'HEAD').write_text('rev1\n')
+    save_flow()
 
 
 if __name__=='__main__':

@@ -8,8 +8,10 @@ The scripts are the recipe's own (`integration/ibex_sg13g2_ez130`):
 (OpenRCX nominal SPEF), `reference_timing.py` (RustSTA and OpenSTA, TT/SS, on the
 OpenRCX SPEF), `signoff_lvs.py` (full-device KLayout LVS with real SRAM devices),
 `reference_simulation.py` (vendor-model Icarus simulation), `signoff_logic.py`
-(synthesis and final equivalence) and `final_density.utilization` (final
-non-filler density). The input documents are built exactly as
+(synthesis and final equivalence), `final_density.utilization` (final
+non-filler density) and `tap_coverage_runner.py` (latch-up: the independent
+LU.a/LU.b tap-coverage certificate; the foundry main deck run by the `drc` gate
+checks LU.b only, LU.a is in the maximal deck). The input documents are built exactly as
 `reference_flow.py` builds them. Each gate runs under GNU time; the driver
 writes `summary.json` with every gate verdict, wall time and peak RSS.
 
@@ -31,6 +33,11 @@ ROOT = Path(__file__).resolve().parents[2]
 TOP = "ibex_sram_bench"
 MACRO = "RM_IHPSG13_1P_1024x32_c2_bm_bist"
 MIB = 1 << 20
+# tap_coverage.py ceilings, as in the joint tap proof (native_flow.TAP_LIMITS).
+TAP_LIMITS = dict(cells=16384, hierarchy_edges=250000, instance_visits=4000000,
+                  input_shapes=2000000, vertices=8000000, shape_visits=8000000,
+                  vertex_visits=32000000, domains=4096, anchors=250000, bin_entries=1000000,
+                  candidates=4096, boxes=16000000, distance_checks=200000000, pending=64, depth=32)
 
 
 def identity(path) -> dict:
@@ -44,13 +51,23 @@ def read(path):
     return json.loads(Path(path).read_text())
 
 
+def latchup_plan(gds: dict, workspace: Path) -> dict:
+    """The latch-up gate's `tap_coverage_runner.py` config for one final GDS (identity record).
+
+    Every diffusion point must be within 20 um of a contacted tie of its well (LU.a: n-well to
+    n-tap, LU.b: substrate to p-tap). The conservative box certificate fails on any box it cannot
+    prove; the SRAM macro subtrees are excluded as targets, as in the joint proof."""
+    return dict(schema="rusteda.tap-coverage.v1", gds=gds, workspace=str(workspace), base_revision="empty",
+                top=TOP, excluded_cells={MACRO: 2}, limits=TAP_LIMITS)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--layout", type=Path, required=True,
                         help="JSON: {gds, def, netlist, powered_netlist, synthesis_netlist}")
     parser.add_argument("--workspace", type=Path, required=True)
-    parser.add_argument("--gates", default="drc,antenna,extraction,timing,lvs,simulation,logic,density")
+    parser.add_argument("--gates", default="drc,antenna,latchup,extraction,timing,lvs,simulation,logic,density")
     args = parser.parse_args()
     host = read(args.host)
     layout = read(args.layout)
@@ -108,6 +125,16 @@ def main() -> int:
                               "--table", table, "--workspace", work / name, "--base-rev", "empty"], 7200)
             report = work / name / "summary.json"
             summary["gates"][name] = dict(exit_code=code, report=read(report) if report.exists() else None)
+    if "latchup" in gates:
+        plan = work / "plans" / "latchup.json"
+        plan.write_text(json.dumps(latchup_plan(final["gds"], work / "latchup"), indent=2) + "\n")
+        appimage = tools["appimage"]
+        code = run("latchup", [tools["python"]["path"], recipe / "tap_coverage_runner.py", "--config", plan,
+                               "--workspace", work / "latchup", "--base-rev", "empty", "--tool", appimage["path"],
+                               "--tool-sha256", appimage["sha256"], "--tool-bytes", appimage["bytes"]], 900)
+        reports = {k: work / "latchup" / f"{k}.json" for k in ("controller", "summary")}
+        summary["gates"]["latchup"] = dict(exit_code=code, report={k: read(v) if v.exists() else None
+                                                                    for k, v in reports.items()})
     spef = None
     if "extraction" in gates or "timing" in gates:
         data = dict(schema="rusteda.reference-extraction-inputs.v1", top=TOP,

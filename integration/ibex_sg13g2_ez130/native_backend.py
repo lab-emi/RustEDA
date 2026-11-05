@@ -22,6 +22,15 @@ from pathlib import Path
 import resource
 import sys
 
+# Final-stream representation of `rustroad export-gds` (RustROAD 3a2ef82 or later): each net's
+# metal as an exact cover of maximal rectangles, vias written flat with it. The geometry equals
+# the default stream's (KLayout XOR empty on every layer); the shared foundry main/antenna DRC
+# and LVS run faster on it (RustROAD docs/gds-export.md, "Downstream check cost"). Every export
+# whose bytes must equal the final GDS (qualify_native.py's early export, the foundry-first
+# initial export copied from be_gds) passes the same options. Both post-route orders write the
+# final GDS with it.
+GDS_STYLE = ('--merge-shapes', 'rectangles', '--vias', 'flat')
+
 
 REQUIRED = {'physical_prepare', 'rc_builder', 'reference_extract', 'timing_runner', 'postroute_runner',
             'lvs_runner', 'drc_runner', 'macro_contract', 'std_gds', 'ram_gds',
@@ -30,6 +39,15 @@ REQUIRED = {'physical_prepare', 'rc_builder', 'reference_extract', 'timing_runne
             'ram_cdl', 'filler_cdl', 'sram_qualification', 'lvs_interfaces',
             'antenna_runner', 'antenna_fields', 'contract'}
 V2_FILES = {'antenna_group_policy', 'antenna_legacy', 'antenna_verifier', 'antenna_source_manifest'}
+# Post-route repair order. screen_after_extract (default): antenna repair and
+# the one full native extraction run on the trial route, and be_postroute
+# screens DRV on that SPEF, then materializes the final workspace (hard links
+# when clean; ECO rebuild, antenna repair and extraction again otherwise).
+# extract_before_antenna: the earlier order, in which be_postroute extracts
+# the pre-antenna trial itself and be_extract extracts the final layout again
+# (kept for the foundry-first capture/reuse protocol, which is bound to it).
+SCREEN_ORDER, LEGACY_ORDER = 'screen_after_extract', 'extract_before_antenna'
+POSTROUTE_ORDERS = (SCREEN_ORDER, LEGACY_ORDER)
 GROUP_POLICY = dict(group_names=128, max_groups=1024, max_attempts=64,
     max_total_jumpers=4096, max_commands=4096, max_report_bytes=8 << 30,
     max_selected_report_bytes=128 << 20, max_metadata_bytes=4 << 20,
@@ -127,9 +145,11 @@ def single_process_antenna(files):
 
 def build(config):
     required = {'schema', 'frontend_fragment', 'files', 'tools', 'pdk_root'}
-    require(required <= set(config) and not set(config) - required - {'parallel_signoff'}
+    require(required <= set(config) and not set(config) - required - {'parallel_signoff', 'postroute_order'}
             and config['schema'] == 'rusteda.native-backend-inputs.v1', 'backend config schema')
     require(type(config.get('parallel_signoff', False)) is bool, 'parallel_signoff must be explicit boolean')
+    order = config.get('postroute_order', SCREEN_ORDER)
+    require(order in POSTROUTE_ORDERS, 'postroute_order must be one of ' + ', '.join(POSTROUTE_ORDERS))
     record = config['frontend_fragment']
     require(identity(Path(record['path'])) == record, 'frontend recipe changed')
     front = read(Path(record['path']))
@@ -192,8 +212,7 @@ def build(config):
             '--config', '{output}/frontend/physical/routing.json'], 43200)
     # Post-route electrical repair: equal-width resizes replayed through the
     # frontend's own final import/place/CTS arguments, then an ECO route on the
-    # trial route. Every later step reads its final workspace (a file-for-file
-    # copy of the trial when no resize is needed).
+    # screened route. Every final export reads the runner's final workspace.
     by_id = {s['id']: s for s in front['steps']}
 
     def final_stage(step):
@@ -207,69 +226,119 @@ def build(config):
     prects = stage_import[stage_import.index('--netlist') + 1]
     stage_import[stage_import.index('--netlist') + 1] = '@NETLIST@'
     postroute = output + 'postroute'
-    render('postroute_inputs', 'postroute-inputs.json',
-           dict(schema='rusteda.native-postroute-inputs.v1', top='ibex_sram_bench',
-                trial=dict(workspace=road, revision='rev4'), final_workspace=postroute + '/road',
-                prects_netlist=prects,
-                recipe={'import': stage_import, 'place': final_stage('fe_final_place'),
-                        'cts': final_stage('fe_final_cts'), 'route': steps[-1]['arguments'][2:],
-                        # --threads is a global option: it must precede the
-                        # subcommand (foundry_first/protocol.py), and it sizes
-                        # extraction's strip pool like the route step's.
-                        'extract': ['--threads', '{threads}', '--max-expansions', '8000000', 'extract', '--rc-profile',
-                                    output + 'profiles/ihp-rc-nom.json', '--corner', 'nom', '--out', '@SPEF@',
-                                    '--max-spef-mib', '256', '--extract-memory-mib', '3584',
-                                    '--max-extract-shapes', '4000000', '--max-rc-nodes', '2000000',
-                                    '--max-rc-elements', '30000000', '--max-coupling-caps', '10000000',
-                                    '--max-extract-work', '100000000000', '--max-extract-candidates', '65536',
-                                    '--min-coupling-ff', '0.1']},
-                profiles=dict(sizing='{output}/frontend/profiles/sizing.json',
-                              delay='{output}/frontend/profiles/delay.json',
-                              cell_buses='{output}/frontend/profiles/cell-buses.json', cell_lef='{files:cell_lef}'),
-                timing={key: input_id(key) for key in ('std_tt', 'ram_tt', 'std_ss', 'ram_ss', 'sdc')},
-                tools={key: {'$tool': key} for key in ('rustroad', 'rusteda', 'ruststa')},
-                policy=dict(near_limit_ratio=0.9, target_ratio=0.8, max_rounds=2, max_resizes=256),
-                limits=dict(threads=front['scope']['threads'], deadline_seconds=5400)))
-    command('postroute', 'python', ['{files:postroute_runner}', '--inputs', output + 'postroute-inputs.json',
-            '--workspace', postroute, '--base-rev', 'empty'], 5460)
-    road = postroute + '/road'
-    antenna_content = dict(schema='rusteda.native-antenna-inputs.v1', design_workspace=road,
-                initial_revision='rev4', tool={'$tool': 'rustroad'},
-                limits=dict(threads=front['scope']['threads'], max_rounds=3,
-                            max_selected_nets=100000, max_work=200000000,
-                            max_expansions=8000000, deadline_seconds=1800))
-    if antenna_grouping is not None:
-        antenna_content.update(schema='rusteda.native-antenna-inputs.v2', grouping=antenna_grouping)
-    render('antenna_inputs', 'antenna-inputs.json', antenna_content)
-    command('antenna_repair', 'python', ['{files:antenna_runner}', '--inputs',
-            output + 'antenna-inputs.json', '--workspace', output + 'antenna-repair',
-            '--base-rev', 'empty'], 1860)
-    if antenna_grouping is not None:
-        render('antenna_verify_inputs', 'antenna-verification-inputs.json',
-               dict(schema=('rusteda.antenna-v3-independent-verifier-inputs.v1' if antenna_session
-                        else 'rusteda.antenna-v2-independent-verifier-inputs.v1'),
-                    lineage=output_id('backend/antenna-repair/lineage.json'),
-                    tool={'$tool': 'rustroad'}, source_manifest=input_id('antenna_source_manifest'),
-                    design_workspace=road, evidence_kind='actual_native_artifacts',
-                    **({'controller_inputs': output_id('backend/antenna-inputs.json')}
-                       if antenna_session else {})))
-        command('antenna_verify', 'python', ['{files:antenna_verifier}', '--inputs',
-                output + 'antenna-verification-inputs.json', '--workspace',
-                output + 'antenna-verification', '--base-rev', 'empty'], 180)
-    for name, operation in [('inspect', 'inspect'), ('def', 'export-def'),
-                            ('netlist', 'export-verilog')]:
-        command(name, 'rustroad', ['--workspace', road, operation], 300)
-    command('powered', 'rustroad', ['--workspace', road, 'export-verilog', '--include-power'], 300)
-    command('gds', 'rustroad', ['--workspace', road, 'export-gds', '--cell-gds',
-            output + 'profiles/combined-cells.gds', '--layer-map', output + 'profiles/gds-map.json',
-            '--out', gds], 300)
-    command('extract', 'rustroad', ['--workspace', road, '--threads', '{threads}', '--max-expansions', '8000000',
-            'extract', '--rc-profile', output + 'profiles/ihp-rc-nom.json', '--corner', 'nom',
-            '--out', native_spef, '--max-spef-mib', '256', '--extract-memory-mib', '3584',
-            '--max-extract-shapes', '4000000',
-            '--max-rc-nodes', '2000000', '--max-rc-elements', '30000000',
-            '--max-coupling-caps', '10000000', '--max-extract-work', '100000000000',
-            '--max-extract-candidates', '65536', '--min-coupling-ff', '0.1'], 1800)
+    route_args = steps[-1]['arguments'][2:]
+    # --threads is a global option: it must precede the subcommand
+    # (foundry_first/protocol.py), and it sizes extraction's strip pool like
+    # the route step's. One template serves be_extract and every extraction
+    # the post-route runner performs, so their arguments cannot drift apart.
+    extract_args = ['--threads', '{threads}', '--max-expansions', '8000000', 'extract', '--rc-profile',
+                    output + 'profiles/ihp-rc-nom.json', '--corner', 'nom', '--out', '@SPEF@',
+                    '--max-spef-mib', '256', '--extract-memory-mib', '3584',
+                    '--max-extract-shapes', '4000000', '--max-rc-nodes', '2000000',
+                    '--max-rc-elements', '30000000', '--max-coupling-caps', '10000000',
+                    '--max-extract-work', '100000000000', '--max-extract-candidates', '65536',
+                    '--min-coupling-ff', '0.1']
+    def postroute_content(schema, tools, **extra):
+        # Key order is the rendered JSON order; the earlier order's document
+        # keeps its original layout byte for byte.
+        content = dict(schema=schema, top='ibex_sram_bench', trial=dict(workspace=road, revision='rev4'),
+                       final_workspace=final_road)
+        if 'final_spef' in extra:
+            content['final_spef'] = extra.pop('final_spef')
+        content.update(prects_netlist=prects,
+                       recipe={'import': stage_import, 'place': final_stage('fe_final_place'),
+                               'cts': final_stage('fe_final_cts'), 'route': route_args,
+                               'extract': list(extract_args)})
+        content.update(extra)
+        content.update(profiles=dict(sizing='{output}/frontend/profiles/sizing.json',
+                                     delay='{output}/frontend/profiles/delay.json',
+                                     cell_buses='{output}/frontend/profiles/cell-buses.json',
+                                     cell_lef='{files:cell_lef}'),
+                       timing={key: input_id(key) for key in ('std_tt', 'ram_tt', 'std_ss', 'ram_ss', 'sdc')},
+                       tools={key: {'$tool': key} for key in tools},
+                       policy=dict(near_limit_ratio=0.9, target_ratio=0.8, max_rounds=2, max_resizes=256),
+                       limits=dict(threads=front['scope']['threads'], deadline_seconds=5400))
+        return content
+
+    final_road = postroute + '/road'
+    antenna_limits = dict(threads=front['scope']['threads'], max_rounds=3,
+                          max_selected_nets=100000, max_work=200000000,
+                          max_expansions=8000000, deadline_seconds=1800)
+
+    def antenna_steps(workspace):
+        antenna_content = dict(schema='rusteda.native-antenna-inputs.v1', design_workspace=workspace,
+                               initial_revision='rev4', tool={'$tool': 'rustroad'}, limits=antenna_limits)
+        if antenna_grouping is not None:
+            antenna_content.update(schema='rusteda.native-antenna-inputs.v2', grouping=antenna_grouping)
+        render('antenna_inputs', 'antenna-inputs.json', antenna_content)
+        command('antenna_repair', 'python', ['{files:antenna_runner}', '--inputs',
+                output + 'antenna-inputs.json', '--workspace', output + 'antenna-repair',
+                '--base-rev', 'empty'], 1860)
+        if antenna_grouping is not None:
+            render('antenna_verify_inputs', 'antenna-verification-inputs.json',
+                   dict(schema=('rusteda.antenna-v3-independent-verifier-inputs.v1' if antenna_session
+                            else 'rusteda.antenna-v2-independent-verifier-inputs.v1'),
+                        lineage=output_id('backend/antenna-repair/lineage.json'),
+                        tool={'$tool': 'rustroad'}, source_manifest=input_id('antenna_source_manifest'),
+                        design_workspace=workspace, evidence_kind='actual_native_artifacts',
+                        **({'controller_inputs': output_id('backend/antenna-inputs.json')}
+                           if antenna_session else {})))
+            command('antenna_verify', 'python', ['{files:antenna_verifier}', '--inputs',
+                    output + 'antenna-verification-inputs.json', '--workspace',
+                    output + 'antenna-verification', '--base-rev', 'empty'], 180)
+
+    def extract_step(workspace, spef):
+        command('extract', 'rustroad', ['--workspace', workspace,
+                *[spef if a == '@SPEF@' else a for a in extract_args]], 1800)
+
+    if order == SCREEN_ORDER:
+        # be_route -> antenna repair (+ verify) -> be_extract on the trial ->
+        # be_postroute screens that SPEF -> final exports. The trial SPEF keeps
+        # a distinct name: only be_postroute publishes the final SPEF path.
+        trial_spef = output + 'trial.native.nom.spef'
+        antenna_steps(road)
+        extract_step(road, trial_spef)
+        grouped = antenna_grouping is not None
+        render('postroute_inputs', 'postroute-inputs.json', postroute_content(
+            'rusteda.native-postroute-inputs.v2', ('rustroad', 'rusteda', 'ruststa', 'python'),
+            final_spef=native_spef,
+            screen=dict(spef=output_id('backend/trial.native.nom.spef'),
+                        extract_report=output_id('logs/be_extract.stdout'),
+                        extract_command=output_id('logs/be_extract.command.json')),
+            antenna=dict(inputs=output_id('backend/antenna-inputs.json'),
+                         lineage=output_id('backend/antenna-repair/lineage.json'),
+                         runner=input_id('antenna_runner'),
+                         verifier=input_id('antenna_verifier') if grouped else None,
+                         verifier_inputs=output_id('backend/antenna-verification-inputs.json') if grouped else None,
+                         verification=output_id('backend/antenna-verification/result.json') if grouped else None)))
+        command('postroute', 'python', ['{files:postroute_runner}', '--inputs', output + 'postroute-inputs.json',
+                '--workspace', postroute, '--base-rev', 'empty'], 5460)
+        road = final_road
+        for name, operation in [('inspect', 'inspect'), ('def', 'export-def'),
+                                ('netlist', 'export-verilog')]:
+            command(name, 'rustroad', ['--workspace', road, operation], 300)
+        command('powered', 'rustroad', ['--workspace', road, 'export-verilog', '--include-power'], 300)
+        command('gds', 'rustroad', ['--workspace', road, 'export-gds', '--cell-gds',
+                output + 'profiles/combined-cells.gds', '--layer-map', output + 'profiles/gds-map.json',
+                '--out', gds, *GDS_STYLE], 300)
+    else:
+        # Earlier order: be_postroute extracts the pre-antenna trial itself and
+        # copies it file for file; antenna repair then edits that copy and
+        # be_extract extracts the final layout again.
+        render('postroute_inputs', 'postroute-inputs.json', postroute_content(
+            'rusteda.native-postroute-inputs.v1', ('rustroad', 'rusteda', 'ruststa')))
+        command('postroute', 'python', ['{files:postroute_runner}', '--inputs', output + 'postroute-inputs.json',
+                '--workspace', postroute, '--base-rev', 'empty'], 5460)
+        road = final_road
+        antenna_steps(road)
+        for name, operation in [('inspect', 'inspect'), ('def', 'export-def'),
+                                ('netlist', 'export-verilog')]:
+            command(name, 'rustroad', ['--workspace', road, operation], 300)
+        command('powered', 'rustroad', ['--workspace', road, 'export-verilog', '--include-power'], 300)
+        command('gds', 'rustroad', ['--workspace', road, 'export-gds', '--cell-gds',
+                output + 'profiles/combined-cells.gds', '--layer-map', output + 'profiles/gds-map.json',
+                '--out', gds, *GDS_STYLE], 300)
+        extract_step(road, native_spef)
     render('rcx_inputs', 'openrcx-inputs.json',
            dict(schema='rusteda.reference-extraction-inputs.v1', top='ibex_sram_bench',
                 files={'def': output_id('logs/be_def.stdout'),
@@ -342,9 +411,9 @@ def build(config):
                   pdk='ihp-sg13g2', library='ez130_8t', corners=['tt', 'ss'], files=files, tools=tools,
                   steps=steps, scope=front['scope'], gates={}, artifacts=artifacts, stdout_artifacts=stdout_artifacts)
     if config.get('parallel_signoff', False):
-        require(front['scope']['threads'] >= 6 and front['scope'].get('memory_mib') == 8192,
-                'parallel signoff requires six physical CPUs and the matched 8192 MiB cgroup')
-        groups = [policy.signoff_parallel_group()]
+        require(front['scope']['threads'] >= 4 and front['scope'].get('memory_mib') == 8192,
+                'parallel signoff requires four physical CPUs and the matched 8192 MiB cgroup')
+        groups = [policy.signoff_parallel_group(front['scope']['threads'])]
         policy.validate_parallel_groups(steps, groups, front['scope'])
         fragment['parallel_groups'] = groups
         prefix['parallel_groups'] = groups

@@ -26,6 +26,10 @@ LOGIC_LIMITS = dict(memory_mib=4096, swap_mib=512, deadline_seconds=1200, thread
 
 
 class AntennaSessionProtocol(unittest.TestCase):
+    # None composes native_backend's default post-route order (screen_after_extract);
+    # the foundry-first fixtures select the earlier order their protocol is bound to.
+    postroute_order = None
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='antenna-session-protocol-')
         self.root = Path(self.temp.name)
@@ -53,7 +57,7 @@ class AntennaSessionProtocol(unittest.TestCase):
             files['antenna_session_policy'] = native_backend.identity(self.bundle / 'antenna-session-policy.json')
         return files
 
-    def backend(self, session=True, grouped=True):
+    def backend(self, session=True, grouped=True, order=None):
         files = {name: self.marker for name in native_backend.REQUIRED}
         files.update(self.grouped_files(session) if grouped else {})
         if session and not grouped:
@@ -84,10 +88,12 @@ class AntennaSessionProtocol(unittest.TestCase):
         config = dict(schema='rusteda.native-backend-inputs.v1', frontend_fragment=self.write('frontend.json', front),
             files=files, tools={name: self.marker for name in ('appimage', 'opensta', 'yosys')},
             pdk_root='/protocol-only/no-pdk-is-read')
+        if (order or self.postroute_order) is not None:
+            config['postroute_order'] = order or self.postroute_order
         return native_backend.build(config)
 
-    def assembled(self, session=True, grouped=True):
-        backend, _ = self.backend(session, grouped)
+    def assembled(self, session=True, grouped=True, order=None):
+        backend, _ = self.backend(session, grouped, order)
         files = dict(backend['files'], **{name: self.marker for name in native_flow.FILES})
         tools = dict(backend['tools'], **{name: self.marker for name in native_flow.TOOLS})
         return native_flow.assemble(backend, files, tools, LOGIC_LIMITS)
@@ -143,14 +149,16 @@ class AntennaSessionProtocol(unittest.TestCase):
                 helper.grouped_antenna(files)
 
     def test_backend_renders_exact_v3_controller_file_identity_without_replacing_foundry_gate(self):
-        backend, prefix = self.backend()
-        steps = self.by_id(backend)
-        self.assertEqual(steps['be_antenna_verify_inputs']['content'], dict(
-            schema='rusteda.antenna-v3-independent-verifier-inputs.v1',
-            lineage={'$identity': 'backend/antenna-repair/lineage.json'}, tool={'$tool': 'rustroad'},
-            source_manifest={'$input': 'antenna_source_manifest'},
-            design_workspace='{output}/backend/postroute/road', evidence_kind='actual_native_artifacts',
-            controller_inputs={'$identity': 'backend/antenna-inputs.json'}))
+        for order, workspace in [(None, '{output}/frontend/road-final'),
+                                 (native_backend.LEGACY_ORDER, '{output}/backend/postroute/road')]:
+            backend, prefix = self.backend(order=order)
+            steps = self.by_id(backend)
+            self.assertEqual(steps['be_antenna_verify_inputs']['content'], dict(
+                schema='rusteda.antenna-v3-independent-verifier-inputs.v1',
+                lineage={'$identity': 'backend/antenna-repair/lineage.json'}, tool={'$tool': 'rustroad'},
+                source_manifest={'$input': 'antenna_source_manifest'},
+                design_workspace=workspace, evidence_kind='actual_native_artifacts',
+                controller_inputs={'$identity': 'backend/antenna-inputs.json'}))
         self.assertEqual(steps['be_antenna_inputs']['content']['schema'], 'rusteda.native-antenna-inputs.v2')
         self.assertEqual(backend['gates']['antenna'], 'backend/antenna/summary.json')
         self.assertEqual(prefix['gates'], {})

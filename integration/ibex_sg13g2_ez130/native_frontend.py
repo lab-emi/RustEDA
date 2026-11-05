@@ -109,16 +109,23 @@ def build(config):
     libargs=[]
     for c in ['tt','ss']:
         for k in ['std','ram']:libargs += ['--lib','{files:'+k+'_'+c+'}','--corner',c]
+    # The timing imports share one Liberty compile cache in this run's tree: a library compiled
+    # by an earlier timing import of the run is copied into the next workspace instead of parsed
+    # again (rusteda import --lib-cache; the workspace cache files are the same either way). The
+    # synthesis import keeps its own compile, so the frontend timing steps compile every library
+    # they use themselves (fe_mapped_import compiles all four).
+    lib_cache=out+'lib-cache'
     def timing(tag, source, hold=False, run=True, spef=None):
         ws=out+'sta-'+tag
         command(tag+'_init','rusteda',['init','-w',ws,'--format','json'])
-        imp=['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json']
+        imp=['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache]
         if spef:imp+=['--max-spef-mib','64','--max-rc-name-mib','64','--max-rc-nodes','2000000','--max-rc-elements','4000000','--max-rc-nets','100000']
         for c in ['tt','ss']:
             for k in ['std','ram']:imp+=['--lib','{files:'+k+'_'+c+'}','--corner',c]
             if spef:imp+=['--spef',spef,'--spef-corner',c]
         command(tag+'_import','rusteda',imp+['--netlist',source,'--sdc','{files:sdc}'])
-        if run: command(tag+'_run','ruststa',['run','-w',ws,'--base-rev','rev1','--threads','2','--max-state-gib','2','--max-paths','32','--max-limit-rows','100000','--require-wire-model','spef_rc' if spef else 'ideal','--format','json'])
+        # The two corners share the two workers (--concurrent-corners): same tables, less wall time.
+        if run: command(tag+'_run','ruststa',['run','-w',ws,'--base-rev','rev1','--threads','2','--concurrent-corners','--max-state-gib','2','--max-paths','32','--max-limit-rows','100000','--require-wire-model','spef_rc' if spef else 'ideal','--format','json'])
         command(tag+'_graph','rusteda',['export','-w',ws,'--rev','rev2' if run else 'rev1','--kind','connectivity-json','--cell-buses',out+'profiles/cell-buses.json','--netlist',out+tag+'-graph.json','--format','json'])
         if run:
             for c in ['tt','ss']:
@@ -132,7 +139,9 @@ def build(config):
         args=['{files:prepare}','bundle','--context',out+'context.json','--workspace',out+'bundle-'+op,'--base-rev','empty','--operation',op,'--timing-tag',tag,'--source',source,'--graph',out+(graph_tag or tag)+'-graph.json']
         if timed: args += ['--timed',timed]
         command('bundle_'+op,'python',args)
-        command('eco_'+op,'python',['{files:ecos}',op,'--workspace',out+'eco-'+op,'--base-rev','empty','--inputs',out+'bundle-'+op+'/inputs.json','--policy',out+'bundle-'+op+'/policy.json'])
+        # The run's flow digest cache (written by the bundle helpers) spares the planner hashing
+        # the pinned tools and libraries again; its final input check still reads every file.
+        command('eco_'+op,'python',['{files:ecos}',op,'--workspace',out+'eco-'+op,'--base-rev','empty','--inputs',out+'bundle-'+op+'/inputs.json','--policy',out+'bundle-'+op+'/policy.json','--digest-cache',out+'sha256-cache.json'])
         return out+'eco-'+op+'/netlist.v'
     source=out+'mapped.v'; timing('mapped',source)
     source=eco('reset','mapped',source)

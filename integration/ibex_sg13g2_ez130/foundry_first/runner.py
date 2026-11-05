@@ -67,7 +67,13 @@ def compose(manifest):
     p.need(old['schema'] == 'rusteda.native-antenna-inputs.v2' and old['initial_revision'] == 'rev4',
            'FOUNDRY_FIRST_INITIAL_ROUTE')
     post = by['be_postroute_inputs']['content']
-    p.need(post['schema'] == 'rusteda.native-postroute-inputs.v1', 'FOUNDRY_FIRST_POSTROUTE')
+    # The capture/reuse protocol is bound to the earlier post-route order: the
+    # runner extracts the pre-antenna trial and be_extract may reuse it. The
+    # screen order (native_backend postroute_order screen_after_extract) runs
+    # antenna repair and the one extraction before post-route instead.
+    order = [step['id'] for step in steps]
+    p.need(post['schema'] == 'rusteda.native-postroute-inputs.v1'
+           and order.index('be_postroute') < order.index('be_antenna_inputs'), 'FOUNDRY_FIRST_POSTROUTE_ORDER')
     post['schema'] = 'rusteda.native-postroute-reuse-inputs.v1'
     by['be_postroute']['arguments'].append('--foundry-first')
     post['foundry_first'] = dict(protocol={'$input': 'foundry_first_protocol'},

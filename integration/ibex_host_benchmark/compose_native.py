@@ -41,7 +41,7 @@ SELECTION = {
                 for n in (1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 44, 48, 64)],
     "primary_buffer": "BUFX24",
     "reset": {"pin": "RB", "leaf": "BUFX8", "trunk": "BUFX16"},
-    "delay_cells": ["DLY1X2"], "target_fanout": 8, "cap_fraction": 0.8,
+    "delay_cells": ["DLY1X2"], "target_fanout": 9, "cap_fraction": 0.8,
     "hold_margin_ns": 0.075, "setup_margin_ns": 0.05,
     "port_diode": {"cell": "ANTENNA2", "pin": "A"},
     "electrical": {
@@ -49,7 +49,7 @@ SELECTION = {
         "sram_buffer": "BUFX4", "sram_clock_buffer": "BUFX8",
         "sram_masters": ["RM_IHPSG13_1P_1024x32_c2_bm_bist"],
         "load_fraction": 0.6, "max_wire_um": 1200, "antenna_cells": ["ANTENNA2"],
-        "drv_margin": 0.25, "hold_drv_margin": 0.2,
+        "drv_margin": 0.15, "hold_drv_margin": 0.1,
         "clock_balance": {"cell": "DLY1X2", "max_stages": 32, "margin_ns": 0.1, "wire_pf": 0.002},
     },
     "launch_chain_max": 32,
@@ -148,7 +148,10 @@ def main() -> int:
           "frontend_fragment": identity(work / "fe/fragment.json"),
           "files": {k: identity(v) for k, v in be_files.items()},
           "tools": {k: identity(Path(tools[k])) for k in ("appimage", "opensta", "yosys")},
-          "pdk_root": str(ihp.parent)}
+          "pdk_root": str(ihp.parent),
+          # The producer's foundry checks (be_main, be_antenna -> be_lvs) run as two concurrent
+          # two-core lanes on a four-CPU host (producer.signoff_parallel_group); host.json can opt out.
+          "parallel_signoff": bool(host.get("parallel_signoff", threads == 4))}
     (work / "backend-inputs.json").write_text(json.dumps(be, indent=2) + "\n")
     subprocess.run([python, str(recipe / "native_backend.py"), "--inputs", str(work / "backend-inputs.json"),
                     "--workspace", str(work / "be"), "--base-rev", "empty"], check=True)

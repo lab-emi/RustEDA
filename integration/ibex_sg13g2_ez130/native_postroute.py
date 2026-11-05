@@ -3,17 +3,40 @@
 
 The frontend closes DRV on placement-estimated RC; routed wires can still push
 a few nets past max_capacitance/max_transition (run13: 15 TT nets on native
-SPEF). This runner times the trial route (frontend final workspace after
-be_route) on native nominal SPEF with RustSTA (TT and SS, propagated clocks),
-upsizes each offending driver to an equal-width member of its Liberty sizing
-family (same pins, directions and output functions in both corners, same LEF
-width and height, no sequential/bus groups, no dont_use), applies the resizes
-to the pre-CTS netlist and replays the frontend's final import/place/CTS recipe
-argument for argument (byte-identical placed DEF for identical inputs), then
-routes with the trial route as ECO prior: nets whose pins did not change keep
-their geometry, and the new layout is extracted and timed again. Without any
-resize the trial workspace is copied file for file. Downstream steps therefore
-always read one final workspace at one revision (rev4).
+SPEF). This runner times a routed layout on native nominal SPEF with RustSTA
+(TT and SS, propagated clocks), upsizes each offending driver to an
+equal-width member of its Liberty sizing family (same pins, directions and
+output functions in both corners, same LEF width and height, no
+sequential/bus groups, no dont_use), applies the resizes to the pre-CTS
+netlist and replays the frontend's final import/place/CTS recipe argument for
+argument (byte-identical placed DEF for identical inputs), then routes with
+the screened route as ECO prior: nets whose pins did not change keep their
+geometry.
+
+Two input protocols:
+
+* v2 (screen after extraction, rusteda.native-postroute-inputs.v2): the
+  producer has already run antenna repair, its verifier and the one full
+  native extraction on the trial route (frontend final workspace after
+  be_route). The runner binds that SPEF to the workspace path, its HEAD
+  revision (design.json and routes.rbin SHA-256, which must match the antenna
+  lineage's final design file) and the SHA-256 of the exact extraction argv,
+  and times it; it never extracts the trial again. Without any resize the
+  final workspace is the screened trial, hard-linked file for file (RustROAD
+  writes every revision table with create_new and replaces HEAD and receipts
+  by rename, so a link is never edited in place; HEAD and the lock are fresh
+  files), and the final SPEF path is a hard link of the trial SPEF. With
+  resizes, each ECO rebuild is antenna-repaired with the same pinned runner
+  and inputs (only the workspace differs), independently verified when the
+  recipe verifies, extracted with the same argv template and screened again,
+  at most max_rounds times; the last screened workspace and its SPEF are then
+  linked the same way. Every screened revision, lineage, verification and
+  extraction is recorded in result.json.
+* v1 (the earlier order): the runner extracts the pre-antenna trial itself
+  (antenna repair follows, and be_extract extracts the final layout again)
+  and copies the trial file for file when no resize is needed.
+
+Downstream steps therefore always read one final workspace.
 
 Rows at or above near_limit_ratio of their limit are repaired when an
 equal-width upsize exists (native and OpenRCX extraction differ per net);
@@ -21,16 +44,19 @@ violations (slack < 0) without one are recorded as residual and left to the
 signoff timing gate. Setup/hold are not repaired here; their state after the
 last round is recorded. Nothing here is signoff.
 
-Memory/work: one child at a time (route with prior about 1 GiB measured on the
-full design and bounded by its track memory_mib; native extraction 0.85 GiB;
-apply-eco 2 GiB budget, the full netlist estimate is 546 MiB;
-RustSTA --max-state-gib 2). Python state: the flat netlist (about 16k
+Memory/work: one child at a time, except that the v2 screen overlaps the
+netlist export with input hashing and runs its four read-only report queries
+together (route with prior about 1 GiB measured on the full design and bounded
+by its track memory_mib; native extraction 0.85 GiB; apply-eco 2 GiB budget,
+the full netlist estimate is 546 MiB; RustSTA --max-state-gib 2; a report
+query well below 1 GiB). Python state: the flat netlist (about 16k
 instances), two Liberty cell tables and at most max_rows DRV rows per corner,
 below 256 MiB. Rounds, resizes and rows are capped by the policy.
 
 usage: native_postroute.py --inputs INPUTS.json --workspace OUT --base-rev empty
 """
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -45,6 +71,7 @@ import types
 import time
 
 SCHEMA = 'rusteda.native-postroute-inputs.v1'
+SCREEN_SCHEMA = 'rusteda.native-postroute-inputs.v2'
 CORNERS = ('tt', 'ss')
 MAX_ROUNDS, MAX_RESIZES, MAX_ROWS = 3, 1024, 100000
 DRV_KINDS = {'max_capacitance', 'max_transition'}
@@ -235,11 +262,17 @@ class Runner:
         self.c = read(inputs_path, 4 << 20)
         c = self.c
         self.reuse = c.get('schema') == 'rusteda.native-postroute-reuse-inputs.v1'
+        self.screen = c.get('schema') == SCREEN_SCHEMA
         require(not self.reuse or allow_reuse, 'explicit --foundry-first required')
+        require(not (self.screen and allow_reuse), 'foundry-first capture requires the v1 order')
         expected = {'schema', 'top', 'trial', 'final_workspace', 'prects_netlist',
                     'recipe', 'profiles', 'timing', 'tools', 'policy', 'limits'}
-        require(c.get('schema') == ('rusteda.native-postroute-reuse-inputs.v1' if self.reuse else SCHEMA)
-                and set(c) == expected | ({'foundry_first'} if self.reuse else set()), 'post-route input schema')
+        if self.screen:
+            require(set(c) == expected | {'final_spef', 'screen', 'antenna'}
+                    and set(c['tools']) == {'rustroad', 'rusteda', 'ruststa', 'python'}, 'post-route input schema')
+        else:
+            require(c.get('schema') == ('rusteda.native-postroute-reuse-inputs.v1' if self.reuse else SCHEMA)
+                    and set(c) == expected | ({'foundry_first'} if self.reuse else set()), 'post-route input schema')
         p = c['policy']
         require(0.5 <= p['near_limit_ratio'] <= 1 and 0.3 <= p['target_ratio'] < p['near_limit_ratio']
                 and 1 <= p['max_rounds'] <= MAX_ROUNDS and 0 <= p['max_resizes'] <= MAX_RESIZES, 'post-route policy budget')
@@ -257,6 +290,8 @@ class Runner:
         self.final = Path(c['final_workspace'])
         require(not self.final.exists() and self.final.parent == out.resolve(), 'final workspace must be fresh, inside the runner')
         self.extract_inputs = []
+        if self.screen:
+            self.screen_inputs()
         if self.reuse:
             pins = c['foundry_first']
             require(set(pins) == {'protocol', 'policy', 'cell_gds', 'layer_map', 'drc_profile', 'cell_lef', 'run_root'}, 'foundry-first capture source pins')
@@ -278,6 +313,33 @@ class Runner:
                 for role, filename in [('cell_gds', 'cells.gds'), ('layer_map', 'layer-map.json'), ('cell_lef', 'cells.lef')]}
             self.frozen_foundry = self.protocol.freeze_profile(pins['drc_profile'], effective / 'foundry', self.out)
 
+
+    def screen_inputs(self):
+        """v2: the screened trial evidence, rendered by the producer as file identities."""
+        c = self.c
+        trial = Path(c['trial']['workspace'])
+        require(trial.is_absolute() and c['trial']['revision'] == 'rev4', 'trial route binding')
+        self.final_spef = Path(c['final_spef'])
+        require(self.final_spef.is_absolute() and self.final_spef.parent == self.out.resolve().parent
+                and not self.final_spef.exists() and not self.final_spef.is_symlink(),
+                'final SPEF must be a fresh path beside the runner workspace')
+        require(set(c['screen']) == {'spef', 'extract_report', 'extract_command'}
+                and set(c['antenna']) == {'inputs', 'lineage', 'runner', 'verifier', 'verifier_inputs',
+                                          'verification'}, 'post-route screen input schema')
+        verified = c['antenna']['verifier'] is not None
+        require(all((c['antenna'][key] is not None) == verified
+                    for key in ('verifier', 'verifier_inputs', 'verification')),
+                'antenna verifier, its inputs and its result go together')
+        for item in [*c['screen'].values(), *(v for v in c['antenna'].values() if v is not None)]:
+            self.record(item)
+
+    def record(self, item, cap=1 << 40):
+        """A file identity rendered earlier in this run; the bytes must be unchanged."""
+        require(isinstance(item, dict) and set(item) == {'path', 'sha256', 'bytes'}
+                and type(item['bytes']) is int and 0 <= item['bytes'] <= cap
+                and Path(item['path']).is_absolute(), 'file identity schema')
+        require(identity(item['path']) == item, 'input changed: ' + item['path'])
+        return Path(item['path'])
 
     def remaining(self):
         left = self.c['limits']['deadline_seconds'] - (time.monotonic() - self.started)
@@ -337,6 +399,57 @@ class Runner:
         self.extract_inputs.append(protocol.identity(path, 2 << 20))
         return output
 
+    def spawn(self, name, argv):
+        """Start one bounded child; finish() records its row (same fields as run())."""
+        argv = [str(a) for a in argv]
+        log = self.out / 'logs'
+        log.mkdir(exist_ok=True)
+        with (log / (name + '.stdout')).open('xb') as o, (log / (name + '.stderr')).open('xb') as e:
+            process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=o, stderr=e,
+                                       env=dict(os.environ, RAYON_NUM_THREADS=str(self.c['limits']['threads'])))
+        return dict(name=name, argv=argv, process=process, started=time.monotonic(), wall=None)
+
+    @staticmethod
+    def abandon(jobs):
+        for job in jobs:
+            if job['process'].poll() is None:
+                job['process'].kill()
+            job['process'].wait(timeout=10)
+
+    def finish(self, jobs, cap=256 << 20):
+        """Wait for every job (polling, so each wall is its own), then record rows in job order."""
+        try:
+            while any(job['wall'] is None for job in jobs):
+                self.remaining()
+                for job in jobs:
+                    if job['wall'] is None and job['process'].poll() is not None:
+                        job['wall'] = round(time.monotonic() - job['started'], 3)
+                time.sleep(.005)
+        except BaseException:
+            self.abandon(jobs)
+            raise
+        log, outputs = self.out / 'logs', {}
+        for job in jobs:
+            name = job['name']
+            row = dict(name=name, argv=job['argv'], exit_code=job['process'].returncode, wall_seconds=job['wall'],
+                       stdout=identity(log / (name + '.stdout')), stderr=identity(log / (name + '.stderr')))
+            self.commands.append(row)
+            require(row['stdout']['bytes'] <= cap and row['stderr']['bytes'] <= 64 << 20, 'command output budget: ' + name)
+            if row['exit_code'] != 0:
+                raise Failure(f"{name} exited {row['exit_code']}: " + (log / (name + '.stderr')).read_text()[-2000:])
+            outputs[name] = log / (name + '.stdout')
+        return outputs
+
+    def run_together(self, queries):
+        jobs = []
+        try:
+            for name, argv in queries:
+                jobs.append(self.spawn(name, argv))
+        except BaseException:
+            self.abandon(jobs)
+            raise
+        return self.finish(jobs)
+
     def physical_models(self, netlist, root):
         lef = Path(self.c['profiles']['cell_lef']).read_text()
         logical = Path(netlist).read_text()
@@ -360,13 +473,22 @@ class Runner:
         return libs, names
 
     def check(self, tag, workspace):
-        """Native extraction plus RustSTA on the routed HEAD of workspace."""
+        """v1: native extraction plus RustSTA on the routed HEAD of workspace."""
         root = self.out / tag
         root.mkdir()
         spef = root / 'native.nom.spef'
         extract = [spef if a == '@SPEF@' else a for a in self.c['recipe']['extract']]
         self.road(tag + '-extract', workspace, extract, 1 << 20)
         netlist = self.road(tag + '-netlist', workspace, ['export-verilog'])
+        summary, corners = self.sta(tag, root, spef, netlist)
+        return summary, corners, netlist
+
+    def sta(self, tag, root, spef, netlist, together=False):
+        """RustSTA TT/SS (propagated clocks, SPEF RC) on one netlist and SPEF.
+
+        together runs the four read-only report queries of rev2 at once (each
+        takes a shared workspace lock); their rows are recorded in the fixed
+        sequential order either way."""
         stubs, names = self.physical_models(netlist, root)
         sta = root / 'sta'
         t, th = self.c['tools'], str(self.c['limits']['threads'])
@@ -382,13 +504,21 @@ class Runner:
         self.run(tag + '-sta-run', [t['ruststa']['path'], 'run', '-w', sta, '--base-rev', 'rev1', '--threads', th,
                  '--backend', 'cpu', '--precision', 'f64', '--max-state-gib', '2', '--max-paths', '32',
                  '--max-limit-rows', str(MAX_ROWS), '--require-wire-model', 'spef_rc', '--format', 'json'])
+        queries = []
+        for co in CORNERS:
+            queries.append((f'{tag}-{co}-summary', [t['ruststa']['path'], 'report', '-w', sta, '--rev', 'rev2',
+                            '--corner', co, '--threads', th, '--section', 'summary', '--format', 'json']))
+            queries.append((f'{tag}-{co}-drv', [t['ruststa']['path'], 'report', '-w', sta, '--rev', 'rev2',
+                            '--corner', co, '--threads', th, '--section', 'drv', '--filter', 'slack<0.2',
+                            '--limit', str(MAX_ROWS), '--format', 'json']))
+        if together:
+            outputs = self.run_together(queries)
+        else:
+            outputs = {name: self.run(name, argv) for name, argv in queries}
         corners = {}
         for co in CORNERS:
-            summary = read(self.run(f'{tag}-{co}-summary', [t['ruststa']['path'], 'report', '-w', sta, '--rev', 'rev2',
-                           '--corner', co, '--threads', th, '--section', 'summary', '--format', 'json']))
-            drv = read(self.run(f'{tag}-{co}-drv', [t['ruststa']['path'], 'report', '-w', sta, '--rev', 'rev2',
-                       '--corner', co, '--threads', th, '--section', 'drv', '--filter', 'slack<0.2',
-                       '--limit', str(MAX_ROWS), '--format', 'json']))
+            summary = read(outputs[f'{tag}-{co}-summary'])
+            drv = read(outputs[f'{tag}-{co}-drv'])
             require(drv['scope']['wire_model'] == 'spef_rc' and drv['scope']['clock_model'] == 'propagated'
                     and drv['scope']['corner'] == co, 'post-route STA scope')
             rows = drv['sections']['drv']
@@ -399,7 +529,7 @@ class Runner:
                 'worst_setup_slack_ns', 'worst_hold_slack_ns', 'setup_violating_endpoints', 'hold_violating_endpoints',
                 'max_transition_violating', 'max_capacitance_violating', 'max_fanout_violating')})
         return dict(spef=identity(spef), netlist=identity(netlist), physical_only=names,
-                    corners={co: v['metrics'] for co, v in corners.items()}), corners, netlist
+                    corners={co: v['metrics'] for co, v in corners.items()}), corners
 
     def plan(self, corners, netlist, resized):
         """Equal-width upsizes for rows at/over near_limit_ratio; residual rows that have none."""
@@ -483,8 +613,9 @@ class Runner:
                         stage_stdout={s: identity(self.out / 'logs' / f'{tag}-{s}.stdout') for s in stages},
                         def_identical_to_prior=sha(mine) == sha(theirs), def_sha256=sha(mine))
 
-    def execute(self):
-        c, p = self.c, self.c['policy']
+    def prepare(self):
+        """Equal-width sizing families from both corners' Liberty and the cell LEF."""
+        c = self.c
         self.libs = {co: liberty(c['timing']['std_' + co]['path']) for co in CORNERS}
         sizes = lef_sizes(c['profiles']['cell_lef'])
         fams, self.member = families(self.libs, sizes)
@@ -497,6 +628,40 @@ class Runner:
                             'no sequential, bus, bundle, clock-gating or dont_use cell', families=fams, excluded=[])
         sizing = self.out / 'equal-width-sizing.json'
         save(sizing, profile)
+        return fams, sizing
+
+    def rebuild(self, index, ops, resized, sizing, prior, row):
+        """Apply the cumulative resizes to the pre-CTS netlist and rebuild with prior as ECO route prior."""
+        c = self.c
+        for op in ops:
+            resized[op['instance']] = op['cell']
+        plan = self.out / f'plan{index}.json'
+        save(plan, dict(schema='rustroad.eco-plan.v1', module=c['top'],
+                        operations=[dict(op='resize_cell', instance=i, cell=resized[i]) for i in sorted(resized)]))
+        source = self.out / f'netlist{index}.v'
+        args = ['apply-eco', '--netlist', c['prects_netlist'], '--plan', plan, '--delay-cells', c['profiles']['delay'],
+                '--cell-lef', c['profiles']['cell_lef'], '--sizing-profile', sizing, '--max-eco-operations',
+                str(len(resized)), '--max-input-mib', '16', '--eco-memory-mib', '2048', '--out', source]
+        if c['profiles'].get('cell_buses'):
+            args += ['--cell-buses', c['profiles']['cell_buses']]
+        self.run(f'apply{index}', [c['tools']['rustroad']['path'], *args])
+        ws, row['build'] = self.build(f'build{index}', source, prior)
+        row['netlist'] = identity(source)
+        return ws
+
+    @staticmethod
+    def status(resized, residual):
+        return 'residual_violations' if residual else ('repaired' if resized else 'clean')
+
+    def resources(self):
+        return dict(wall_seconds=round(time.monotonic() - self.started, 3),
+                    peak_child_rss_kib=resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss)
+
+    def execute(self):
+        if self.screen:
+            return self.execute_screen()
+        c, p = self.c, self.c['policy']
+        fams, sizing = self.prepare()
         trial = (Path(c['trial']['workspace']), c['trial']['revision'])
         require(head(trial[0]) == trial[1], 'trial workspace HEAD differs')
         resized, rounds, prior, status = {}, [], trial, None
@@ -507,26 +672,12 @@ class Runner:
                        residual=residual, near_limit_without_upsize=skipped)
             rounds.append(row)
             if not ops:
-                status = 'residual_violations' if residual else ('repaired' if resized else 'clean')
+                status = self.status(resized, residual)
                 break
             if index == p['max_rounds']:
                 status = 'round_budget_exhausted'
                 break
-            for op in ops:
-                resized[op['instance']] = op['cell']
-            plan = self.out / f'plan{index}.json'
-            save(plan, dict(schema='rustroad.eco-plan.v1', module=c['top'],
-                            operations=[dict(op='resize_cell', instance=i, cell=resized[i]) for i in sorted(resized)]))
-            source = self.out / f'netlist{index}.v'
-            args = ['apply-eco', '--netlist', c['prects_netlist'], '--plan', plan, '--delay-cells', c['profiles']['delay'],
-                    '--cell-lef', c['profiles']['cell_lef'], '--sizing-profile', sizing, '--max-eco-operations',
-                    str(len(resized)), '--max-input-mib', '16', '--eco-memory-mib', '2048', '--out', source]
-            if c['profiles'].get('cell_buses'):
-                args += ['--cell-buses', c['profiles']['cell_buses']]
-            self.run(f'apply{index}', [c['tools']['rustroad']['path'], *args])
-            ws, row['build'] = self.build(f'build{index}', source, prior)
-            row['netlist'] = identity(source)
-            prior = (ws, 'rev4')
+            prior = (self.rebuild(index, ops, resized, sizing, prior, row), 'rev4')
         if prior[0] == trial[0]:
             # No resize: the final workspace is the trial, copied file for file.
             shutil.copytree(trial[0], self.final, symlinks=False)
@@ -548,8 +699,7 @@ class Runner:
                       last_check_corners=last, commands=self.commands,
                       scope='native nominal SPEF, RustSTA TT/SS propagated; repair selection only, not signoff',
                       unverified=['signoff_timing', 'openrcx_timing', 'drc', 'lvs', 'antenna'],
-                      resources=dict(wall_seconds=round(time.monotonic() - self.started, 3),
-                                     peak_child_rss_kib=resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss))
+                      resources=self.resources())
         if self.reuse:
             result.update(schema='rusteda.native-postroute-reuse-result.v1',
                           extract_inputs=self.extract_inputs, effective_rc=self.frozen_rc,
@@ -561,6 +711,190 @@ class Runner:
             summary.update(input_manifest=self.inputs, result=self.protocol.identity(self.out / 'result.json', 2 << 20))
         print(json.dumps(summary))
 
+    # ---- v2: screen the SPEF of the step that extracted the antenna-repaired route ----
+
+    def extract_argv(self, workspace, spef):
+        return [self.c['tools']['rustroad']['path'], '--workspace', str(workspace),
+                *[str(spef) if a == '@SPEF@' else a for a in self.c['recipe']['extract']]]
+
+    def screened(self, source, workspace, lineage, antenna, spef, report_path, argv):
+        """Bind one extraction to (workspace path, HEAD, design/routes bytes, exact argv)."""
+        revision = head(workspace)
+        require(lineage['workspace'] == str(workspace) and lineage['initial_revision'] == 'rev4'
+                and lineage['final_revision'] == revision and lineage['tool'] == self.c['tools']['rustroad'],
+                'antenna lineage does not end at the screened HEAD')
+        files = {name: identity(workspace / 'revisions' / revision / name) for name in ('design.json', 'routes.rbin')}
+        require(lineage['final']['revision'] == revision and lineage['final']['design_file'] == files['design.json'],
+                'screened revision differs from the antenna lineage final design')
+        expected = self.extract_argv(workspace, spef['path'])
+        require(argv == expected, 'extraction argv differs from the recipe template')
+        report = read(report_path, 2 << 20)
+        profile = expected[expected.index('--rc-profile') + 1]
+        require(report['schema'] == 'rustroad.extract.v1' and report['status'] == 'ok'
+                and report['workspace_revision'] == revision and report['output'] == spef
+                and report['rc_profile'] == identity(profile),
+                'extraction report does not bind its SPEF to the screened HEAD')
+        require(head(workspace) == revision, 'screened HEAD moved')
+        return dict(source=source, workspace=str(workspace), revision=revision, revision_files=files,
+                    antenna=antenna, extraction=dict(
+                        argv_sha256=hashlib.sha256(json.dumps(expected).encode()).hexdigest(),
+                        report=identity(report_path), spef=spef))
+
+    def screen_trial(self, trial):
+        """The trial as the producer left it: antenna-repaired (and verified), extracted by be_extract."""
+        c, a = self.c, self.c['antenna']
+        lineage = read(self.record(a['lineage']))
+        verification = None
+        if a['verification'] is not None:
+            verification = read(self.record(a['verification']))
+            require(verification['workspace'] == str(trial) and verification['final_revision'] == head(trial)
+                    and verification['lineage'] == a['lineage'], 'antenna verification does not bind the trial HEAD')
+        command = read(self.record(c['screen']['extract_command']))
+        argv = command['argv']
+        # The producer runs every command under GNU time: time -v -o FILE argv...
+        require(isinstance(argv, list) and len(argv) > 4 and argv[1:3] == ['-v', '-o'], 'extraction command record')
+        return self.screened('trial', trial, lineage, dict(inputs=a['inputs'], lineage=a['lineage'],
+                             verification=a['verification']), self.c['screen']['spef'],
+                             self.record(c['screen']['extract_report']), argv[4:])
+
+    def antenna(self, index, workspace):
+        """Antenna-repair (and verify) an ECO rebuild with the producer's own pinned runner and inputs."""
+        c, a = self.c, self.c['antenna']
+        trial, python = c['trial']['workspace'], c['tools']['python']['path']
+        template = read(self.record(a['inputs']))
+        require(template['design_workspace'] == trial and template['initial_revision'] == 'rev4'
+                and template['tool'] == c['tools']['rustroad'], 'antenna input template differs')
+        require(head(workspace) == 'rev4', 'rebuild HEAD before antenna repair')
+        inputs = self.out / f'antenna{index}-inputs.json'
+        save(inputs, dict(template, design_workspace=str(workspace)))
+        work = self.out / f'antenna{index}'
+        self.record(a['runner'])
+        self.run(f'antenna{index}', [python, a['runner']['path'], '--inputs', inputs, '--workspace', work,
+                                      '--base-rev', 'empty'], 16 << 20)
+        lineage_path = work / 'lineage.json'
+        lineage = read(lineage_path)
+        ids = dict(inputs=identity(inputs), lineage=identity(lineage_path), verification=None)
+        if a['verifier'] is not None:
+            template = read(self.record(a['verifier_inputs']))
+            require(template['design_workspace'] == trial and template['lineage'] == a['lineage']
+                    and template.get('controller_inputs', a['inputs']) == a['inputs'],
+                    'antenna verifier input template differs')
+            config = dict(template, lineage=ids['lineage'], design_workspace=str(workspace))
+            if 'controller_inputs' in template:
+                config['controller_inputs'] = ids['inputs']
+            path = self.out / f'antenna{index}-verification-inputs.json'
+            save(path, config)
+            review = self.out / f'antenna{index}-verification'
+            self.record(a['verifier'])
+            self.run(f'antenna{index}-verify', [python, a['verifier']['path'], '--inputs', path, '--workspace',
+                                                review, '--base-rev', 'empty'], 16 << 20)
+            verification = read(review / 'result.json')
+            require(verification['workspace'] == str(workspace) and verification['final_revision'] == head(workspace)
+                    and verification['lineage'] == ids['lineage'], 'rebuild antenna verification differs')
+            ids.update(verification=identity(review / 'result.json'))
+        return lineage, ids
+
+    def screen_rebuild(self, index, workspace):
+        lineage, ids = self.antenna(index, workspace)
+        root = self.out / f'check{index}'
+        root.mkdir()
+        spef = root / 'native.nom.spef'
+        args = self.extract_argv(workspace, spef)[3:]
+        report = self.road(f'check{index}-extract', workspace, args, 1 << 20)
+        return self.screened('eco_rebuild', workspace, lineage, ids, identity(spef), report,
+                             self.commands[-1]['argv'])
+
+    def link_workspace(self, source, revision):
+        """The final workspace: every file of source hard-linked, fresh HEAD and lock."""
+        target = self.final
+        require(head(source) == revision, 'screened HEAD moved before linking')
+        linked = []
+        with (source / 'workspace.lock').open('rb') as lock:
+            fcntl.flock(lock, fcntl.LOCK_SH)   # as a RustROAD reader: no commit meanwhile
+            require(head(source) == revision, 'screened HEAD moved before linking')
+            target.mkdir()
+            for folder, dirs, names in os.walk(source):
+                dirs.sort()
+                here = Path(folder)
+                for name in dirs:
+                    require(not (here / name).is_symlink(), 'workspace directory symlink')
+                    (target / (here / name).relative_to(source)).mkdir()
+                for name in sorted(names):
+                    path = here / name
+                    relative = path.relative_to(source)
+                    if relative in (Path('HEAD'), Path('workspace.lock')):
+                        continue
+                    require(stat.S_ISREG(path.lstat().st_mode), 'workspace entry is not a regular file: ' + str(relative))
+                    os.link(path, target / relative)
+                    linked.append(relative)
+            (target / 'workspace.lock').touch()
+            (target / 'HEAD').write_text(revision + '\n')
+            same = all(os.stat(source / f)[1:3] == os.stat(target / f)[1:3] for f in linked)
+            require(same and head(target) == head(source) == revision, 'final workspace links differ')
+        return len(linked)
+
+    def execute_screen(self):
+        c, p = self.c, self.c['policy']
+        trial = Path(c['trial']['workspace'])
+        require(trial.resolve(strict=True) == trial, 'trial workspace path must be canonical')
+        # The round-0 netlist export starts first; it overlaps input hashing and Liberty parsing.
+        job = self.spawn('check0-netlist', [c['tools']['rustroad']['path'], '--workspace', trial, 'export-verilog'])
+        try:
+            current = self.screen_trial(trial)
+            fams, sizing = self.prepare()
+        except BaseException:
+            self.abandon([job])
+            raise
+        netlist = self.finish([job])['check0-netlist']
+        require(head(trial) == current['revision'], 'trial HEAD moved during the netlist export')
+        screens, resized, rounds, status = [current], {}, [], None
+        for index in range(p['max_rounds'] + 1):
+            tag = f'check{index}'
+            root = self.out / tag
+            if index:
+                netlist = self.road(tag + '-netlist', Path(current['workspace']), ['export-verilog'])
+            else:
+                root.mkdir()
+            summary, corners = self.sta(tag, root, Path(current['extraction']['spef']['path']), netlist,
+                                        together=True)
+            ops, residual, skipped = self.plan(corners, netlist, resized)
+            row = dict(check=summary, workspace=current['workspace'], revision=current['revision'],
+                       source=current['source'], resizes=ops, residual=residual, near_limit_without_upsize=skipped)
+            rounds.append(row)
+            if not ops:
+                status = self.status(resized, residual)
+                break
+            if index == p['max_rounds']:
+                status = 'round_budget_exhausted'
+                break
+            prior = (Path(current['workspace']), current['revision'])
+            workspace = self.rebuild(index, ops, resized, sizing, prior, row)
+            current = self.screen_rebuild(index + 1, workspace)
+            screens.append(current)
+        last = screens[len(rounds) - 1]
+        require(last['workspace'] == rounds[-1]['workspace'], 'last screen differs from the last round')
+        linked = self.link_workspace(Path(last['workspace']), last['revision'])
+        spef = Path(last['extraction']['spef']['path'])
+        require(identity(spef) == last['extraction']['spef'], 'screened SPEF changed')
+        os.link(spef, self.final_spef)
+        require(os.stat(spef)[1:3] == os.stat(self.final_spef)[1:3], 'final SPEF link differs')
+        result = dict(schema='rusteda.native-postroute-result.v2', status=status, top=c['top'],
+                      input_manifest=self.inputs, policy_source=identity(__file__), tools=c['tools'],
+                      order='screen_after_extract',
+                      trial=dict(workspace=str(trial), revision=c['trial']['revision']),
+                      screens=screens, final_workspace=str(self.final), final_revision=last['revision'],
+                      resized=resized, final_source='trial_link' if last['source'] == 'trial' else 'eco_rebuild',
+                      final_link=dict(method='hard_link', source=last['workspace'], linked_files=linked,
+                                      fresh=['HEAD', 'workspace.lock']),
+                      final_spef=identity(self.final_spef), final_extraction=last['extraction'],
+                      final_antenna=last['antenna'],
+                      sizing_profile=identity(sizing), equal_width_families=len(fams), rounds=rounds,
+                      last_check_corners=rounds[-1]['check']['corners'], commands=self.commands,
+                      scope='native nominal SPEF, RustSTA TT/SS propagated; repair selection only, not signoff',
+                      unverified=['signoff_timing', 'openrcx_timing', 'drc', 'lvs', 'antenna'],
+                      resources=self.resources())
+        save(self.out / 'result.json', result)
+        print(json.dumps({k: result[k] for k in ('schema', 'status', 'final_workspace', 'final_revision', 'resized')}))
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)

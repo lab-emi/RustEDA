@@ -172,6 +172,15 @@ def verify_record(record):
     require(identity(record["path"]) == record, "source identity changed: " + record["path"])
 
 
+def check_parallel_groups(backend, steps, policy):
+    """The backend's parallel groups must be the producer policy's group for the backend's own CPU
+    allocation (`signoff_parallel_group(threads)`: the sixteen-CPU B4 group, or the two-lane
+    foundry-check group of a four-CPU host), valid over the composed steps."""
+    require(backend['parallel_groups'] == [policy.signoff_parallel_group(backend['scope']['threads'])],
+            'native signoff concurrency differs from the explicit B4 policy')
+    policy.validate_parallel_groups(steps, backend['parallel_groups'], backend['scope'])
+
+
 def capture_policy(record):
     """Import the declared producer source, never an undeclared adjacent file."""
     verify_record(record)
@@ -342,23 +351,54 @@ def assemble(backend, files, tools, logic_limits):
     require({"antenna_runner", "antenna_fields"} <= set(files), "pinned native antenna helper sources required")
     require({"contract", "rules_nom"} <= set(files), "explicit common contract and RC calibration inputs required")
     route_workspace = workspace
+    final_workspace = extract_workspace = workspace
+    exports = ("be_inspect", "be_def", "be_netlist", "be_powered", "be_gds")
     if "be_postroute" in order:
         # Post-route repair: be_route routes the frontend's final workspace (the
-        # trial); every later step reads the runner's final workspace.
+        # trial); every final export reads the runner's final workspace.
         post, post_inputs = by_name["be_postroute"], by_name.get("be_postroute_inputs")
         require(post_inputs is not None and post_inputs["kind"] == "render"
                 and post_inputs["destination"] == "backend/postroute-inputs.json"
-                and order["be_route"] < order["be_postroute_inputs"] < order["be_postroute"] < order["be_antenna_inputs"],
-                "post-route repair must sit between the trial route and antenna repair")
+                and order["be_route"] < order["be_postroute_inputs"] < order["be_postroute"],
+                "post-route repair must follow the trial route")
         content = post_inputs["content"]
         route_workspace = content["trial"]["workspace"]
-        require(content["schema"] == "rusteda.native-postroute-inputs.v1"
-                and content["trial"]["revision"] == "rev4" and content["final_workspace"] == workspace
-                and workspace == "{output}/backend/postroute/road"
+        require(content["trial"]["revision"] == "rev4"
+                and content["final_workspace"] == "{output}/backend/postroute/road"
                 and isinstance(route_workspace, str) and route_workspace.startswith("{output}/")
-                and content["recipe"]["route"] == by_name["be_route"]["arguments"][2:]
-                and content["tools"] == {key: {"$tool": key} for key in ("rustroad", "rusteda", "ruststa")},
+                and content["recipe"]["route"] == by_name["be_route"]["arguments"][2:],
                 "post-route repair does not bind the trial route and final workspace")
+        if content["schema"] == "rusteda.native-postroute-inputs.v2":
+            # Screen order: antenna repair (and its verifier) and the one full
+            # extraction run on the trial; be_postroute screens that SPEF, then
+            # materializes the final workspace and the final SPEF path.
+            grouped = antenna_grouping is not None
+            extract = by_name["be_extract"]["arguments"]
+            spef = "{output}/backend/trial.native.nom.spef"
+            require(order[final_antenna_step] < order["be_extract"] < order["be_postroute_inputs"]
+                    < order["be_postroute"] < min(order[name] for name in exports),
+                    "screen order: antenna repair, extraction, post-route screen, then final exports")
+            require(workspace == route_workspace and content["final_spef"] == "{output}/" + artifacts["spef_native_nom"]
+                    and extract == ["--workspace", route_workspace,
+                                    *[spef if a == "@SPEF@" else a for a in content["recipe"]["extract"]]]
+                    and content["screen"] == dict(spef={"$identity": "backend/trial.native.nom.spef"},
+                        extract_report={"$identity": "logs/be_extract.stdout"},
+                        extract_command={"$identity": "logs/be_extract.command.json"})
+                    and content["antenna"] == dict(inputs={"$identity": "backend/antenna-inputs.json"},
+                        lineage={"$identity": "backend/antenna-repair/lineage.json"},
+                        runner={"$input": "antenna_runner"},
+                        verifier={"$input": "antenna_verifier"} if grouped else None,
+                        verifier_inputs={"$identity": "backend/antenna-verification-inputs.json"} if grouped else None,
+                        verification={"$identity": "backend/antenna-verification/result.json"} if grouped else None)
+                    and content["tools"] == {key: {"$tool": key} for key in ("rustroad", "rusteda", "ruststa", "python")},
+                    "screen-order post-route repair does not bind the trial antenna repair and extraction")
+            final_workspace = content["final_workspace"]
+            extract_workspace = route_workspace
+        else:
+            require(content["schema"] == "rusteda.native-postroute-inputs.v1"
+                    and order["be_postroute"] < order["be_antenna_inputs"] and content["final_workspace"] == workspace
+                    and content["tools"] == {key: {"$tool": key} for key in ("rustroad", "rusteda", "ruststa")},
+                    "post-route repair must sit between the trial route and antenna repair")
         relative(route_workspace[len("{output}/"):])
         require(post["kind"] == "command" and post["tool"] == "python"
                 and post["arguments"] == ["{files:postroute_runner}", "--inputs", "{output}/backend/postroute-inputs.json",
@@ -366,10 +406,12 @@ def assemble(backend, files, tools, logic_limits):
                 and "postroute_runner" in files, "fresh post-route runner command required")
     for name in required - {"be_antenna_inputs", "be_antenna_repair"}:
         step = by_name[name]
+        expected = (route_workspace if name == "be_route" else extract_workspace if name == "be_extract"
+                    else final_workspace)
         require(step["kind"] == "command" and step["tool"] == "rustroad"
-                and step["arguments"][:2] == ["--workspace", route_workspace if name == "be_route" else workspace],
+                and step["arguments"][:2] == ["--workspace", expected],
                 "route and final exports must use the same current native workspace")
-    require(by_name["be_inspect"]["arguments"] == ["--workspace", workspace, "inspect"],
+    require(by_name["be_inspect"]["arguments"] == ["--workspace", final_workspace, "inspect"],
             "final inspect must read the current HEAD")
     if antenna_grouping is not None:
         verify_inputs = by_name['be_antenna_verify_inputs']
@@ -456,9 +498,7 @@ def assemble(backend, files, tools, logic_limits):
                 scope=backend["scope"], steps=steps, gates=gates, artifacts=artifacts,
                 stdout_artifacts=backend['stdout_artifacts'])
     if 'parallel_groups' in backend:
-        require(backend['parallel_groups'] == [policy.signoff_parallel_group()],
-                'native signoff concurrency differs from the explicit B4 policy')
-        policy.validate_parallel_groups(steps, backend['parallel_groups'], backend['scope'])
+        check_parallel_groups(backend, steps, policy)
         manifest['parallel_groups'] = backend['parallel_groups']
     if 'foundry_first_policy' in files:
         record = files.get('foundry_first_runner')

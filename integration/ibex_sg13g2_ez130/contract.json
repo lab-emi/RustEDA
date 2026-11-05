@@ -109,7 +109,7 @@
     ],
     "pin_access_lower_layer": "Metal1",
     "top_metal_use": "fixed_power_grid_and_legal_signal_routing",
-    "native_tap_max_gap_um": 15,
+    "native_tap_max_gap_um": 42,
     "pnr_constraint_policy": "LibreLane PNR wrapper sources the byte-exact common SDC then explicit CPPR-off; final independent signoff reads original common SDC with CPPR-off",
     "antenna_signoff": "complete original foundry Ant.a..i on actual final GDS; separate from main DRC and LEF-based router estimates",
     "rc_calibration_rules": "ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules",

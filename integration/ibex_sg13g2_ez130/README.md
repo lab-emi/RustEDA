@@ -128,15 +128,26 @@ unannotated port, so the change does not affect its result.
 - **Clock balance.** `native_ecos.py` (`electrical.clock_balance`) adds DLY1X2
   stages to the ungated launch registers so that they match the gated clock tree.
   This replaces long hold-fix chains.
-- **Post-route repair.** `native_postroute.py` (step `be_postroute`) extracts the
-  trial route with native extraction and runs RustSTA at TT and SS. Drivers near
-  a capacitance or transition limit get an equal-width upsize. The step then
-  replays the frontend's final import/place/CTS exactly and routes with
-  `--prior-workspace`, so unchanged nets keep their geometry. If nothing needs a
-  resize, the final workspace is a file-for-file copy of the trial.
-- **Composition and qualification.** `native_flow.py` places the step between
-  the trial route and antenna repair. `qualify_native.py` binds its lineage and
-  reads the expected SRAM placement from the pinned contract.
+- **Post-route repair.** Antenna repair, its verifier and the one full native
+  extraction run on the trial route (`be_antenna_repair`, `be_antenna_verify`,
+  `be_extract`). `native_postroute.py` (step `be_postroute`) then runs RustSTA
+  at TT and SS on that SPEF, bound to the workspace path, the HEAD revision's
+  bytes and the exact extraction arguments; it does not extract again. Drivers
+  near a capacitance or transition limit get an equal-width upsize. The step
+  then replays the frontend's final import/place/CTS exactly and routes with
+  `--prior-workspace` (the screened route), so unchanged nets keep their
+  geometry; each rebuild is antenna-repaired, verified and extracted again with
+  the same pinned helpers and arguments, then screened again. If nothing needs
+  a resize, the final workspace is the screened trial, hard-linked file for
+  file, and `backend/native.nom.spef` is a hard link of the trial SPEF. The
+  earlier order, in which `be_postroute` extracts the pre-antenna trial itself
+  and `be_extract` extracts the final layout again, remains available as
+  `native_backend.py` `postroute_order: extract_before_antenna`; the
+  foundry-first capture protocol requires it.
+- **Composition and qualification.** `native_flow.py` checks either order; in
+  the default one, verified antenna repair and the extraction precede
+  `be_postroute`, which precedes every final export. `qualify_native.py` binds
+  its lineage and reads the expected SRAM placement from the pinned contract.
 
 run16's RustSTA/OpenSTA same-SPEF difference is 0.806 ps against the unchanged
 1 ps gate. The gap is effective-capacitance modelling on RC-heavy nets, so a
@@ -198,6 +209,222 @@ reach R20/R21's QoR; those recipe inputs are not in the repository
 [run16 receipt](../../docs/benchmarks/ibex-sg13g2-ez130.json) ·
 [Harness and reproduction commands](../ibex_host_benchmark/README.md)
 
+## Physical-QoR and runtime settings · 2026-11-04
+
+`native-physical.json`, `native-routing.json`, the repair policy in
+[`../ibex_host_benchmark/compose_native.py`](../ibex_host_benchmark/compose_native.py)
+and the frontend and backend composers carry the settings below. They need
+RustROAD `3a2ef82` or later (electrostatic placement, the staggered tap
+lattice, seeded clock-tree re-placement, the track router's quality controls
+with post-route via reduction and strict wide-metal cycle cuts, and the
+`export-gds` shape and via styles), RustSTA `6a4547b` (`ruststa run
+--concurrent-corners`) built against RustEDA-Common `59af45f` (`rusteda import
+--lib-cache`), and RustSys `1ee999f`. Older builds reject
+`clock.seed_from_placement`, `tap.pattern.unpaired`, `track_router.qor`, the
+`export-gds` options `--merge-shapes` and `--vias` and the two STA options as
+unknown, so these files and the module pins change together.
+
+- **Placement.** `cell_spacing_sites` 2 (was 7, i.e. 2.94 µm between cells) and
+  the electrostatic global placer (`placer.electrostatic`: target density 0.6,
+  at most 200 iterations, 512 evaluations and 4 backtracks, 2 workers,
+  spacing-aware density). Its result does not depend on the worker count (a
+  unit test covers 1 to 5 workers; the Ibex placement is identical at 1, 2
+  and 3).
+- **Taps.** `tap.max_gap` 42 µm on a staggered lattice (phase 21 µm) with extra
+  taps on unpaired `cell_top` row edges: 5,934 taps instead of 13,923.
+  `contract.json` declares the same 42 µm (`native_tap_max_gap_um`), and
+  `qualify_native.py` pins that contract by hash (`CONTRACT_SHA256`), so the
+  file and the pin change together (`tests/test_recipe_pins.py`). The
+  foundry-first joint tap proof pins its own original T1 contract (30 µm,
+  `TAP_CONTRACT_SHA256`, frozen as `tests/fixtures/foundry_first_t1`) and the
+  T1 30 µm lattice; it rejects this recipe's contract and lattice, so it
+  remains a proof of the T1 configuration only.
+  `native_frontend_inputs.py` admits only the three lattices that have
+  latch-up evidence on this floorplan: 15 µm aligned, 28.98 µm staggered by
+  14.49 µm, and this one. Without the `cell_top` taps the 42 µm lattice leaves
+  LU.a boxes uncovered, so the margin is load-bearing. The foundry main deck
+  (shared `drc` gate) checks LU.b only; the shared `latchup` gate
+  (`tap_coverage_runner.py`, LU.a and LU.b, 20 µm, conservative box
+  certificate) checks both on every final GDS and fails on any box it cannot
+  prove. The maximal foundry deck (`signoff_latchup.py`, which includes LU.a)
+  is not part of the flow; it passed on the GDS of the first runs below. Both
+  checks fail on a copy of a final GDS with the taps of one 100 µm window
+  removed.
+- **Clock tree.** `clock.seed_from_placement`: the CTS re-placement starts from
+  the current placement.
+- **Routing.** Metal2 pin access, `via_cost` 2520, `wrong_way_factor` 3,
+  `heuristic_weight` 2 and `track_router.qor` (`prim_order`, `drop_portals`,
+  `net_aware_access`, `small_net_terminals` 10, `small_net_weight` 1,
+  `notch_bridge`, `strict_wide_cycles`, `via_reduction`). Metal2 access
+  needs `notch_bridge`. With vias priced higher (2520 instead of 1680) and
+  wrong-way steps lower (3 instead of 4), a short wrong-way Metal2 jog often
+  costs less than a pair of vias. Such jogs can close small loops through a
+  pin's own escape that cleanup fills into wide metal; `strict_wide_cycles`
+  cuts them (without it, routing the placement of the RustSys published on
+  2026-11-02 ends with an unresolved wide-metal pair). `via_reduction`
+  re-routes, after repair, every net with at most 10 terminals and at most
+  20 µm of routed wire per connection against the fixed metal of all others,
+  with vias at twice their price (5,040 DBU) and an admissible search capped
+  at 10,000 expansions per net, and keeps a route only when it removes vias
+  for at most 1.68 µm of extra wire each. In a post-route ECO it re-routes
+  only the nets the ECO routed; the nets kept from the prior routing stay as
+  they were (RustROAD `docs/routing-budget.md`).
+- **Repair margins.** `target_fanout` 9 against the SDC limit of 10
+  (`native_ecos.py` admits 2 to 9), `drv_margin` 0.15, `hold_drv_margin` 0.1.
+- **Frontend STA and ECO helpers.** Every `rusteda import` of the frontend
+  shares one compiled-Liberty cache (`--lib-cache`, `frontend/lib-cache`; the
+  imported workspaces are the same either way), `ruststa run` analyses the TT
+  and SS corners at once with one worker thread per corner
+  (`--concurrent-corners`; the same tables), and `native_ecos.py` reads the
+  run's digest cache (`--digest-cache`, `frontend/sha256-cache.json`) so that a
+  pinned input outside the run tree is hashed once per file version; the
+  frontend's validate step hashes every cached entry again. The Python helpers
+  memoize per-cell pin views and per-port labels. On the 2026-11-02 placement,
+  in eight interleaved frontend-only runs (load 0.9 to 1.8), the receipt's
+  frontend STA/ECO stage took a median 34.88 s (40.72 s CPU) against 53.51 s
+  (57.56 s CPU) before; the frontend outputs differed only in provenance
+  fields (argument lists, helper hashes, timings), not in netlists, timing
+  tables or ECO plans.
+- **GDS stream.** `be_gds` (and every export that must reproduce its bytes:
+  `qualify_native.py`'s early export, the foundry-first initial export) passes
+  `--merge-shapes rectangles --vias flat` (`native_backend.GDS_STYLE`): each
+  net's metal is written as maximal non-overlapping rectangles with its vias'
+  shapes instead of via cells. The geometry is the same as the default
+  stream's (a KLayout XOR is empty on all 38 layer/datatype pairs, labels
+  equal, on the layout of the earlier routing settings and on the final one).
+  On the layout of the earlier routing settings (first item below), on the
+  same machine load, the shared foundry main DRC took 0.71x LibreLane's wall
+  time and 0.75x its CPU time, antenna 0.76x/0.76x and LVS 0.70x/0.70x (3
+  interleaved repetitions; RustROAD `docs/gds-export.md`, "Downstream check
+  cost"), and the stream grew from 19.3 MB to 26.5 MB. On the final layout
+  (last item below), also 3 interleaved repetitions at the same load: main
+  DRC 0.72x/0.77x, antenna 0.74x/0.74x and LVS 0.73x/0.73x; its stream is
+  27.1 MB against 20.6 MB in the default style. RustROAD's default stays the
+  legacy stream, which its structural harnesses (`scripts/verify_gds.py`, the
+  rtl2gds via controls) need.
+- **Post-route order and foundry checks.** The default post-route order
+  screens the final extraction (see the post-route repair item above), and on
+  a four-CPU host the producer's foundry checks run as two concurrent lanes
+  ([optional concurrent signoff](#optional-concurrent-signoff)).
+
+Runs with the 2026-11-02 host setup (its prepared inputs and gate scripts plus
+the `latchup` gate; not published receipts), LibreLane's published values in
+brackets:
+
+- **Placement, taps, clock tree, margins and the earlier routing settings**
+  (`via_cost` 1680, `wrong_way_factor` 4, neither `strict_wide_cycles` nor
+  `via_reduction`), RustSys `7f3d3a4`, RustSTA (`ruststa`, `rusteda`) and
+  RustSpice at their 2026-11-04 heads before the STA options above, and the
+  configuration checker and pin-cap exporter as published:
+  187,585.2 µm² standard-cell area (197,913.7), 892,781.5 µm of routed signal
+  wire (969,571.6) and 130,729 vias (122,194), with 14,058 cells, 2,449
+  buffers, 5,934 taps and 52 antenna diodes. Every shared gate passed,
+  including `latchup` (LU.a and LU.b: 0 uncertified boxes); TT and SS timing
+  on native and OpenRCX SPEF had 0 setup, hold, slew, capacitance and fanout
+  violations; the producer completed all 119 steps, including
+  `timing_accuracy` (largest RustSTA/OpenSTA difference 0.07 ps). GDS, DEF,
+  all netlists and the native SPEF were byte-identical across two runs.
+  Against LibreLane, taps account for 4,090 µm² of the 10,329 µm² area
+  margin. With the RustSys published on 2026-11-02 instead, the same recipe
+  gave 194,337.8 µm², 930,481.4 µm and 138,914 vias, also with every gate
+  passing (the latch-up certificate then ran outside the gate script).
+- **Plus the routing settings above** (the via and wrong-way prices,
+  `strict_wide_cycles` and `via_reduction`): 187,585.2 µm² standard-cell area,
+  897,717.5 µm of routed signal wire and 118,610 vias (Via1 53,271, Via2
+  49,196, Via3 13,198, Via4 2,709, TopVia1 232, TopVia2 4), with the same
+  cells, buffers, taps and diodes. That is 2.9 % fewer vias than LibreLane as
+  a count but parity per connection (2.995 vias per connection against 3.024;
+  1.650 against 1.650 without Via1): the native netlist has fewer connections
+  (39,608 against 40,405) and the routing uses fewer Via1, while Via3 and Via4
+  remain 6.7 k and 1.6 k above LibreLane's. Route replays split the gain: the
+  via and wrong-way prices with `strict_wide_cycles` take `be_route` from
+  130,527 to 121,603 vias, and `via_reduction` to 118,424. Both trade vias for
+  wrong-way wire: 26.3 k µm in the final DEF, against 10.4 k µm before and
+  LibreLane's 17.3 k µm. Every shared gate passed, including `latchup`; TT and
+  SS timing on native and OpenRCX SPEF had 0 setup, hold, slew, capacitance
+  and fanout violations (OpenRCX TT setup worst slack 49.636 ns and hold
+  0.111 ns, against 49.628 ns and 0.110 ns before); the producer completed all
+  119 steps, including `timing_accuracy` (largest RustSTA/OpenSTA difference
+  0.17 ps). GDS, DEF, all netlists and the native SPEF were byte-identical
+  across three runs with two builds of the same RustROAD source. `be_route`
+  took 263.6 s (261.4 s CPU; producer load mean 1.9, max 2.8). In interleaved
+  route replays at load 2.3 to 3.8 it took 231 to 241 s with the earlier
+  routing settings and 279 to 294 s with these, about 47 s more CPU, most of
+  it from the new prices; the via-reduction pass itself takes about 10 s.
+- **All settings of this section together** (the routing settings, the
+  screened post-route order, the frontend STA options, the merged GDS stream
+  and the concurrent foundry checks), with RustROAD `3a2ef82`, RustSTA
+  `6a4547b`, RustSys `1ee999f`, RustEDA-Common `59af45f` and RustSpice
+  `0b557b5`, three complete runs: the DEF, all netlists and the native SPEF
+  are byte-identical to those of the previous item (same area, wire, vias,
+  cells, buffers, taps and diodes), and GDS, DEF, all netlists and the native
+  SPEF are byte-identical across the three runs (the OpenRCX SPEF, written by
+  OpenROAD, differs; every timing value read from it is equal). Every shared
+  gate passed, including `latchup`; the producer completed all 119 steps,
+  including `timing_accuracy` (0.17 ps). On OpenRCX SPEF the hold worst slack
+  is 0.111 ns at TT and 0.211 ns at SS (LibreLane: 0.172 ns and 0.312 ns),
+  with no setup, hold, slew, capacitance or fanout violation (LibreLane's
+  layout has capacitance and fanout violations). The producer took 669.0,
+  842.3 and 873.5 s at a load mean of 1.8, 1.9 and 1.6; with identical
+  outputs, the later runs spent 12 % to 65 % more CPU time in each stage
+  (apart from 0.2 s of renders), so the difference is the host, not the
+  work (LibreLane's flow: 2,444.8 s, on the host of 2026-11-02).
+
+  Stage seconds of the three runs, paired with LibreLane's published steps as
+  in [`docs/benchmarks.md`](../../docs/benchmarks.md) (LibreLane in
+  brackets): synthesis 3.4, 3.8 and 4.0 (110.6); placement and CTS 20.2, 23.9
+  and 25.4 (36.5); repair before detailed routing, the frontend STA and ECO
+  rounds, 27.7, 36.9 and 37.0 (39.9: the resizer row, which holds all four of
+  LibreLane's repair steps); routing 241.9, 294.5 and 304.9 (1,865.8); repair
+  after routing, post-route repair 5.3, 7.2 and 7.3 and antenna repair and
+  verification 11.8, 19.0 and 20.1 (no LibreLane row: its two repair steps
+  after global routing are in the resizer row); signoff timing 27.7, 34.8 and
+  34.7 (114.4); native extraction plus OpenRCX 10.7, 12.6 and 12.8 (fill,
+  RCX, IR drop and reports 34.7); export 1.6, 2.2 and 2.1 (230.7); the
+  producer's foundry DRC beside antenna then LVS, with the macro contract,
+  317.3, 404.2 and 422.0; renders and profiles 0.2 (none). Two parts lose:
+
+  - *Repair.* The frontend STA and ECO rounds plus post-route repair take
+    33.1, 44.0 and 44.3 s against the 39.9 s of LibreLane's four repair
+    steps, so the second and third runs are slower. On the same host and
+    load (5 interleaved repetitions each; LibreLane's four steps replayed as
+    a black box from their published inputs, DEF and netlist byte-identical
+    to the published ones), the frontend stage took a median 39.3 s (46.6 s
+    CPU) against 58.3 s for LibreLane's four steps (0.67x) and 24.3 s for its
+    two steps before global routing (1.61x). The frontend stage also holds
+    six full RustSTA runs that feed its ECO decisions (14.4 s in the third
+    run); LibreLane's separate STA reports are in its STA row.
+  - *OpenRCX.* `be_openrcx` runs the script of the shared `extraction` gate:
+    5.4, 6.8 and 6.8 s against 3.6 s for LibreLane's in-flow RCX step, and
+    1.40x to 1.44x LibreLane's layout in same-load interleaved gate runs
+    (median 6.96 s against 4.83 s; 6.24 s, 1.25x, on the layout of the
+    earlier routing settings). The final DEF has 198,956 wire segments,
+    against 172,586 before via reduction and LibreLane's 123,344.
+
+  Shared gates on the final layout against LibreLane's layout at the same
+  load (interleaved; 3 repetitions, 5 for gates under 10 s and for timing),
+  median wall time: foundry main DRC 0.72x, antenna 0.74x, LVS 0.73x,
+  simulation 0.73x, density 0.73x, timing 0.98x (parity: the ranges of the
+  two arms overlap), latch-up 1.10x (slower; it reads only the front-end
+  layers) and OpenRCX extraction 1.44x (slower). The logic gate has no
+  valid comparison: on LibreLane's layout its synthesis and final
+  equivalence do not complete (`unverified`, as in the published receipt). With the receipt's accounting (sv2v preparation,
+  producer, and the `latchup`, simulation, equivalence and density gates the
+  producer does not run), end to end took 753.3, 921.2 and 959.4 s against
+  LibreLane's 2,919.3 s with its shared DRC, antenna and LVS on the same
+  schedule: 3.88x, 3.17x and 3.04x (3.21x, 2.60x and 2.52x with both flows'
+  checks one after another).
+
+`timing_accuracy` passing is a property of these layouts, not a fix: the same
+RustSTA and OpenSTA binaries still differ by 1.405 ps in TT setup worst slack on
+the 2026-11-02 layout, against the 1 ps tolerance. The producer's own foundry
+DRC, antenna and LVS steps are the identical checks of the shared `drc`,
+`antenna` and `lvs` gates (same scripts, deck, rule selection, switches and
+GDS bytes; the DRC and antenna reports are byte-identical), so the receipt
+counts each check once (`make_receipt.py`, `producer_identical_checks`); its
+stage table counts `be_antenna`, the foundry antenna check, with foundry DRC
+and LVS, not with antenna repair.
+
 ## Optional concurrent signoff
 
 Set `parallel_signoff: true` in a new `rusteda.native-backend-inputs.v1`
@@ -233,6 +460,31 @@ complete independent report fields, retaining the unresolved database identity
 explicitly. See the [B4 handoff](../../docs/handoffs/2026-10-30-parallel-signoff.md)
 for raw roots, resource measurements, the unverified internal graph comparison
 and source-freeze guidance.
+
+On a four-CPU allocation (`threads: 4`, the campaign host) `parallel_signoff`
+selects a two-lane group over the foundry checks only: `be_main` on CPU slots
+0-1, and `be_antenna` followed by `be_lvs` on slots 2-3
+(`producer.signoff_parallel_group(4)`); OpenRCX and signoff timing stay serial
+before it, so `timing_accuracy` still gates the checks. Reservations are 2560
++ 2304 MiB (2560 + 2048 MiB while LVS runs) under the same 7168 MiB group cap.
+`compose_native.py` sets `parallel_signoff: true` on a four-thread host unless
+`host.json` sets it to false. In an interleaved replay of the three checks with
+this executor on the final Ibex stream (3 serial and 3 parallel samples, order
+alternated, 1-minute load 1.2 to 2.2), the median wall time fell from 687.6 s
+serial to 369.8 s parallel at 825.5 vs 816.8 s CPU; the parallel samples
+peaked at 2.92 GiB in the 8 GiB cgroup (the three checks alone), and every
+check passed in both modes. The whole producer's cgroup peak, page cache
+included, was 4,535,873,536 B and 5,400,031,232 B in two complete runs with
+the group against 4,156,129,280 B in one serial run, inside the 8 GiB limit.
+The checks keep their two-thread limits and decks; only their start times
+change, so a receipt that
+compares end-to-end times must charge LibreLane's shared checks on the same
+schedule (`make_receipt.py`, `end_to_end_seconds_native_check_schedule`).
+`native_flow.py` accepts a backend's parallel groups only when they equal
+`signoff_parallel_group(threads)` for that backend's allocation
+(`check_parallel_groups`; `tests/test_signoff_parallel_group.py`).
+`integration/verify_ihp_parallel_signoff.py` replays only the six-CPU B4
+group (it requires six CPUs and calls the default sixteen-CPU policy).
 
 ## Matched LibreLane reference
 

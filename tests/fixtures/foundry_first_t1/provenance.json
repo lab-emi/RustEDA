@@ -1,0 +1,15 @@
+{
+  "schema": "rusteda.first-party-compatibility-fixtures.v1",
+  "source_repository": "lab-emi/RustEDA",
+  "source_commit": "7bea0e320013289deee94682a4ec40dc64cd9276",
+  "scope": "own-source metadata recipe compatibility; not an EDA oracle",
+  "files": {
+    "contract.json": {
+      "source_path": "integration/ibex_sg13g2_ez130/contract.json",
+      "derivation": "source file (unchanged since 19c3f6e) with \"native_tap_max_gap_um\": 15 replaced by 30",
+      "pinned_by": "integration/ibex_sg13g2_ez130/native_flow.py TAP_CONTRACT (the original T1 contract of the joint tap proof)",
+      "sha256": "96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282",
+      "bytes": 5666
+    }
+  }
+}

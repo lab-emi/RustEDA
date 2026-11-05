@@ -105,6 +105,7 @@ Planner/apply/report time belongs to the caller's end-to-end measurement.
 import argparse
 import csv
 import fcntl
+import gc
 import hashlib
 import importlib.util
 import json
@@ -137,9 +138,96 @@ def number(value, *, positive=False):
     return value
 
 
-def sha(path):
+def sha_fresh(path):
+    """SHA-256 of the file's current content, always read in full."""
     with Path(path).open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+# Digests of this process, by resolved path: (identity, SHA-256). native_frontend_inputs.py
+# shares this dict and DIGEST_FLOW when it loads this module (one memo per process).
+DIGEST_MEMO = {}
+# The run's flow digest cache (--digest-cache, written by native_frontend_inputs.py): the
+# SHA-256 of pinned inputs outside the run tree by identity, or None.
+DIGEST_FLOW = None
+
+
+def file_identity(st):
+    return [st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns]
+
+
+# File systems whose file status is exact (local ones); only their files are memoized.
+LOCAL_FILE_SYSTEMS = {'ext2', 'ext3', 'ext4', 'xfs', 'btrfs', 'tmpfs', 'f2fs', 'zfs', 'overlay'}
+FILE_SYSTEMS = {}
+MOUNTINFO = '/proc/self/mountinfo'
+
+
+def local_file(st):
+    """Whether the file of status ST is on a local file system (LOCAL_FILE_SYSTEMS), by its
+    device in MOUNTINFO; False when that cannot be told."""
+    if st.st_dev not in FILE_SYSTEMS:
+        kind = None
+        try:
+            dev = f'{os.major(st.st_dev)}:{os.minor(st.st_dev)}'
+            with open(MOUNTINFO) as stream:
+                for line in stream:
+                    left, _, right = line.partition(' - ')
+                    if left.split()[2] == dev and right.split():
+                        kind = right.split()[0]
+                        break
+        except (OSError, IndexError):
+            kind = None
+        FILE_SYSTEMS[st.st_dev] = kind
+    return FILE_SYSTEMS[st.st_dev] in LOCAL_FILE_SYSTEMS
+
+
+def sha(path):
+    """SHA-256 of a file, hashed once per file version in this process; a pinned input outside
+    the run tree whose identity matches the run's flow digest cache is not hashed again. The
+    identity (device, inode, size, mtime_ns, ctime_ns) changes with every write, rename and
+    replacement, so a changed file is always hashed again; a file on a file system that is not
+    local is hashed every time. The final check that no input changed during planning/apply
+    reads every file again (sha_fresh), and the frontend's validate step hashes every entry of
+    the flow digest cache again."""
+    path = Path(path).resolve(); name = str(path); st = os.stat(path); key = file_identity(st)
+    if not local_file(st):
+        return sha_fresh(path)
+    hit = DIGEST_MEMO.get(name)
+    if hit is not None and hit[0] == key:
+        return hit[1]
+    flow = DIGEST_FLOW
+    if flow is not None and not path.is_relative_to(flow['root']):
+        entry = flow['entries'].get(name)
+        if entry is not None and entry['identity'] == key:
+            DIGEST_MEMO[name] = (key, entry['sha256'])
+            return entry['sha256']
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+        unchanged = file_identity(os.fstat(stream.fileno())) == key
+    if unchanged:
+        DIGEST_MEMO[name] = (key, digest)
+    return digest
+
+
+def load_digest_cache(path):
+    """The flow digest cache of native_frontend_inputs.py at PATH (read only here): used only
+    when it is a regular file at <root>/frontend/sha256-cache.json of the root it names."""
+    global DIGEST_FLOW
+    try:
+        path = Path(path)
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 4 << 20:
+            return
+        data = json.loads(path.read_text())
+        root = Path(data['root'])
+        if data.get('schema') != 'rusteda.frontend-digests.v1' or not root.is_absolute() or path.resolve() != root/'frontend'/'sha256-cache.json':
+            return
+        entries = {k: v for k, v in data['entries'].items()
+                   if isinstance(v, dict) and set(v) == {'identity', 'sha256'} and isinstance(v['identity'], list)
+                   and len(v['identity']) == 5 and all(type(x) is int for x in v['identity'])
+                   and isinstance(v['sha256'], str) and re.fullmatch('[0-9a-f]{64}', v['sha256'])}
+        DIGEST_FLOW = dict(root=root, entries=entries)
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        DIGEST_FLOW = None
 
 
 def read_json(path, cap):
@@ -160,6 +248,7 @@ class Inputs:
         require(self.manifest.get('schema') == 'rusteda.native-eco-inputs.v1', 'SCHEMA', 'input bundle schema')
         self.files, self.cache, self.work = {}, {}, 0
         self.report_identity = None
+        self.xxh3_memo = {}
         self.files[str(path.resolve())] = sha(path)
 
     def tick(self, count=1):
@@ -208,9 +297,16 @@ class Inputs:
         require(code == 0, 'NATIVE_CLI', f'{label} exited {code}; see retained stderr')
 
     def xxh3(self, path):
+        # One xxhsum run per file version in this process (by identity, as sha() memoizes).
+        st = os.stat(path)
+        key = (str(Path(path).resolve()), *file_identity(st)) if local_file(st) else None
+        if key in self.xxh3_memo:
+            return self.xxh3_memo[key]
         data = subprocess.check_output([str(self.tool('xxhsum')), '-H3', '--', str(path)], timeout=15, text=True)
         match = re.fullmatch(r'XXH3_([0-9a-fA-F]{16})[ \t]+[^\n]+\n?', data)
         require(match is not None, 'HASH_TOOL', 'unexpected XXH3-64 executable output')
+        if key is not None and (str(Path(path).resolve()), *file_identity(os.stat(path))) == key:
+            self.xxh3_memo[key] = 'xxh3:'+match[1].lower()
         return 'xxh3:'+match[1].lower()
 
     def report(self, corner, kind, timed, sdc):
@@ -289,7 +385,14 @@ def pin_views(inputs, corners):
                                            clock=clock == 'true', max_fanout=optional(fan_limit), direction=direction)
                     require(len(view) <= inputs.args.max_connections, 'BUDGET', 'pin-table budget')
         views[corner] = view
+    memo = {}
     def merged(cell, pin):
+        # The merged view of a (cell, pin) is the same every time: computed once, copied out.
+        hit = memo.get((cell, pin))
+        if hit is None:
+            hit = memo[cell, pin] = merge(cell, pin)
+        return dict(hit)
+    def merge(cell, pin):
         values = [views[c].get((cell, pin)) for c in corners]
         require(all(v is not None for v in values), 'PIN_TABLE', f'pin absent in a corner: {cell}/{pin}')
         require(len({v['direction'] for v in values}) == 1, 'PIN_TABLE', 'mixed pin directions')
@@ -304,10 +407,11 @@ def pin_views(inputs, corners):
 
 def bit_labels(name, definition):
     bits = definition['bits']
+    # offset, upto and is_bus are the same for every bit: read once.
+    count, offset, upto = len(bits), definition.get('offset', 0), definition.get('upto', 0)
+    bus = definition.get('is_bus', count > 1 or offset != 0 or upto)
     for index, bit in enumerate(bits):
-        offset = definition.get('offset', 0)
-        position = offset + (len(bits)-1-index if definition.get('upto', 0) else index)
-        bus = definition.get('is_bus', len(bits) > 1 or offset != 0 or definition.get('upto', 0))
+        position = offset + (count-1-index if upto else index)
         yield (f'{name}[{position}]' if bus else name), bit
 
 
@@ -343,28 +447,50 @@ class Graph:
         self.cells = self.top['cells']
         require(len(self.cells) <= inputs.args.max_cells, 'BUDGET', 'cell budget exceeded')
         self.loads, self.drivers, self.clock_bits, self.pin_bits, self.names = {}, {}, set(), {}, set()
-        count = 0
+        loads, drivers, clock_bits, pin_bits = self.loads, self.drivers, self.clock_bits, self.pin_bits
+        count, max_connections, max_work = 0, inputs.args.max_connections, inputs.args.max_work
+        # The pin labels of a port depend only on its cell type: labelled once per (type, port).
+        port_labels, checked = {}, {}
         for inst, cell in self.cells.items():
             self.names.add(inst)
+            kind = cell['type']
             for port, bits in cell['connections'].items():
-                definition = self.modules[cell['type']]['ports'][port]
-                require(len(bits) == len(definition['bits']), 'NETLIST', 'cell port width mismatch')
-                for (pin, _), bit in zip(bit_labels(port, definition), bits):
-                    inputs.tick(); count += 1
-                    require(count <= inputs.args.max_connections, 'BUDGET', 'connection budget exceeded')
+                labels = port_labels.get((kind, port))
+                if labels is None:
+                    definition = self.modules[kind]['ports'][port]
+                    labels = port_labels[kind, port] = [pin for pin, _ in bit_labels(port, definition)]
+                require(len(bits) == len(labels), 'NETLIST', 'cell port width mismatch')
+                # One work tick and one connection per bit, counted per port while both budgets
+                # hold for the whole port; otherwise bit by bit, so a budget fails where it did.
+                if inputs.work + len(bits) <= max_work and count + len(bits) <= max_connections:
+                    inputs.work += len(bits); count += len(bits); per_bit = False
+                else:
+                    per_bit = True
+                direction = None
+                for pin, bit in zip(labels, bits):
+                    if per_bit:
+                        inputs.tick(); count += 1
+                        require(count <= max_connections, 'BUDGET', 'connection budget exceeded')
                     if not isinstance(bit, int):
                         continue
-                    model = pins(cell['type'], pin)
-                    direction = cell['port_directions'][port]
-                    require(direction.lower() == model['direction'].lower(), 'NETLIST', 'JSON/Liberty direction mismatch')
-                    row = dict(instance=inst, pin=pin, cell=cell['type'], **model)
-                    self.pin_bits[inst, pin] = bit
-                    if direction == 'input': self.loads.setdefault(bit, []).append(row)
+                    if direction is None:
+                        direction = cell['port_directions'][port]
+                    # The pin model and its direction check depend only on (type, pin, direction).
+                    model = checked.get((kind, pin, direction))
+                    if model is None:
+                        model = pins(kind, pin)
+                        require(direction.lower() == model['direction'].lower(), 'NETLIST', 'JSON/Liberty direction mismatch')
+                        checked[kind, pin, direction] = model
+                    row = {'instance': inst, 'pin': pin, 'cell': kind, **model}
+                    pin_bits[inst, pin] = bit
+                    if direction == 'input':
+                        if bit in loads: loads[bit].append(row)
+                        else: loads[bit] = [row]
                     elif direction == 'output':
-                        require(bit not in self.drivers, 'NETLIST', 'multiple signal drivers')
-                        self.drivers[bit] = row
+                        require(bit not in drivers, 'NETLIST', 'multiple signal drivers')
+                        drivers[bit] = row
                     else: raise Failure('NETLIST', 'inout signal ECO unsupported')
-                    if model['clock']: self.clock_bits.add(bit)
+                    if model['clock']: clock_bits.add(bit)
         self.net_bits = {}
         require(len(self.top['netnames']) <= inputs.args.max_connections, 'BUDGET', 'net-name budget exceeded')
         for name, definition in self.top['netnames'].items():
@@ -411,7 +537,7 @@ class Planner:
         self.weights = {}; self.repaired = set()
         self.bus_rewrite = 'cell_buses' in inputs.manifest['profiles']
         self.fanout = int(policy['target_fanout']); self.fraction = number(policy['cap_fraction'], positive=True)
-        require(2 <= self.fanout <= 8 and self.fraction <= 1, 'POLICY', 'qualified fanout/cap bounds')
+        require(2 <= self.fanout <= 9 and self.fraction <= 1, 'POLICY', 'qualified fanout/cap bounds')
         self.prefix = handle(policy.get('prefix', 'native_eco'))
         self.buffers = {b['cell']: b for b in policy['buffers']}
         require(len(self.buffers) == len(policy['buffers']) <= 32, 'POLICY', 'buffer selection count')
@@ -1226,12 +1352,18 @@ def main():
     parser.add_argument('--workspace', type=Path, required=True); parser.add_argument('--base-rev', required=True)
     parser.add_argument('--inputs', type=Path, required=True); parser.add_argument('--policy', type=Path, required=True)
     parser.add_argument('--plan-only', action='store_true')
+    parser.add_argument('--digest-cache', type=Path, help='the run\'s flow digest cache (frontend/sha256-cache.json), read only')
     for name, default in [('memory-mib', 2048), ('max-operations', 4096), ('max-depth', 8), ('max-cells', 100000),
                           ('max-connections', 500000), ('max-rows', 200000), ('max-work', 10000000),
                           ('max-combinations', 200000), ('max-hold-chain', 4), ('max-total-hold-chain', 8),
                           ('timeout-seconds', 180)]:
         parser.add_argument('--'+name, type=int, default=default)
     args = parser.parse_args(); started = time.monotonic()
+    # A planner run builds large, acyclic JSON and graph structures that live to the end: the
+    # cyclic collector would traverse them again and again and free nothing (the peak RSS is the
+    # same), so it runs only every 100,000 allocations and almost never on the old generations.
+    gc.set_threshold(100_000, 50, 100)
+    if args.digest_cache is not None: load_digest_cache(args.digest_cache)
     require(all(0 < getattr(args, n) <= cap for n, cap in [('memory_mib', 4096), ('max_operations', 4096), ('max_depth', 8),
             ('max_cells', 100000), ('max_connections', 500000), ('max_rows', 200000), ('max_work', 100000000),
             ('max_combinations', 200000), ('max_hold_chain', 8), ('max_total_hold_chain', 8),
@@ -1351,16 +1483,16 @@ def main():
             if 'cell_buses' in bundle['profiles']:
                 cmd += ['--cell-buses', str(inputs.file(bundle['profiles']['cell_buses'], 2 << 20))]
             inputs.command(cmd, staging, 'apply-native')
-        require(all(sha(Path(p)) == h for p, h in inputs.files.items()), 'STALE_INPUT', 'an input changed during planning/apply')
+        require(all(sha_fresh(Path(p)) == h for p, h in inputs.files.items()), 'STALE_INPUT', 'an input changed during planning/apply')
         receipt = dict(schema='rusteda.native-eco-receipt.v1', rev='rev1', operation=args.operation,
-            planner_sha256=sha(Path(__file__)),
+            planner_sha256=sha_fresh(Path(__file__)),
             status='planned_unverified' if args.plan_only else 'applied_requires_retiming', scope=expected,
             corner_scopes={c: r['scope'] for c, r in zip(corners, reports)}, inputs=inputs.files,
             operations=len(planner.ops), checked=planner.checks, excluded=planner.excluded, extra=extra,
             budgets={k: v for k, v in vars(args).items() if k.startswith('max_') or k in ('memory_mib', 'timeout_seconds')},
             memory_estimate_bytes=estimate, work_units=inputs.work, elapsed_seconds=time.monotonic()-started,
-            peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, plan_sha256=sha(staging/'plan.json'),
-            netlist_sha256=sha(staging/'netlist.v') if (staging/'netlist.v').exists() else None,
+            peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, plan_sha256=sha_fresh(staging/'plan.json'),
+            netlist_sha256=sha_fresh(staging/'netlist.v') if (staging/'netlist.v').exists() else None,
             signoff={'CEC': 'unverified', 'DRC': 'unverified', 'LVS': 'unverified', 'post_edit_timing': 'unverified'})
         (staging/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
         for path in staging.iterdir(): os.replace(path, args.workspace/path.name)

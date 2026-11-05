@@ -7,7 +7,7 @@ import copy
 from pathlib import Path
 import unittest
 
-from integration.ibex_sg13g2_ez130 import native_flow, producer
+from integration.ibex_sg13g2_ez130 import native_backend, native_flow, producer
 from integration.ibex_sg13g2_ez130.foundry_first import freeze, protocol as p
 from tests import test_ihp_antenna_session as legacy
 
@@ -17,6 +17,8 @@ LOGIC_LIMITS, GATES = legacy.LOGIC_LIMITS, legacy.GATES
 class FoundryComposition(unittest.TestCase):
     def setUp(self):
         self.old = legacy.AntennaSessionProtocol()
+        # The capture/reuse protocol is bound to the earlier post-route order.
+        self.old.postroute_order = native_backend.LEGACY_ORDER
         self.old.setUp()
         self.root = self.old.root
         self.bundle = self.root / 'foundry-source'
@@ -106,6 +108,18 @@ class FoundryComposition(unittest.TestCase):
         self.assertEqual(len(exact['steps']), 128)
         with self.assertRaisesRegex(ValueError, 'STEP_BUDGET'):
             self.assembled(extra=extras + 1)
+
+    def test_screen_order_is_rejected_by_the_capture_protocol(self):
+        backend, _ = self.old.backend(order=native_backend.SCREEN_ORDER)
+        files = dict(backend['files'], **{name: self.old.marker for name in native_flow.FILES})
+        tools = dict(backend['tools'], **{name: self.old.marker for name in native_flow.TOOLS})
+        default = native_flow.assemble(copy.deepcopy(backend), files, tools, LOGIC_LIMITS)
+        self.assertEqual(self.old.by_id(default)['be_postroute_inputs']['content']['schema'],
+                         'rusteda.native-postroute-inputs.v2')
+        files.update(self.records)
+        files['foundry_first_sources'] = self.manifest
+        with self.assertRaisesRegex(ValueError, 'FOUNDRY_FIRST_POSTROUTE_ORDER'):
+            native_flow.assemble(backend, files, tools, LOGIC_LIMITS)
 
     def test_partial_bundle_and_boolean_policy_are_rejected(self):
         from integration.ibex_sg13g2_ez130.foundry_first import runner
