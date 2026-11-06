@@ -17,7 +17,7 @@ Results, scope and the module-by-module comparison are published on the
 ## Results · 2026-11-05
 
 One timed sample per flow on 4 vCPUs, with the committed recipe and engines of
-superproject `cf44eaa`. **RustEDA passes every shared gate that gives a
+superproject `397bfa6`. **RustEDA passes every shared gate that gives a
 pass/fail verdict; LibreLane fails the timing gate and leaves equivalence
 unverified, so the receipt's end-to-end ratios are null.** RustEDA's producer
 completed all 114 manifest steps in 888.896 s, including `timing_accuracy`
@@ -147,7 +147,7 @@ Each deviation applies to both flows unless stated otherwise.
      `native_flow.py`, `native_antenna.py`, `foundry_first/runner.py` and
      `qualify_native.py`. On 2026-11-02 the `antenna_session/` copies of
      `native_antenna.py` and `verify.py` needed the same edit; the repository
-     accepts 4 there since commit `534557a`, so the 2026-11-05 host copy no
+     accepts 4 there since commit `7e195cc`, so the 2026-11-05 host copy no
      longer patches them.
    - `build_rc_profile.py` accepts the explicit calibration rules path the
      composer passes.

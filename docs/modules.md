@@ -33,10 +33,10 @@ GPU-integrated RTL-to-GDS remains unchecked.
 The newest results are the 2026-11-05 host campaign: Ibex on SG13G2/EZ130 with
 two real SRAMs on a 4-vCPU cloud host, against LibreLane 3.0.17 on the same
 prepared inputs, plus module head-to-heads for RustSys, RustSTA, RustROAD and
-RustSpice. Its receipt lists the engine revisions that superproject `cf44eaa`
+RustSpice. Its receipt lists the engine revisions that superproject `397bfa6`
 pins (`engine_commits`) and identifies each executable by SHA-256; the native
 layout passes every shared gate that gives a pass/fail verdict, LibreLane's
-fails the timing gate, so no end-to-end ratio is published. The earlier 2026-11-02 host campaign is kept on the same page. In both campaigns each flow has one timed sample, the EZ130 tech LEF and cell
+fails the timing gate, so the receipt keeps its ratio fields null; divided, the recorded times give RustEDA a 4.2× shorter end-to-end time (3.4× with every check serial). The receipt's commit IDs predate the rewrite of the branch's commit metadata; [commit-map.json](benchmarks/commit-map.json) maps them to the current IDs. The earlier 2026-11-02 host campaign is kept on the same page. In both campaigns each flow has one timed sample, the EZ130 tech LEF and cell
 GDS are reconstructed, and the native run is `unqualified`; the benchmark page
 lists the tool and host deviations.
 

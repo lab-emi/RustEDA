@@ -3,9 +3,9 @@
 **2026-11-05 host campaign.** The Ibex SG13G2/EZ130 campaign was repeated with
 the current sources and is [published](benchmarks.md#ibex-host-campaign-2026-11-05)
 with its [receipt](benchmarks/ibex-sg13g2-ez130-host-20261105.json). Its
-`engine_commits` are the engine revisions that superproject `cf44eaa` pins:
-RustSys `1ee999fc71bb`, RustSTA `6a4547b854d3`, RustROAD `63d492d6dbd0`,
-RustSpice `0b557b5fce24` and RustEDA-Common `59af45f11cee`. Every engine was
+`engine_commits` are the engine revisions that superproject `397bfa6` pins:
+RustSys `86e59d816e6d`, RustSTA `35507399f3a2`, RustROAD `1921481c5f0f`,
+RustSpice `d4d6a5043af2` and RustEDA-Common `6668eecae9bb`. Every engine was
 built from those clean commits, and the receipt identifies each executable by
 SHA-256. These revisions are newer than the 2026-11-01 publication recorded in
 the table below.
@@ -23,7 +23,7 @@ RustROAD and RustSpice gitlinks to documentation-only commits that describe the
 campaign (table below); their engine sources are unchanged.
 
 For the 2026-11-02 publication the superproject recorded the following exact
-module versions (superproject `cf44eaa` pins the newer revisions of the
+module versions (superproject `397bfa6` pins the newer revisions of the
 2026-11-05 note above). Flow, CLI and
 workbench remain in `apps/`; no standalone application repositories or root
 Cargo workspace are restored. Original local experiments and historical evidence
@@ -32,10 +32,10 @@ are preserved.
 | Module | Published source | Current scope |
 | --- | --- | --- |
 | RustEDA-Common | [`06a9cdac2336`](https://github.com/lab-emi/RustEDA-Common/commit/06a9cdac2336b054b79b4d3647421dcae6cb6a1c) | SRAM-aware formats, connectivity export and f64 RC charge fitting |
-| RustSys | [`cf913e571502`](https://github.com/lab-emi/RustSys/commit/cf913e5715023337224f70422b3c5579fecb1c60) (sources of `0f8a2d80654d`, documentation updated) | Opaque SRAM preservation and bounded interface validation |
-| RustSTA | [`bfa7aa5fe4d8`](https://github.com/lab-emi/RustSTA/commit/bfa7aa5fe4d8408ea3752a82d4a94bb4762b5a02) (sources of `0c2bcc6a5395`, documentation updated) | Mixed libraries, global derates and deterministic parallel RC preparation |
-| RustROAD | [`f844cb819f3c`](https://github.com/lab-emi/RustROAD/commit/f844cb819f3c599f396944cd0d952b1b01aa6717) (sources of `07e1626f220e`, documentation updated) | Spacing-aware placement, bounded routing/extraction and tap/antenna work |
-| RustSpice | [`1d190789caa2`](https://github.com/lab-emi/RustSpice/commit/1d190789caa2466713a84b3bf8277cac9b24add2) (sources of `cc2426f3e6cb`, documentation updated) | Adaptive simulation, supported device kernels and current accuracy scope |
+| RustSys | [`03bb75e5fbd9`](https://github.com/lab-emi/RustSys/commit/03bb75e5fbd9835aea01b1a75eca2eea4fd9964d) (sources of `0f8a2d80654d`, documentation updated) | Opaque SRAM preservation and bounded interface validation |
+| RustSTA | [`9996cf113604`](https://github.com/lab-emi/RustSTA/commit/9996cf1136046842c68ae22456f6f6d6278a5d50) (sources of `0c2bcc6a5395`, documentation updated) | Mixed libraries, global derates and deterministic parallel RC preparation |
+| RustROAD | [`6c2602c1ed97`](https://github.com/lab-emi/RustROAD/commit/6c2602c1ed974406c52f14f424dfeb4084c83b7f) (sources of `07e1626f220e`, documentation updated) | Spacing-aware placement, bounded routing/extraction and tap/antenna work |
+| RustSpice | [`96328622a692`](https://github.com/lab-emi/RustSpice/commit/96328622a6925226e4bdb8389399348b65c8dcd6) (sources of `cc2426f3e6cb`, documentation updated) | Adaptive simulation, supported device kernels and current accuracy scope |
 
 The isolated publication checks pass **1,955 Rust tests** with 55 ignored,
 and 311 Python controls with nine skipped. Ignored/skipped checks are not

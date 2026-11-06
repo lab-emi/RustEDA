@@ -211,7 +211,7 @@ reach R20/R21's QoR; those recipe inputs are not in the repository
 
 ## Host campaign · 2026-11-05
 
-The committed recipe (superproject `cf44eaa`, with every setting of the next
+The committed recipe (superproject `397bfa6`, with every setting of the next
 section) ran through [`../ibex_host_benchmark/final_campaign.sh`](../ibex_host_benchmark/README.md)
 on a 4-vCPU cloud host beside LibreLane 3.0.17 Classic, from freshly prepared
 inputs and with every engine built from its pinned commit. Results, receipt and
@@ -247,12 +247,12 @@ method: [benchmark page](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host
 `native-physical.json`, `native-routing.json`, the repair policy in
 [`../ibex_host_benchmark/compose_native.py`](../ibex_host_benchmark/compose_native.py)
 and the frontend and backend composers carry the settings below. They need
-RustROAD `3a2ef82` or later (electrostatic placement, the staggered tap
+RustROAD `0bbf81c` or later (electrostatic placement, the staggered tap
 lattice, seeded clock-tree re-placement, the track router's quality controls
 with post-route via reduction and strict wide-metal cycle cuts, and the
-`export-gds` shape and via styles), RustSTA `6a4547b` (`ruststa run
---concurrent-corners`) built against RustEDA-Common `59af45f` (`rusteda import
---lib-cache`), and RustSys `1ee999f`. Older builds reject
+`export-gds` shape and via styles), RustSTA `3550739` (`ruststa run
+--concurrent-corners`) built against RustEDA-Common `6668eec` (`rusteda import
+--lib-cache`), and RustSys `86e59d8`. Older builds reject
 `clock.seed_from_placement`, `tap.pattern.unpaired`, `track_router.qor`, the
 `export-gds` options `--merge-shapes` and `--vias` and the two STA options as
 unknown, so these files and the module pins change together.
@@ -436,7 +436,7 @@ brackets:
 
 - **Placement, taps, clock tree, margins and the earlier routing settings**
   (`via_cost` 1680, `wrong_way_factor` 4, neither `strict_wide_cycles` nor
-  `via_reduction`), RustSys `7f3d3a4`, RustSTA (`ruststa`, `rusteda`) and
+  `via_reduction`), RustSys `901517b`, RustSTA (`ruststa`, `rusteda`) and
   RustSpice at their 2026-11-04 heads before the STA options above, and the
   configuration checker and pin-cap exporter as published:
   187,585.2 µm² standard-cell area (197,913.7), 892,781.5 µm of routed signal
@@ -476,9 +476,9 @@ brackets:
   it from the new prices; the via-reduction pass itself takes about 10 s.
 - **All settings of this section together** (the routing settings, the
   screened post-route order, the frontend STA options, the merged GDS stream
-  and the concurrent foundry checks), with RustROAD `3a2ef82`, RustSTA
-  `6a4547b`, RustSys `1ee999f`, RustEDA-Common `59af45f` and RustSpice
-  `0b557b5`, three complete runs: the DEF, all netlists and the native SPEF
+  and the concurrent foundry checks), with RustROAD `0bbf81c`, RustSTA
+  `3550739`, RustSys `86e59d8`, RustEDA-Common `6668eec` and RustSpice
+  `d4d6a50`, three complete runs: the DEF, all netlists and the native SPEF
   are byte-identical to those of the previous item (same area, wire, vias,
   cells, buffers, taps and diodes), and GDS, DEF, all netlists and the native
   SPEF are byte-identical across the three runs (the OpenRCX SPEF, written by
@@ -539,7 +539,7 @@ brackets:
   checks one after another).
 
 - **Plus `dedupe_vias` and `straighten`** (two passes, `turn_at_ends`, no
-  re-route; RustROAD `661c045`, the other binaries as in the previous item),
+  re-route; RustROAD `c7471d7`, the other binaries as in the previous item),
   two complete runs with byte-identical GDS, DEF, netlists and native SPEF:
   118,525 vias (Via1 53,239, Via2 49,179, Via3 13,170, Via4 2,701, TopVia1
   232, TopVia2 4) against 118,610, 897,357.3 µm of routed signal wire against

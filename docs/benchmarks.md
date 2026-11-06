@@ -2,11 +2,55 @@
 
 This page holds four Ibex result sets for RustEDA and its modules, newest first: the [host campaign of 2026-11-05](#ibex-host-campaign-2026-11-05), which runs the current RustEDA recipe and engines against LibreLane on a 4-vCPU cloud host, with module head-to-heads and same-load reruns; the [host campaign of 2026-11-02](#ibex-host-campaign-2026-11-02), the first such campaign on another host; the [R20/R21 native development runs of 2026-11-01](#latest-native-development-results-2026-11-01); and the [historical matched comparison of 2026-10-30](#historical-matched-comparison-2026-10-30). Each set names its own host, inputs and schedule, and times from different hosts are not comparable. The target is Ibex on the IHP SG13G2 process, using the EZ130 standard-cell library and **two real SRAM macros**. EZ130 is a cell library for SG13G2, not a separate process.
 
+## At a glance · 2026-11-05
+
+Ibex RTL-to-GDS on IHP SG13G2 with EZ130 cells and two SRAM macros, 2026-11-05: RustEDA and LibreLane 3.0.17 (OpenROAD, Yosys, KLayout, Magic, Netgen) ran one after the other on the same 4-vCPU host from the same prepared inputs, and the same signoff scripts checked both layouts. Commit IDs that receipts and evidence recorded before 2026-11-06 refer to the history before its commit metadata was rewritten; [commit-map.json](benchmarks/commit-map.json) maps each to its current ID (file contents are identical).
+
+**4.2× faster end to end** (974 s against 4,105 s with both flows' foundry
+checks on the same schedule; 3.4× with every check run one after another), with a
+**5.2 % smaller, 7.4 % shorter-wired layout, 3.0 % fewer vias and zero timing
+violations** where LibreLane's layout has 112.
+
+| Stage | RustEDA | LibreLane | RustEDA |
+| --- | ---: | ---: | ---: |
+| Synthesis | 3.48 s | 132.63 s | **38.1× faster** |
+| Placement and clock tree | 28.00 s | 47.05 s | **1.7× faster** |
+| Repair before detailed routing | 26.04 s | 52.36 s | **2.0× faster** |
+| Routing, global and detailed | 302.24 s | 2,570.19 s | **8.5× faster** |
+| Static timing in the flow | 35.42 s | 183.31 s | **5.2× faster** |
+| Parasitic extraction | 13.08 s | 47.73 s | **3.6× faster** |
+| GDS / DEF / netlist export | 2.09 s | 351.18 s | **168× faster** |
+| Foundry DRC / antenna / LVS on each layout¹ | 403 / 198 / 147 s | 534 / 254 / 207 s | **1.3× / 1.3× / 1.4× faster** |
+| Whole flow² | 888.90 s | 3,409.11 s | **3.8× faster** |
+| **End to end** (flow + every signoff check) | **974.19 s** | **4,104.97 s** | **4.2× faster** |
+
+| Quality of results | RustEDA | LibreLane | RustEDA |
+| --- | ---: | ---: | ---: |
+| Standard-cell area | 187,585.2 µm² | 197,913.7 µm² | **5.2 % smaller** |
+| Routed signal wirelength | 897,357.3 µm | 969,571.6 µm | **7.4 % shorter** |
+| Vias | 118,525 | 122,194 | **3.0 % fewer** |
+| Capacitance / fanout violations, TT + SS | 0 | 112 | **timing-clean** |
+| Setup worst slack, TT / SS | 49.64 / 49.44 ns | 48.60 / 47.84 ns | **+1.03 / +1.60 ns** |
+| Synthesis and final equivalence | proven | unverified | **proven** |
+
+| Module against its open-source counterpart | Speed | Peak memory | Quality |
+| --- | --- | --- | --- |
+| RustSys vs Yosys + ABC (LibreLane script) | **35.4× faster** (44.4× in direct mode) | **6.6× less** | 1.8 % less area, logic depth 36 vs 40, equivalence proven |
+| RustSTA vs OpenSTA | **1.6× faster** at 2 threads, **2.0×** at 4 | 17.8 % / 6.3 % less | worst slacks within 0.164 ps |
+| RustROAD routing vs OpenROAD (in the flow) | **8.5× faster** | — | 7.4 % less wire, 3.0 % fewer vias |
+| RustROAD GDS export vs KLayout | **2.3× faster** | **2.0× less** | — |
+| RustSpice vs ngspice-45 (extracted RC nets) | **4.3–6.0× faster** | **1.4–2.0× less** | closer to the reference in all 10 cases |
+
+¹ Same scripts and decks on both layouts, interleaved runs at the same load (medians).
+² RustEDA's flow time includes its own foundry DRC, antenna and LVS; LibreLane's does not.
+
+LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. RustEDA is not faster everywhere: its repair before global routing takes 1.18× LibreLane's two pre-route resizer steps alone, OpenRCX runs 1.36× longer on RustEDA's DEF, and the latch-up check 1.11× longer on its layout. [All stages, gates and losses](#ibex-host-campaign-2026-11-05)
+
 ## Ibex host campaign · 2026-11-05
 
-The repository's current native recipe and engines (superproject `cf44eaa`:
-RustSys `1ee999f`, RustSTA `6a4547b`, RustROAD `63d492d`, RustSpice `0b557b5`,
-RustEDA-Common `59af45f`) and LibreLane 3.0.17 Classic ran again on a 4-vCPU
+The repository's current native recipe and engines (superproject `397bfa6`:
+RustSys `86e59d8`, RustSTA `3550739`, RustROAD `1921481`, RustSpice `d4d6a50`,
+RustEDA-Common `6668eec`) and LibreLane 3.0.17 Classic ran again on a 4-vCPU
 cloud host from the same prepared RTL, SDC and floorplan contract, one timed
 sample per flow, and the same nine independent gate scripts checked both final
 layouts. **RustEDA's producer completed all 114 manifest steps, including the
@@ -20,8 +64,8 @@ the timing gate on 28 (TT) and
 24 (SS) maximum-capacitance and 30 fanout violations, with setup and hold met,
 and its equivalence stays `unverified` (433 renamed registers the checker cannot
 name-match). Under the publication rule the receipt's status is
-`comparison_incomplete` and its ratios are null, so this section states the two
-end-to-end times with their scope and forms no end-to-end speedup or QoR ratio.
+`comparison_incomplete` and its ratio fields are null; the [summary above](#at-a-glance-2026-11-05) divides the
+recorded times instead, with that condition stated.
 The native run is still `unqualified`: the component-qualification evidence
 that the sixteen-gate composer needs is not published.
 
@@ -283,7 +327,8 @@ The recipe's export now writes merged rectangles and flat vias.
 #### RustROAD place, CTS and route vs OpenROAD · 2026-11-05
 
 From the two flows above; the netlists and the repair around each stage differ,
-so this is not an identical-task comparison and no quotient is formed.
+so this is not an identical-task comparison; the summary at the top pairs these
+stages by phase.
 
 | | RustROAD (native recipe) | OpenROAD 26Q3 (LibreLane Classic) |
 | --- | --- | --- |
@@ -382,7 +427,7 @@ Every stage or gate where RustEDA is not faster, or not better, in this campaign
 - **Flow memory** (cgroup peak): the producer's cgroup, page cache included,
   peaked at 4.43 GiB against LibreLane's 3.64 GiB, while its largest process
   (2.15 GiB) stayed below LibreLane's (2.22 GiB).
-- **Not compared.** The receipt forms no end-to-end ratio, because LibreLane
+- **Receipt ratios.** The receipt keeps its ratio fields null, because LibreLane
   fails the timing gate and its equivalence is unverified; LibreLane's floorplan, checks and IR-drop steps have no
   native counterpart in the stage table.
 
@@ -455,7 +500,7 @@ has no 2026-11-02 time, and LibreLane's end-to-end time now includes it
   caps: RustEDA producer 8 GiB RAM plus a 2 GiB swap allowance in memory+swap
   accounting, LibreLane flow 10 GiB RAM, shared gates 8 GiB on both layouts.
 - **Binaries.** Every engine was built from the commits pinned by superproject
-  `cf44eaa` with clean module checkouts, offline and `--locked`, into the
+  `397bfa6` with clean module checkouts, offline and `--locked`, into the
   target directories the harness names (rustc 1.97.1). RustSys, RustSTA and the
   pin-cap exporter are byte-identical to the binaries of the pre-campaign
   integration runs; the receipt identifies each executable by SHA-256.
@@ -481,7 +526,7 @@ has no 2026-11-02 time, and LibreLane's end-to-end time now includes it
 - **Tools.** Unchanged nixpkgs builds: OpenROAD 26Q3 (with OpenSTA 3.1.0 and
   OpenRCX), Yosys 0.70, KLayout 0.30.12, Magic 8.3.689, Netgen 1.5.325, Icarus
   Verilog 13.0, ngspice-45 and sv2v 0.0.13.1; LibreLane 3.0.17 from PyPI.
-- **Native composition.** The repository recipe at `cf44eaa`, composed by
+- **Native composition.** The repository recipe at `397bfa6`, composed by
   `compose_native.py` with every file and tool pinned by path, SHA-256 and size,
   the grouped single-process antenna session, RustROAD route, extraction,
   post-route repair and antenna repair at `--threads 4`, frontend placement and

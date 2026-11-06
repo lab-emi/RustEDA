@@ -61,7 +61,7 @@ provenance remain authoritative; publication is not a legal certification.
 
 ## Ibex host campaign · 2026-11-05
 
-The current native recipe (superproject `cf44eaa`) and LibreLane 3.0.17 Classic
+The current native recipe (superproject `397bfa6`) and LibreLane 3.0.17 Classic
 built Ibex with two real SRAMs on a 4-vCPU Xeon cloud host (15.7 GiB RAM) from
 the same prepared inputs; the same nine independent gate scripts checked both
 final layouts. Each flow has one timed sample.
