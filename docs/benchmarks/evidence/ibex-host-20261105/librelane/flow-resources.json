@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.host-measured-run.v1",
+  "name": "librelane",
+  "command": "ll-final/run.sh",
+  "started": "2026-11-05T19:36:17+00:00",
+  "wall_seconds": 3409.108,
+  "exit_code": 0,
+  "gnu_time_max_rss_kib": 2331184,
+  "cgroup_v1_memory_max_usage_bytes": 3909816320,
+  "cgroup_v1_memsw_max_usage_bytes": 3909816320,
+  "cgroup_v1_failcnt": 0,
+  "cgroup_limit_bytes": 10737418240,
+  "sampled_peak_total_rss_bytes": 2440089600,
+  "loadavg_1m_mean": 2.98,
+  "loadavg_1m_max": 4.12,
+  "samples": 679,
+  "cpus_online": 4
+}

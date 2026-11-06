@@ -31,13 +31,14 @@ published benchmark is the [Ibex SG13G2/EZ130 campaign](benchmarks.md).
 ## Known limits
 
 - The Ibex SG13G2/EZ130 results cover one design: R20/R21 are two runs on one
-  host, and the 2026-11-02 host campaign is one timed sample per flow. They do
+  host, and the 2026-11-02 and 2026-11-05 host campaigns are one timed sample per
+  flow each. They do
   not qualify other designs, SRAM configurations or the IHP `sg13g2_stdcell`
   library.
-- The 2026-11-02 host reproduction is `unqualified` because its native recipe was
-  composed without component-qualification evidence. Separately, its
-  RustSTA/OpenSTA parity exceeded 1 ps, and its EZ130 tech LEF and cell GDS are
-  reconstructed.
+- The host campaigns are `unqualified` because their native recipe was composed
+  without component-qualification evidence, and their EZ130 tech LEF and cell
+  GDS are reconstructed. On 2026-11-02 the RustSTA/OpenSTA parity also exceeded
+  1 ps on that layout; on 2026-11-05 it passed (0.164 ps).
 - The R20/R21 recipe inputs are not published, so R20/R21 cannot be reproduced
   from the repository.
 - The independent equivalence checker cannot name-match registers that a flow
@@ -57,6 +58,42 @@ published benchmark is the [Ibex SG13G2/EZ130 campaign](benchmarks.md).
 Public benchmark and oracle records retain their original identities and scope.
 Local planning notes do not replace those records. Licenses, notices and design
 provenance remain authoritative; publication is not a legal certification.
+
+## Ibex host campaign · 2026-11-05
+
+The current native recipe (superproject `cf44eaa`) and LibreLane 3.0.17 Classic
+built Ibex with two real SRAMs on a 4-vCPU Xeon cloud host (15.7 GiB RAM) from
+the same prepared inputs; the same nine independent gate scripts checked both
+final layouts. Each flow has one timed sample.
+
+**Native scope.** Composed without the unpublished component-qualification
+evidence, the eight derived qualification gates were not produced and the run
+is `unqualified`. The producer completed all 114 manifest steps, including the
+RustSTA/OpenSTA parity gate and its own foundry DRC, antenna DRC, LVS and macro
+contract, which the receipt verified to be the identical checks of the shared
+gates.
+
+| Gate | RustEDA | LibreLane 3.0.17 |
+| --- | --- | --- |
+| Foundry main DRC (`recommended` rules disabled) / antenna DRC | `passed`, 0 / 0 | `passed`, 0 / 0 |
+| Latch-up tap coverage, LU.a / LU.b (20 µm) | `passed`, 0 / 0 uncertified boxes | `passed`, 0 / 0 uncertified boxes |
+| OpenRCX extraction (SPEF for the timing gate) | `extracted_not_qualified` (no pass/fail verdict) | `extracted_not_qualified` (no pass/fail verdict) |
+| Full-device LVS | `passed` | `passed` |
+| Timing on OpenRCX SPEF, TT and SS | `passed`; 0 setup, hold, slew, capacitance and fanout violations | `failed`; setup and hold met; 28 / 24 capacitance and 30 / 30 fanout violations (TT / SS) |
+| Vendor-model simulation | `passed` | `passed` |
+| Synthesis / final equivalence | `proven` / `proven` | `unverified` / `unverified` |
+| Final density, cap 70 % | `passed`, 26.67 % | `passed`, 28.14 % |
+| RustSTA/OpenSTA parity on identical SPEF, 1 ps | `passed`, 0.164 ps | not evaluated |
+
+LibreLane's equivalence is `unverified` because the checker cannot name-match
+433 renamed registers to the RTL; this is a checker limitation, not evidence of
+non-equivalence. The deviations are those of 2026-11-02 below, on a different
+and slower virtual machine (Xeon @ 2.80 GHz). LibreLane fails a gate, so the
+receipt's end-to-end ratios are null.
+
+[Host campaign results](benchmarks.md#ibex-host-campaign-2026-11-05) ·
+[Receipt](benchmarks/ibex-sg13g2-ez130-host-20261105.json) ·
+[Harness and deviations](../integration/ibex_host_benchmark/README.md)
 
 ## Ibex host campaign · 2026-11-02
 
@@ -113,6 +150,7 @@ extra tap proof binds the actual maximal/coverage processes, complete LU.a/LU.b
 categories and immutable GDS. The publication retains original reports by SHA-256
 and does not rerun or relabel failed attempts. The original qualifier’s benchmark
 field remains `unverified`: no matched reference campaign was run for R20/R21.
-The 2026-11-02 host campaign used the run16-class recipe on another host.
+The 2026-11-02 host campaign used the run16-class recipe on another host; the
+2026-11-05 host campaign used the current recipe.
 
 [Latest measurement scope and evidence](benchmarks.md#latest-native-development-results-2026-11-01)

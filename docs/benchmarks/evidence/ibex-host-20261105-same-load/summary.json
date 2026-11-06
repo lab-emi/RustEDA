@@ -1,0 +1,750 @@
+{
+ "schema": "rusteda.ibex-host-same-load-ab.v1",
+ "campaign": "Ibex host campaign 2026-11-05 (receipt docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json)",
+ "method": "interleaved same-session runs on the campaign host after the timed campaign; arm order alternates per repetition; each run (gates) or each repetition pair (repair) held an exclusive host lock, so no other measured job ran at the same time and both arms saw the same load; medians are reported, with min and max; a total over several LibreLane steps is the median of the per-repetition sums",
+ "gates": {
+  "extraction": {
+   "native_wall": {
+    "n": 5,
+    "median": 6.566,
+    "min": 6.346,
+    "max": 6.744,
+    "values": [
+     6.346,
+     6.542,
+     6.566,
+     6.693,
+     6.744
+    ]
+   },
+   "librelane_wall": {
+    "n": 5,
+    "median": 4.837,
+    "min": 4.582,
+    "max": 5.04,
+    "values": [
+     4.582,
+     4.813,
+     4.837,
+     4.887,
+     5.04
+    ]
+   },
+   "native_cpu": {
+    "n": 5,
+    "median": 6.37,
+    "min": 6.22,
+    "max": 6.48,
+    "values": [
+     6.22,
+     6.35,
+     6.37,
+     6.47,
+     6.48
+    ]
+   },
+   "librelane_cpu": {
+    "n": 5,
+    "median": 4.67,
+    "min": 4.46,
+    "max": 4.96,
+    "values": [
+     4.46,
+     4.63,
+     4.67,
+     4.69,
+     4.96
+    ]
+   },
+   "native_peak_rss_kib": 211436,
+   "librelane_peak_rss_kib": 203328,
+   "load_before_1m": {
+    "min": 0.47,
+    "max": 1.0
+   },
+   "native_over_librelane_median_wall": 1.357,
+   "native_over_librelane_median_cpu": 1.364,
+   "ranges_overlap": false,
+   "verdict": "loss"
+  },
+  "timing": {
+   "native_wall": {
+    "n": 5,
+    "median": 27.898,
+    "min": 26.974,
+    "max": 30.007,
+    "values": [
+     26.974,
+     27.442,
+     27.898,
+     28.717,
+     30.007
+    ]
+   },
+   "librelane_wall": {
+    "n": 5,
+    "median": 29.137,
+    "min": 28.028,
+    "max": 29.638,
+    "values": [
+     28.028,
+     28.781,
+     29.137,
+     29.489,
+     29.638
+    ]
+   },
+   "native_cpu": {
+    "n": 5,
+    "median": 32.75,
+    "min": 31.84,
+    "max": 35.25,
+    "values": [
+     31.84,
+     32.32,
+     32.75,
+     33.56,
+     35.25
+    ]
+   },
+   "librelane_cpu": {
+    "n": 5,
+    "median": 34.49,
+    "min": 32.95,
+    "max": 34.79,
+    "values": [
+     32.95,
+     33.85,
+     34.49,
+     34.78,
+     34.79
+    ]
+   },
+   "native_peak_rss_kib": 168004,
+   "librelane_peak_rss_kib": 182284,
+   "load_before_1m": {
+    "min": 0.59,
+    "max": 1.08
+   },
+   "native_over_librelane_median_wall": 0.957,
+   "native_over_librelane_median_cpu": 0.95,
+   "ranges_overlap": true,
+   "verdict": "parity"
+  },
+  "latchup": {
+   "native_wall": {
+    "n": 5,
+    "median": 50.537,
+    "min": 49.58,
+    "max": 52.768,
+    "values": [
+     49.58,
+     50.451,
+     50.537,
+     51.345,
+     52.768
+    ]
+   },
+   "librelane_wall": {
+    "n": 5,
+    "median": 45.47,
+    "min": 44.509,
+    "max": 46.738,
+    "values": [
+     44.509,
+     45.13,
+     45.47,
+     46.63,
+     46.738
+    ]
+   },
+   "native_cpu": {
+    "n": 5,
+    "median": 50.15,
+    "min": 49.23,
+    "max": 52.32,
+    "values": [
+     49.23,
+     50.12,
+     50.15,
+     50.97,
+     52.32
+    ]
+   },
+   "librelane_cpu": {
+    "n": 5,
+    "median": 45.21,
+    "min": 44.29,
+    "max": 46.42,
+    "values": [
+     44.29,
+     44.85,
+     45.21,
+     46.33,
+     46.42
+    ]
+   },
+   "native_peak_rss_kib": 600716,
+   "librelane_peak_rss_kib": 580120,
+   "load_before_1m": {
+    "min": 0.94,
+    "max": 1.05
+   },
+   "native_over_librelane_median_wall": 1.111,
+   "native_over_librelane_median_cpu": 1.109,
+   "ranges_overlap": false,
+   "verdict": "loss"
+  },
+  "simulation": {
+   "native_wall": {
+    "n": 5,
+    "median": 5.237,
+    "min": 4.835,
+    "max": 5.642,
+    "values": [
+     4.835,
+     5.187,
+     5.237,
+     5.238,
+     5.642
+    ]
+   },
+   "librelane_wall": {
+    "n": 5,
+    "median": 7.948,
+    "min": 7.102,
+    "max": 8.806,
+    "values": [
+     7.102,
+     7.7,
+     7.948,
+     8.049,
+     8.806
+    ]
+   },
+   "native_cpu": {
+    "n": 5,
+    "median": 5.19,
+    "min": 4.87,
+    "max": 5.66,
+    "values": [
+     4.87,
+     5.15,
+     5.19,
+     5.23,
+     5.66
+    ]
+   },
+   "librelane_cpu": {
+    "n": 5,
+    "median": 7.96,
+    "min": 7.17,
+    "max": 8.82,
+    "values": [
+     7.17,
+     7.75,
+     7.96,
+     8.1,
+     8.82
+    ]
+   },
+   "native_peak_rss_kib": 245708,
+   "librelane_peak_rss_kib": 307916,
+   "load_before_1m": {
+    "min": 0.87,
+    "max": 1.16
+   },
+   "native_over_librelane_median_wall": 0.659,
+   "native_over_librelane_median_cpu": 0.652,
+   "ranges_overlap": false,
+   "verdict": "win"
+  },
+  "density": {
+   "native_wall": {
+    "n": 5,
+    "median": 0.211,
+    "min": 0.205,
+    "max": 0.213,
+    "values": [
+     0.205,
+     0.206,
+     0.211,
+     0.212,
+     0.213
+    ]
+   },
+   "librelane_wall": {
+    "n": 5,
+    "median": 0.257,
+    "min": 0.255,
+    "max": 0.268,
+    "values": [
+     0.255,
+     0.257,
+     0.257,
+     0.267,
+     0.268
+    ]
+   },
+   "native_cpu": null,
+   "librelane_cpu": null,
+   "native_peak_rss_kib": null,
+   "librelane_peak_rss_kib": null,
+   "load_before_1m": {
+    "min": 0.71,
+    "max": 1.05
+   },
+   "native_over_librelane_median_wall": 0.821,
+   "native_over_librelane_median_cpu": null,
+   "ranges_overlap": false,
+   "verdict": "win"
+  },
+  "lvs": {
+   "native_wall": {
+    "n": 3,
+    "median": 147.145,
+    "min": 144.029,
+    "max": 155.158,
+    "values": [
+     144.029,
+     147.145,
+     155.158
+    ]
+   },
+   "librelane_wall": {
+    "n": 3,
+    "median": 207.094,
+    "min": 206.202,
+    "max": 210.204,
+    "values": [
+     206.202,
+     207.094,
+     210.204
+    ]
+   },
+   "native_cpu": {
+    "n": 3,
+    "median": 145.34,
+    "min": 142.82,
+    "max": 154.08,
+    "values": [
+     142.82,
+     145.34,
+     154.08
+    ]
+   },
+   "librelane_cpu": {
+    "n": 3,
+    "median": 205.12,
+    "min": 204.23,
+    "max": 208.58,
+    "values": [
+     204.23,
+     205.12,
+     208.58
+    ]
+   },
+   "native_peak_rss_kib": 629788,
+   "librelane_peak_rss_kib": 866828,
+   "load_before_1m": {
+    "min": 0.46,
+    "max": 1.16
+   },
+   "native_over_librelane_median_wall": 0.711,
+   "native_over_librelane_median_cpu": 0.709,
+   "ranges_overlap": false,
+   "verdict": "win"
+  },
+  "antenna": {
+   "native_wall": {
+    "n": 3,
+    "median": 198.159,
+    "min": 195.972,
+    "max": 199.395,
+    "values": [
+     195.972,
+     198.159,
+     199.395
+    ]
+   },
+   "librelane_wall": {
+    "n": 3,
+    "median": 253.808,
+    "min": 243.023,
+    "max": 255.05,
+    "values": [
+     243.023,
+     253.808,
+     255.05
+    ]
+   },
+   "native_cpu": {
+    "n": 3,
+    "median": 197.39,
+    "min": 194.36,
+    "max": 198.3,
+    "values": [
+     194.36,
+     197.39,
+     198.3
+    ]
+   },
+   "librelane_cpu": {
+    "n": 3,
+    "median": 252.51,
+    "min": 241.42,
+    "max": 253.52,
+    "values": [
+     241.42,
+     252.51,
+     253.52
+    ]
+   },
+   "native_peak_rss_kib": 1590100,
+   "librelane_peak_rss_kib": 1694060,
+   "load_before_1m": {
+    "min": 1.0,
+    "max": 1.11
+   },
+   "native_over_librelane_median_wall": 0.781,
+   "native_over_librelane_median_cpu": 0.782,
+   "ranges_overlap": false,
+   "verdict": "win"
+  },
+  "drc": {
+   "native_wall": {
+    "n": 3,
+    "median": 402.652,
+    "min": 398.984,
+    "max": 403.29,
+    "values": [
+     398.984,
+     402.652,
+     403.29
+    ]
+   },
+   "librelane_wall": {
+    "n": 3,
+    "median": 534.243,
+    "min": 532.379,
+    "max": 543.805,
+    "values": [
+     532.379,
+     534.243,
+     543.805
+    ]
+   },
+   "native_cpu": {
+    "n": 3,
+    "median": 552.15,
+    "min": 548.36,
+    "max": 552.48,
+    "values": [
+     548.36,
+     552.15,
+     552.48
+    ]
+   },
+   "librelane_cpu": {
+    "n": 3,
+    "median": 690.35,
+    "min": 684.65,
+    "max": 700.4,
+    "values": [
+     684.65,
+     690.35,
+     700.4
+    ]
+   },
+   "native_peak_rss_kib": 2274436,
+   "librelane_peak_rss_kib": 2307412,
+   "load_before_1m": {
+    "min": 1.0,
+    "max": 1.24
+   },
+   "native_over_librelane_median_wall": 0.754,
+   "native_over_librelane_median_cpu": 0.8,
+   "ranges_overlap": false,
+   "verdict": "win"
+  }
+ },
+ "repair": {
+  "native_frontend_sta_eco_wall": {
+   "n": 5,
+   "median": 26.6,
+   "min": 25.83,
+   "max": 27.39,
+   "values": [
+    25.83,
+    26.13,
+    26.6,
+    26.66,
+    27.39
+   ]
+  },
+  "native_frontend_sta_eco_cpu": {
+   "n": 5,
+   "median": 42.78,
+   "min": 41.46,
+   "max": 43.65,
+   "values": [
+    41.46,
+    42.33,
+    42.78,
+    43.12,
+    43.65
+   ]
+  },
+  "librelane_steps_wall": {
+   "openroad-repairdesignpostgpl": {
+    "n": 5,
+    "median": 14.33,
+    "min": 13.21,
+    "max": 14.57,
+    "values": [
+     13.21,
+     13.63,
+     14.33,
+     14.34,
+     14.57
+    ]
+   },
+   "openroad-repairdesignpostgrt": {
+    "n": 5,
+    "median": 17.0,
+    "min": 16.06,
+    "max": 17.93,
+    "values": [
+     16.06,
+     16.62,
+     17.0,
+     17.01,
+     17.93
+    ]
+   },
+   "openroad-resizertimingpostcts": {
+    "n": 5,
+    "median": 8.14,
+    "min": 7.93,
+    "max": 8.44,
+    "values": [
+     7.93,
+     8.03,
+     8.14,
+     8.14,
+     8.44
+    ]
+   },
+   "openroad-resizertimingpostgrt": {
+    "n": 5,
+    "median": 15.16,
+    "min": 14.26,
+    "max": 15.49,
+    "values": [
+     14.26,
+     15.03,
+     15.16,
+     15.41,
+     15.49
+    ]
+   }
+  },
+  "librelane_steps_runtime_txt": {
+   "openroad-repairdesignpostgpl": {
+    "n": 5,
+    "median": 13.821,
+    "min": 12.805,
+    "max": 13.936,
+    "values": [
+     12.805,
+     13.206,
+     13.821,
+     13.823,
+     13.936
+    ]
+   },
+   "openroad-repairdesignpostgrt": {
+    "n": 5,
+    "median": 16.581,
+    "min": 15.622,
+    "max": 17.461,
+    "values": [
+     15.622,
+     16.137,
+     16.581,
+     16.63,
+     17.461
+    ]
+   },
+   "openroad-resizertimingpostcts": {
+    "n": 5,
+    "median": 7.667,
+    "min": 7.467,
+    "max": 7.872,
+    "values": [
+     7.467,
+     7.568,
+     7.667,
+     7.673,
+     7.872
+    ]
+   },
+   "openroad-resizertimingpostgrt": {
+    "n": 5,
+    "median": 14.72,
+    "min": 13.821,
+    "max": 15.031,
+    "values": [
+     13.821,
+     14.623,
+     14.72,
+     15.031,
+     15.031
+    ]
+   }
+  },
+  "librelane_steps_cpu": {
+   "openroad-repairdesignpostgpl": {
+    "n": 5,
+    "median": 14.14,
+    "min": 13.15,
+    "max": 14.29,
+    "values": [
+     13.15,
+     13.42,
+     14.14,
+     14.19,
+     14.29
+    ]
+   },
+   "openroad-repairdesignpostgrt": {
+    "n": 5,
+    "median": 16.81,
+    "min": 15.94,
+    "max": 17.78,
+    "values": [
+     15.94,
+     16.59,
+     16.81,
+     16.83,
+     17.78
+    ]
+   },
+   "openroad-resizertimingpostcts": {
+    "n": 5,
+    "median": 7.91,
+    "min": 7.78,
+    "max": 8.25,
+    "values": [
+     7.78,
+     7.8,
+     7.91,
+     7.99,
+     8.25
+    ]
+   },
+   "openroad-resizertimingpostgrt": {
+    "n": 5,
+    "median": 14.93,
+    "min": 14.11,
+    "max": 15.28,
+    "values": [
+     14.11,
+     14.89,
+     14.93,
+     15.26,
+     15.28
+    ]
+   }
+  },
+  "librelane_all_four_wall": {
+   "n": 5,
+   "median": 54.28,
+   "min": 52.5,
+   "max": 56.11,
+   "values": [
+    52.5,
+    52.86,
+    54.28,
+    54.98,
+    56.11
+   ]
+  },
+  "librelane_pre_route_two_wall": {
+   "n": 5,
+   "median": 22.48,
+   "min": 21.24,
+   "max": 22.77,
+   "values": [
+    21.24,
+    21.77,
+    22.48,
+    22.5,
+    22.77
+   ]
+  },
+  "librelane_all_four_runtime_txt": {
+   "n": 5,
+   "median": 52.26,
+   "min": 50.775,
+   "max": 54.185,
+   "values": [
+    50.775,
+    51.124,
+    52.26,
+    53.151,
+    54.185
+   ]
+  },
+  "librelane_pre_route_two_runtime_txt": {
+   "n": 5,
+   "median": 21.403,
+   "min": 20.373,
+   "max": 21.693,
+   "values": [
+    20.373,
+    20.879,
+    21.403,
+    21.49,
+    21.693
+   ]
+  },
+  "librelane_all_four_cpu": {
+   "n": 5,
+   "median": 53.57,
+   "min": 51.87,
+   "max": 55.43,
+   "values": [
+    51.87,
+    52.28,
+    53.57,
+    54.19,
+    55.43
+   ]
+  },
+  "librelane_pre_route_two_cpu": {
+   "n": 5,
+   "median": 22.09,
+   "min": 20.93,
+   "max": 22.39,
+   "values": [
+    20.93,
+    21.41,
+    22.09,
+    22.1,
+    22.39
+   ]
+  },
+  "native_over_all_four": 0.49,
+  "native_over_pre_route_two": 1.183,
+  "native_over_all_four_runtime_txt": 0.509,
+  "native_over_pre_route_two_runtime_txt": 1.243,
+  "scope": "N: the receipt's frontend STA/ECO stage (make_receipt.native_stage_times) of a frontend-only producer run (--stop-after fe_frontend_validate) with the campaign's composition and binaries; L: GNU-time wall of `python3 -m librelane.steps run` per resizer step from the campaign run's own config.json/state_in.json (process start-up included; runtime_txt is LibreLane's own step runtime)"
+ },
+ "host": "the campaign host after the timed campaign; one run (gates) or one repetition pair (repair) at a time, each holding an exclusive host lock so that no other measured job ran; light operator activity (documentation editing, a short DEF statistics script at the start of the third repair repetition, and a 170 MB archive extraction during the first native DRC repetition) was not excluded",
+ "runs_file": {
+  "path": "runs.json",
+  "sha256": "ff9a7e5a955135bec0f0ea1463b4abfdcb868c446a38d3c319edb28e64bc81a5",
+  "bytes": 37667
+ }
+}

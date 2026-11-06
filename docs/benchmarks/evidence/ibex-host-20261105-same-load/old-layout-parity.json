@@ -1,0 +1,44 @@
+{
+ "schema": "rusteda.old-layout-parity-check.v2",
+ "layout": "the 2026-11-02 published native layout (receipt docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json), read-only",
+ "method": "campaign run_signoff.sh --gates timing: fresh OpenRCX extraction and RustSTA/OpenSTA with the 2026-11-05 binaries; native_compare of the shared timing gate",
+ "spef": "fresh OpenRCX SPEF of that layout (the shared timing gate's extraction)",
+ "tt_setup_ps": 1.2838,
+ "differences": [
+  {
+   "corner": "tt",
+   "field": "setup_ws_ns",
+   "ruststa_ns": 49.296423,
+   "opensta_ns": 49.297707,
+   "abs_difference_ps": 1.2838
+  },
+  {
+   "corner": "tt",
+   "field": "hold_ws_ns",
+   "ruststa_ns": 0.142664,
+   "opensta_ns": 0.142711,
+   "abs_difference_ps": 0.0476
+  },
+  {
+   "corner": "ss",
+   "field": "setup_ws_ns",
+   "ruststa_ns": 48.868532,
+   "opensta_ns": 48.868607,
+   "abs_difference_ps": 0.0746
+  },
+  {
+   "corner": "ss",
+   "field": "hold_ws_ns",
+   "ruststa_ns": 0.265683,
+   "opensta_ns": 0.265467,
+   "abs_difference_ps": 0.2153
+  }
+ ],
+ "parity_tolerance_ps": 1.0,
+ "parity_max_abs_difference_ps": 1.2838,
+ "parity_status": "failed",
+ "parity_note": "RustSTA/OpenSTA parity on identical SPEF, judged like the producer's 1 ps timing_accuracy gate; the 2026-11-02 receipt records the same OpenRCX-SPEF values",
+ "timing_gate_status": "passed",
+ "timing_gate_note": "the shared timing gate's own verdict on that layout (slack and violation checks), not parity",
+ "ruststa_sha256": "04f1791ea2c78cb7f31ef87c5d6398d8f9b9a3595a3fb5a222ccdce385a1e305"
+}

@@ -1,5 +1,15 @@
 # Development publication · 2026-11-01
 
+**2026-11-05 host campaign.** The Ibex SG13G2/EZ130 campaign was repeated with
+the current sources and is [published](benchmarks.md#ibex-host-campaign-2026-11-05)
+with its [receipt](benchmarks/ibex-sg13g2-ez130-host-20261105.json). Its
+`engine_commits` are the engine revisions that superproject `cf44eaa` pins:
+RustSys `1ee999fc71bb`, RustSTA `6a4547b854d3`, RustROAD `63d492d6dbd0`,
+RustSpice `0b557b5fce24` and RustEDA-Common `59af45f11cee`. Every engine was
+built from those clean commits, and the receipt identifies each executable by
+SHA-256. These revisions are newer than the 2026-11-01 publication recorded in
+the table below.
+
 **2026-11-02 host campaign.** An Ibex SG13G2/EZ130 benchmark campaign on a
 4-vCPU cloud host is [published](benchmarks.md#ibex-host-campaign-2026-11-02)
 with its [receipt](benchmarks/ibex-sg13g2-ez130-host-20261102.json). The
@@ -12,7 +22,9 @@ executable by SHA-256. The superproject then advanced the RustSys, RustSTA,
 RustROAD and RustSpice gitlinks to documentation-only commits that describe the
 campaign (table below); their engine sources are unchanged.
 
-The superproject records the following exact module versions. Flow, CLI and
+For the 2026-11-02 publication the superproject recorded the following exact
+module versions (superproject `cf44eaa` pins the newer revisions of the
+2026-11-05 note above). Flow, CLI and
 workbench remain in `apps/`; no standalone application repositories or root
 Cargo workspace are restored. Original local experiments and historical evidence
 are preserved.

@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.host-measured-run.v1",
+  "name": "native",
+  "command": "/usr/local/bin/python3 /home/user/RustEDA/.work/campaign-20261105/hostcopy/integration/ibex_sg13g2_ez130/producer.py --project /home/user/RustEDA/.work/campaign-20261105/compose/be --manifest /home/user/RustEDA/.work/campaign-20261105/compose/be/prefix-manifest.json --output /home/user/RustEDA/.work/campaign-20261105/native-final/output --base-rev empty --pdk ihp --rustroad /home/user/RustEDA/.work/target/RustROAD/release/rustroad --gnu-time /opt/eda/time/bin/time --stop-after be_macro_contract",
+  "started": "2026-11-05T19:03:28+00:00",
+  "wall_seconds": 888.896,
+  "exit_code": 0,
+  "gnu_time_max_rss_kib": 2250408,
+  "cgroup_v1_memory_max_usage_bytes": 4756537344,
+  "cgroup_v1_memsw_max_usage_bytes": 4756537344,
+  "cgroup_v1_failcnt": 0,
+  "cgroup_limit_bytes": 8589934592,
+  "sampled_peak_total_rss_bytes": 2933743616,
+  "loadavg_1m_mean": 1.67,
+  "loadavg_1m_max": 2.82,
+  "samples": 178,
+  "cpus_online": 4
+}

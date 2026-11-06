@@ -203,5 +203,53 @@ class StageTimes(unittest.TestCase):
         self.assertEqual(mr.native_stage_times(receipts)["foundry DRC, LVS, macro contract"], 950.0)
 
 
+class RecordedThreads(unittest.TestCase):
+    def test_threads_come_from_the_recorded_commands_and_inputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            def command(step, *extra):
+                write(out / "logs" / f"{step}.command.json",
+                      dict(argv=["/time", "-v", "-o", "x", "/bin/rustroad", "--workspace", "w", *extra, "sub"]))
+            command("fe_final_place", "--threads", "2")
+            command("fe_final_cts", "--threads", "2")
+            command("be_route", "--threads", "4")
+            command("be_extract", "--threads", "4", "--max-expansions", "8")
+            command("be_gds")
+            write(out / "backend/postroute-inputs.json", dict(limits=dict(threads=4)))
+            write(out / "backend/antenna-inputs.json", dict(limits=dict(threads=4)))
+            threads = mr.recorded_threads(out)
+        self.assertEqual(threads, dict(fe_final_place=2, fe_final_cts=2, be_route=4, be_extract=4, be_gds="default",
+                                       be_postroute=4, be_antenna_repair=4))
+        text = mr.threads_text(threads)
+        self.assertIn("frontend placement, CTS at --threads 2", text)
+        self.assertIn("route, extract, post-route repair, antenna repair at --threads 4", text)
+        self.assertIn("export-gds on the default 2-thread pool (no --threads)", text)
+
+    def test_missing_records_stay_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            threads = mr.recorded_threads(Path(tmp))
+        self.assertTrue(all(v is None for v in threads.values()))
+        text = mr.threads_text(threads)
+        self.assertNotIn("default 2-thread pool", text)
+        self.assertEqual(text, "frontend placement, CTS, route, extract, export-gds, post-route repair, "
+                               "antenna repair: thread count not recorded")
+        self.assertEqual(mr.thread_value_text(None), "not recorded")
+
+    def test_partial_records_are_not_reported_as_the_default_pool(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            write(out / "logs" / "be_route.command.json",
+                  dict(argv=["/bin/rustroad", "--threads", "4", "route"]))
+            write(out / "logs" / "be_gds.command.json", dict(argv=["/bin/rustroad", "export-gds"]))
+            threads = mr.recorded_threads(out)
+        self.assertEqual((threads["be_route"], threads["be_gds"], threads["be_extract"]), (4, "default", None))
+        text = mr.threads_text(threads)
+        self.assertIn("route at --threads 4", text)
+        self.assertIn("export-gds on the default 2-thread pool (no --threads)", text)
+        self.assertIn("frontend placement, CTS, extract, post-route repair, antenna repair: thread count not recorded",
+                      text)
+        self.assertEqual(mr.thread_value_text("default"), "no --threads: default 2-thread pool")
+
+
 if __name__ == "__main__":
     unittest.main()

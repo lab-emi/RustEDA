@@ -349,6 +349,53 @@ def librelane_stage_times(steps):
     return {k: round(v, 2) for k, v in out.items()}
 
 
+# RustROAD steps whose thread count the receipt states: the recorded command's --threads value
+# ("default": recorded without --threads, RustROAD's default 2-thread pool) or, for the Python repair
+# helpers, the `limits.threads` of their input document. None means the step left no record.
+THREAD_STEPS = ("fe_final_place", "fe_final_cts", "be_route", "be_extract", "be_gds")
+THREAD_INPUTS = {"be_postroute": "backend/postroute-inputs.json", "be_antenna_repair": "backend/antenna-inputs.json"}
+
+
+def recorded_threads(output):
+    """Thread count each RustROAD step of a completed producer output actually ran with."""
+    out = {}
+    for step in THREAD_STEPS:
+        record = maybe(Path(output) / "logs" / f"{step}.command.json")
+        argv = record.get("argv") if isinstance(record, dict) else record
+        if not argv:
+            out[step] = None
+        else:
+            out[step] = int(argv[argv.index("--threads") + 1]) if "--threads" in argv else "default"
+    for step, name in THREAD_INPUTS.items():
+        out[step] = ((maybe(Path(output) / name) or {}).get("limits") or {}).get("threads")
+    return out
+
+
+def threads_text(threads):
+    """Plain-language thread scope from `recorded_threads` ("default" = the default 2-thread pool,
+    None = not recorded)."""
+    names = dict(fe_final_place="frontend placement", fe_final_cts="CTS", be_route="route",
+                 be_postroute="post-route repair", be_antenna_repair="antenna repair", be_extract="extract",
+                 be_gds="export-gds")
+    groups = {}
+    for step, value in threads.items():
+        groups.setdefault(value, []).append(names[step])
+    parts = [f"{', '.join(v)} at --threads {k}" for k, v in sorted((k, v) for k, v in groups.items()
+                                                                    if isinstance(k, int))]
+    if "default" in groups:
+        parts.append(f"{', '.join(groups['default'])} on the default 2-thread pool (no --threads)")
+    if None in groups:
+        parts.append(f"{', '.join(groups[None])}: thread count not recorded")
+    return "; ".join(parts)
+
+
+def thread_value_text(value):
+    """One step's recorded thread count as text."""
+    if value is None:
+        return "not recorded"
+    return "no --threads: default 2-thread pool" if value == "default" else f"--threads {value}"
+
+
 def tool(path, version_cmd=None):
     p = Path(path).resolve()
     rec = dict(path=str(p), sha256=sha(p))
@@ -472,11 +519,13 @@ def main() -> int:
     schedule = check_schedule(receipts, covered)
     prep = gnu_time(w / "prep/sv2v-time.txt")
     nqor_def = run_json([sys.executable, str(HERE / "def_metrics.py"), str(o / "logs/be_def.stdout")])
+    threads = recorded_threads(o)
     native = dict(
-        configuration="published repository recipe (run16-class), composed by compose_native.py; grouped single-process "
-                      "antenna session; RustROAD route, post-route and antenna repair at --threads 4, "
-                      "frontend placement/CTS at --threads 2, extract, export-gds and other export/inspect "
-                      "steps on the default 2-thread pool; unqualified",
+        configuration="repository recipe (integration/ibex_sg13g2_ez130 at the campaign commit), composed by "
+                      "compose_native.py; grouped single-process antenna session; RustROAD "
+                      f"{threads_text(threads)}; producer foundry checks on the schedule in "
+                      "foundry_check_schedule; unqualified",
+        rustroad_threads=threads,
         producer=dict(status=nsum["status"], error=nsum.get("error"), failed_items=nsum.get("failed_items"),
                       steps_completed=len(receipts), manifest_steps=len(read(w / "compose/be/prefix-manifest.json")["steps"]),
                       wall_seconds=nmeasure["wall_seconds"], peak_rss_kib=nmeasure["gnu_time_max_rss_kib"],
@@ -519,7 +568,7 @@ def main() -> int:
         native["determinism"] = dict(
             reference_run=bring["run"],
             identical={k: sha(p) == bring["artifacts"][k]["sha256"] for k, p in pairs.items() if k in bring["artifacts"]},
-            note="artifact identity across two complete native runs; the OpenRCX SPEF is written by OpenROAD")
+            note="artifact identity across two native producer runs (reference_run names the second); the OpenRCX SPEF is written by OpenROAD")
         keep("native/bringup-artifacts.json", data=dict(run=bring["run"], artifacts=bring["artifacts"]))
     keep("native/summary.json", source=o / "summary.json")
     keep("native/step-receipts.json", source=o / "step-receipts.json")
@@ -617,13 +666,16 @@ def main() -> int:
     mb = read(w / names["modules"] / "module-bench.json")
     for key in ("extraction", "timing", "gds"):
         modules[key] = mb.get(key)
-    pool_note = ("RustROAD sizes its thread pool from --threads (default 2); the recorded extract and export-gds "
-                 "commands pass none, so every RustROAD run used a 2-thread pool and the _t4 rows are a second "
-                 "2-thread sample. RAYON_NUM_THREADS does not size it. OpenRCX used set_thread_count 2 and 4.")
+    pool_note = ("RustROAD sizes its thread pool from --threads (default 2; RAYON_NUM_THREADS does not size it); "
+                 "module_bench.py sets --threads to each listed value on the recorded extract command, so the _t2 "
+                 f"and _t4 rows ran 2 and 4 threads (the flow's be_extract: {thread_value_text(threads['be_extract'])}). "
+                 "OpenRCX used set_thread_count 2 and 4.")
     if modules.get("extraction"):
         modules["extraction"]["thread_note"] = pool_note
     if modules.get("gds"):
-        modules["gds"]["thread_note"] = "RustROAD export-gds ran on its default 2-thread pool; KLayout's LEF/DEF reader is single-process."
+        modules["gds"]["thread_note"] = (f"RustROAD export-gds replays the recorded be_gds command ("
+                                         f"{thread_value_text(threads['be_gds'])}); "
+                                         "KLayout's LEF/DEF reader is single-process.")
     if parity:
         modules["timing"]["agreement"] = producer_gates["timing_accuracy"]
     keep("modules/replay.json", data=mb)
@@ -713,10 +765,10 @@ def main() -> int:
             "EZ130 SG13G2 tech LEF and cell GDS reconstructed from public sources (not byte-identical to the pinned archive)",
             "nixpkgs tool builds (OpenROAD 26Q3, Yosys 0.70) instead of LibreLane's pinned OpenROAD dcf36133 / Yosys 0.62",
             "native recipe composed without component-qualification evidence: eight derived qualification gates not produced",
-            "native recipe is the repository's run16-class recipe; the R20/R21 recipe inputs are not published",
+            "native recipe is the repository recipe of the campaign commit; the R20/R21 recipe inputs are not published",
             "host-local helper patches: thread allow-lists (4), cgroup-v1 ownership, RC-profile rules path, density DEF parser",
             "LibreLane without the historical RustEDA-authored repair loop; its own post-GRT design repair enabled",
-            "4 vCPUs (Xeon 2.1 GHz) instead of 16 logical CPUs of an i9-13900HX",
+            f"{facts['host']['logical_cpus']} vCPUs ({facts['host']['cpu']}) instead of 16 logical CPUs of an i9-13900HX",
         ],
         publication_rule=("Only complete independently checked runs with frozen matching inputs may populate "
                           "end-to-end comparative ratios. Module head-to-heads report each contender's measured time "

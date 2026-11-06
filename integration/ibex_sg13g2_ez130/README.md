@@ -209,6 +209,39 @@ reach R20/R21's QoR; those recipe inputs are not in the repository
 [run16 receipt](../../docs/benchmarks/ibex-sg13g2-ez130.json) ·
 [Harness and reproduction commands](../ibex_host_benchmark/README.md)
 
+## Host campaign · 2026-11-05
+
+The committed recipe (superproject `cf44eaa`, with every setting of the next
+section) ran through [`../ibex_host_benchmark/final_campaign.sh`](../ibex_host_benchmark/README.md)
+on a 4-vCPU cloud host beside LibreLane 3.0.17 Classic, from freshly prepared
+inputs and with every engine built from its pinned commit. Results, receipt and
+method: [benchmark page](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-05) ·
+[receipt](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json).
+
+- The producer completed all 114 manifest steps in 888.896 s (`timing_accuracy`
+  0.1639 ps; its own foundry DRC, antenna DRC, LVS and macro contract passed),
+  and the layout passed every shared gate that gives a pass/fail verdict (the
+  OpenRCX extraction gate reports `extracted_not_qualified` on both layouts).
+  LibreLane's layout failed the timing gate (capacitance and fanout) and its
+  equivalence is `unverified`, so the receipt's ratios are null.
+- GDS, DEF, all netlists and the native SPEF are byte-identical to those of the
+  last item of the next section and to a second producer run of the campaign's
+  composition (through `be_timing`): 187,585.2 µm² standard-cell area, 897,357.3 µm of routed signal
+  wire and 118,525 vias, against LibreLane's 197,913.7 µm², 969,571.6 µm and
+  122,194 (LibreLane's DEF and netlists are byte-identical to 2026-11-02's).
+- Same-load reruns after the campaign: the frontend STA and ECO stage took a
+  median 26.60 s against 54.28 s for LibreLane's four resizer steps
+  (0.49x) and 22.48 s for its two steps before global routing
+  (1.18x, slower); shared gates on this layout against LibreLane's: foundry main DRC 0.75x (faster), antenna 0.78x (faster), LVS 0.71x (faster), simulation 0.66x (faster), density 0.82x (faster), timing 0.96x (level), latch-up 1.11x (slower), OpenRCX extraction 1.36x (slower).
+  The equivalence gate has no valid comparison (it does not complete on
+  LibreLane's layout).
+- On the 2026-11-02 layout, the campaign's RustSTA and OpenSTA binaries still
+  differ by 1.2838 ps in TT setup worst slack on a fresh OpenRCX SPEF (shared
+  timing gate, diagnostic comparison), the value the 2026-11-02 receipt records
+  on OpenRCX SPEF (on native SPEF it recorded 1.4052 ps); the
+  parity margin of the current layout is a property of the layout, not a
+  RustSTA fix.
+
 ## Physical-QoR and runtime settings · 2026-11-04
 
 `native-physical.json`, `native-routing.json`, the repair policy in
@@ -360,7 +393,8 @@ unknown, so these files and the module pins change together.
   The sixteen-CPU allocation was not measured (this host has four CPUs).
 
   A complete run on four CPUs (all 114 steps) passed every producer gate and
-  all nine shared gates with the same OpenRCX timing values, and its GDS, DEF,
+  every shared gate that gives a pass/fail verdict with the same OpenRCX timing
+  values, and its GDS, DEF,
   all netlists and native SPEF are byte-identical to the three runs of the
   last item below. Of the 464 frontend files (`frontend/**`, the steps'
   stdout), all but the provenance records (hashes of the changed recipe files
@@ -534,9 +568,11 @@ brackets:
   leaves off, made OpenRCX about 0.25 s faster per run in the same batches
   (DEF of a run with it) for 25 to 31 s more `be_route` time.
 
-`timing_accuracy` passing is a property of these layouts, not a fix: the same
-RustSTA and OpenSTA binaries still differ by 1.405 ps in TT setup worst slack on
-the 2026-11-02 layout, against the 1 ps tolerance. The producer's own foundry
+`timing_accuracy` passing is a property of these layouts, not a fix: on the
+2026-11-02 layout RustSTA and OpenSTA differed by 1.405 ps in TT setup worst
+slack on its native SPEF (1.2838 ps on its OpenRCX SPEF), and the 2026-11-05
+campaign's binaries still differ by 1.2838 ps on a fresh OpenRCX SPEF of that
+layout, against the 1 ps tolerance. The producer's own foundry
 DRC, antenna and LVS steps are the identical checks of the shared `drc`,
 `antenna` and `lvs` gates (same scripts, deck, rule selection, switches and
 GDS bytes; the DRC and antenna reports are byte-identical), so the receipt

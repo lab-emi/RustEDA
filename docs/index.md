@@ -26,22 +26,24 @@ guides the next iteration.
 
 ## Ibex SG13G2 / EZ130
 
-The 2026-11-02 host campaign built Ibex with EZ130 cells and **two real IHP
-SRAM macros** on a 4-vCPU cloud host, one timed sample per flow: the native
-recipe and LibreLane 3.0.17 read the same prepared inputs, and the same
-independent scripts checked both layouts. **Neither flow passes every gate.**
-RustEDA's layout passes DRC, antenna, LVS, TT/SS timing, simulation, equivalence
-and density, but on identical SPEF RustSTA and OpenSTA differ by up to 1.405 ps,
-failing the 1 ps parity gate. Separately, the run is `unqualified` because the
-recipe was composed without component-qualification evidence. LibreLane fails
-the timing gate on max-capacitance and fanout checks (setup and hold met); its
-equivalence is `unverified` because the checker cannot name-match 433 renamed
-registers, a checker limitation rather than evidence of non-equivalence.
-Standard-cell area is 233,909.2 µm² for RustEDA and 197,913.7 µm² for LibreLane.
-The end-to-end times, 2,609.93 s and 3,286.87 s, cover different work (RustEDA's
-producer stopped at the parity gate), so no cross-tool ratio is published.
-Module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice (on
-extracted RC nets, not transistor level).
+The 2026-11-05 host campaign built Ibex with EZ130 cells and **two real IHP
+SRAM macros** on a 4-vCPU cloud host, one timed sample per flow: the current
+native recipe and LibreLane 3.0.17 read the same prepared inputs, and the same
+nine independent gate scripts checked both layouts. **RustEDA's producer
+completed every step, including the 1 ps RustSTA/OpenSTA parity gate, and its
+layout passes every shared gate that gives a pass/fail verdict** (OpenRCX
+extraction reports `extracted_not_qualified` on both layouts), with 187,585.2 µm² standard-cell area, 897,357.3 µm
+of routed wire and 118,525 vias against LibreLane's 197,913.7 µm², 969,571.6 µm
+and 122,194. LibreLane's layout fails the timing gate on max-capacitance and
+fanout checks and its equivalence is `unverified`, so the receipt publishes no
+cross-tool ratio; the end-to-end times were 974.19 s and 4,616.30 s. The native
+run is `unqualified` (no published component-qualification evidence). RustEDA
+leads every paired stage except two: the repair before global routing, where
+LibreLane's two pre-route resizer steps are faster, and the flows' own OpenRCX
+step (6.79 s against 5.557 s). Two shared gates, OpenRCX extraction and latch-up
+tap coverage, run slower on its layout (the timing gate is level); module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice
+(on extracted RC nets, not transistor level). The 2026-11-02 campaign, on
+another host, stays on the benchmark page.
 
 The retained R20/R21 native runs complete **129/129 steps and all 16 gates**, in
 472.2 s and 472.6 s on 16 logical CPUs of an i9-13900HX; times from different

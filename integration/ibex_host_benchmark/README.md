@@ -9,8 +9,53 @@ and the stock LibreLane Classic flow from the same prepared inputs, then applies
 the same independent gate scripts to both final layouts.
 
 Results, scope and the module-by-module comparison are published on the
-[benchmark page](../../docs/benchmarks.md) and in the machine-readable receipt
+[benchmark page](../../docs/benchmarks.md) and in the machine-readable receipts
+[`docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json`](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json)
+(newest) and
 [`docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json`](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json).
+
+## Results · 2026-11-05
+
+One timed sample per flow on 4 vCPUs, with the committed recipe and engines of
+superproject `cf44eaa`. **RustEDA passes every shared gate that gives a
+pass/fail verdict; LibreLane fails the timing gate and leaves equivalence
+unverified, so the receipt's end-to-end ratios are null.** RustEDA's producer
+completed all 114 manifest steps in 888.896 s, including `timing_accuracy`
+(largest RustSTA/OpenSTA difference 0.1639 ps) and its own foundry main DRC,
+antenna DRC, LVS and macro contract, which the receipt verified to be the
+identical checks of the shared gates; its layout passes the eight shared gates
+that give a pass/fail verdict
+(DRC and antenna 0 violations, latch-up LU.a/LU.b 0 uncertified boxes, LVS
+`passed`, TT/SS timing with 0 setup, hold, slew, capacitance and fanout
+violations, simulation `passed`, synthesis and final equivalence `proven`,
+density `passed`); the ninth, OpenRCX extraction, reports
+`extracted_not_qualified` on both layouts, as on 2026-11-02. LibreLane's layout
+passes DRC, antenna, latch-up, LVS,
+simulation and density, fails timing on 28 (TT) and 24 (SS) capacitance and 30
+fanout violations with setup and hold met, and its equivalence is `unverified`
+(433 renamed registers).
+
+End to end, RustEDA took 974.19 s (sv2v preparation, producer, and the
+latch-up, simulation, equivalence and density gates) and LibreLane 4,616.30 s
+(preparation, flow through `Checker.XOR`, all nine shared gates); with both
+flows' DRC, antenna and LVS charged one after another, 1,352.37 s, and with
+LibreLane's charged on the producer's two-lane schedule, 4,104.97 s. No ratio is
+published. The native layout has 187,585.2 µm² standard-cell area,
+897,357.3 µm of routed signal wire and 118,525 vias, against 197,913.7 µm²,
+969,571.6 µm and 122,194. GDS, DEF, all netlists and the native SPEF were
+byte-identical in a second producer run after the campaign (through
+`be_timing`, which writes them all); the OpenRCX SPEF differed. The host is a different virtual machine from
+2026-11-02's, on which every LibreLane stage took longer (host deviation 6).
+
+After the campaign, same-load reruns (5 interleaved repetitions) put the native
+frontend STA and ECO stage at 0.49× LibreLane's four resizer steps and
+1.18× its two steps before global routing, and OpenRCX extraction of the
+native DEF at 1.36× that of LibreLane's; the benchmark page lists every
+stage, gate and module comparison.
+
+[Host campaign results](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-05) ·
+[Receipt and evidence inventory](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json) ·
+[Same-load comparisons](../../docs/benchmarks/evidence/ibex-host-20261105-same-load/summary.json)
 
 ## Results · 2026-11-02
 
@@ -59,9 +104,9 @@ no quotient.
 | `def_metrics.py` | Routed signal wirelength and vias from a final DEF, with the published receipt's definition. |
 | `spef_spice_decks.py` | Transient decks for `rustspice bench-suite` built from extracted Ibex RC nets. |
 | `synth_bench.sh` | Synthesis head-to-head on the prepared RTL: RustSys running the native frontend's workspace sequence (2 threads) and its single-command direct mode (all CPUs), against Yosys running LibreLane 3.0.17's own synthesis script with the run's step configuration. One warm-up plus `REPS` interleaved runs per contender under GNU time. |
-| `module_bench.py` | Replays commands recorded by a completed native producer, on the same inputs: RustROAD `extract` against OpenRCX, the RustSTA pipeline of `signoff_timing.py` against its two OpenSTA processes, RustROAD `export-gds` against KLayout's LEF/DEF reader. One warm-up plus `--reps` interleaved runs at each `--threads` value; writes `module-bench.json`. RustROAD sizes its pool only from `--threads` (default 2); the recorded `extract` and `export-gds` commands pass none, so every RustROAD replay runs on 2 threads and the 4-thread extraction rows are a second 2-thread sample. The GDS replay is not repeated per thread count. |
+| `module_bench.py` | Replays commands recorded by a completed native producer, on the same inputs: RustROAD `extract` against OpenRCX, the RustSTA pipeline of `signoff_timing.py` against its two OpenSTA processes, RustROAD `export-gds` against KLayout's LEF/DEF reader. One warm-up plus `--reps` interleaved runs at each `--threads` value; writes `module-bench.json`. RustROAD sizes its pool only from its global `--threads` option (default 2; `RAYON_NUM_THREADS` does not size it), so the extraction replay sets `--threads` to each listed value on the recorded `extract` command (the 2026-11-02 campaign's recorded command passed none, so its 4-thread RustROAD rows were a second 2-thread sample). The GDS replay runs the recorded `export-gds` command unchanged (no `--threads`: the default 2-thread pool) and is not repeated per thread count. |
 | `final_campaign.sh` | The timed campaign, one stage at a time: native producer, shared gates on its layout, LibreLane through `Checker.XOR`, shared gates on its layout, then the synthesis, module and SPICE head-to-heads. Each stage starts once the one-minute load average is below 0.5 (at most 20 min wait). |
-| `make_receipt.py` | Builds `docs/benchmarks/ibex-sg13g2-ez130-host-<YYYYMMDD>.json` (the `--date` value without dashes) and its evidence directory (each file at most 2 MiB) from a completed campaign directory, recomputing DEF, density and netlist QoR. Ratios are filled only when both flows pass every gate; missing values stay null. The native end-to-end time counts each check once: when the producer ran `be_main`, `be_antenna` or `be_lvs` to completion as the identical check of a shared gate (same script, deck SHA-256, rule selection, switches, KLayout command line up to the run's own workspace paths, and the same GDS, netlist, CDL and helper bytes), that gate's shared time is not added again (`producer_identical_checks`, recorded in the receipt with the reason for every gate it does not cover); latch-up, simulation, equivalence and density, which the producer does not run, are always added. The LVS identity is input and verdict identity: it ignores only the producer's shorter deadline and its expected-hash preconditions, and it does not compare the LVS databases, because KLayout's LVS database is not byte-deterministic (two shared runs on the same layout differ in layer-index order). A parallel group's steps count their elapsed span once in the stage table. When the producer runs the covered checks concurrently (`foundry_check_schedule.mode` `concurrent`, e.g. `be_main` beside `be_antenna` then `be_lvs` on a four-CPU host), the native end-to-end time contains their elapsed span while LibreLane's shared gates run one at a time, so the receipt reports both conventions: `end_to_end_speedup` charges LibreLane's shared main/antenna DRC and LVS on the native producer's schedule (`end_to_end_seconds_native_check_schedule`, e.g. max(drc, antenna + lvs)), and `end_to_end_speedup_serial_checks` charges both flows those checks one after another (`end_to_end_seconds_serial_checks` on the native side). The shared `extraction` and `timing` gates are never added on the native side (`COMPLETION_GATES`): the producer's `be_openrcx` and `be_timing` run the same scripts, but unlike the foundry checks that identity is not checked by the receipt; LibreLane is charged both gates on top of its in-flow RCX and STA, as in the published end-to-end scope (`docs/benchmarks.md`). Unit tests: `tests/test_make_receipt.py`. |
+| `make_receipt.py` | Builds `docs/benchmarks/ibex-sg13g2-ez130-host-<YYYYMMDD>.json` (the `--date` value without dashes) and its evidence directory (each file at most 2 MiB) from a completed campaign directory, recomputing DEF, density and netlist QoR. Ratios are filled only when both flows pass every gate; missing values stay null. The RustEDA configuration text and `rustroad_threads` record the thread count each RustROAD step actually ran with, read from the producer's recorded commands and repair inputs (`default` for a recorded command without `--threads`, the default 2-thread pool; null and `not recorded` when a step left no record). The native end-to-end time counts each check once: when the producer ran `be_main`, `be_antenna` or `be_lvs` to completion as the identical check of a shared gate (same script, deck SHA-256, rule selection, switches, KLayout command line up to the run's own workspace paths, and the same GDS, netlist, CDL and helper bytes), that gate's shared time is not added again (`producer_identical_checks`, recorded in the receipt with the reason for every gate it does not cover); latch-up, simulation, equivalence and density, which the producer does not run, are always added. The LVS identity is input and verdict identity: it ignores only the producer's shorter deadline and its expected-hash preconditions, and it does not compare the LVS databases, because KLayout's LVS database is not byte-deterministic (two shared runs on the same layout differ in layer-index order). A parallel group's steps count their elapsed span once in the stage table. When the producer runs the covered checks concurrently (`foundry_check_schedule.mode` `concurrent`, e.g. `be_main` beside `be_antenna` then `be_lvs` on a four-CPU host), the native end-to-end time contains their elapsed span while LibreLane's shared gates run one at a time, so the receipt reports both conventions: `end_to_end_speedup` charges LibreLane's shared main/antenna DRC and LVS on the native producer's schedule (`end_to_end_seconds_native_check_schedule`, e.g. max(drc, antenna + lvs)), and `end_to_end_speedup_serial_checks` charges both flows those checks one after another (`end_to_end_seconds_serial_checks` on the native side). The shared `extraction` and `timing` gates are never added on the native side (`COMPLETION_GATES`): the producer's `be_openrcx` and `be_timing` run the same scripts, but unlike the foundry checks that identity is not checked by the receipt; LibreLane is charged both gates on top of its in-flow RCX and STA, as in the published end-to-end scope (`docs/benchmarks.md`). Unit tests: `tests/test_make_receipt.py`. |
 | `ez130/restore.sh` | Rebuilds the EZ130 8T v1.1 tree from public mirrors: restores the citation placeholder in the mirrored files, rebuilds the tech LEF, strips the cell GDS, then checks every file with `sha256sum -c reconstructed.sha256`. |
 | `ez130/rebuild_tech_lef.py` | Rebuilds the SG13G2 tech LEF from the public SG13CMOS5L retarget, taking the removed layer, via and rule text from IHP's SG13G2 stdcell tech LEF at commit `3b59002e`. |
 | `ez130/strip_prboundary.py` | KLayout script that removes the `189/4` boundary shapes the retarget added to the cell GDS. |
@@ -99,9 +144,11 @@ Each deviation applies to both flows unless stated otherwise.
    (`recipe_dir` in the host map) and of RustROAD's `build_rc_profile.py`. None
    of these edits is committed:
    - Thread allow-lists accept 4 as well as 2 and 16 in `native_frontend.py`,
-     `native_flow.py`, `native_antenna.py` (and its `antenna_session/` copy),
-     `foundry_first/runner.py`, `qualify_native.py` and
-     `antenna_session/verify.py`.
+     `native_flow.py`, `native_antenna.py`, `foundry_first/runner.py` and
+     `qualify_native.py`. On 2026-11-02 the `antenna_session/` copies of
+     `native_antenna.py` and `verify.py` needed the same edit; the repository
+     accepts 4 there since commit `534557a`, so the 2026-11-05 host copy no
+     longer patches them.
    - `build_rc_profile.py` accepts the explicit calibration rules path the
      composer passes.
    - `signoff_lvs.py` and `producer.py` read the cgroup-v1 memory controller
@@ -130,16 +177,58 @@ Each deviation applies to both flows unless stated otherwise.
    which on the historical host had 8 GiB plus 2 GiB swap; this host has no
    swap). Peak RSS is GNU time's maximum over the waited process tree; the
    cgroup peak includes page cache.
+6. **Host of the 2026-11-05 campaign.** The 2026-11-05 campaign ran on a
+   different 4-vCPU virtual machine of the same kind: Intel Xeon @ 2.80 GHz
+   (33 MiB L3, AVX-512), 15.7 GiB RAM, kernel 6.18.44-fc-v236, against a
+   2.10 GHz Xeon and kernel 6.18.44-fc-v185 on 2026-11-02 (`host-facts.json`
+   of each receipt). Despite the higher nominal clock this host was slower:
+   with the same configuration and tool builds every LibreLane stage took
+   longer, and every step that took 2 s or more on 2026-11-02 took 1.11× to
+   1.69× as long (detailed routing 1.38×), apart from the first Yosys step at
+   flow start (2.24×, 4.52 s against 2.02 s), which overlapped a cold start and
+   brief operator activity (last item below); compare the two flows within one
+   campaign and read the 2026-11-02 figures only as history. The deviations above apply unchanged, with these
+   differences in how they were applied:
+   - the host copy is `git archive HEAD integration` of the campaign commit
+     (a superset of step 2's `integration/ibex_sg13g2_ez130`) and carries 12
+     hunks in 9 files (the `antenna_session/` hunks are upstream, see
+     deviation 3); the patch is otherwise the 2026-11-02 one;
+   - the patched `build_rc_profile.py` is byte-identical to 2026-11-02's
+     (RustROAD's script is unchanged since then);
+   - the run wrappers also export `PYTHONDONTWRITEBYTECODE=1`, so no bytecode
+     is written into module script directories during a run;
+   - the external inputs (Ibex and IHP checkouts, the restored EZ130 tree, the
+     combined cell LEF and the LibreLane installation) are the 2026-11-02
+     ones, and the preparation steps were re-run into a new campaign
+     directory: the converted RTL (`da905268…`), the testbench, SDC, PDN and
+     the LibreLane configuration are byte-identical to 2026-11-02's up to the
+     campaign directory's paths, and `contract.json` differs only by the
+     recipe's own `native_tap_max_gap_um` (42 instead of 15, committed since);
+   - each timed stage ran with no other measured job, but operator activity was
+     not fully excluded: creating scratch copies of the documentation
+     repositories (about 63 MB written in about 11 s) overlapped the native
+     `be_route` step (302.24 s, against 304.91 s in the second producer run
+     after the campaign), and a 1.8 MB copy overlapped LibreLane's first Yosys
+     step.
 
 ## Reproduce
 
-This command sequence reproduces the 2026-11-02 campaign with the current
-scripts, run from the repository root. Replace `/path/to/…` with local paths.
-`WORK` is a new, empty campaign directory (this host used `.work/ibex-host`) and
+This command sequence reproduces the 2026-11-05 campaign (and, with the
+2026-11-02 recipe and host patch, the 2026-11-02 one) with the current scripts,
+run from the repository root. Replace `/path/to/…` with local paths.
+`WORK` is a new, empty campaign directory (the 2026-11-02 campaign used
+`.work/ibex-host`, the 2026-11-05 campaign `.work/campaign-20261105`) and
 `HOSTCOPY` holds the patched recipe copy; every preparation step refuses a
 nonempty workspace with `REVISION_CONFLICT`.
 
-In the original run, the SPICE head-to-head and the GDS replay were rerun after
+The 2026-11-05 campaign ran `final_campaign.sh` once, without interruption and
+without rerunning any stage; its preparation steps were re-run into a new
+campaign directory with the 2026-11-02 external inputs (host deviation 6). Its
+determinism record (`bringup-native-record.json`) comes from a second producer
+run of the same composition after the campaign, stopped after `be_timing`, and
+it repeated no prepared-config diagnostic.
+
+In the original 2026-11-02 run, the SPICE head-to-head and the GDS replay were rerun after
 the campaign script had finished, once the missing `bench-spice` directory
 creation and KLayout's `.def` input path were fixed; the repository versions of `final_campaign.sh` and `module_bench.py`
 include both fixes. A first campaign attempt was abandoned after its native
@@ -248,7 +337,7 @@ EOF
 `signoff_layout.py`, `run_logic.py` and `make_receipt.py` read it. `appimage`
 is the LibreLane devshell AppImage or a multi-call stand-in whose first
 argument names `openroad`, `klayout`, `python3` (with KLayout's Python module),
-`sta` or `yosys`; this host used the stand-in.
+`sta` or `yosys`; both campaigns used the stand-in.
 
 ```bash
 cat > "$WORK/host.json" <<'EOF'
@@ -329,16 +418,19 @@ The receipt's native determinism check and LibreLane prepared-config
 diagnostic come from two bring-up runs that no repository script performs.
 `make_receipt.py` adds each only when its inputs are present in `$WORK`:
 
-- **Determinism.** A second complete native producer run (on this host, an
-  earlier `run_native.sh` bring-up under shared host load). Record its
+- **Determinism.** A second native producer run (on 2026-11-02, an earlier
+  complete `run_native.sh` bring-up under shared host load; on 2026-11-05, a
+  run of the same composition after the campaign, stopped after `be_timing`,
+  which writes every compared artifact). Record its
   artifacts in `bringup-native-record.json`: `run` (a label) and `artifacts`,
   which maps `gds`, `def_`, `netlist_synth`, `netlist_final`,
   `netlist_powered`, `spef_native` and `spef_openrcx` to `{sha256, bytes}`.
-  This host's record also holds the run's `summary` and timing `parity`
-  documents, which `make_receipt.py` does not read.
+  Both campaigns' records also hold the run's `summary` and timing `parity`
+  documents (the 2026-11-05 record also `resources`), which `make_receipt.py`
+  does not read.
 - **Prepared-config diagnostic.** LibreLane on the prepared `config.json` with
   only `DRT_THREADS` set to 4, run tag `full` in `$WORK/ll-full` (read from
-  `ll-full/runs/full`); on this host it was resumed once with `--last-run
+  `ll-full/runs/full`); on 2026-11-02 it was resumed once with `--last-run
   --from KLayout.StreamOut`. List its final views in
   `layout-librelane-bringup.json` (the keys of `layout-librelane.json`) and
   check them with `run_signoff.sh signoff-librelane-bringup
@@ -347,4 +439,5 @@ diagnostic come from two bring-up runs that no repository script performs.
 
 Memory caps were 8 GiB RAM for the RustEDA producer and for
 both shared-gate runs and 10 GiB for the LibreLane flow; the largest shared-gate process
-peaked at 2,615,468 KiB on the native layout and 2,290,552 KiB on LibreLane's.
+peaked at 2,615,468 KiB on the native layout and 2,290,552 KiB on LibreLane's on
+2026-11-02, and at 2,245,620 KiB and 2,258,996 KiB on 2026-11-05.

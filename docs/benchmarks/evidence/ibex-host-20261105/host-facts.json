@@ -1,0 +1,19 @@
+{
+ "source": "captured on the campaign host on 2026-11-05 before the timed campaign (superproject cf44eaa; /proc/cpuinfo, sysconf, uname, lscpu in host-lscpu.txt); engine commits are the gitlinks pinned by cf44eaa, from which every engine binary was built",
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "logical_cpus": 4,
+  "memory_bytes": 16867418112,
+  "kernel": "6.18.44-fc-v236",
+  "cgroup": "v1 memory controller; each timed stage alone in its own child group",
+  "allocation": "all 4 vCPUs to each flow; RustEDA 8 GiB cap (+2 GiB memsw), LibreLane 10 GiB cap; no swap device",
+  "sampling": "one timed sample per flow; module stages one warm-up plus three measured repetitions"
+ },
+ "engine_commits": {
+  "RustSys": "1ee999fc71bb2fa49215db2478864b4f1654e794",
+  "RustSTA": "6a4547b854d3d7076b9e68932bde60dbdc18a752",
+  "RustROAD": "63d492d6dbd0034e0ef96ae6145b519498db5aa7",
+  "RustSpice": "0b557b5fce24e7d5a70596d8d4d5a059c357ac4e",
+  "RustEDA-Common": "59af45f11ceef4a1a4c05427422fa632ad58af1a"
+ }
+}

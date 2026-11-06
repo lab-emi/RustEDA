@@ -1,0 +1,31 @@
+{
+ "def_path": "/home/user/RustEDA/.work/campaign-20261105/native-final/output/logs/be_def.stdout",
+ "dbu_per_micron": 1000,
+ "routed_signal_wirelength_um": 897357.3,
+ "wirelength_by_layer_um": null,
+ "vias": 118525,
+ "vias_by_name_top": {
+  "Via1_YY_so": 30178,
+  "Via2_XY_so": 29667,
+  "Via1_XY_so": 22541,
+  "Via2_XX_so": 18418,
+  "Via3_XY_so": 11470,
+  "Via4_YX_so": 2385,
+  "Via3_XX_so": 1375,
+  "Via2_YX_so": 658,
+  "Via2_YY_so": 436,
+  "Via4_XX_so": 266,
+  "Via1_YX_so": 263,
+  "Via1_XX_so": 257
+ },
+ "nets": 14180,
+ "routed_nets": 14178,
+ "components": {
+  "standard": 14058,
+  "macro": 2,
+  "antenna": 52,
+  "tap": 5934,
+  "filler": 34322
+ },
+ "scope": "regular NETS only; SPECIALNETS excluded; Manhattan segments between consecutive path points; RECT patches and VIRTUAL jumps excluded"
+}

@@ -139,7 +139,9 @@ def check_host_benchmarks():
         complete = receipt['status'] == 'completed'
         assert complete == all(all(gates.values()) for gates in receipt['gate_pass'].values()), path
         if not complete:
-            assert all(value is None for key, value in receipt['ratios'].items() if key != 'eligibility'), path
+            # Text fields (eligibility, the end-to-end convention) describe the ratios; every ratio stays null.
+            assert all(value is None for key, value in receipt['ratios'].items()
+                       if key not in ('eligibility', 'end_to_end_convention')), path
         inventory = receipt['evidence_inventory']
         assert 1 <= len(inventory) <= 128, 'host evidence file budget'
         total = 0
