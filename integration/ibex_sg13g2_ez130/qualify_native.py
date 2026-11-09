@@ -353,8 +353,29 @@ def antenna_lineage(lineage, root, route, inspect, cts, files, tools):
                 scope='native subset repair ancestry only; complete original final-GDS antenna gate remains mandatory')
 
 
+
+def single_process_antenna(files):
+    """A pinned explicit policy selects the single-process lineage protocol."""
+    if 'antenna_session_policy' not in files:
+        return False
+    record = files['antenna_session_policy']
+    path = Path(record['path'])
+    require(record['bytes'] <= 65536 and identity(path) == record,
+            'antenna session policy changed or exceeds byte budget')
+    policy = read(path)
+    require(policy == dict(schema='rusteda.antenna-session-policy.v1',
+        execution_mode='single_native_process', actual_native_processes=1)
+        and type(policy['actual_native_processes']) is int,
+        'antenna session execution policy differs')
+    return True
+
+
 def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, tools, lineage_path):
     """Consume the standalone verifier result; never import/run its large IR reader."""
+    session = lineage['schema'] == 'rusteda.native-antenna-lineage.v3'
+    require(session == single_process_antenna(files), 'antenna declared execution/lineage protocol differs')
+    expected_review = ('rusteda.antenna-v3-independent-lineage-review.v1' if session
+                       else 'rusteda.antenna-v2-independent-lineage-review.v1')
     require(V2_FILES <= set(files), 'v2 antenna source pins missing')
     require(files['flow_qualifier'] == identity(Path(__file__)), 'v2 qualifier source differs from executed helper')
     def unique(items):
@@ -400,7 +421,7 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
         require(path.is_relative_to(root) and identity(path) == value, 'v2 evidence stale/external')
         return path
 
-    require(verification['schema'] == 'rusteda.antenna-v2-independent-lineage-review.v1'
+    require(verification['schema'] == expected_review
             and verification['status'] == 'metadata_lineage_verified_requires_full_signoff'
             and verification['evidence_kind'] == 'actual_native_artifacts'
             and verification['whole_layout_antenna_status'] == 'unchecked'
@@ -425,14 +446,25 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
     input_path = dynamic('backend/antenna-verification-inputs.json')
     require(verification['input_manifest'] == identity(input_path), 'v2 verifier used another config')
     config = read(input_path, 1 << 20)
-    require(config == dict(schema='rusteda.antenna-v2-independent-verifier-inputs.v1',
-        lineage=identity(lineage_path), tool=tools['rustroad'], source_manifest=files['antenna_source_manifest'],
-        design_workspace=lineage['workspace'], evidence_kind='actual_native_artifacts'), 'v2 verifier config differs')
-    require(lineage['schema'] == 'rusteda.native-antenna-lineage.v2'
+    expected_config = dict(schema=('rusteda.antenna-v3-independent-verifier-inputs.v1' if session
+        else 'rusteda.antenna-v2-independent-verifier-inputs.v1'), lineage=identity(lineage_path),
+        tool=tools['rustroad'], source_manifest=files['antenna_source_manifest'],
+        design_workspace=lineage['workspace'], evidence_kind='actual_native_artifacts')
+    if session:
+        expected_config['controller_inputs'] = identity(dynamic('backend/antenna-inputs.json'))
+    require(config == expected_config, 'v2/v3 verifier config differs')
+    require(lineage['schema'] in {'rusteda.native-antenna-lineage.v2', 'rusteda.native-antenna-lineage.v3'}
             and lineage['scope'] == 'supported_standard_cell_subset'
             and lineage['route_scope'] == 'all_signal_nets'
             and lineage['status'] in {'complete', 'unresolved'}
             and lineage['tool'] == tools['rustroad'], 'v2 lineage prefix scope differs')
+    if session:
+        require(verification['execution_mode'] == 'single_native_process'
+                and type(verification['actual_native_processes']) is int
+                and verification['actual_native_processes'] == 1
+                and natural(verification['logical_operations'])
+                and 0 < verification['logical_operations'] <= policy['max_commands'],
+                'v3 actual process/logical operation scope differs')
     initial, final = lineage['initial_revision'], lineage['final_revision']
     workspace = Path(lineage['workspace']).resolve(strict=True)
     require(workspace.is_relative_to(root) and verification['workspace'] == str(workspace)
@@ -505,6 +537,9 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
         verifier_resources=dict(gnu_time=identity(time_path), peak_rss_kib=int(rss[0])),
         routed_named_nets=verification['routed_named_nets'], final_group_count=verification['final_group_count'],
         whole_layout_antenna_status='unchecked', requires_full_revalidation=True,
+        **(dict(execution_mode='single_native_process',
+                actual_native_processes=verification['actual_native_processes'],
+                logical_operations=verification['logical_operations']) if session else {}),
         scope='independently verified grouped native metadata; complete original foundry antenna gate remains separate')
 
 
