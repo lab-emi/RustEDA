@@ -1,0 +1,139 @@
+{
+ "alternating_rows": true,
+ "body_ground_pins": [
+  "VSS!"
+ ],
+ "body_power_pins": [
+  "VDD!",
+  "VDDARRAY!"
+ ],
+ "cell_spacing_sites": 7,
+ "clock": {
+  "cell": "BUFX4",
+  "clustering": "hilbert",
+  "input_pin": "A",
+  "level_cells": [
+   "BUFX4",
+   "BUFX8",
+   "BUFX16"
+  ],
+  "max_buffers": 4096,
+  "max_fanout": 8,
+  "max_work": 1000000,
+  "output_pin": "Y",
+  "port": "clk_i",
+  "regroup_prefixes": [
+   "native_fanout_",
+   "native_reset_"
+  ],
+  "root_at_driver": true,
+  "root_net": "n4072",
+  "sink_pin": "CK"
+ },
+ "filler_cells": [
+  "DECAP32",
+  "DECAP16",
+  "DECAP8",
+  "DECAP4",
+  "FILLER16",
+  "FILLER8",
+  "FILLER4",
+  "FILLER2",
+  "FILLER1"
+ ],
+ "ground_net": "VGND",
+ "ground_pin": "VSS",
+ "io_layer": "Metal3",
+ "io_min_area": true,
+ "io_spacing": 840,
+ "io_width": 300,
+ "macro_supply": {
+  "collection_layer": "Metal5",
+  "pin_layer": "Metal4",
+  "pin_via": "Via4_XX_so",
+  "via_stack": [
+   "TopVia1EWNS"
+  ],
+  "wire_width": 1000
+ },
+ "max_added_cells": 250000,
+ "max_tie_fanout": 1,
+ "placement_blockages": [
+  {
+   "lx": 506640,
+   "ly": 621300,
+   "ux": 590000,
+   "uy": 977760
+  }
+ ],
+ "placer": {
+  "electrostatic": {
+   "density_weight_milli": 2000,
+   "initial_step_milli": 1000,
+   "max_backtracks": 4,
+   "max_bins_per_object": 256,
+   "max_capacity_interactions": 64000000,
+   "max_cells": 100000,
+   "max_density_interactions": 1000000000,
+   "max_evaluations": 512,
+   "max_fillers": 4096,
+   "max_interactions_per_evaluation": 2000000,
+   "max_intervals": 250000,
+   "max_iterations": 200,
+   "max_move_bins_milli": 2000,
+   "max_net_pin_evaluations": 1000000000,
+   "max_nets": 100000,
+   "max_pins": 1000000,
+   "max_state_mib": 256,
+   "max_step_milli": 4000,
+   "max_transform_terms": 1000000000,
+   "max_work": 20000000000,
+   "min_step_micros": 1,
+   "smoothing_bins_milli": [
+    2000,
+    1000,
+    500
+   ],
+   "spacing_aware_density": true,
+   "stop_at_evaluation_cap": true,
+   "target_density_milli": 700,
+   "workers": 4
+  },
+  "local_detail": true,
+  "new_cells_first": true,
+  "retarget_isolated": true
+ },
+ "power_net": "VPWR",
+ "power_pin": "VDD",
+ "rail_layer": "Metal1",
+ "rail_via_stack": [
+  "Via1_XX_so",
+  "Via2_XX_so",
+  "Via3_XX_so",
+  "Via4_XX_so",
+  "TopVia1EWNS"
+ ],
+ "strap_layer": "TopMetal1",
+ "strap_spacing": 1000,
+ "strap_width": 2200,
+ "tap": {
+  "body_view": "gds",
+  "cell": "WELLTAP",
+  "max_gap": 30000,
+  "pattern": {
+   "kind": "staggered",
+   "phase": 15000
+  },
+  "substrate_layer": "PSub",
+  "well_layer": "NWell"
+ },
+ "tie_high": {
+  "cell": "TIEHI",
+  "pin": "Y"
+ },
+ "tie_low": {
+  "cell": "TIELO",
+  "pin": "Y"
+ },
+ "via": "Via1_XX_so"
+}
