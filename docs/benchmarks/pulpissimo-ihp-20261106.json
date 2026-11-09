@@ -1,0 +1,66 @@
+{
+  "schema": "rusteda.pulpissimo-ihp-summary.v1",
+  "date": "2026-11-06",
+  "design": {
+    "name": "PULPissimo",
+    "commit": "bfc3d9a1ef72443464509a22d948f0a6f5b65b4c",
+    "top": "pulpissimo_soc_wrapper",
+    "configuration": "CORE_TYPE=1, no FPU/XPULP/HWPE"
+  },
+  "technology": {
+    "pdk": "ihp-sg13g2",
+    "corner": "tt_1p20v_25c",
+    "standard_cells": "ez130_8t",
+    "sram_macro": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+    "sram_instances": 80,
+    "sram_capacity_kib": 320
+  },
+  "producer": {
+    "tool": "rustsys",
+    "sha256": "fd2ecbd50c12caf0c1ee6299098eef1c1d1598ac1c00166ee9ca75168b596010",
+    "threads": 16
+  },
+  "status": "synthesis_completed",
+  "result": {
+    "wall_seconds": 426.343,
+    "peak_rss_kib": 1316868,
+    "cells": 161114,
+    "standard_cells": 161034,
+    "macro_cells": 80,
+    "combinational_cells": 131004,
+    "sequential_cells": 30028,
+    "inverters": 11598,
+    "latches": 1105,
+    "area_um2": 13259619.340800114,
+    "logic_area_um2": 2045003.788800113,
+    "macro_area_um2": 11214615.552000001,
+    "logic_depth": 78,
+    "estimated_delay_ns": 119.0814,
+    "aig_nodes_before": 604986,
+    "aig_nodes_after": 330146,
+    "state_bits_rtl": 36389,
+    "state_bits_retained": 30028,
+    "warnings": 157
+  },
+  "phases_seconds": {
+    "read": 0.18774797,
+    "elaborate": 4.267942265,
+    "optimize": 416.377065592,
+    "merge": 414.109122627,
+    "map": 5.186103411,
+    "emit": 0.11248791
+  },
+  "limits": [
+    "synthesis only; no placement, routing, extraction, DRC, LVS, equivalence, simulation or GDS",
+    "macro internal delay/setup/hold are outside the RustSys delay estimate",
+    "merge pass reached its work budget; QoR is bounded",
+    "adapter simulation is a smoke test, not full-SoC verification"
+  ],
+  "evidence": {
+    "synthesis_receipt": "evidence/pulpissimo-ihp-20261106/synthesis-receipt.json",
+    "synthesis_report": "evidence/pulpissimo-ihp-20261106/synthesis-report.json",
+    "input_manifest": "evidence/pulpissimo-ihp-20261106/input.json",
+    "adapter_simulation": "evidence/pulpissimo-ihp-20261106/adapter-simulation.json",
+    "netlist_record": "evidence/pulpissimo-ihp-20261106/netlist.json"
+  }
+}

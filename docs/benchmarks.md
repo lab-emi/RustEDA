@@ -1,5 +1,7 @@
 # Ibex on SG13G2 / EZ130
 
+**Second design benchmark.** [PULPissimo Ibex-core synthesis on SKY130 HD](benchmarks/pulpissimo.md) is a separate, synthesis-only comparison with Yosys 0.70/ABC. It is not part of the Ibex RTL-to-GDS campaign below and does not extend its qualification. The full PULPissimo SoC now passes hierarchy elaboration. On SKY130 with behavioral L2 memory it exceeds a 2 h synthesis budget; the [elaboration analysis](benchmarks/pulpissimo-elaboration.md) traces the cost to those L2 banks. A separate [IHP SG13G2 / EZ130 synthesis-only test](benchmarks/pulpissimo-ihp.md) with 80 official SRAM macros completes in 426 s. Neither is physical signoff.
+
 This page holds four Ibex result sets for RustEDA and its modules, newest first: the [host campaign of 2026-11-05](#ibex-host-campaign-2026-11-05), which runs the current RustEDA recipe and engines against LibreLane on a 4-vCPU cloud host, with module head-to-heads and same-load reruns; the [host campaign of 2026-11-02](#ibex-host-campaign-2026-11-02), the first such campaign on another host; the [R20/R21 native development runs of 2026-11-01](#latest-native-development-results-2026-11-01); and the [historical matched comparison of 2026-10-30](#historical-matched-comparison-2026-10-30). Each set names its own host, inputs and schedule, and times from different hosts are not comparable. The target is Ibex on the IHP SG13G2 process, using the EZ130 standard-cell library and **two real SRAM macros**. EZ130 is a cell library for SG13G2, not a separate process.
 
 ## At a glance · 2026-11-05
@@ -1135,5 +1137,7 @@ This help favours LibreLane; without it, the earlier attempts failed sooner. Eve
 | RustROAD | Floorplan, placement, CTS, routing, extraction and streamout |
 | RustEDA Common | Shared models, formats, disk workspaces and compute used by RustSys and RustSTA; included transitively |
 | RustSpice | Not timed in the RTL-to-GDS main flow. The host campaigns compare it with ngspice-45 on RC networks extracted from the Ibex layouts (module head-to-heads of [2026-11-05](#module-head-to-heads-2026-11-05) and [2026-11-02](#module-head-to-heads)); no transistor-level Ibex claim |
+
+The separate [PULPissimo Ibex-core synthesis benchmark](benchmarks/pulpissimo.md) covers RustSys only and is outside this campaign; RustSTA, RustROAD, RustSpice and RustEDA Common are not timed in it.
 
 Older synthesis-only, small-block, OpenC910 and circuit-simulation performance tables are retired from current publication. Their source snapshots, licenses, regression fixtures and immutable qualification receipts are preserved. Sky130/GF180 correctness coverage remains required; it is not an additional current public performance campaign.

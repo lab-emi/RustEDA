@@ -1,0 +1,38 @@
+{
+  "schema": "rusteda.pulpissimo-ihp-input.v1",
+  "pdk": "ihp-sg13g2",
+  "library": "ez130_8t",
+  "macro": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+  "macro_capacity_words": 1024,
+  "macro_data_width": 32,
+  "changes": [
+    "replace the behavioral tc_sram module with the IHP SRAM-macro adapter",
+    "add is_macro_cell to the official macro Liberty copy (PDK untouched)"
+  ],
+  "source_input": {
+    "path": "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+    "bytes": 4899187,
+    "sha256": "bbc8aac0b0c36fe6a178a86fd690911a431e364a07bd02992300889b0a3b0d51"
+  },
+  "wrapper": {
+    "path": "/home/cgao/.codex/worktrees/publish-development-20261101/RustEDA/integration/pulpissimo_soc/ihp/tc_sram_ihp.v",
+    "bytes": 3567,
+    "sha256": "e7fe8707f630874fa899f6748b961447270c945a4b52630a5c17a9636c3179f5"
+  },
+  "macro_lib_source": {
+    "path": "/home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C.lib",
+    "bytes": 49322,
+    "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3"
+  },
+  "output": {
+    "path": "/tmp/pulpissimo-bench/ihp/prep/pulpissimo_soc_ihp.v",
+    "bytes": 4897219,
+    "sha256": "e1695a2f768e2cf21b0bfc9da5a515a2af82b6d4f69fe09dd4b547eaa31f494a",
+    "tc_sram_modules": 1
+  },
+  "out_lib": {
+    "path": "/tmp/pulpissimo-bench/ihp/prep/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C_macro.lib",
+    "bytes": 49346,
+    "sha256": "9f4ff72463b637f05774c8ff4d6fbb12e4057a120d6f8a3e041ef9bd327105c3"
+  }
+}

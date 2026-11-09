@@ -1,0 +1,286 @@
+progress: 0.087 s synth libraries done in 0.087 s
+progress: 0.087 s synth libraries done in 0.000 s
+progress: 0.278 s synth read done in 0.190 s
+elab: entering run
+elab: starting top-level units
+elab: top-level units processed in 0.000 s: 380 modules, 0 packages
+elab: top selected: pulpissimo_soc_wrapper
+elab: elaborating top module pulpissimo_soc_wrapper
+elab: enter generate block apb_chip_ctrl_master (14 items)
+elab: leave generate block apb_chip_ctrl_master in 0.000 s
+elab: enter generate block i_soc_domain (88 items)
+elab: enter instance i_soc_domain.i_pulp_soc (pulp_soc)
+elab: generate loop gen_cluster_core_id: 8 iterations in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_apb_intrpt_ctrl_bus (14 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_apb_intrpt_ctrl_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_apb_hwpe_bus (14 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_apb_hwpe_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_apb_debug_bus (14 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_apb_debug_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_apb_chip_ctrl_bus (14 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_apb_chip_ctrl_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_data_in_bus (50 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_data_in_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_data_out_bus (50 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_data_out_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_periph_bus (22 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_periph_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_mem_rom_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_mem_rom_bus in 0.000 s
+elab: generate loop s_mem_l2_bus: 4 iterations in 0.000 s
+elab: generate loop s_mem_l2_pri_bus: 2 iterations in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_debug_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_debug_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_pulp_jtag_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_pulp_jtag_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_riscv_jtag_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_riscv_jtag_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_udma_tx_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_udma_tx_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_udma_rx_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_udma_rx_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_fc_data_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_fc_data_bus in 0.000 s
+elab: enter generate block i_soc_domain.i_pulp_soc.s_lint_fc_instr_bus (9 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.s_lint_fc_instr_bus in 0.000 s
+elab: generate loop s_lint_hwpe_bus: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i (axi_cdc_dst_C7472_DBD40)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw (cdc_fifo_gray_dst_438A4_AF701)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_rptr_g2b (gray_to_binary): 0.000 s, 593 signals, 19028 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_rptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_rptr_b2g (binary_to_gray): 0.000 s, 595 signals, 19037 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[0].i_sync (sync): 0.000 s, 600 signals, 19060 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[1].i_sync (sync): 0.000 s, 605 signals, 19062 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[2].i_sync (sync): 0.000 s, 610 signals, 19064 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.gen_sync[3].i_sync (sync): 0.000 s, 615 signals, 19066 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_wptr_g2b (gray_to_binary): 0.000 s, 617 signals, 19081 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_spill_register (spill_register_20530_F708E)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_spill_register.spill_register_flushable_i (spill_register_flushable_AB8FB_1FB2F)
+elab: enter generate block i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_spill_register.spill_register_flushable_i.gen_spill_reg (19 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_spill_register.spill_register_flushable_i.gen_spill_reg in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_spill_register.spill_register_flushable_i (spill_register_flushable_AB8FB_1FB2F): 0.000 s, 642 signals, 20001 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw.i_spill_register (spill_register_20530_F708E): 0.000 s, 642 signals, 20001 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_aw (cdc_fifo_gray_dst_438A4_AF701): 0.001 s, 642 signals, 20001 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w (cdc_fifo_gray_dst_33955_58529)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_rptr_g2b (gray_to_binary): 0.000 s, 662 signals, 39029 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_rptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_rptr_b2g (binary_to_gray): 0.000 s, 664 signals, 39038 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[0].i_sync (sync): 0.000 s, 669 signals, 39061 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[1].i_sync (sync): 0.000 s, 674 signals, 39063 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[2].i_sync (sync): 0.000 s, 679 signals, 39065 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.gen_sync[3].i_sync (sync): 0.000 s, 684 signals, 39067 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_wptr_g2b (gray_to_binary): 0.000 s, 686 signals, 39082 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_spill_register (spill_register_CF41A_A9F89)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_spill_register.spill_register_flushable_i (spill_register_flushable_447F4_95FFA)
+elab: enter generate block i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_spill_register.spill_register_flushable_i.gen_spill_reg (19 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_spill_register.spill_register_flushable_i.gen_spill_reg in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_spill_register.spill_register_flushable_i (spill_register_flushable_447F4_95FFA): 0.000 s, 711 signals, 40002 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w.i_spill_register (spill_register_CF41A_A9F89): 0.000 s, 711 signals, 40002 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_w (cdc_fifo_gray_dst_33955_58529): 0.001 s, 711 signals, 40002 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b (cdc_fifo_gray_src_A0718_1BA61)
+elab: generate loop gen_word: 8 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[0].i_sync (sync): 0.000 s, 731 signals, 40361 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[1].i_sync (sync): 0.000 s, 736 signals, 40363 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[2].i_sync (sync): 0.000 s, 741 signals, 40365 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.gen_sync[3].i_sync (sync): 0.000 s, 746 signals, 40367 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.i_rptr_g2b (gray_to_binary): 0.000 s, 748 signals, 40382 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.i_wptr_g2b (gray_to_binary): 0.000 s, 750 signals, 40409 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.i_wptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b.i_wptr_b2g (binary_to_gray): 0.000 s, 752 signals, 40418 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_b (cdc_fifo_gray_src_A0718_1BA61): 0.000 s, 752 signals, 40453 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar (cdc_fifo_gray_dst_C3366_6D24D)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_rptr_g2b (gray_to_binary): 0.000 s, 772 signals, 57114 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_rptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_rptr_b2g (binary_to_gray): 0.000 s, 774 signals, 57123 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[0].i_sync (sync): 0.000 s, 779 signals, 57146 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[1].i_sync (sync): 0.000 s, 784 signals, 57148 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[2].i_sync (sync): 0.000 s, 789 signals, 57150 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.gen_sync[3].i_sync (sync): 0.000 s, 794 signals, 57152 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_wptr_g2b (gray_to_binary): 0.000 s, 796 signals, 57167 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_spill_register (spill_register_381C0_55F26)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_spill_register.spill_register_flushable_i (spill_register_flushable_8B3FB_C6318)
+elab: enter generate block i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_spill_register.spill_register_flushable_i.gen_spill_reg (19 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_spill_register.spill_register_flushable_i.gen_spill_reg in 0.001 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_spill_register.spill_register_flushable_i (spill_register_flushable_8B3FB_C6318): 0.001 s, 821 signals, 58021 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar.i_spill_register (spill_register_381C0_55F26): 0.001 s, 821 signals, 58021 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_dst_ar (cdc_fifo_gray_dst_C3366_6D24D): 0.001 s, 821 signals, 58021 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r (cdc_fifo_gray_src_F9509_988D6)
+elab: generate loop gen_word: 8 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[0].i_sync (sync): 0.000 s, 841 signals, 59940 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[1].i_sync (sync): 0.000 s, 846 signals, 59942 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[2].i_sync (sync): 0.000 s, 851 signals, 59944 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.gen_sync[3].i_sync (sync): 0.000 s, 856 signals, 59946 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.i_rptr_g2b (gray_to_binary): 0.000 s, 858 signals, 59961 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.i_wptr_g2b (gray_to_binary): 0.000 s, 860 signals, 59988 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.i_wptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r.i_wptr_b2g (binary_to_gray): 0.000 s, 862 signals, 59997 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i.i_cdc_fifo_gray_src_r (cdc_fifo_gray_src_F9509_988D6): 0.001 s, 862 signals, 60032 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_slave_cdc_i (axi_cdc_dst_C7472_DBD40): 0.004 s, 862 signals, 60032 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i (axi_cdc_src_5C70B_1E10D)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw (cdc_fifo_gray_src_8B1D7_A8E35)
+elab: generate loop gen_word: 8 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[0].i_sync (sync): 0.000 s, 901 signals, 61927 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[1].i_sync (sync): 0.000 s, 906 signals, 61929 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[2].i_sync (sync): 0.000 s, 911 signals, 61931 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.gen_sync[3].i_sync (sync): 0.000 s, 916 signals, 61933 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.i_rptr_g2b (gray_to_binary): 0.000 s, 918 signals, 61948 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.i_wptr_g2b (gray_to_binary): 0.000 s, 920 signals, 61975 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.i_wptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw.i_wptr_b2g (binary_to_gray): 0.000 s, 922 signals, 61984 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_aw (cdc_fifo_gray_src_8B1D7_A8E35): 0.000 s, 922 signals, 62019 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w (cdc_fifo_gray_src_247AA_6091E)
+elab: generate loop gen_word: 8 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[0].i_sync (sync): 0.000 s, 942 signals, 63074 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[1].i_sync (sync): 0.000 s, 947 signals, 63076 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[2].i_sync (sync): 0.000 s, 952 signals, 63078 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.gen_sync[3].i_sync (sync): 0.000 s, 957 signals, 63080 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.i_rptr_g2b (gray_to_binary): 0.000 s, 959 signals, 63095 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.i_wptr_g2b (gray_to_binary): 0.000 s, 961 signals, 63122 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.i_wptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w.i_wptr_b2g (binary_to_gray): 0.000 s, 963 signals, 63131 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_w (cdc_fifo_gray_src_247AA_6091E): 0.001 s, 963 signals, 63166 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b (cdc_fifo_gray_dst_5A38F_6F7B1)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_rptr_g2b (gray_to_binary): 0.000 s, 983 signals, 65495 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_rptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_rptr_b2g (binary_to_gray): 0.000 s, 985 signals, 65504 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[0].i_sync (sync): 0.000 s, 990 signals, 65527 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[1].i_sync (sync): 0.000 s, 995 signals, 65529 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[2].i_sync (sync): 0.000 s, 1000 signals, 65531 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.gen_sync[3].i_sync (sync): 0.000 s, 1005 signals, 65533 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_wptr_g2b (gray_to_binary): 0.000 s, 1007 signals, 65548 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_spill_register (spill_register_FB74D_88E55)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_spill_register.spill_register_flushable_i (spill_register_flushable_18C5E_35E9B)
+elab: enter generate block i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_spill_register.spill_register_flushable_i.gen_spill_reg (19 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_spill_register.spill_register_flushable_i.gen_spill_reg in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_spill_register.spill_register_flushable_i (spill_register_flushable_18C5E_35E9B): 0.000 s, 1032 signals, 65742 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b.i_spill_register (spill_register_FB74D_88E55): 0.000 s, 1032 signals, 65742 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_b (cdc_fifo_gray_dst_5A38F_6F7B1): 0.001 s, 1032 signals, 65742 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar (cdc_fifo_gray_src_783C1_ACF36)
+elab: generate loop gen_word: 8 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[0].i_sync (sync): 0.000 s, 1052 signals, 67493 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[1].i_sync (sync): 0.000 s, 1057 signals, 67495 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[2].i_sync (sync): 0.000 s, 1062 signals, 67497 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.gen_sync[3].i_sync (sync): 0.000 s, 1067 signals, 67499 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.i_rptr_g2b (gray_to_binary): 0.000 s, 1069 signals, 67514 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.i_wptr_g2b (gray_to_binary): 0.000 s, 1071 signals, 67541 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.i_wptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar.i_wptr_b2g (binary_to_gray): 0.000 s, 1073 signals, 67550 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_src_ar (cdc_fifo_gray_src_783C1_ACF36): 0.000 s, 1073 signals, 67585 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r (cdc_fifo_gray_dst_F4554_56B4D)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_rptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_rptr_g2b (gray_to_binary): 0.000 s, 1093 signals, 76616 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_rptr_b2g (binary_to_gray)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_rptr_b2g (binary_to_gray): 0.000 s, 1095 signals, 76625 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[0].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[0].i_sync (sync): 0.000 s, 1100 signals, 76648 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[1].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[1].i_sync (sync): 0.000 s, 1105 signals, 76650 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[2].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[2].i_sync (sync): 0.000 s, 1110 signals, 76652 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[3].i_sync (sync)
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.gen_sync[3].i_sync (sync): 0.000 s, 1115 signals, 76654 AIG nodes
+elab: generate loop gen_sync: 4 iterations in 0.000 s
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_wptr_g2b (gray_to_binary)
+elab: generate loop genblk1: 4 iterations in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_wptr_g2b (gray_to_binary): 0.000 s, 1117 signals, 76669 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_spill_register (spill_register_57FA2_6F545)
+elab: enter instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_spill_register.spill_register_flushable_i (spill_register_flushable_1B429_63CE4)
+elab: enter generate block i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_spill_register.spill_register_flushable_i.gen_spill_reg (19 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_spill_register.spill_register_flushable_i.gen_spill_reg in 0.000 s
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_spill_register.spill_register_flushable_i (spill_register_flushable_1B429_63CE4): 0.000 s, 1142 signals, 77226 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r.i_spill_register (spill_register_57FA2_6F545): 0.000 s, 1142 signals, 77226 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i.i_cdc_fifo_gray_dst_r (cdc_fifo_gray_dst_F4554_56B4D): 0.001 s, 1142 signals, 77226 AIG nodes
+elab: leave instance i_soc_domain.i_pulp_soc.axi_master_cdc_i (axi_cdc_src_5C70B_1E10D): 0.004 s, 1142 signals, 77226 AIG nodes
+elab: enter generate block i_soc_domain.i_pulp_soc.l2_ram_i (28 items)
+elab: enter instance i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i (tc_sram)
+elab: enter generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i.gen_read_lat (1 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i.gen_read_lat in 2.609 s
+elab: enter generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i.genblk2 (1 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i.genblk2 in 24.615 s
+elab: leave instance i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i (tc_sram): 27.257 s, 1163 signals, 52460372 AIG nodes
+elab: enter instance i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[1].bank_i (tc_sram)
+elab: enter generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[1].bank_i.gen_read_lat (1 items)
+elab: leave generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[1].bank_i.gen_read_lat in 3.392 s
+elab: enter generate block i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[1].bank_i.genblk2 (1 items)

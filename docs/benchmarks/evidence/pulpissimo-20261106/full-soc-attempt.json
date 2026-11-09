@@ -1,0 +1,22 @@
+{
+  "schema": "rusteda.pulpissimo-full-soc-attempt.v2",
+  "date": "2026-11-06",
+  "top": "pulpissimo_soc_wrapper",
+  "pre_fix": {
+    "status": "failed_input_elaboration",
+    "wall_seconds": 2241.09,
+    "observed_peak_rss_kib": 10690216,
+    "diagnostic": "error[S0105]: soc_wrapper_asic_tc3.v:88547:25: 'i_soc_domain' is not declared",
+    "cause": "sv2v inlined the interface-bearing soc_domain into a generate scope and left module-scope hierarchical references to that scope."
+  },
+  "post_fix": {
+    "status": "timeout_after_hierarchy_fix",
+    "wall_seconds": 7200.003,
+    "observed_peak_rss_kib": 3964732,
+    "exit_code": 124,
+    "diagnostic": "No S0105 hierarchy rejection. The bounded 2 h run reached its deadline before writing a netlist or report.",
+    "note": "Observed RSS is a sampled value, not a GNU time maximum; no metrics or ratio are published."
+  },
+  "metrics": null,
+  "ratio": null
+}

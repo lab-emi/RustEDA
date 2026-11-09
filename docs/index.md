@@ -95,6 +95,19 @@ hosts are not comparable.
 
 [Latest Ibex campaign →](benchmarks.md) · [Engine capabilities →](engine-status.md)
 
+## PULPissimo synthesis
+
+A second design benchmark compares the PULPissimo Ibex core with a bounded
+Yosys 0.70/ABC reference on the same SKY130 HD Verilog. RustSys is **1.07×
+slower** on this sample but produces an **8.96% smaller-area, 32.35%
+smaller-cell-count** netlist, using **1.58× more peak memory**. The full
+PULPissimo SoC still exceeds a 2 h budget on SKY130 with the behavioral L2
+memory; an IHP SG13G2 / EZ130 synthesis-only test with 80 official SRAM macros
+completes in 426 s. Neither is an RTL-to-GDS result, and neither extends the
+Ibex RTL-to-GDS qualification.
+
+[PULPissimo benchmark →](benchmarks/pulpissimo.md)
+
 ## Build the feedback loop
 
 <div class="grid cards" markdown>
