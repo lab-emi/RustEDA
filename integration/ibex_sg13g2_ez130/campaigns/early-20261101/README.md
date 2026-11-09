@@ -26,16 +26,19 @@ checkpoint retention at the evaluation horizon, Metal2 access, heuristic weight
 2, via cost 1680 and RC detour 1.08. Frontend STA uses eight workers. These values
 are recipe inputs, not library-specific engine heuristics.
 
-**Not recomposable from a fresh checkout.** The R20 and R21 frozen-input records
-bind three recipe inputs that are not in the repository: `physical.json`
-(`0c7a4e6a…`), `routing.json` (`fe59328a…`) and `native_frontend_inputs.py`
-(`ed7e7c08…`), all taken from the original host's local `.work/` directories.
-The repository's `native-physical.json`, `native-routing.json` and
-`native_frontend_inputs.py` are run16's helper set and hash differently
-(`5fe299cf…`, `aba6ee1d…`, `ef7d5550…`). The same records also bind other files
-with no byte-identical repository copy, for example `rc-policy.json`
-(`611de51a…`) and the backend composer `native_backend.py` (`957bdc4b…`). This
-campaign therefore cannot be recomposed from a fresh checkout. The
+**Recipe inputs recovered; full campaign reproduction remains open.** The exact
+R20 physical, routing, frontend preparation, RC policy and tap contract inputs
+are versioned as `native-physical-r20.json`, `native-routing-r20.json`,
+`native_frontend_inputs_r20.py`, `rc-estimate-policy-r20.json` and
+`contract-r20.json` in the integration directory. [r20_recipe.py](r20_recipe.py)
+imports them with hash checks and verifies a composed manifest. The default
+`native-physical.json`, `native-routing.json` and `native_frontend_inputs.py`
+remain the separate run16 helper set.
+
+These recovered inputs do not supply every original host binding. The frozen
+backend composer `native_backend.py` (`957bdc4b…`) and foundry bundle still need
+their original identities; composing a manifest does not reproduce the measured
+R20/R21 run or transfer its timing. The
 [2026-11-02 host reproduction](../../../ibex_host_benchmark/README.md) composed
 the repository recipe instead and reproduced run16-class QoR, not R20/R21's.
 Record: [R20 frozen inputs](../../../../docs/benchmarks/evidence/ibex-20261101/R20-early-sta/gates/inputs_frozen.json).
