@@ -10,6 +10,7 @@
 .eda-lead { font-size: 1.2rem; }
 .eda-home picture { display: block; margin: 2rem 0 1rem; }
 .eda-home picture img { border-radius: 12px; width: 100%; height: auto; }
+.md-typeset picture > img { display: block; max-width: 100%; height: auto; }
 .eda-metrics { display: grid; grid-template-columns: repeat(3,1fr); border-block: 1px solid #667b8944; margin: 1.3rem 0; padding: 1.3rem 0; gap: 1rem; }
 .eda-metrics strong { display: block; font-size: clamp(1.3rem,3vw,2rem); letter-spacing: -.04em; }
 .eda-metrics span { display: block; font-size: .68rem; margin-top: .3rem; }

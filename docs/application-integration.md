@@ -2,7 +2,7 @@
 
 RustEDA owns the flow engine, command-line program and Studio workbench in `apps/`.
 They are ordinary versioned source files in this repository. The remaining submodules
-are RustSys, RustSTA, RustROAD and RustEDA Common; each keeps its independent history.
+are RustSys, RustSTA, RustROAD, RustSpice and RustEDA Common; each keeps its independent history.
 There is no Cargo workspace at the repository root. The applications share
 `apps/Cargo.toml` and one lockfile, and consume the exact Common revision.
 

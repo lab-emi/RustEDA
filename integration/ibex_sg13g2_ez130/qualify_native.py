@@ -45,6 +45,14 @@ TAP_POLICY = dict(schema='rusteda.private-staggered-tap-policy.v1',
     foundry_diffusion_tie_max_um=20, execution='serial_after_original_signoff_group',
     certificate_scope='NAME_excluded_SRAM_targets_full_well_domains',
     original_sixteen_gates='unchanged_required')
+# Opt-in schedule: maximal starts on the foundry-first GDS beside main/antenna. It
+# only counts when that file is byte-identical to the final GDS; a repaired layout
+# fails review and must rerun serially, so no verdict crosses a layout change.
+TAP_OVERLAP_EXECUTION = 'overlap_foundry_first_same_immutable_gds'
+TAP_OVERLAP_ALL_EXECUTION = 'overlap_all_same_immutable_gds'
+TAP_EARLY_EXECUTION = 'early_maximal_same_immutable_gds'
+TAP_INITIAL_GDS = 'backend/foundry-first/initial.gds'
+TAP_EARLY_GDS = 'backend/tap-early.gds'
 TAP_LIMITS = dict(cells=16384, hierarchy_edges=250000, instance_visits=4000000,
     input_shapes=2000000, vertices=8000000, shape_visits=8000000,
     vertex_visits=32000000, domains=4096, anchors=250000, bin_entries=1000000,
@@ -513,7 +521,7 @@ def antenna_lineage_v2(lineage, verification, root, route, inspect, cts, files, 
             and actual_head.read_text().strip() == final, 'v2 actual HEAD changed after verification')
 
     receipts = read(dynamic('step-receipts.json'), 2 << 20)
-    require(isinstance(receipts, list) and len(receipts) <= 128, 'producer receipt budget')
+    require(isinstance(receipts, list) and len(receipts) <= 129, 'producer receipt budget')
     positions, by_id = {}, {}
     for index, receipt in enumerate(receipts):
         tag = receipt['id']
@@ -790,6 +798,121 @@ def tap_routing_inventory(value, root, template):
     return writers
 
 
+def tap_overlap(context):
+    """True when the pinned policy selects a same-immutable-GDS overlap."""
+    return tap_read(context['files']['tap_policy']['path'], 65536)['execution'] in (
+        TAP_OVERLAP_EXECUTION, TAP_OVERLAP_ALL_EXECUTION, TAP_EARLY_EXECUTION)
+
+
+def tap_overlap_all(context):
+    """True when every step from maximal through logic shares one dependency region."""
+    return tap_read(context['files']['tap_policy']['path'], 65536)['execution'] in (TAP_OVERLAP_ALL_EXECUTION, TAP_EARLY_EXECUTION)
+
+
+def tap_early(context):
+    """True when maximal starts on a pre-postroute GDS, before the foundry-first chain."""
+    return tap_read(context['files']['tap_policy']['path'], 65536)['execution'] == TAP_EARLY_EXECUTION
+
+
+def tap_overlap_all_group():
+    """Exact region: the serial order survives as dependencies, only maximal and later checks overlap.
+
+    <=24 nodes. Reservations sum to at most 7168 MiB at admission; a real repair or
+    extraction runs beside maximal under the same cap, and a repaired layout then
+    fails review on the GDS identity above.
+    """
+    lean = [0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15]
+
+    def command(dependencies, slots, memory):
+        return dict(depends_on=dependencies, cpu_slots=slots, memory_mib=memory)
+
+    return dict(max_parallel=8, max_memory_mib=7168, steps={
+        'nf_tap_latchup': command([], [6, 7], 1920),
+        'be_ff_main': command([], [0, 1], 2560),
+        'be_ff_antenna': command([], [2, 3], 2688),
+        'be_antenna_repair': command(['be_ff_main', 'be_ff_antenna'], lean, 5248),
+        'be_antenna_verify': command(['be_antenna_repair'], [0, 1], 2304),
+        'be_inspect': command(['be_antenna_verify'], [0, 1], 512),
+        'be_def': command(['be_inspect'], [0, 1], 512),
+        'be_netlist': command(['be_def'], [0, 1], 512),
+        'be_powered': command(['be_netlist'], [0, 1], 512),
+        'be_gds': command(['be_powered'], [0, 1], 512),
+        'be_extract': command(['be_gds'], lean, 3840),
+        'be_rcx_inputs': dict(depends_on=['be_extract']),
+        'be_openrcx': command(['be_rcx_inputs'], [4, 5], 768),
+        'be_timing_inputs': dict(depends_on=['be_openrcx']),
+        'be_timing': command(['be_timing_inputs'], [4, 5], 1024),
+        'be_main': command(['be_extract'], [0, 1], 2304),
+        'be_antenna': command(['be_extract'], [2, 3], 2560),
+        'be_lvs_inputs': dict(depends_on=['be_extract']),
+        'be_lvs': command(['be_lvs_inputs', 'be_antenna'], [2, 3], 2048),
+        'be_macro_contract': command(['be_lvs'], [10, 11], 256),
+        'nf_tap_coverage_inputs': dict(depends_on=['be_extract']),
+        'nf_tap_coverage': command(['nf_tap_coverage_inputs'], [0, 1], 1280),
+        'nf_logic_inputs': dict(depends_on=['be_extract']),
+        'nf_logic': command(['nf_logic_inputs'], [8, 9], 768)})
+
+
+def tap_early_group():
+    """Exact region: maximal beside postroute, LVS and OpenRCX beside the main precheck.
+
+    <=27 nodes. Reservations sum to at most 7168 MiB at admission. Every export before the
+    decision is read-only; a real repair or a resize changes the final GDS and then fails
+    review on the GDS identity, so this schedule can only pass an unrepaired layout.
+    """
+    lean = [0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15]
+
+    def command(dependencies, slots, memory):
+        return dict(depends_on=dependencies, cpu_slots=slots, memory_mib=memory)
+
+    return dict(max_parallel=8, max_memory_mib=7168, steps={
+        'nf_tap_latchup': command([], [6, 7], 1792),
+        'be_postroute': command([], lean, 5248),
+        'be_antenna_inputs': dict(depends_on=['be_postroute']),
+        'be_ff_export': command(['be_antenna_inputs'], [0, 1], 512),
+        'be_inspect': command(['be_ff_export'], [4, 5], 512),
+        'be_def': command(['be_inspect'], [4, 5], 512),
+        'be_netlist': command(['be_def'], [4, 5], 512),
+        'be_powered': command(['be_netlist'], [4, 5], 512),
+        'be_gds': command(['be_powered'], [4, 5], 512),
+        'be_ff_main': command(['be_ff_export'], [0, 1], 2304),
+        'be_ff_antenna': command(['be_ff_export'], [2, 3], 2560),
+        'be_antenna_repair': command(['be_ff_main', 'be_ff_antenna', 'be_gds'], lean, 5248),
+        'be_antenna_verify': command(['be_antenna_repair'], [0, 1], 2304),
+        'be_extract': command(['be_antenna_verify'], lean, 3840),
+        'be_rcx_inputs': dict(depends_on=['be_def']),
+        'be_openrcx': command(['be_rcx_inputs', 'be_ff_antenna'], [4, 5], 768),
+        'be_timing_inputs': dict(depends_on=['be_openrcx', 'be_extract']),
+        'be_timing': command(['be_timing_inputs'], [4, 5], 1024),
+        'be_main': command(['be_extract'], [0, 1], 2304),
+        'be_antenna': command(['be_extract'], [2, 3], 2560),
+        'be_lvs_inputs': dict(depends_on=['be_gds']),
+        'be_lvs': command(['be_lvs_inputs', 'be_ff_antenna'], [2, 3], 2048),
+        'be_macro_contract': command(['be_lvs'], [10, 11], 256),
+        'nf_tap_coverage_inputs': dict(depends_on=['be_extract']),
+        'nf_tap_coverage': command(['nf_tap_coverage_inputs'], [0, 1], 1280),
+        'nf_logic_inputs': dict(depends_on=['be_extract']),
+        'nf_logic': command(['nf_logic_inputs'], [8, 9], 768)})
+
+
+def tap_early_export():
+    """Exact read-only export of the routed frontend workspace for the early maximal."""
+    return dict(id='be_tap_export', kind='command', tool='rustroad', timeout_s=300, arguments=[
+        '--workspace', '{output}/frontend/road-final', 'export-gds', '--cell-gds',
+        '{output}/backend/profiles/combined-cells.gds', '--layer-map', '{output}/backend/profiles/gds-map.json',
+        '--out', '{output}/' + TAP_EARLY_GDS, '--cell-lef', '{files:cell_lef}'])
+
+
+def tap_maximal_gds(context, artifacts):
+    """The GDS maximal actually ran on, proven byte-identical to the final GDS."""
+    if not tap_overlap(context):
+        return artifacts['gds']
+    initial = tap_identity(Path(context['run_root']) / (TAP_EARLY_GDS if tap_early(context) else TAP_INITIAL_GDS), 64 << 20)
+    require((initial['sha256'], initial['bytes']) == (artifacts['gds']['sha256'], artifacts['gds']['bytes']),
+            'overlap maximal GDS differs from the final GDS; rerun the serial schedule')
+    return initial
+
+
 def tap_execution_proof(context, artifacts, tag, argv, manifest_id, helper):
     """Pin full actual checker output to the actual producer stdout emission."""
     root, files, tools = Path(context['run_root']), context['files'], context['tools']
@@ -814,9 +937,9 @@ def tap_execution_proof(context, artifacts, tag, argv, manifest_id, helper):
         'tap_latchup_common' if latchup else 'tap_coverage_worker']
     require(result['source_pins'] == source_pins and result['tools'] == {
             name: tools[name] for name in ('python', 'appimage')}, 'actual joint executable pins differ')
-    actual_inputs = dict(gds=artifacts['gds'])
+    actual_inputs = dict(gds=tap_maximal_gds(context, artifacts) if latchup else artifacts['gds'])
     if latchup:
-        profile = root / 'backend/postroute/effective-inputs/foundry/provenance.json'
+        profile = Path(files['drc_profile']['path']) if tap_early(context) else root / 'backend/postroute/effective-inputs/foundry/provenance.json'
         actual_inputs.update(profile=tap_identity(profile, 2 << 20),
             deck=tap_identity(profile.parent / 'klayout/tech/drc/rule_decks/sg13g2_maximal.drc', 256 << 20))
     else:
@@ -868,7 +991,8 @@ def tap_producer_proof(context, artifacts, c, inputs, helper):
     files, tools = context['files'], context['tools']
     root = Path(context['run_root'])
     manifest, groups = helper.producer_manifest(c)
-    require(len(manifest['steps']) == 128 and len(groups) == 6
+    overlap_all, early = tap_overlap_all(context), tap_early(context)
+    require(len(manifest['steps']) == (129 if early else 128) and len(groups) == (1 if early else 2 if overlap_all else 6)
             and set(manifest['gates']) == DERIVED | REPORTS
             and manifest['artifacts'] == context['artifacts']
             and type(manifest['scope']['threads']) is int and manifest['scope']['threads'] == 16
@@ -887,8 +1011,20 @@ def tap_producer_proof(context, artifacts, c, inputs, helper):
         'be_antenna': dict(depends_on=[], cpu_slots=[2, 3], memory_mib=2560),
         'be_lvs_inputs': dict(depends_on=[]),
         'be_lvs': dict(depends_on=['be_lvs_inputs', 'be_antenna'], cpu_slots=[2, 3], memory_mib=2048)})
-    require(b4 in groups and not any(tag.startswith('nf_tap_') for group in groups for tag in group['steps']),
-            'joint extras must remain serial after the unchanged original B4 group')
+    overlap = tap_overlap(context)
+    grouped_tap = {tag for group in groups for tag in group['steps'] if tag.startswith('nf_tap_')}
+    if overlap_all:
+        require((tap_early_group() if early else tap_overlap_all_group()) in groups
+                and grouped_tap == {'nf_tap_latchup', 'nf_tap_coverage_inputs', 'nf_tap_coverage'},
+                'overlap-all region differs from its exact dependency proof')
+    else:
+        require(b4 in groups and grouped_tap == ({'nf_tap_latchup'} if overlap else set()),
+                'joint extras must remain serial after the unchanged original B4 group')
+    if overlap and not overlap_all:
+        lane = next(group for group in groups if 'nf_tap_latchup' in group['steps'])
+        require(set(lane['steps']) == {'be_ff_main', 'be_ff_antenna', 'nf_tap_latchup'}
+                and lane['steps']['nf_tap_latchup']['depends_on'] == [] and lane['max_parallel'] == 3,
+                'overlap maximal must share exactly the foundry-first precheck lane')
     final_gds = '{output}/' + context['artifacts']['gds']
     expected = [dict(id='nf_tap_latchup', kind='command', tool='python', timeout_s=900,
         arguments=['{files:tap_guard}', '{files:tap_latchup_runner}', '--gds', final_gds,
@@ -908,14 +1044,24 @@ def tap_producer_proof(context, artifacts, c, inputs, helper):
     steps = manifest['steps']
     order = {step['id']: i for i, step in enumerate(steps)}
     begin = order['be_macro_contract'] + 1
-    require(steps[begin:begin + 3] == expected and order['nf_logic_inputs'] == begin + 3
-            and all(order[tag] < order['be_macro_contract'] for group in groups for tag in group['steps'])
+    serial = expected
+    if overlap:
+        maximal, serial = expected[0], expected[1:]
+        maximal['arguments'][maximal['arguments'].index(final_gds)] = '{output}/' + (TAP_EARLY_GDS if early else TAP_INITIAL_GDS)
+        if early:
+            maximal['arguments'][maximal['arguments'].index('--profile') + 1] = '{files:drc_profile}'
+        require(steps[order['be_tap_export' if early else 'be_ff_export'] + 1] == maximal
+                and (not early or steps[order['be_tap_export']] == tap_early_export()),
+                'overlap maximal recipe/order differs')
+    require(steps[begin:begin + len(serial)] == serial and order['nf_logic_inputs'] == begin + len(serial)
+            and (overlap_all or all(order[tag] < order['be_macro_contract'] for group in groups for tag in group['steps']))
             and {tag for tag in order if tag.startswith('nf_tap_')} == {step['id'] for step in expected},
             'joint actual producer recipe/order differs')
     prefix = [tools['python']['path'], files['tap_guard']['path']]
     commands = {
-        'nf_tap_latchup': [*prefix, files['tap_latchup_runner']['path'], '--gds', artifacts['gds']['path'],
-            '--profile', str(root / 'backend/postroute/effective-inputs/foundry/provenance.json'),
+        'nf_tap_latchup': [*prefix, files['tap_latchup_runner']['path'], '--gds',
+            tap_maximal_gds(context, artifacts)['path'],
+            '--profile', files['drc_profile']['path'] if early else str(root / 'backend/postroute/effective-inputs/foundry/provenance.json'),
             '--tool', tools['appimage']['path'], '--top', 'ibex_sram_bench', '--workspace',
             str(root / 'backend/latchup'), '--base-rev', 'empty'],
         'nf_tap_coverage': [*prefix, files['tap_coverage_runner']['path'], '--config',
@@ -926,8 +1072,19 @@ def tap_producer_proof(context, artifacts, c, inputs, helper):
     emissions = {tag: tap_execution_proof(context, artifacts, tag, argv, native['manifest'], helper)
                  for tag, argv in commands.items()}
     rows = {tag: helper.producer_command(c, inputs, tag, argv, emissions[tag][1]) for tag, argv in commands.items()}
+    if early:
+        require(helper.runner.decision(c)['mode'] == 'foundry_clean_keep_revision',
+                'early schedule exports before the decision; a repaired layout must rerun the serial schedule')
+        written = helper.p.read(helper.producer_command(c, inputs, 'be_tap_export', [c['tools']['rustroad']['path'],
+            '--workspace', str(root / 'frontend/road-final'), 'export-gds', '--cell-gds',
+            str(root / 'backend/profiles/combined-cells.gds'), '--layer-map', str(root / 'backend/profiles/gds-map.json'),
+            '--out', str(root / TAP_EARLY_GDS), '--cell-lef', files['cell_lef']['path']])['stdout']['path'])
+        require(written['status'] == 'written' and written['revision'] == 'rev4'
+                and written['workspace_mutated'] is False
+                and written['output'] == tap_maximal_gds(context, artifacts),
+                'early maximal export differs from its checked GDS')
     receipts = helper.p.read(root / 'step-receipts.json')
-    require(isinstance(receipts, list) and len(receipts) <= 128, 'actual joint render receipt budget')
+    require(isinstance(receipts, list) and len(receipts) <= 129, 'actual joint render receipt budget')
     render = [row for row in receipts if row['id'] == 'nf_tap_coverage_inputs']
     require(len(render) == 1 and set(render[0]) == {'id', 'kind', 'wall_seconds'}
             and render[0]['kind'] == 'render' and type(render[0]['wall_seconds']) in (int, float)
@@ -959,7 +1116,10 @@ def verify_tap_checks(context, native, artifacts, reports, current, helper):
             'joint v2 requires the typed capture wrapper')
     require(tap_identity(__file__, 1 << 20) == files['flow_qualifier'], 'running joint qualifier source differs')
     policy = tap_read(files['tap_policy']['path'], 65536)
-    require(policy == TAP_POLICY and all(type(policy[k]) is int for k in
+    require(policy in (TAP_POLICY, {**TAP_POLICY, 'execution': TAP_OVERLAP_EXECUTION},
+                       {**TAP_POLICY, 'execution': TAP_OVERLAP_ALL_EXECUTION},
+                       {**TAP_POLICY, 'execution': TAP_EARLY_EXECUTION})
+            and all(type(policy[k]) is int for k in
             ('native_max_clear_gap_dbu', 'nominal_phase_dbu', 'foundry_diffusion_tie_max_um')),
             'explicit joint tap policy differs')
     worker = files['tap_coverage_worker']
@@ -1054,16 +1214,16 @@ def verify_tap_checks(context, native, artifacts, reports, current, helper):
             and latchup.get('scope') == 'complete_foundry_maximal_additional_to_original_main'
             and latchup.get('original_main_status') == 'unchecked_required_separately',
             'extra unchanged maximal LU.a not semantically passed')
-    require(latchup['gds'] == gds and latchup['tool'] == tool
-            and latchup['profile'] == effective['effective']
-            and latchup['deck'] == deck_id
+    require(latchup['gds'] == tap_maximal_gds(context, artifacts) and latchup['tool'] == tool
+            and latchup['profile'] == (files['drc_profile'] if tap_early(context) else effective['effective'])
+            and latchup['deck'] == (files['tap_latchup_deck'] if tap_early(context) else deck_id)
             and latchup['runner'] == files['tap_latchup_runner']
             and latchup['common_runner'] == files['tap_latchup_common'],
             'latchup GDS/tool/dependency/profile binding differs')
     require(latchup.get('findings') == {}, 'nonzero/unchecked maximal findings')
     latchup_command_path = paths['latchup'].parent / 'command.json'
-    expected_latchup_command = [tool['path'], 'klayout', '-b', '-r', deck_id['path']]
-    for value in ('threads=2', 'run_mode=deep', 'topcell=ibex_sram_bench', 'input=' + gds['path'],
+    expected_latchup_command = [tool['path'], 'klayout', '-b', '-r', latchup['deck']['path']]
+    for value in ('threads=2', 'run_mode=deep', 'topcell=ibex_sram_bench', 'input=' + latchup['gds']['path'],
                   'report=' + str(paths['latchup'].parent / 'drc.lyrdb'),
                   'log=' + str(paths['latchup'].parent / 'deck.log')):
         expected_latchup_command.extend(['-rd', value])
