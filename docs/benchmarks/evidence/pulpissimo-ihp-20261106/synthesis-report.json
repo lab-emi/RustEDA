@@ -1,0 +1,392 @@
+{
+  "format": "rustsys-synth-report",
+  "format_version": 1,
+  "top": "pulpissimo_soc_wrapper",
+  "cells": {
+    "AND2X3": 1150,
+    "AND3BX2": 265,
+    "AND3X2": 170,
+    "AND4X2": 2289,
+    "AO211X2": 406,
+    "AO21X2": 308,
+    "AO22X2": 1959,
+    "AO31X2": 98,
+    "AOAI211X2": 2799,
+    "AOI211X2": 4062,
+    "AOI21BX1": 181,
+    "AOI21BX2": 1,
+    "AOI21X2": 5849,
+    "AOI221X1": 7795,
+    "AOI221X3": 5,
+    "AOI22X2": 3411,
+    "AOI2B1X1": 829,
+    "AOI2B1X2": 5,
+    "AOI2B2BX2": 26,
+    "AOI2B2X1": 433,
+    "AOI2BB2X2": 17,
+    "AOI31X1": 2310,
+    "AOI31X2": 8,
+    "BUFX3": 3,
+    "DFFMRQX2": 14558,
+    "DFFQX1": 2008,
+    "DFFRQX1": 11095,
+    "DFFRX1": 1262,
+    "INVX1": 11598,
+    "INVX3": 3,
+    "LATNQX1": 112,
+    "LATQX1": 993,
+    "MIN3X2": 1052,
+    "MUX2X2": 2546,
+    "MUX4X3": 382,
+    "MUXI2X2": 18025,
+    "NAND2BX3": 554,
+    "NAND2X3": 12628,
+    "NAND3BX3": 13,
+    "NAND3X2": 3592,
+    "NAND4BBX2": 5,
+    "NAND4BX2": 227,
+    "NAND4X2": 576,
+    "NOR2BX2": 1252,
+    "NOR2X3": 11804,
+    "NOR3BX1P5": 48,
+    "NOR3X2": 4265,
+    "NOR4BBX1": 26,
+    "NOR4BBX2": 1,
+    "NOR4BX2": 120,
+    "NOR4X2": 980,
+    "OA211X2": 482,
+    "OA21X2": 646,
+    "OAI211X2": 3707,
+    "OAI21X2": 5977,
+    "OAI221X2": 1906,
+    "OAI22X2": 2256,
+    "OAI2B2BX2": 138,
+    "OAI2B2BX3": 1,
+    "OAI2BB2X2": 152,
+    "OAI31X2": 661,
+    "OAOI211X2": 3234,
+    "OR2X3": 397,
+    "OR3BX2": 244,
+    "OR3X2": 194,
+    "OR4X2": 1711,
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": 80,
+    "TIEHI": 1,
+    "TIELO": 1,
+    "XNOR2X2": 1981,
+    "XNOR3X2": 20,
+    "XOR2X2": 3220,
+    "XOR3X2": 1
+  },
+  "area": 13259619.340800114,
+  "sequential_cells": 30028,
+  "macro_cells": 80,
+  "combinational_cells": 131004,
+  "inverters": 11598,
+  "logic_depth": 78,
+  "estimated_delay": 119.0814,
+  "aig_nodes_before": 604986,
+  "aig_nodes_after": 330146,
+  "map_requested_cuts": 100,
+  "map_effective_cuts": 100,
+  "map_cut_memory_budget_bytes": 4294967296,
+  "state_bits_rtl": 36389,
+  "state_bits_retained": 30028,
+  "after_reset": [],
+  "uninitialized_dont_care": false,
+  "assume_full_case": false,
+  "assume_parallel_case": false,
+  "constant_states": [],
+  "merged_states": [],
+  "latches": 1105,
+  "warnings": 157,
+  "unused_cells": {
+    "ANTENNA2": "output without function",
+    "ANTENNA4": "output without function",
+    "ANTENNA8": "output without function",
+    "CGTSX1": "bus, state table or clock gating cell",
+    "CGTSX1P5": "bus, state table or clock gating cell",
+    "CGTSX2": "bus, state table or clock gating cell",
+    "CGTSX3": "bus, state table or clock gating cell",
+    "CGX1": "bus, state table or clock gating cell",
+    "CGX2": "bus, state table or clock gating cell",
+    "CGX3": "bus, state table or clock gating cell",
+    "DECAP16": "output without function",
+    "DECAP32": "output without function",
+    "DECAP4": "output without function",
+    "DECAP8": "output without function",
+    "DFFRQ2X1": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'",
+    "DFFRQ2X1P5": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'",
+    "DFFRQ2X2": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'",
+    "DFFRQ2X3": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'",
+    "DFFRQ4X1": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'; pin Q2 function refers to unknown name 'IQ'; pin Q3 function refers to unknown name 'IQ'",
+    "DFFRQ4X1P5": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'; pin Q2 function refers to unknown name 'IQ'; pin Q3 function refers to unknown name 'IQ'",
+    "DFFRQ4X2": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'; pin Q2 function refers to unknown name 'IQ'; pin Q3 function refers to unknown name 'IQ'",
+    "DFFRQ4X3": "pin Q0 function refers to unknown name 'IQ'; pin Q1 function refers to unknown name 'IQ'; pin Q2 function refers to unknown name 'IQ'; pin Q3 function refers to unknown name 'IQ'",
+    "FAX1": "more than one output",
+    "HAX2": "more than one output",
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": "bus, state table or clock gating cell",
+    "TBUFX1": "three-state output",
+    "TBUFX2": "three-state output",
+    "TINVX1": "three-state output",
+    "TINVX2": "three-state output"
+  },
+  "runtime_s": 426.131593606,
+  "phase_s": [
+    [
+      "read",
+      0.18774797
+    ],
+    [
+      "elaborate",
+      4.267942265
+    ],
+    [
+      "optimize",
+      416.377065592
+    ],
+    [
+      "map",
+      5.186103411
+    ],
+    [
+      "emit",
+      0.11248791
+    ]
+  ],
+  "map_backend": "cpu",
+  "map_phase_s": [
+    [
+      "setup",
+      0.009885128
+    ],
+    [
+      "cut_passes",
+      1.8714943819999998
+    ],
+    [
+      "exact_passes",
+      3.271232874
+    ],
+    [
+      "exact_planning",
+      2.4679330529999994
+    ],
+    [
+      "exact_commit",
+      0.6588892829999998
+    ],
+    [
+      "exact_replay",
+      0.4839361300000029
+    ]
+  ],
+  "opt_phase_s": [
+    [
+      "sweep",
+      0.01862004
+    ],
+    [
+      "mux_decode",
+      0.07925104
+    ],
+    [
+      "merge",
+      414.109122627
+    ],
+    [
+      "balance",
+      0.114558506
+    ],
+    [
+      "rewrite",
+      0.234078261
+    ],
+    [
+      "refactor",
+      0.197872896
+    ],
+    [
+      "resub",
+      0.916953551
+    ],
+    [
+      "rewrite",
+      0.200948704
+    ],
+    [
+      "rewrite_zero",
+      0.220070602
+    ],
+    [
+      "rewrite",
+      0.167066172
+    ],
+    [
+      "balance",
+      0.070133762
+    ],
+    [
+      "mux_merge",
+      0.034340143
+    ],
+    [
+      "sweep",
+      0.010208392
+    ]
+  ],
+  "opt_work": [
+    {
+      "pass": "sweep",
+      "windows": 564789,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "merge",
+      "windows": 10933,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": true
+    },
+    {
+      "pass": "balance",
+      "windows": 439625,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "rewrite",
+      "windows": 419334,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "refactor",
+      "windows": 375753,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "resub",
+      "windows": 529939,
+      "bounded_windows": 232962,
+      "replayed_windows": 164843,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "rewrite",
+      "windows": 353552,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "rewrite_zero",
+      "windows": 344693,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "rewrite",
+      "windows": 340145,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "balance",
+      "windows": 338307,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    },
+    {
+      "pass": "sweep",
+      "windows": 362846,
+      "bounded_windows": 0,
+      "replayed_windows": 0,
+      "pass_budget_reached": false
+    }
+  ],
+  "cell_area": {
+    "AND2X3": 7.056,
+    "AND3BX2": 8.4672,
+    "AND3X2": 8.4672,
+    "AND4X2": 9.8784,
+    "AO211X2": 9.8784,
+    "AO21X2": 9.8784,
+    "AO22X2": 12.7008,
+    "AO31X2": 11.2896,
+    "AOAI211X2": 9.8784,
+    "AOI211X2": 8.4672,
+    "AOI21BX1": 8.4672,
+    "AOI21BX2": 9.8784,
+    "AOI21X2": 7.056,
+    "AOI221X1": 9.8784,
+    "AOI221X3": 11.2896,
+    "AOI22X2": 9.8784,
+    "AOI2B1X1": 8.4672,
+    "AOI2B1X2": 9.8784,
+    "AOI2B2BX2": 14.112,
+    "AOI2B2X1": 11.2896,
+    "AOI2BB2X2": 12.7008,
+    "AOI31X1": 8.4672,
+    "AOI31X2": 9.8784,
+    "BUFX3": 5.6448,
+    "DFFMRQX2": 36.6912,
+    "DFFQX1": 22.5792,
+    "DFFRQX1": 28.224,
+    "DFFRX1": 31.0464,
+    "INVX1": 4.2336,
+    "INVX3": 4.2336,
+    "LATNQX1": 18.3456,
+    "LATQX1": 18.3456,
+    "MIN3X2": 9.8784,
+    "MUX2X2": 12.7008,
+    "MUX4X3": 28.224,
+    "MUXI2X2": 11.2896,
+    "NAND2BX3": 7.056,
+    "NAND2X3": 5.6448,
+    "NAND3BX3": 9.8784,
+    "NAND3X2": 7.056,
+    "NAND4BBX2": 14.112,
+    "NAND4BX2": 11.2896,
+    "NAND4X2": 9.8784,
+    "NOR2BX2": 7.056,
+    "NOR2X3": 5.6448,
+    "NOR3BX1P5": 8.4672,
+    "NOR3X2": 7.056,
+    "NOR4BBX1": 12.7008,
+    "NOR4BBX2": 14.112,
+    "NOR4BX2": 11.2896,
+    "NOR4X2": 9.8784,
+    "OA211X2": 9.8784,
+    "OA21X2": 8.4672,
+    "OAI211X2": 8.4672,
+    "OAI21X2": 7.056,
+    "OAI221X2": 11.2896,
+    "OAI22X2": 9.8784,
+    "OAI2B2BX2": 14.112,
+    "OAI2B2BX3": 15.5232,
+    "OAI2BB2X2": 12.7008,
+    "OAI31X2": 9.8784,
+    "OAOI211X2": 9.8784,
+    "OR2X3": 7.056,
+    "OR3BX2": 8.4672,
+    "OR3X2": 8.4672,
+    "OR4X2": 9.8784,
+    "RM_IHPSG13_1P_1024x32_c2_bm_bist": 140182.6944,
+    "TIEHI": 4.2336,
+    "TIELO": 4.2336,
+    "XNOR2X2": 9.8784,
+    "XNOR3X2": 21.168,
+    "XOR2X2": 9.8784,
+    "XOR3X2": 21.168
+  },
+  "time_unit_ns": 1.0
+}

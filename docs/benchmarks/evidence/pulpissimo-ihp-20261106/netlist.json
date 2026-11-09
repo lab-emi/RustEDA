@@ -1,0 +1,8 @@
+{
+  "schema": "rusteda.pulpissimo-ihp-netlist.v1",
+  "path": "runner.v",
+  "bytes": 33352463,
+  "sha256": "6811525239c9c6d0597ff4d5466e454ff97cbd30e202cac59b5b3fac0fa60865",
+  "macro_instances": 80,
+  "note": "Netlist is not committed; this records the exact artifact measured by the receipt."
+}

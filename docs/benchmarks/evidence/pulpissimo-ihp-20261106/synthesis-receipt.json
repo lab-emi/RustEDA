@@ -1,0 +1,170 @@
+{
+  "schema": "rusteda.pulpissimo-synthesis-receipt.v1",
+  "label": "PULPissimo SoC, IHP SG13G2 TT, EZ130 + 80 official SRAM macros",
+  "status": "completed",
+  "exit_code": 0,
+  "command": [
+    "/tmp/rustsys-target-pulp/release/rustsys",
+    "--threads",
+    "16",
+    "synth",
+    "--top",
+    "pulpissimo_soc_wrapper",
+    "--lib",
+    "/home/cgao/pdks/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+    "--lib",
+    "/tmp/pulpissimo-bench/ihp/prep/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C_macro.lib",
+    "-D",
+    "SYNTHESIS",
+    "--progress",
+    "log",
+    "-v",
+    "/tmp/pulpissimo-bench/ihp/prep/pulpissimo_soc_ihp.v",
+    "--out",
+    "/tmp/pulpissimo-bench/ihp/runner.v",
+    "--report",
+    "/tmp/pulpissimo-bench/ihp/runner.json"
+  ],
+  "resources": {
+    "threads": 16,
+    "memory_limit_gib": 32,
+    "timeout_seconds": 900,
+    "wall_seconds": 426.343,
+    "recorded_wall_seconds": "7:06.33",
+    "peak_rss_kib": 1316868,
+    "user_cpu_seconds": 474.63,
+    "system_cpu_seconds": 1.69
+  },
+  "tools": {
+    "rustsys": {
+      "path": "/tmp/rustsys-target-pulp/release/rustsys",
+      "sha256": "fd2ecbd50c12caf0c1ee6299098eef1c1d1598ac1c00166ee9ca75168b596010",
+      "version": "rustsys 0.1.0 (runtimes: cpu)"
+    },
+    "gnu_time": {
+      "path": "/home/cgao/.local/share/containers/storage/overlay/d1a194c6048338802bb33b89e26ffcad28186a9fdf7082312592e14711add98e/diff/usr/bin/time",
+      "sha256": "3b11dec50514a8473e9f6efa7a34d584d0657538c09988f61b72d38ad4991a10"
+    }
+  },
+  "input": {
+    "path": "/tmp/pulpissimo-bench/ihp/prep/pulpissimo_soc_ihp.v",
+    "bytes": 4897219,
+    "sha256": "e1695a2f768e2cf21b0bfc9da5a515a2af82b6d4f69fe09dd4b547eaa31f494a"
+  },
+  "library": {
+    "path": "/home/cgao/pdks/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+    "bytes": 9292203,
+    "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c"
+  },
+  "libraries": [
+    {
+      "path": "/home/cgao/pdks/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+      "bytes": 9292203,
+      "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c"
+    },
+    {
+      "path": "/tmp/pulpissimo-bench/ihp/prep/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C_macro.lib",
+      "bytes": 49346,
+      "sha256": "9f4ff72463b637f05774c8ff4d6fbb12e4057a120d6f8a3e041ef9bd327105c3"
+    }
+  ],
+  "artifacts": {
+    "netlist": "/tmp/pulpissimo-bench/ihp/runner.v",
+    "report": "/tmp/pulpissimo-bench/ihp/runner.json",
+    "log": "/tmp/pulpissimo-bench/ihp/runner-receipt.log",
+    "time": "/tmp/pulpissimo-bench/ihp/runner-receipt.time"
+  },
+  "metrics": {
+    "cells": 161114,
+    "combinational_cells": 131004,
+    "sequential_cells": 30028,
+    "inverters": 11598,
+    "area_um2": 13259619.340800114,
+    "logic_depth": 78,
+    "estimated_delay_ns": 119.0814,
+    "aig_nodes_before": 604986,
+    "aig_nodes_after": 330146,
+    "state_bits_rtl": 36389,
+    "state_bits_retained": 30028,
+    "macro_cells": 80,
+    "latches": 1105,
+    "warnings": 157,
+    "phase_s": [
+      [
+        "read",
+        0.18774797
+      ],
+      [
+        "elaborate",
+        4.267942265
+      ],
+      [
+        "optimize",
+        416.377065592
+      ],
+      [
+        "map",
+        5.186103411
+      ],
+      [
+        "emit",
+        0.11248791
+      ]
+    ],
+    "opt_phase_s": [
+      [
+        "sweep",
+        0.01862004
+      ],
+      [
+        "mux_decode",
+        0.07925104
+      ],
+      [
+        "merge",
+        414.109122627
+      ],
+      [
+        "balance",
+        0.114558506
+      ],
+      [
+        "rewrite",
+        0.234078261
+      ],
+      [
+        "refactor",
+        0.197872896
+      ],
+      [
+        "resub",
+        0.916953551
+      ],
+      [
+        "rewrite",
+        0.200948704
+      ],
+      [
+        "rewrite_zero",
+        0.220070602
+      ],
+      [
+        "rewrite",
+        0.167066172
+      ],
+      [
+        "balance",
+        0.070133762
+      ],
+      [
+        "mux_merge",
+        0.034340143
+      ],
+      [
+        "sweep",
+        0.010208392
+      ]
+    ],
+    "runtime_s": 426.131593606
+  }
+}

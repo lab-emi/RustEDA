@@ -1,0 +1,4 @@
+Verilator 5.052, official IHP -DFUNCTIONAL macro model
+PASS at 160 ns
+Coverage: 16384-word bank (16 macros); write/read slice 0 (address 5),
+slice 1 (address 1029), slice 11 (address 11269); byte-masked write at address 7.

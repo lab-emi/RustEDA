@@ -1,0 +1,52 @@
+{
+  "schema": "rusteda.pulpissimo-elaboration-analysis.v1",
+  "date": "2026-11-06",
+  "method": "RUSTSYS_ELAB_TRACE=1; per-instance and per-generate-block timings on standard error",
+  "full_input": {
+    "path": "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+    "sha256": "bbc8aac0b0c36fe6a178a86fd690911a431e364a07bd02992300889b0a3b0d51"
+  },
+  "control_input": {
+    "path": "/tmp/pulpissimo-bench/harness-smallmem/pulpissimo_soc.v",
+    "sha256": "3f3d9c82511d71089a1fe55f6ef95c69c495ce225d9ff8d91ad18db0892e763d",
+    "change": "each tc_sram NumWords reduced to 1; AddrWidth kept at 14/13 to preserve port widths"
+  },
+  "full_memory_bank": {
+    "instance": "i_soc_domain.i_pulp_soc.l2_ram_i.CUTS[0].bank_i",
+    "module": "tc_sram",
+    "wall_seconds": 27.257,
+    "aig_nodes": 52460372,
+    "read_latency_block_seconds": 2.609,
+    "genblk2_seconds": 24.615
+  },
+  "control": {
+    "elaboration_seconds": 4.249,
+    "aig_nodes": 605650,
+    "status": "completed",
+    "aig_nodes_before": 605650,
+    "aig_nodes_after": 325803,
+    "synthesis_seconds": 487.529,
+    "merge_seconds": 474.706,
+    "map_seconds": 6.076,
+    "cells": 180669,
+    "sequential_cells": 30460,
+    "area_um2": 1697673.2032013952,
+    "logic_depth": 98,
+    "state_bits_retained": 30460,
+    "note": "Not a PULPissimo QoR result: L2 banks reduced to one word.",
+    "read_seconds": 0.184,
+    "optimize_seconds": 476.909,
+    "emit_seconds": 0.11
+  },
+  "conclusion": "Behavioral tc_sram L2 banks dominate elaboration and AIG construction (52,460,372 nodes for one bank). With one-word banks the whole SoC elaborates in 4.249 s and synthesizes in 487.5 s; the merge optimization then dominates at about 480 s. The full SoC timeout is a memory-modeling limit, not a generate-scope limit.",
+  "next_steps": [
+    "model L2 banks as opaque SRAM macros (as the Ibex campaign uses real SRAM macros)",
+    "or add memory inference for tc_sram",
+    "or use a documented reduced-memory configuration only for scaling analysis"
+  ],
+  "tools": {
+    "trace_rustsys_sha256": "c95b1e627a819fb6747b397fedfc898c85e6409850feceeb17511f9386dde569",
+    "control_rustsys_sha256": "fd2ecbd50c12caf0c1ee6299098eef1c1d1598ac1c00166ee9ca75168b596010",
+    "note": "The trace build predates the current-module-name resolution; the trace reached the L2 banks before that path. The control uses the final build."
+  }
+}
