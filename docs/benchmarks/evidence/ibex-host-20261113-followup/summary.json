@@ -1,0 +1,360 @@
+{
+ "schema": "rusteda.host-followup.v1",
+ "date": "2026-11-13",
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+  "logical_cpus": 4,
+  "note": "the 4-vCPU VM of the same-load gate reruns of 2026-11-13, after a further container restart"
+ },
+ "engines": {
+  "RustROAD": {
+   "base": "52bc4e9 (campaign engine f90f2dd)",
+   "candidate": "fe4b28610fa1d2ce728fa5456e0b1fa891d821f7"
+  },
+  "RustSTA": {
+   "base": "47ef36a (campaign engine d453782)",
+   "candidate": "de210a66e5cef12e9e0cb11eec8a2e11ee77f0ba"
+  }
+ },
+ "binaries_sha256": {
+  "rustroad": "0c86ccdd1b9611c4ccc3af9b70796a4af9a309e87220e48fa4c97ec482dea067",
+  "ruststa": "b4a48fe196868376e539a1c507088321e9a69772541d9f78fe6f58e238d79169",
+  "rusteda": "c902a152126ccc5c3f1eb19c80b3343628d75e1ff03befef3f15127a01ddee6f",
+  "base_rustroad": "fde7f04c182bf9b1f980afda22dbc4e473143b4668ae3517b9b96d137f9bcefd",
+  "base_ruststa": "fc223e3617b3c7a9a8ab38f222506fc0a98aa6b1f8b87200df9045fbabee6dbb",
+  "base_rusteda": "440351bdec0c3f206517f9a9d552635c21d0c08f49c7b68f47ca50eb9e2e051c",
+  "rusteda_flow": "a48ec94d5575fe3671b950bdb3dfab0496a561581cee2cfdbb2eac070ecb6701"
+ },
+ "full_run": {
+  "steps_completed": 114,
+  "steps_total": 114,
+  "executor": "rusteda flow exec (campaign binary)",
+  "inputs": "the 2026-11-13 campaign prepared inputs, recipe and host copy",
+  "outputs_identical_to_campaign": {
+   "backend/ibex_sram_bench.gds": {
+    "campaign": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+    "followup": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107"
+   },
+   "logs/be_def.stdout": {
+    "campaign": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+    "followup": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0"
+   },
+   "backend/native.nom.spef": {
+    "campaign": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+    "followup": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+   },
+   "logs/be_netlist.stdout": {
+    "campaign": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+    "followup": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7"
+   },
+   "logs/be_powered.stdout": {
+    "campaign": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+    "followup": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076"
+   },
+   "frontend/mapped.v": {
+    "campaign": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+    "followup": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40"
+   }
+  },
+  "shared_gates": {
+   "drc": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "antenna": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "latchup": {
+    "exit_code": 0,
+    "status": null,
+    "campaign_status": null
+   },
+   "extraction": {
+    "exit_code": 0,
+    "status": "extracted_not_qualified",
+    "campaign_status": "extracted_not_qualified"
+   },
+   "timing": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "lvs": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "simulation": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "logic": {
+    "exit_code": 0,
+    "status": null,
+    "campaign_status": null
+   },
+   "density": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   }
+  }
+ },
+ "ab": {
+  "protocol": "one warm-up then 7 measured repetitions; per repetition and thread count, base, candidate and competitor in one rotation; heavy and build locks held for the whole run (no concurrent job); GNU time; base = campaign binaries on the campaign output, candidate = the binaries above on the follow-up run output (each RustROAD on a private copy of its own routed workspace, so each trusts its own validation receipt); commands are the ones each flow recorded",
+  "summary": {
+   "extraction/t2/base": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 6.333,
+     "min": 6.063,
+     "max": 6.595
+    },
+    "cpu_seconds": {
+     "median": 11.47,
+     "min": 10.99,
+     "max": 11.9
+    },
+    "peak_rss_kib": {
+     "median": 310932,
+     "min": 309308,
+     "max": 312172
+    },
+    "spef_sha256": [
+     "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+    ]
+   },
+   "extraction/t2/cand": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 5.315,
+     "min": 5.164,
+     "max": 5.461
+    },
+    "cpu_seconds": {
+     "median": 9.71,
+     "min": 9.47,
+     "max": 9.99
+    },
+    "peak_rss_kib": {
+     "median": 288896,
+     "min": 287536,
+     "max": 304448
+    },
+    "spef_sha256": [
+     "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+    ]
+   },
+   "extraction/t2/openrcx": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 2.874,
+     "min": 2.796,
+     "max": 2.979
+    },
+    "cpu_seconds": {
+     "median": 2.86,
+     "min": 2.78,
+     "max": 2.95
+    },
+    "peak_rss_kib": {
+     "median": 201276,
+     "min": 201048,
+     "max": 201808
+    }
+   },
+   "extraction/t4/base": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 3.87,
+     "min": 3.645,
+     "max": 4.031
+    },
+    "cpu_seconds": {
+     "median": 11.73,
+     "min": 11.15,
+     "max": 12.15
+    },
+    "peak_rss_kib": {
+     "median": 319616,
+     "min": 316044,
+     "max": 323400
+    },
+    "spef_sha256": [
+     "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+    ]
+   },
+   "extraction/t4/cand": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 3.226,
+     "min": 3.062,
+     "max": 3.397
+    },
+    "cpu_seconds": {
+     "median": 10.12,
+     "min": 9.58,
+     "max": 10.62
+    },
+    "peak_rss_kib": {
+     "median": 324552,
+     "min": 296712,
+     "max": 328504
+    },
+    "spef_sha256": [
+     "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+    ]
+   },
+   "extraction/t4/openrcx": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 3.014,
+     "min": 2.838,
+     "max": 3.333
+    },
+    "cpu_seconds": {
+     "median": 2.99,
+     "min": 2.81,
+     "max": 3.3
+    },
+    "peak_rss_kib": {
+     "median": 201696,
+     "min": 201340,
+     "max": 201952
+    }
+   },
+   "timing/t2/base": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 3.837,
+     "min": 3.614,
+     "max": 4.034
+    },
+    "cpu_seconds": {
+     "median": 5.29,
+     "min": 5.05,
+     "max": 5.52
+    },
+    "peak_rss_kib": {
+     "median": 154796,
+     "min": 148764,
+     "max": 165156
+    },
+    "report_sets": 1
+   },
+   "timing/t2/cand": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 3.907,
+     "min": 3.653,
+     "max": 4.156
+    },
+    "cpu_seconds": {
+     "median": 5.39,
+     "min": 5.09,
+     "max": 5.74
+    },
+    "peak_rss_kib": {
+     "median": 124008,
+     "min": 123844,
+     "max": 124120
+    },
+    "report_sets": 1
+   },
+   "timing/t2/opensta": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 6.077,
+     "min": 5.568,
+     "max": 6.713
+    },
+    "cpu_seconds": {
+     "median": 7.45,
+     "min": 6.74,
+     "max": 8.14
+    },
+    "peak_rss_kib": {
+     "median": 175856,
+     "min": 175644,
+     "max": 176172
+    }
+   },
+   "timing/t4/base": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 2.873,
+     "min": 2.732,
+     "max": 3.066
+    },
+    "cpu_seconds": {
+     "median": 5.29,
+     "min": 5.19,
+     "max": 5.59
+    },
+    "peak_rss_kib": {
+     "median": 192680,
+     "min": 177756,
+     "max": 194124
+    },
+    "report_sets": 1
+   },
+   "timing/t4/cand": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 2.815,
+     "min": 2.631,
+     "max": 3.012
+    },
+    "cpu_seconds": {
+     "median": 5.45,
+     "min": 5.13,
+     "max": 5.71
+    },
+    "peak_rss_kib": {
+     "median": 149448,
+     "min": 148832,
+     "max": 154144
+    },
+    "report_sets": 1
+   },
+   "timing/t4/opensta": {
+    "n": 7,
+    "failed": 0,
+    "wall_seconds": {
+     "median": 5.47,
+     "min": 5.331,
+     "max": 5.841
+    },
+    "cpu_seconds": {
+     "median": 7.95,
+     "min": 7.69,
+     "max": 8.62
+    },
+    "peak_rss_kib": {
+     "median": 176004,
+     "min": 175780,
+     "max": 176308
+    }
+   }
+  },
+  "identity": {
+   "spef": "every RustROAD run of both binaries wrote SPEF sha256 468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+   "ruststa": "with the same inputs at one work path, all 11 step outputs of both binaries are byte-identical at 4 threads (idcheck); in the A/B the base read the campaign output, so native-import.stdout differs only in the two input paths and the input-set hash that covers them"
+  }
+ }
+}

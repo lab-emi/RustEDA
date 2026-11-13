@@ -169,7 +169,10 @@ crosstalk remain outside the supported flow scope.
 at 2 threads and 3.403 s at 4, against 7.349 s and 6.881 s for OpenSTA's two
 corner processes. Its worst peak RSS was 152,088 against 176,060 KiB at 2
 threads but **197,060 against 176,252 KiB at 4 threads (11.8 % more)**, where it
-was below OpenSTA's on 2026-11-05; the cause is not yet investigated. The parity
+was below OpenSTA's on 2026-11-05; the cause was not investigated in the campaign. **Since RustSTA
+`de210a6`** (a fixed allocator mmap threshold, and free pages returned at the end of every phase) its worst peak
+RSS at 4 threads is 154,144 against OpenSTA's 176,308 KiB in same-load runs (12.6 % less;
+[after the campaign](benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)). The parity
 gate `passed`: on identical SPEF the eight compared worst slacks differ by at
 most 0.270 ps. The native frontend's ECO rounds and planning helpers are now
 `rusteda` commands built in RustSTA's tree; in same-load runs the frontend STA
@@ -229,7 +232,9 @@ detailed, 4 threads) against 75.68 s of global routing with antenna repair plus
 8.93 s. On the same final layout (three measured runs), **RustROAD extraction was
 slower than OpenRCX**: 4.664 s at 4 threads against 3.829 s (1.22×, ranges not
 overlapping) and 7.951 s at 2 threads against 3.625 s, with about 3.7 times
-OpenRCX's CPU time; GDS export took 0.498 s against 1.375 s for KLayout. In
+OpenRCX's CPU time (after the campaign, RustROAD `fe4b286` took 0.83× that time at 4 threads, level
+with OpenRCX there and 1.85× slower at 2, with the same SPEF:
+[after the campaign](benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)); GDS export took 0.498 s against 1.375 s for KLayout. In
 same-load reruns of the shared gates the native layout took 0.73× LibreLane's
 time in foundry DRC, 0.75× in antenna DRC, 0.69× in LVS and 0.76× in the
 latch-up gate.

@@ -40,8 +40,11 @@ each executable by SHA-256; the native layout passes every shared gate that
 gives a pass/fail verdict, LibreLane's fails the timing gate, so the receipt
 keeps its ratio fields null; divided, the recorded times give RustEDA a 4.4×
 shorter end-to-end time (3.5× with every check serial). Two module head-to-heads
-are losses: RustROAD's extraction takes 1.22× OpenRCX's time at 4 threads, and
-RustSTA's peak memory at 4 threads is 11.8 % above OpenSTA's. The earlier
+were losses in the campaign: RustROAD's extraction took 1.22× OpenRCX's time at
+4 threads, and RustSTA's peak memory at 4 threads was 11.8 % above OpenSTA's.
+Since then RustSTA's is 12.6 % below OpenSTA's, and RustROAD's extraction is
+level with OpenRCX at 4 threads but still 1.85× slower at 2
+([after the campaign](benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)). The earlier
 2026-11-05 and 2026-11-02 host campaigns are kept on the same page; the
 2026-11-05 receipt's commit IDs predate the rewrite of the branch's commit
 metadata, and [commit-map.json](benchmarks/commit-map.json) maps them to the
