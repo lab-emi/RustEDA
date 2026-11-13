@@ -73,7 +73,7 @@ TAP_PATHS = dict(latchup='backend/latchup/summary.json',
     latchup_execution='backend/latchup-execution/result.json',
     coverage_execution='backend/tap-coverage-execution/result.json')
 # First-party hierarchy-budget correction root0c630b5; not the failed T1 worker.
-TAP_WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
+TAP_WORKER = ('5c08015c126e1855e75afef06308b40444c5bcba842909e4b0462f790c1dee45', 37719)
 TAP_CONTRACT = ('96d227ad2aa23b9b41d853c836a3e9c6fbfe39ec07c02fc64f343418ddc64282', 5666)
 
 

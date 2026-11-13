@@ -189,8 +189,9 @@ the same final layout (three measured runs), RustROAD extraction took 6.260 s at
 threads against 5.988 s, with about three times OpenRCX's CPU time; GDS export
 took 0.831 s against 1.938 s for KLayout. OpenRCX extracts the native DEF
 1.36× slower than LibreLane's in same-load
-runs (192,328 against 129,901 wire pieces), and the latch-up gate is slower (1.11×) on the
-native layout.
+runs (192,328 against 129,901 wire pieces), and the latch-up gate was slower (1.11×) on the
+native layout with the checker of that campaign; with the shared checker of 2026-11-12, changed
+for both layouts, it takes 0.78× ([latch-up checker change](benchmarks.md#latch-up-checker-change-2026-11-12)).
 
 **2026-11-02 host campaign.** On the same final routed DEF (three measured
 runs), RustROAD extraction took a median 158.823 s on its default 2-thread pool

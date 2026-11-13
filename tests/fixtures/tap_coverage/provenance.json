@@ -1,0 +1,13 @@
+{
+  "schema": "rusteda.first-party-compatibility-fixtures.v1",
+  "source_repository": "lab-emi/RustEDA",
+  "source_commit": "699ea579069674f5a66699722816cfa215f5a0f7",
+  "scope": "own-source reference: the tap-coverage certificate as run in the 2026-11-05 campaign, kept as the oracle that the current checker is compared with on control layouts; not a foundry oracle",
+  "files": {
+    "checker_20261105.py": {
+      "source_path": "integration/ibex_sg13g2_ez130/tap_coverage.py",
+      "sha256": "98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47",
+      "bytes": 18682
+    }
+  }
+}

@@ -44,7 +44,106 @@ violations** where LibreLane's layout has 112.
 ¹ Same scripts and decks on both layouts, interleaved runs at the same load (medians).
 ² RustEDA's flow time includes its own foundry DRC, antenna and LVS; LibreLane's does not.
 
-LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. RustEDA is not faster everywhere: its repair before global routing takes 1.18× LibreLane's two pre-route resizer steps alone, OpenRCX runs 1.36× longer on RustEDA's DEF, and the latch-up check 1.11× longer on its layout. [All stages, gates and losses](#ibex-host-campaign-2026-11-05)
+LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. RustEDA is not faster everywhere: its repair before global routing takes 1.18× LibreLane's two pre-route resizer steps alone, OpenRCX runs 1.36× longer on RustEDA's DEF, and the latch-up check 1.11× longer on its layout in the campaign (0.78× since the shared checker changed for both layouts on 2026-11-12: [latch-up checker change](#latch-up-checker-change-2026-11-12)). [All stages, gates and losses](#ibex-host-campaign-2026-11-05)
+
+## Latch-up checker change · 2026-11-12
+
+RustEDA's own latch-up certificate (`integration/ibex_sg13g2_ez130/tap_coverage.py`,
+LU.a and LU.b, 20 µm), which the shared `latchup` gate runs on both flows'
+layouts, was rewritten on 2026-11-12. **The gate's time changed because the
+shared checker changed, for both layouts alike; neither layout changed.** In the
+2026-11-05 campaign the checker flattened every layer shape by shape in Python
+(1.37 M contacts on RustEDA's layout, 1.26 M on LibreLane's) and intersected
+the whole target layer with each n-well domain, which is slow for the notched
+ones (71 of the 251 domains with targets on RustEDA's layout, 24 of 197 on
+LibreLane's), so the gate took 1.11× longer on RustEDA's layout.
+
+| Latch-up gate, same-load A/B (6 interleaved runs per arm) | RustEDA layout | LibreLane layout | RustEDA ÷ LibreLane |
+| --- | ---: | ---: | ---: |
+| Checker of 2026-11-05: wall s, median (range) | 39.02 (38.03–41.16) | 35.21 (34.38–36.17) | 1.11× (loss) |
+| Checker of 2026-11-05: CPU s | 38.84 (37.90–39.61) | 35.02 (34.26–36.06) | 1.11× |
+| Checker of 2026-11-12: wall s | 5.70 (5.51–6.04) | 7.34 (7.05–7.61) | **0.78× (win)** |
+| Checker of 2026-11-12: CPU s | 5.56 (5.46–5.63) | 7.25 (6.97–7.49) | **0.77×** |
+| New ÷ old checker, wall | 0.15× | 0.21× | |
+| Peak RSS, old → new | 586 → 255 MiB | 565 → 287 MiB | |
+
+Each run is the campaign's `run_signoff.sh … --gates latchup` with only the
+recipe copy's checker differing; wall and CPU (user + system) are the gate
+process's GNU time. The 24 runs were interleaved (arm order rotated per
+repetition) inside one hold of the host's exclusive lock, at a 1-minute load of
+2.46–3.56 (median 3.11). Every run gave the same verdict:
+LU.a `passed` with 251 (197) domains, 37,250 (42,506) targets and 17,802
+(20,700) tie points, LU.b `passed`, 0 uncertified boxes.
+
+**What changed in the checker.** It validates and counts each master cell's
+shapes once, weighted by exact occurrence counts; flattens the layers natively
+(the n-well merged per cell first, the dopant Booleans per cell); reads only
+the contacts that touch tie diffusion (35,604 of 1,367,691 on RustEDA's
+layout, 41,400 of 1,255,986 on LibreLane's); gathers each domain's targets and ties through a bounding-box index
+before one small Boolean per domain; merges each domain's targets and ties
+again, so that a target box is the bounding box of one connected diffusion and
+a tie point one vertex of one connected contacted tie, however cells and
+instances cut or repeat them; and stops the tie-point search for a box at the
+first point that proves it.
+
+**Same certificate.** The straight-line certificate examines the same boxes
+against the same tie-point sets as the checker of 2026-11-05:
+
+- on both final layouts, all 91,466 (107,323) certificate calls, compared as
+  multisets of box and tie-point set;
+- on 7 mutants of each final layout (the taps of one n-well strip within 70 µm
+  of its end, and within 45 µm of a notch, left without contacts; every tap in
+  an 80 × 40 µm window deleted; every tap in a 60 × 30 µm window moved by
+  40 µm; the n-well-side or the substrate-side contacts removed in an
+  80 × 30 µm window; one tap deleted), where both checkers examine the same
+  boxes and fail exactly the same ones (4 to 343 per mutant; LibreLane's
+  one-tap mutant passes both);
+- on 150 control layouts, 143 of them also with a second domain per rule, and on
+  7,938 seeded random hierarchical layouts (`tests/fixtures/tap_coverage`):
+  rotated, mirrored and arrayed instances, wells, targets and ties formed only
+  by abutting or overlapping shapes of different cells, repeated instances,
+  macro exclusions, contacts partly on tie diffusion, empty layers, and targets
+  exactly on, 1 nm inside and 1 nm outside the 20 µm limit. The calls are
+  identical on the 145 controls and 6,902 random layouts without diffusion
+  pieces that touch at a corner; on the others every box of the old checker is
+  examined, against the same or fewer tie points, and more (below). Paths,
+  non-rectilinear shapes and rotated or magnified instances are refused with
+  the same diagnostics.
+
+The tests run both checkers on these layouts in the pinned KLayout
+(`tests/test_tap_coverage.py`, `RUSTEDA_TEST_KLAYOUT`).
+
+**Two differences, both stricter.** A layout that the new checker passes is
+passed by the checker of 2026-11-05 (unless that one stops on one of its work
+budgets, which the two consume differently); the reverse does not hold in two
+cases:
+
+- *LU.a inside the well.* The foundry LU.a rule grows the ties inside NWell
+  (`ext_enlarge_inside` in the maximal deck); the old certificate measured a
+  straight line. In every non-rectangular n-well domain each target rectangle
+  now also needs a certified path inside the well: monotone to a tie point, or
+  through the domain's reflex corners, whose own in-well distances come from a
+  Dijkstra search. A U-shaped n-well whose target is 10 µm from its tie in a
+  straight line but 76 µm inside the well, and two strips joined by a spine at
+  one end, pass the old checker; they fail the new one and the maximal deck's
+  LU.a. Wells whose in-well path is longer than the straight line but within
+  20 µm (around the bottom of a U, around a notch) pass all three. Both final
+  layouts pass (71 and 24 notched domains).
+- *Diffusion pieces that touch at a corner.* The old checker certified such
+  pieces separately or as one box, depending on whether an operand of its
+  Booleans happened to be a single rectangle. The new one certifies both the
+  box of the whole and the boxes of the parts, against one tie point per
+  connected tie. Neither final layout has such pieces.
+
+The unchanged maximal deck flags LU.a on 26 of the 94 controls that are
+neither refused nor empty. The new checker fails 20 of them and passes the 6
+that lie outside its scope by construction: 4 with targets or dopants inside
+the excluded SRAM macro, which the macro contract and LVS cover, and 2 with P+
+Activ under `PWell:block`, which the deck treats as n-well and the certificate,
+old and new, does not. The old checker passes 2 more, the U-shaped well and
+the comb. In a 200 × 50 µm window of RustEDA's layout with three taps of one
+strip removed, all eight foundry LU.a findings lie inside boxes that the
+checker fails (21 failing boxes in that window, old and new alike).
 
 ## Ibex host campaign · 2026-11-05
 
@@ -410,6 +509,10 @@ Every stage or gate where RustEDA is not faster, or not better, in this campaign
   the shape of the n-well domains: 71 of the native layout's 251 LU.a domains
   are notched, against 24 of 197 on LibreLane's, mostly by the mux-input reset
   flop `DFFMRQX2` that synthesis selects (RustROAD `docs/tap-integration.md`).
+  The shared checker was changed for both layouts on 2026-11-12; it certifies
+  the same boxes and no longer intersects each domain with the whole target
+  layer. With it the gate takes 5.70 s on RustEDA's layout against 7.34 s
+  (0.78×, [latch-up checker change](#latch-up-checker-change-2026-11-12)).
 - **Timing gate** (parity, 0.96×): RustSTA plus OpenSTA on each
   layout's OpenRCX SPEF, where RustEDA's layout is not faster in same-load runs.
 - **RustROAD extraction against OpenRCX** (module head-to-head): level at

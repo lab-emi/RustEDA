@@ -23,7 +23,7 @@ import subprocess
 import sys
 import time
 
-WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
+WORKER = ('5c08015c126e1855e75afef06308b40444c5bcba842909e4b0462f790c1dee45', 37719)
 
 
 def need(value, message):

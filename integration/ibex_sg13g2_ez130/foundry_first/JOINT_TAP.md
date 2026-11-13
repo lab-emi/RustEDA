@@ -38,9 +38,11 @@ must both be zero-finding, with category applicability. Early main paths stay
 raw; only the original C7 typed proof connects them to equal final content.
 
 Maximal and independent coverage both bind the exact actual final GDS FileID.
-Coverage requires the independently frozen hierarchy-fixed root0c630b5 worker
-`98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47`,18682B,
-and unchanged original caps. Distinct hierarchy dependencies and expanded
+Coverage requires the frozen worker
+`5c08015c126e1855e75afef06308b40444c5bcba842909e4b0462f790c1dee45`,37719B (native-region geometry; the straight-line
+certificate of the hierarchy-fixed root0c630b5 worker `98e1044b…`,18682B on
+merged domain components, plus the in-well LU.a certificate), and unchanged
+original caps. Distinct hierarchy dependencies and expanded
 occurrences are reported separately. Both LU.a/LU.b certificates must be
 nonvacuous and satisfy the hard20um rule. Exactly two named SRAM target
 exclusions retain full well domains and the separate original macro contract

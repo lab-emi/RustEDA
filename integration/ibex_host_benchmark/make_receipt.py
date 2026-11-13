@@ -73,9 +73,11 @@ def shared_gates(summary):
     # The controller passes only on a zero exit with both rules passed and the report bound to the GDS.
     out["latchup"] = dict(status=(controller.get("status") if lu.get("exit_code") == 0 else "unverified") if lu
                           else None,
-                          scope="tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate",
+                          scope="tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate, LU.a also in-well",
+                          # Reported boxes of both certificates (each list is capped at 32 by the checker).
                           rules={k: dict(status=v.get("status"), target_polygons=v.get("target_polygons"),
-                                         uncertified_boxes=len(v.get("uncertified_boxes") or []))
+                                         uncertified_boxes=len(v.get("uncertified_boxes") or [])
+                                         + len(v.get("in_well_uncertified_boxes") or []))
                                  for k, v in (coverage.get("rules") or {}).items()})
     r = (g.get("lvs") or {}).get("report") or {}
     out["lvs"] = dict(status=r.get("status"), top_port_identity=r.get("top_port_identity"),

@@ -85,7 +85,9 @@ run is `unqualified` (no published component-qualification evidence). RustEDA
 leads every paired stage except two: the repair before global routing, where
 LibreLane's two pre-route resizer steps are faster, and the flows' own OpenRCX
 step (6.79 s against 5.557 s). Two shared gates, OpenRCX extraction and latch-up
-tap coverage, run slower on its layout (the timing gate is level); module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice
+tap coverage, ran slower on its layout in that campaign (the timing gate is level; the latch-up
+gate's shared checker was changed for both layouts on 2026-11-12 and now takes 0.78× on RustEDA's
+layout, [latch-up checker change](benchmarks.md#latch-up-checker-change-2026-11-12)); module head-to-heads cover RustSys, RustSTA, RustROAD and RustSpice
 (on extracted RC nets, not transistor level). The 2026-11-02 campaign, on
 another host, stays on the benchmark page.
 

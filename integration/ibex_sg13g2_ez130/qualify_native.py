@@ -68,7 +68,7 @@ TAP_PATHS = dict(latchup='backend/latchup/summary.json',
     routing_audit='frontend/physical/routing-writer-audit.json',
     latchup_execution='backend/latchup-execution/result.json',
     coverage_execution='backend/tap-coverage-execution/result.json')
-TAP_WORKER = ('98e1044bad21adc710700da0b53236876949adeecdfd04adb01eba67cbf33b47', 18682)
+TAP_WORKER = ('5c08015c126e1855e75afef06308b40444c5bcba842909e4b0462f790c1dee45', 37719)
 RC_RULE_KEY = 'ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules'
 RC_RULE_SHA256 = 'ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905'
 V2_FILES = {'antenna_group_policy', 'antenna_legacy', 'antenna_verifier', 'antenna_source_manifest'}

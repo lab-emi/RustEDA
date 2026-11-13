@@ -15,19 +15,43 @@ The triangle inequality proves every point of each accepted box is <=20um
 away; this is conservative for Euclidean distance. Failure means unverified
 coverage, not a fabricated foundry finding. No sampling-only pass is possible.
 
+LU.a additionally measures the distance inside the n-well, as the foundry rule
+grows the ties inside NWell: in a non-rectangular domain every target box must
+also pass a second certificate whose paths stay inside the closed domain
+(WellCorridor). Every certified path is a real path inside the well, so its
+length is at least the in-well L1 distance, which is at least the straight-line
+one; this certificate runs after the first and only adds failures. LU.b keeps
+the straight-line distance, as the foundry LU.b grows the ties without a well.
+
+Geometry is processed by native KLayout region operations: source shapes are
+validated and counted once per master cell and weighted by exact occurrence
+counts, layers are flattened by the region constructor, contacts are reduced
+to those touching tie diffusion before any Boolean, and each domain's targets
+and ties are clipped from a bounding-box window. Every derived target and tie
+region is the same point set as the plain expression it replaces, and each
+domain's targets and ties are merged again before use (component_region): a
+target box is the bounding box of one connected diffusion and a tie point is
+one vertex of one connected contacted tie, however cells, instances or the
+operations above cut or repeat them. Pieces that touch at a corner count as
+connected: such a tie gives one point, and such a target is certified as the
+box of the whole and as the boxes of its edge-connected parts.
+
 Fixture estimate: <2GiB based on merged source geometry (eight source regions),
 derived domains/dopants, target/tie/intersection temporaries and the reader;
-measured baseline peak0.9GiB. Aggregated hierarchy state<128MiB (including
-dictionary growth), anchors/bins<96MiB, one
+measured peak RSS below 0.35GiB on the Ibex final layouts (0.57GiB with the
+per-shape flattening that the native regions replaced). Aggregated hierarchy
+state<128MiB (including dictionary growth), anchors/bins<96MiB, one
 worker. Caps are not a generic admission proof for native Boolean intermediates:
 they allocate before output inspection. Caller MUST supply4GiB/1GiB and600s
 guards and GNU peak RSS; native allocation/time failure means unverified.
 Tiny controls use1GiB/60s. Python traversals have explicit count/work caps.
 """
+import bisect
 from collections import deque
 from decimal import Decimal
 import fcntl
 import hashlib
+import heapq
 import json
 from pathlib import Path
 import re
@@ -89,21 +113,185 @@ class TiePoints:
                     best = min(best, abs(px - x) + abs(py - y))
         return best
 
+    def reaches(self, x, y, threshold):
+        """Whether nearest(x, y) <= threshold, stopping at the first tie point that proves it."""
+        if threshold < 0:
+            return False
+        bx, by = x // self.distance, y // self.distance
+        cells = [self.bins.get((bx, by), ())] + [self.bins.get((ix, iy), ()) for ix in range(bx - 1, bx + 2)
+                                                  for iy in range(by - 1, by + 2) if (ix, iy) != (bx, by)]
+        if sum(map(len, cells)) > self.budget.limits['candidates']:
+            raise CoverageLimit('COVERAGE_BUDGET:candidates')
+        checks = 0
+        for cell in cells:
+            for px, py in cell:
+                checks += 1
+                if abs(px - x) + abs(py - y) <= threshold:
+                    self.budget.charge('distance_checks', checks)
+                    return True
+        self.budget.charge('distance_checks', checks)
+        return False
 
-def certify_box(box, points, budget):
-    """Sufficient certificate over the entire closed box, with bounded DFS."""
+    def candidates(self, x, y):
+        """Every tie point within the limit of (x, y) as (distance, x, y), nearest first."""
+        bx, by = x // self.distance, y // self.distance
+        cells = [self.bins.get((ix, iy), ()) for ix in range(bx - 1, bx + 2) for iy in range(by - 1, by + 2)]
+        checks = sum(map(len, cells))
+        if checks > self.budget.limits['candidates']:
+            raise CoverageLimit('COVERAGE_BUDGET:candidates')
+        self.budget.charge('distance_checks', checks)
+        found = [(distance, px, py) for cell in cells for px, py in cell
+                 for distance in (abs(px - x) + abs(py - y),) if distance <= self.distance]
+        found.sort()
+        return found
+
+
+def span(ax, ay, bx, by):
+    return min(ax, bx), min(ay, by), max(ax, bx), max(ay, by)
+
+
+class WellCorridor:
+    """Certified paths inside one closed, non-rectangular well domain polygon.
+
+    The closure of the domain's bounding box minus the domain is given twice as
+    closed rectangles: cut into horizontal slabs (`rows`, no vertical cut lines) and
+    into vertical slabs (`columns`, no horizontal cut lines); rectangles on the
+    bounding box edge reach 1 DBU past it. A box inside the bounding box lies in the
+    closed domain iff it overlaps no such rectangle in the open sense; a vertical
+    segment is tested against `rows`, a horizontal one against `columns`, so a cut
+    line is never mistaken for well, and a point uses the exact `inside` test.
+    A box whose bounding box with a point q lies in the domain reaches q by a
+    monotone in-well path of exactly the L1 distance. Reflex corners of the domain
+    are relays: Dijkstra over monotone hops gives each corner the length of an
+    in-well path to a contacted tie point, so every certified length is that of a
+    real in-well path: never below the in-well or straight-line L1 distance.
+    """
+
+    def __init__(self, frame, rows, columns, inside, corners, points, budget):
+        self.frame, self.inside, self.points, self.budget = frame, inside, points, budget
+        self.limit = points.distance
+        self.slabs = []
+        for holes in (rows, columns):
+            holes = sorted(holes)
+            self.slabs.append((holes, [hole[0] for hole in holes],
+                               max((hole[2] - hole[0] for hole in holes), default=0)))
+        corners = sorted(set(corners))
+        index = {}
+        for number, (x, y) in enumerate(corners):
+            budget.charge('anchors')
+            budget.charge('bin_entries')
+            index.setdefault((x // self.limit, y // self.limit), []).append(number)
+        reach, queue = [None] * len(corners), []
+        for number, (x, y) in enumerate(corners):
+            for distance, px, py in points.candidates(x, y):
+                if self.contains(*span(x, y, px, py)):
+                    queue.append((distance, number))
+                    break
+        heapq.heapify(queue)
+        while queue:
+            distance, number = heapq.heappop(queue)
+            if reach[number] is not None:
+                continue
+            reach[number] = distance
+            x, y = corners[number]
+            for ix in range(x // self.limit - 1, x // self.limit + 2):
+                for iy in range(y // self.limit - 1, y // self.limit + 2):
+                    for other in index.get((ix, iy), ()):
+                        if reach[other] is not None:
+                            continue
+                        ox, oy = corners[other]
+                        total = distance + abs(ox - x) + abs(oy - y)
+                        if total <= self.limit and self.contains(*span(x, y, ox, oy)):
+                            heapq.heappush(queue, (total, other))
+        self.relays = {}
+        for number, (x, y) in enumerate(corners):
+            if reach[number] is not None:
+                self.relays.setdefault((x // self.limit, y // self.limit), []).append((x, y, reach[number]))
+
+    def contains(self, lx, ly, ux, uy):
+        """Whether the closed box [lx,ux]x[ly,uy] lies in the closed domain."""
+        fl, fb, fr, ft = self.frame
+        if lx < fl or ly < fb or ux > fr or uy > ft:
+            return False
+        if lx == ux and ly == uy:
+            self.budget.charge('distance_checks')
+            return self.inside(lx, ly)
+        holes, lefts, widest = self.slabs[1 if ly == uy else 0]
+        for number in range(bisect.bisect_left(lefts, lx - widest), len(holes)):
+            hl, hb, hr, ht = holes[number]
+            if hl > ux:
+                break
+            self.budget.charge('distance_checks')
+            if hl < ux and lx < hr and hb < uy and ly < ht:
+                return False
+        return True
+
+    def clear(self, box):
+        """No hole within the limit of the box. Then every hop that the straight-line
+        certificate accepted for this box (to a tie point within the limit, inside the
+        domain's bounding box) already stays in the well, so that certificate suffices."""
+        lx, ly, ux, uy = (box[0] - self.limit, box[1] - self.limit, box[2] + self.limit, box[3] + self.limit)
+        holes, lefts, widest = self.slabs[0]
+        for number in range(bisect.bisect_left(lefts, lx - widest), len(holes)):
+            hl, hb, hr, ht = holes[number]
+            if hl > ux:
+                break
+            if hl < ux and lx < hr and hb < uy and ly < ht:
+                return False
+        return True
+
+    def reach(self, box, x, y, radius):
+        """(accepted, length of the shortest certified path from the centre, or limit+1)."""
+        lx, ly, ux, uy = box
+        options = self.points.candidates(x, y)
+        for total, qx, qy in options:  # tie points first: most boxes need no relay
+            if total + radius > self.limit:
+                break
+            if self.contains(min(lx, qx), min(ly, qy), max(ux, qx), max(uy, qy)):
+                return True, total
+        for ix in range(x // self.limit - 1, x // self.limit + 2):
+            for iy in range(y // self.limit - 1, y // self.limit + 2):
+                for wx, wy, length in self.relays.get((ix, iy), ()):
+                    self.budget.charge('distance_checks')
+                    total = abs(wx - x) + abs(wy - y) + length
+                    if total <= self.limit:
+                        options.append((total, wx, wy))
+        options.sort()
+        for total, qx, qy in options:
+            if total + radius > self.limit:
+                break
+            if self.contains(min(lx, qx), min(ly, qy), max(ux, qx), max(uy, qy)):
+                return True, total
+        for total, qx, qy in options:
+            if self.contains(*span(x, y, qx, qy)):
+                return False, total
+        return False, self.limit + 1
+
+
+def certify_box(box, points, budget, corridor=None):
+    """Sufficient certificate over the entire closed box, with bounded DFS.
+
+    With a WellCorridor, every accepted path also stays inside the well domain."""
     pending = [(box, 0)]
     while pending:
         budget.charge('boxes')
         (lx, ly, ux, uy), depth = pending.pop()
         x, y = (lx + ux) // 2, (ly + uy) // 2
-        distance = points.nearest(x, y)
         radius = max(x - lx, ux - x) + max(y - ly, uy - y)
-        if distance + radius <= points.distance:
-            continue
-        if distance > points.distance:
-            return dict(box=[lx, ly, ux, uy], center=[x, y],
-                        nearest_l1_distance_dbu_at_least=distance)
+        if corridor is None:
+            if points.reaches(x, y, points.distance - radius):
+                continue
+            distance = points.nearest(x, y)
+            if distance > points.distance:
+                return dict(box=[lx, ly, ux, uy], center=[x, y],
+                            nearest_l1_distance_dbu_at_least=distance)
+        else:
+            accepted, distance = corridor.reach((lx, ly, ux, uy), x, y, radius)
+            if accepted:
+                continue
+            if distance > points.distance:
+                return dict(box=[lx, ly, ux, uy], center=[x, y],
+                            diagnostic='NO_CERTIFIED_IN_WELL_PATH_WITHIN_LIMIT')
         if depth >= budget.limits['depth'] or lx == ux and ly == uy:
             raise CoverageLimit('COVERAGE_BUDGET:depth')
         if max(ux - lx, uy - ly) <= 1:
@@ -193,16 +381,137 @@ def hierarchy(layout, top, excluded, budget):
     return cells, full, selected
 
 
-def inspect_region(region, budget):
-    count = vertices = 0
-    for poly in region.each():
-        count += 1
-        vertices += poly.num_points()
-        budget.charge('shape_visits')
-        budget.charge('vertex_visits', poly.num_points())
-        if count > budget.limits['input_shapes'] or vertices > budget.limits['vertices']:
-            raise CoverageLimit('COVERAGE_REGION_SIZE_BUDGET')
+LAYERS = dict(active=(1, 0), psd=(14, 0), nsd=(7, 0), nsd_block=(7, 21),
+              nwell=(31, 0), pwell_block=(46, 21), pwell_draw=(46, 0), contact=(6, 0))
+FULL_HIERARCHY = ('nwell', 'pwell_block', 'pwell_draw')
+
+
+def region_inventory(region, budget):
+    """Polygons and vertices of a region as stored, counted natively."""
+    semantics = region.merged_semantics
+    region.merged_semantics = False
+    count, vertices = region.count(), region.edges().count()
+    region.merged_semantics = semantics
+    budget.charge('shape_visits', count)
+    budget.charge('vertex_visits', vertices)
+    if count > budget.limits['input_shapes'] or vertices > budget.limits['vertices']:
+        raise CoverageLimit('COVERAGE_REGION_SIZE_BUDGET')
     return dict(polygons=count, vertices=vertices)
+
+
+def source_layer(pya, cells, counts, skipped, layer, budget):
+    """Validate every reachable shape of one layer and charge its flattened counts.
+
+    Each master cell is checked once and weighted by its exact occurrence count;
+    `skipped` cells (the excluded macros, for target and tie layers) are not visited,
+    as the recursive iterator that flattens the layer does not visit them.
+    hierarchy() rejected every complex instance, so each occurrence applies a unit
+    orthogonal transform, which keeps shape class, rectilinearity and vertex count.
+    """
+    other = pya.Shapes.SEdges | pya.Shapes.SEdgePairs | pya.Shapes.SPoints | pya.Shapes.SUserObjects
+    shapes_total = vertices_total = 0
+    for key, cell in cells.items():
+        occurrences, shapes = counts.get(key, 0), cell.shapes(layer)
+        if not occurrences or key in skipped or shapes.is_empty():
+            continue
+        if next(iter(shapes.each(pya.Shapes.SPaths)), None) is not None:
+            raise ValueError('COVERAGE_PATH_GEOMETRY_UNSUPPORTED')
+        if next(iter(shapes.each(other)), None) is not None:
+            raise ValueError('COVERAGE_SHAPE_CLASS_UNSUPPORTED')
+        raw = pya.Region(shapes)  # boxes and polygons; texts are not geometry
+        raw.merged_semantics = False
+        if not raw.non_rectilinear().is_empty():
+            raise ValueError('COVERAGE_NONRECTILINEAR_GEOMETRY_UNSUPPORTED')
+        shapes_total += raw.count() * occurrences
+        vertices_total += raw.edges().count() * occurrences
+        if shapes_total > budget.limits['input_shapes'] or vertices_total > budget.limits['vertices']:
+            raise CoverageLimit('COVERAGE_BUDGET:input_shapes')
+    budget.charge('input_shapes', shapes_total)
+    budget.charge('vertices', vertices_total)
+    return dict(source_shapes=shapes_total, source_vertices=vertices_total)
+
+
+def partition(region, frames, size, budget):
+    """Polygons of `region` grouped by every domain frame that their bounding box meets.
+
+    `frames` are the domains' bounding boxes. A polygon with positive area inside a
+    domain meets its frame, so (group & domain) is exactly (region & domain)."""
+    grid, groups = {}, [[] for _ in frames]
+    for number, (fl, fb, fr, ft) in enumerate(frames):
+        for ix in range(fl // size, fr // size + 1):
+            for iy in range(fb // size, ft // size + 1):
+                budget.charge('bin_entries')
+                grid.setdefault((ix, iy), []).append(number)
+    for polygon in region.each():
+        box = polygon.bbox()
+        seen = set()
+        for ix in range(box.left // size, box.right // size + 1):
+            for iy in range(box.bottom // size, box.top // size + 1):
+                for number in grid.get((ix, iy), ()):
+                    fl, fb, fr, ft = frames[number]
+                    if number not in seen and fl <= box.right and box.left <= fr and fb <= box.top and box.bottom <= ft:
+                        seen.add(number)
+                        groups[number].append(polygon)
+    return groups
+
+
+def component_region(pya, group, polygon, alone):
+    """Merged polygons of (region & polygon) for one domain, from that domain's group.
+
+    `group` holds every polygon of the region whose bounding box meets the domain's frame, so
+    (group & polygon) is the same point set as (region & polygon). `alone`: no other domain
+    frame meets any polygon of the region, which is already clipped to the domains, so all of
+    it lies in this domain and no clip is needed. The pieces may overlap, abut or repeat
+    (cell pieces, repeated instances, a clip that returns its input pieces): the final merge
+    of a fresh region makes one polygon per connected part, corner contacts included."""
+    pieces = pya.Region(group)
+    if not alone:
+        pieces = pya.Region(list((pieces & pya.Region(polygon)).each()))
+    pieces.min_coherence = False
+    pieces.merge()
+    return pieces
+
+
+def corner_part_boxes(pya, region, known):
+    """Bounding boxes of the edge-connected parts of polygons that join parts at a corner only.
+
+    `region` is a component_region(). Empty when no polygon touches itself at a corner (the part
+    count then equals the polygon count); boxes in `known` are left out."""
+    parts = region.dup()
+    parts.min_coherence = True
+    parts.merge()
+    if parts.count() == region.count():
+        return []
+    boxes = {(box.left, box.bottom, box.right, box.top) for box in (part.bbox() for part in parts.each())}
+    return sorted(boxes - known)
+
+
+def slab_rectangles(pya, region, transform, frame):
+    """Closed rectangles of `region` cut into horizontal slabs in `transform`'s frame."""
+    fl, fb, fr, ft = frame
+    rectangles = []
+    for piece in region.transformed(transform).each():
+        for part in piece.decompose_trapezoids(pya.Polygon.TD_simple):
+            if not part.is_box():
+                raise ValueError('COVERAGE_WELL_DECOMPOSITION')
+            box = part.bbox().transformed(transform.inverted())
+            rectangles.append((box.left - (box.left == fl), box.bottom - (box.bottom == fb),
+                               box.right + (box.right == fr), box.top + (box.top == ft)))
+    return rectangles
+
+
+def well_corridor(pya, polygon, points, budget):
+    box = polygon.bbox()
+    frame = (box.left, box.bottom, box.right, box.top)
+    outside = pya.Region(box) - pya.Region(polygon)
+    rows = slab_rectangles(pya, outside, pya.Trans(), frame)
+    columns = slab_rectangles(pya, outside, pya.Trans(pya.Trans.M45), frame)
+    if len(rows) + len(columns) > budget.limits['anchors']:
+        raise CoverageLimit('COVERAGE_BUDGET:anchors')
+    corners = [(x, y) for hl, hb, hr, ht in rows for x in (hl, hr) for y in (hb, ht)
+               if polygon.inside(pya.Point(x, y))]
+    return WellCorridor(frame, rows, columns, lambda x, y: polygon.inside(pya.Point(x, y)),
+                        corners, points, budget)
 
 
 def geometry_check(config, budget):
@@ -229,90 +538,128 @@ def geometry_check(config, budget):
     cells, full, selected = hierarchy(layout, top, excluded, budget)
     if any(full.get(key, 0) != expected for key, expected in excluded.items()):
         raise ValueError('COVERAGE_EXCLUSION_COUNT')
-    layers = dict(active=(1, 0), psd=(14, 0), nsd=(7, 0), nsd_block=(7, 21),
-                  nwell=(31, 0), pwell_block=(46, 21), pwell_draw=(46, 0), contact=(6, 0))
-    indices = {name: layout.layer(*spec) for name, spec in layers.items()}
+    indices = {name: layout.layer(*spec) for name, spec in LAYERS.items()}
     for name, layer in indices.items():
-        counts = full if name in ('nwell', 'pwell_block', 'pwell_draw') else selected
+        counts = full if name in FULL_HIERARCHY else selected
         estimated = sum(cell.shapes(layer).size() * counts.get(key, 0) for key, cell in cells.items())
         if estimated > budget.limits['input_shapes']:
             raise CoverageLimit('COVERAGE_INPUT_SHAPE_ESTIMATE:' + name)
-    regions, inventory = {}, {}
+    regions, inventory, store = {}, {}, pya.DeepShapeStore()
     for name, layer in indices.items():
-        region = pya.Region()
+        counts = full if name in FULL_HIERARCHY else selected
+        inventory[name] = source_layer(pya, cells, counts, () if name in FULL_HIERARCHY else excluded,
+                                       layer, budget)
+        if name == 'contact':
+            continue  # flattened below, only where it can touch tie diffusion
         iterator = top.begin_shapes_rec(layer)
-        if name not in ('nwell', 'pwell_block', 'pwell_draw'):
+        if name not in FULL_HIERARCHY:
             iterator.unselect_cells(list(excluded))
-        while not iterator.at_end():
-            shape = iterator.shape()
-            if shape.is_box():
-                poly = pya.Polygon(shape.box)
-            elif shape.is_polygon():
-                poly = shape.polygon
-            elif shape.is_path():
-                raise ValueError('COVERAGE_PATH_GEOMETRY_UNSUPPORTED')
-            elif shape.is_text():
-                iterator.next()
-                continue
-            else:
-                raise ValueError('COVERAGE_SHAPE_CLASS_UNSUPPORTED')
-            budget.charge('input_shapes')
-            budget.charge('vertices', poly.num_points())
-            if not poly.is_rectilinear():
-                raise ValueError('COVERAGE_NONRECTILINEAR_GEOMETRY_UNSUPPORTED')
-            transform = iterator.trans()
-            if transform.is_complex():
-                raise ValueError('COVERAGE_COMPLEX_TRANSFORM_UNSUPPORTED')
-            # Unit orthogonal transforms are exactly representable by Trans;
-            # do not round arbitrary-angle/scaled geometry through ICplxTrans.
-            region.insert(poly.transformed(transform.s_trans()))
-            iterator.next()
-        iterator._destroy()
-        region.min_coherence = True
-        region.merge()
-        inventory[name] = inspect_region(region, budget)
-        regions[name] = region
+        if name in FULL_HIERARCHY:
+            # Merged per cell variant, then flattened and merged once more: the same merged
+            # polygons as merging the flattened layer, with repeated cells merged only once.
+            deep = pya.Region(iterator, store)
+            deep.merge()
+            region = pya.Region()
+            region.insert(deep)
+            region.min_coherence = True
+            region.merge()
+            inventory[name].update(region_inventory(region, budget))
+            regions[name] = region
+        else:
+            regions[name] = pya.Region(iterator, store)  # dopant Booleans run per cell variant
     frame = pya.Region(top.bbox())
     pwell = (frame - regions['nwell'] - regions['pwell_block']) | regions['pwell_draw']
-    nsd = (frame - regions['psd'] - regions['nsd_block']) | regions['nsd']
     p_active = regions['active'] & regions['psd']
-    n_active = regions['active'] & nsd
-    reports = {}
-    for rule, domain, target, ties in (
-            ('LU.a', regions['nwell'], p_active, n_active & regions['contact']),
-            ('LU.b', pwell, n_active, p_active & regions['contact'])):
+    # active lies inside frame, so this is active & ((frame - psd - nsd_block) | nsd).
+    n_active = ((regions['active'] - regions['psd']) - regions['nsd_block']) | (regions['active'] & regions['nsd'])
+    rules = []
+    for rule, domain, target, tie_diffusion, in_well in (
+            ('LU.a', regions['nwell'], p_active, n_active, True),
+            ('LU.b', pwell, n_active, p_active, False)):
         domain.min_coherence = True
         domain.merge()
-        domain_inventory = inspect_region(domain, budget)
-        target, ties = target & domain, ties & domain
-        inspect_region(target, budget)
-        inspect_region(ties, budget)
+        rules.append([rule, domain, region_inventory(domain, budget), target & domain, tie_diffusion & domain, in_well])
+    # Only contacts touching tie diffusion can intersect it; the iterator delivers every
+    # contact that overlaps or touches the union, so (contacts & tie diffusion) is exact.
+    tie_window = rules[0][4] | rules[1][4]  # kept referenced while the iterator is in use
+    iterator = top.begin_shapes_rec(indices['contact'])
+    iterator.region = tie_window
+    iterator.unselect_cells(list(excluded))
+    contacts = pya.Region(iterator)
+    contacts.merged_semantics = False
+    reports = {}
+    for rule, domain, domain_inventory, target, tie_diffusion, in_well in rules:
+        ties = contacts & tie_diffusion
+        region_inventory(target, budget)
+        region_inventory(ties, budget)
+        polygons = list(domain.each())
+        frames = [(b.left, b.bottom, b.right, b.top) for b in (poly.bbox() for poly in polygons)]
+        target_groups = partition(target, frames, distance, budget)
+        tie_groups = partition(ties, frames, distance, budget)
         report = dict(status='passed', domains=0, target_polygons=0, tie_points=0,
-                      uncertified_boxes=[], domain_inventory=domain_inventory)
-        for poly in domain.each():
+                      uncertified_boxes=[], uncertified_count=0, in_well_domains=0,
+                      in_well_uncertified_boxes=[], in_well_uncertified_count=0,
+                      distance='in_well_L1_upper_bound_and_straight_L1' if in_well else 'straight_L1',
+                      domain_inventory=domain_inventory)
+        target_domains = sum(1 for group in target_groups if group)
+        tie_domains = sum(1 for group in tie_groups if group)
+        for number, poly in enumerate(polygons):
             budget.charge('domains')
-            component = pya.Region(poly)
-            targets = target & component
+            if not target_groups[number]:
+                continue  # no target polygon meets this domain's frame
+            targets = component_region(pya, target_groups[number], poly, target_domains == 1)
             if targets.is_empty():
                 continue
             report['domains'] += 1
             anchors = []
-            for anchor in (ties & component).each():
-                # A polygon vertex is an actual contacted-tie point. Using
-                # that point is stronger than using an arbitrary bbox center.
-                point = next(anchor.each_point_hull())
-                if len(anchors) >= budget.limits['anchors']:
-                    raise CoverageLimit('COVERAGE_BUDGET:anchors')
-                anchors.append((point.x, point.y))
+            if tie_groups[number]:
+                for anchor in component_region(pya, tie_groups[number], poly, tie_domains == 1).each():
+                    # A polygon vertex is an actual contacted-tie point. Using
+                    # that point is stronger than using an arbitrary bbox center.
+                    point = next(anchor.each_point_hull())
+                    if len(anchors) >= budget.limits['anchors']:
+                        raise CoverageLimit('COVERAGE_BUDGET:anchors')
+                    anchors.append((point.x, point.y))
             report['tie_points'] += len(anchors)
             points = TiePoints(anchors, distance, budget)
+            corridor = None
+            if in_well and not poly.is_box():
+                corridor = well_corridor(pya, poly, points, budget)
+                report['in_well_domains'] += 1
+            certified = set()
             for target_poly in targets.each():
                 report['target_polygons'] += 1
                 budget.charge('shape_visits')
                 box = target_poly.bbox()
-                failure = certify_box((box.left, box.bottom, box.right, box.top), points, budget)
+                box = (box.left, box.bottom, box.right, box.top)
+                certified.add(box)
+                failure = certify_box(box, points, budget)
                 if failure is not None:
                     report['status'] = 'unverified'
+                    report['uncertified_count'] += 1
+                    if len(report['uncertified_boxes']) < 32:
+                        report['uncertified_boxes'].append(failure)
+                elif corridor is not None and not corridor.clear(box):
+                    # Only diffusion points need an in-well path: certify the target's own
+                    # rectangles, each inside the domain, not its bounding box.
+                    parts = [box] if target_poly.is_box() else [
+                        (r.left, r.bottom, r.right, r.top) for r in
+                        (part.bbox() for part in target_poly.decompose_trapezoids(pya.Polygon.TD_simple))]
+                    failure = next((f for f in (certify_box(part, points, budget, corridor) for part in parts)
+                                    if f is not None), None)
+                    if failure is not None:
+                        report['status'] = 'unverified'
+                        report['in_well_uncertified_count'] += 1
+                        if len(report['in_well_uncertified_boxes']) < 32:
+                            report['in_well_uncertified_boxes'].append(failure)
+            # A diffusion joined at a corner was certified above as one box; its parts are
+            # certified on their own as well, so both readings of such a diffusion are proven.
+            for box in corner_part_boxes(pya, targets, certified):
+                budget.charge('shape_visits')
+                failure = certify_box(box, points, budget)
+                if failure is not None:
+                    report['status'] = 'unverified'
+                    report['uncertified_count'] += 1
                     if len(report['uncertified_boxes']) < 32:
                         report['uncertified_boxes'].append(failure)
         if not report['target_polygons'] or not report['tie_points']:
@@ -363,6 +710,7 @@ def run(config_path):
                       excluded_macro_content_status='unchecked_requires_separate_macro_contract_and_full_lvs',
                       geometry_scope='rectilinear_polygons_unit_orthogonal_transforms_no_paths',
                       criterion='conservative_complete_box_L1_contacted_tie_certificate',
+                      lu_a_distance='also_inside_nwell_monotone_paths_via_certified_reflex_corners',
                       full_foundry_latchup_status='unchecked', wall_seconds=time.monotonic() - started)
         text = json.dumps(report, indent=2, allow_nan=False) + '\n'
         if len(text.encode()) > 4 << 20:

@@ -278,8 +278,9 @@ unknown, so these files and the module pins change together.
   LU.a boxes uncovered, so the margin is load-bearing. The foundry main deck
   (shared `drc` gate) checks LU.b only; the shared `latchup` gate
   (`tap_coverage_runner.py`, LU.a and LU.b, 20 µm, conservative box
-  certificate) checks both on every final GDS and fails on any box it cannot
-  prove. The maximal foundry deck (`signoff_latchup.py`, which includes LU.a)
+  certificate; in a non-rectangular n-well LU.a also needs a path inside the
+  well, as the foundry rule grows the ties inside NWell) checks both on every
+  final GDS and fails on any box it cannot prove. The maximal foundry deck (`signoff_latchup.py`, which includes LU.a)
   is not part of the flow; it passed on the GDS of the first runs below. Both
   checks fail on a copy of a final GDS with the taps of one 100 µm window
   removed.
