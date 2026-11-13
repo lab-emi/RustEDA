@@ -8,7 +8,7 @@ cd RustEDA
 ./dev shared
 ```
 
-The development baseline is Git, Python 3.11+, Rust 1.97.1 and Linux native
+The development baseline is Git, Python 3.11+, Rust 1.100.0 and Linux native
 build dependencies. Component-specific requirements live under each guide.
 There is no root Cargo workspace. Shared implementation lives in RustEDA Common;
 applications in `apps/` depend on an exact source revision.

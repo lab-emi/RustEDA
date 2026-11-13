@@ -197,7 +197,7 @@ See [PDK and SRAM setup](docs/pdks.md) for paths, provenance and compiler limits
 
 ## Start building
 
-Git, Python 3.11+, Rust 1.97.1 and a native Linux build environment are the
+Git, Python 3.11+, Rust 1.100.0 and a native Linux build environment are the
 development baseline. Python drives the development harness; Rust core crates
 do not depend on it. Studio has additional native GUI dependencies.
 

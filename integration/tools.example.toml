@@ -2,7 +2,7 @@ schema_version = 1
 status = "unchecked"
 
 [rust]
-channel = "1.97.1"
+channel = "1.100.0"
 
 [scope]
 pdks = ["sky130_fd_sc_hd", "gf180mcu_fd_sc_mcu7t5v0", "gf180mcu_fd_sc_mcu9t5v0"]
