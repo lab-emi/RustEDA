@@ -15,29 +15,19 @@ repository = "https://github.com/lab-emi/RustEDA"
 [workspace.dependencies]
 rusteda-core = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "26d8548093c8696ae425238f8ae0c6a590e72f5d" }
 rusteda-workspace = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "26d8548093c8696ae425238f8ae0c6a590e72f5d" }
+# No member uses rusteda-compute; `./dev shared` requires every consumer of the foundation to pin
+# all five shared crates at the recorded revision, so Cargo reports this one entry as unused.
 rusteda-compute = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "26d8548093c8696ae425238f8ae0c6a590e72f5d" }
 rusteda-formats = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "26d8548093c8696ae425238f8ae0c6a590e72f5d" }
 rusteda-flow = { path = "crates/apps/rusteda-flow" }
 rusteda-studio = { path = "crates/apps/rusteda-studio", default-features = false }
-rusteda-cli = { path = "crates/apps/rusteda-cli" }
 rusteda-cli-shared = { package = "rusteda-cli-common", git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "26d8548093c8696ae425238f8ae0c6a590e72f5d" }
 clap = { version = "=4.6.7", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "color", "suggestions"] }
 clap_complete = { version = "=4.6.11", default-features = false }
-# Terminal size for the progress line of the command line. `windows`: crossterm does not compile
-# on Windows without it (its dependencies are Windows-only).
-crossterm = { version = "=0.29.0", default-features = false, features = ["windows"] }
 serde = { version = "=1.0.228", features = ["derive"] }
 # float_roundtrip: the decimal text of a stored f64 parses back to the same value.
 serde_json = { version = "=1.0.149", features = ["float_roundtrip"] }
-thiserror = "=2.0.18"
 rayon = "=1.12.0"
-rustc-hash = "=2.1.2"
-# Plain-record views of the frozen netlist tables and the compute task interface.
-bytemuck = { version = "=1.25.2", features = ["derive"] }
-memmap2 = "=0.9.11"
-xxhash-rust = { version = "=0.8.19", default-features = false, features = ["xxh3"] }
-# The CUDA driver and NVRTC libraries are loaded at run time: builds need no CUDA toolkit.
-cudarc = { version = "=0.19.10", default-features = false, features = ["std", "driver", "nvrtc", "fallback-dynamic-loading", "cuda-version-from-build-system", "fallback-latest"] }
 # The workbench's user-interface framework (plan §6.1), used only by the `gui` feature of
 # `rusteda-studio` (an apps crate, Rule 1.3). The released 0.2.2 is the last version on
 # crates.io; the component library of the plan does not build against it in its current
