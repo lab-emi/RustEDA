@@ -106,6 +106,38 @@ more than 200 IDs is not expanded: only its first number counts as cited.
 | CORE-REQ-0136 | docs/specs/core/netlist.md | @common/crates/core/rusteda-core/src/netlist/frozen.rs<br>@common/crates/core/rusteda-core/src/netlist/tests.rs<br>@common/crates/core/rusteda-core/src/netlist/tests_frozen.rs |
 | CORE-REQ-0137 | docs/specs/core/netlist.md | @common/crates/core/rusteda-core/src/netlist/frozen.rs<br>@common/crates/core/rusteda-core/src/netlist/tests_frozen.rs<br>@common/crates/core/rusteda-core/src/netlist/validate.rs<br>@common/crates/formats/rusteda-formats/src/verilog/netlist/freeze_writer.rs |
 | CORE-REQ-0138 | docs/specs/core/netlist.md | @common/crates/core/rusteda-core/src/netlist/frozen.rs<br>@common/crates/core/rusteda-core/src/netlist/tests_frozen.rs |
+| FLOWEXEC-REQ-0001 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0002 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0003 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0004 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0005 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0006 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0007 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/exec/template.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0008 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/exec/pyjson.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0009 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/exec/identity.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0010 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0011 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/exec/template.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0012 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0013 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0014 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0015 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0016 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0017 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0018 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0019 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0020 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0021 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0022 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0023 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0024 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0025 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0026 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0027 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0028 | docs/specs/flow/exec.md | crates/apps/rusteda-cli/tests/flow_exec.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0029 | docs/specs/flow/exec.md | crates/apps/rusteda-cli/tests/flow_exec.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0030 | docs/specs/flow/exec.md | crates/apps/rusteda-cli/tests/flow_exec.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0031 | docs/specs/flow/exec.md | crates/apps/rusteda-cli/tests/flow_exec.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0032 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/cli.rs<br>crates/apps/rusteda-flow/tests/worker_contract.rs |
 | JOB-REQ-0001 | docs/specs/core/README.md | @common/crates/core/rusteda-core/src/job.rs |
 | JOB-REQ-0002 | docs/specs/core/README.md | @common/crates/core/rusteda-core/src/job.rs |
 | JOB-REQ-0003 | docs/specs/core/README.md | @common/crates/core/rusteda-core/src/job.rs<br>crates/apps/rusteda-studio/src/model/snapshot.rs |
@@ -248,6 +280,7 @@ more than 200 IDs is not expanded: only its first number counts as cited.
 | SDC-REQ-0054 | docs/specs/sdc/sdc.md | @common/crates/apps/rusteda-cli/src/import_sdc.rs<br>@common/crates/apps/rusteda-cli/tests/import_sdc.rs<br>crates/apps/rusteda-cli/tests/import_sdc.rs |
 | SDC-REQ-0055 | docs/specs/sdc/sdc.md | @common/crates/apps/rusteda-cli/src/import_sdc.rs<br>@common/crates/apps/rusteda-cli/tests/import_sdc.rs<br>@common/crates/formats/rusteda-formats/src/sdc.rs<br>crates/apps/rusteda-cli/tests/import_sdc.rs |
 | SDC-REQ-0070 | docs/specs/sdc/sdc.md | @common/crates/formats/rusteda-formats/tests/sdc_commands.rs |
+| SDC-REQ-0071 | docs/specs/sdc/sdc.md | @common/crates/formats/rusteda-formats/tests/sdc_commands.rs |
 | STUDIO-REQ-0001 | docs/specs/studio/workspace.md | crates/apps/rusteda-studio/src/model/watch.rs<br>crates/apps/rusteda-studio/tests/studio.rs |
 | STUDIO-REQ-0002 | docs/specs/studio/workspace.md | crates/apps/rusteda-studio/src/model/watch.rs<br>crates/apps/rusteda-studio/tests/studio.rs |
 | STUDIO-REQ-0003 | docs/specs/studio/workspace.md | crates/apps/rusteda-studio/src/model/budget.rs |
@@ -453,12 +486,13 @@ more than 200 IDs is not expanded: only its first number counts as cited.
 | BLIF | 23 | 0 |
 | COMPUTE | 32 | 0 |
 | CORE | 26 | 0 |
+| FLOWEXEC | 32 | 0 |
 | JOB | 7 | 0 |
 | LIBERTY | 49 | 0 |
 | RCLI | 30 | 0 |
-| SDC | 56 | 0 |
+| SDC | 57 | 0 |
 | STUDIO | 70 | 0 |
 | VERILOG | 28 | 0 |
 | WS | 100 | 0 |
 
-435 requirements, 0 without a citing test or source.
+468 requirements, 0 without a citing test or source.

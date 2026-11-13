@@ -364,3 +364,137 @@ fn missing_scope_and_fake_declarations_fail_closed() {
         assert_eq!(result["ok"], false, "{defect}: {result}");
     }
 }
+
+/// A minimal IHP producer manifest and flow configuration around it; `road` is completed by
+/// the caller. The manifest is never executed here.
+fn ihp_fixture(root: &Path, road: Value) -> PathBuf {
+    let program = std::env::current_exe().unwrap();
+    let file = |name: &str| {
+        let path = root.join(name);
+        fs::write(&path, format!("synthetic {name}\n")).unwrap();
+        serde_json::to_value(workspace::identify(&path, 1024).unwrap()).unwrap()
+    };
+    let tool = serde_json::to_value(workspace::identify(&program, 1 << 30).unwrap()).unwrap();
+    let cpu = fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|status| {
+            let list = status
+                .lines()
+                .find_map(|line| line.strip_prefix("Cpus_allowed_list:"))?
+                .trim()
+                .to_owned();
+            list.split([',', '-']).next()?.parse::<u32>().ok()
+        })
+        .unwrap_or(0);
+    write(
+        &root.join("manifest.json"),
+        &json!({"schema":"rusteda.ihp-flow.v1","name":"native_control","pdk":"ihp-sg13g2",
+            "library":"ez130_8t","corners":["tt","ss"],
+            "files":{"contract":file("contract.json"),"rtl":file("design.v"),"sdc":file("design.sdc"),
+                "sram_qualification":file("sram.json"),"producer":file("producer.py")},
+            "tools":{"rustroad":tool,"gnu_time":tool},
+            "scope":{"threads":1,"cpu_affinity":[cpu],"memory_mib":8192,"max_log_bytes":8192},
+            "steps":[{"id":"only","kind":"render","destination":"x.json","content":{}}],
+            "gates":{},"artifacts":{}}),
+    );
+    let mut road = road;
+    road["project"] = json!(root);
+    road["manifest"] = json!("manifest.json");
+    let config = root.join("config.json");
+    write(
+        &config,
+        &json!({"schema_version":1,"design_name":"native_control","pdk":"ihp_sg13g2_ez130",
+            "flow":"rusteda","road":road,
+            "tools":{"python":"interpreter_that_is_not_installed","rustroad":program,
+                "gnu_time":program,"podman":program},
+            "limits":{"memory_mib":8192,"threads":1,"max_log_bytes":8192,
+                "max_file_bytes":1073741824,"max_input_bytes":4294967296u64}}),
+    );
+    config
+}
+
+/// FLOWEXEC-REQ-0032: with `road.executor: "native"` the published request runs this program's
+/// `flow exec` on the captured manifest and needs neither a driver script nor an interpreter;
+/// the worker boundary stays the controller's, so `run` still refuses.
+#[test]
+fn a_native_executor_request_runs_this_program_without_a_driver_script() {
+    let temp = tempfile::tempdir().unwrap();
+    let root = fs::canonicalize(temp.path()).unwrap();
+    let config = ihp_fixture(&root, json!({"executor":"native"}));
+    let ws = root.join("workspace");
+    flow::init(&ws, &config, "empty").unwrap();
+    let plan = flow::plan(&ws, "HEAD").unwrap();
+    assert_eq!(
+        plan["steps"][0]["capability"],
+        "external_worker_native_executor"
+    );
+    let doctor = flow::doctor(&ws, "HEAD").unwrap();
+    let tools: Vec<_> = doctor["checks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|c| c["tool"].clone())
+        .collect();
+    assert_eq!(tools, ["rustroad", "gnu_time", "podman"]);
+    assert_eq!(
+        flow::run(&ws, "rev0", None, false).unwrap_err().code,
+        "EXTERNAL_WORKER_REQUIRED"
+    );
+    let (_, request_path, _) = prepare(&ws);
+    let request: Value = serde_json::from_slice(&fs::read(&request_path).unwrap()).unwrap();
+    let program = fs::canonicalize(std::env::current_exe().unwrap()).unwrap();
+    assert_eq!(request["program"], json!(program));
+    assert_eq!(request["executor"], "native");
+    assert_eq!(request["cpu_affinity"].as_array().unwrap().len(), 1);
+    let arguments: Vec<&str> = request["arguments"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|a| a.as_str().unwrap())
+        .collect();
+    assert_eq!(arguments[..2], ["flow", "exec"]);
+    let value = |name: &str| arguments[arguments.iter().position(|a| *a == name).unwrap() + 1];
+    assert_eq!(value("--project"), root.to_str().unwrap());
+    assert_eq!(
+        value("--manifest"),
+        root.join("manifest.json").to_str().unwrap()
+    );
+    assert_eq!(value("--pdk"), "ihp");
+    assert_eq!(value("--base-rev"), "empty");
+    assert_eq!(value("--rustroad"), program.to_str().unwrap());
+    assert_eq!(value("--gnu-time"), program.to_str().unwrap());
+    assert!(Path::new(value("--output")).starts_with(ws.join("steps/rtl2gds/attempt1")));
+    assert!(
+        request["environment"]["RUSTEDA_WORKER_ID"]
+            .as_str()
+            .unwrap()
+            .len()
+            == 64
+    );
+}
+
+/// FLOWEXEC-REQ-0032: a driver script and the native executor exclude each other, a driver flow
+/// still needs its interpreter and its pinned script, and only the IHP manifest is native.
+#[test]
+fn the_native_executor_is_an_explicit_choice_of_the_ihp_flow() {
+    let temp = tempfile::tempdir().unwrap();
+    let root = fs::canonicalize(temp.path()).unwrap();
+    let both = ihp_fixture(&root, json!({"executor":"native","driver":"producer.py"}));
+    let error = rusteda_flow::config::Config::load(&both).unwrap_err();
+    assert_eq!(error.code, "IHP_FLOW_PROTOCOL");
+    let neither = ihp_fixture(&root, json!({}));
+    assert!(rusteda_flow::config::Config::load(&neither).is_err());
+    // The default executor is the driver, which needs the configured interpreter.
+    let driver = ihp_fixture(&root, json!({"driver":"producer.py"}));
+    assert_eq!(
+        rusteda_flow::config::Config::load(&driver)
+            .unwrap_err()
+            .code,
+        "TOOL_UNAVAILABLE"
+    );
+    let other: Value = json!({"schema_version":1,"design_name":"top","pdk":"sky130_fd_sc_hd",
+        "flow":"rusteda","road":{"project":".","manifest":"design.json","executor":"native"},
+        "limits":{"memory_mib":8192}});
+    let config: rusteda_flow::config::Config = serde_json::from_value(other).unwrap();
+    assert_eq!(config.validate().unwrap_err().code, "RUSTROAD_PROTOCOL");
+}

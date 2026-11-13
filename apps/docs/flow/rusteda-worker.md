@@ -12,6 +12,46 @@ The native process supervisor deliberately prohibits namespace creation.
 Container work therefore uses an explicit external-worker protocol, rather
 than changing that supervisor's guarantees. No resident server is required.
 
+## The worker program
+
+The request names a program and its arguments. Two programs execute a native step graph:
+
+- `rusteda flow exec`, the [native executor](native-executor.md): Rust, no interpreter
+  on the executor path. It runs the `rusteda.ihp-flow.v1` manifest of the IHP SG13G2
+  recipe with the same files and receipts as the script it replaces.
+- The Python drivers, which are still needed in these cases:
+  1. **SKY130 HD and GF180 7T** (`road_worker.py`): the qualified producer of these PDKs
+     is RustROAD's `rtl2gds.py`, a Python program with its own gate logic and Podman
+     containers; it has no manifest for the native executor to run.
+  2. **A request that was prepared with a driver script** (`road.driver` names
+     `producer.py`): `prepare` publishes exactly the configured driver, so such a
+     request keeps running it. Both executors accept the same manifest; switching is a
+     configuration change, never a silent substitution.
+  3. **Steps whose tool is a Python script.** They are ordinary command steps of the
+     native executor too: Python is then one more pinned child program, not the executor.
+  4. **Composition** of the IHP manifest (`native_frontend.py`, `native_backend.py`,
+     `native_flow.py`) and the **worker controller** of `./dev flow`
+     (`worker_control.py`: the systemd user scope, container cleanup and the receipt).
+
+The native executor is selected in the flow configuration, for the IHP PDK only:
+
+```json
+{"flow": "rusteda", "pdk": "ihp_sg13g2_ez130", "design_name": "ibex_sram_bench",
+ "road": {"project": "compose/be", "manifest": "manifest.json", "executor": "native"}}
+```
+
+`prepare` then publishes `rusteda flow exec ...` of the running program as the request,
+and neither a driver script nor an interpreter is resolved for it. The controller runs
+that request exactly as it runs a driver request. `rusteda flow run` itself still answers
+`EXTERNAL_WORKER_REQUIRED` for a `rusteda` flow, also with the native executor: creating
+the worker's control group (a systemd user scope named after the request, which the
+recipe's LVS step checks) and attesting its cleanup is the controller's part of the
+contract, and that controller is the Python `worker_control.py` today.
+
+Whichever program runs, it runs inside the controller's ownership boundary below: the
+executor owns scheduling and records, the controller owns the memory limit, the CPU set
+and the cleanup of the whole scope.
+
 ## State transitions
 
 1. `init --base-rev empty` captures source scripts, fixture definitions, PDK

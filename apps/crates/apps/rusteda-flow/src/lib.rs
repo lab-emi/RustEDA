@@ -5,6 +5,7 @@ pub mod cli;
 pub mod config;
 pub mod engine;
 pub mod error;
+pub mod exec;
 pub mod flow;
 pub mod ihp;
 pub mod integration;

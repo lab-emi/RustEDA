@@ -8,6 +8,7 @@ RustEDA flow executes bounded tool processes and records revisioned checkpoints,
 
 - [Workspace architecture](architecture.md)
 - [RustEDA worker](rusteda-worker.md)
+- [Native step-graph executor](native-executor.md)
 - [Physical recipes](physical-recipes.md)
 - [Engine contracts](verification/engine-contracts.md)
 - [Process containment](verification/process-supervisor.md)

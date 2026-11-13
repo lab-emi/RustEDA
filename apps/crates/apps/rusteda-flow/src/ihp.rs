@@ -59,6 +59,17 @@ pub fn validate_config(config: &Config) -> Result<()> {
             "native IHP flow requires one authoritative producer manifest",
         ));
     }
+    // An empty driver path is the native executor's; a driver script must be named.
+    if config.native_executor()
+        != config
+            .road
+            .as_ref()
+            .is_some_and(|r| r.driver.as_os_str().is_empty())
+    {
+        return Err(bad(
+            "road.driver names the driver script; with road.executor native it is omitted",
+        ));
+    }
     if !(1..=86400).contains(&l.timeout_secs)
         || !(8192..=16384).contains(&l.memory_mib)
         || !(1..=16).contains(&l.threads)
@@ -145,7 +156,11 @@ pub fn input_paths(config: &Config) -> Result<Vec<PathBuf>> {
         .as_ref()
         .ok_or_else(|| bad("missing producer"))?;
     let value = manifest(config)?;
-    let mut files = BTreeSet::from([producer.manifest.clone(), producer.driver.clone()]);
+    let native = config.native_executor();
+    let mut files = BTreeSet::from([producer.manifest.clone()]);
+    if !native {
+        files.insert(producer.driver.clone());
+    }
     for (key, max) in [("files", 256), ("tools", 32)] {
         let records = value[key]
             .as_object()
@@ -162,7 +177,11 @@ pub fn input_paths(config: &Config) -> Result<Vec<PathBuf>> {
             files.insert(spec.path);
         }
     }
-    for name in ["contract", "rtl", "sdc", "sram_qualification", "producer"] {
+    // The driver script pins itself as `producer`; the native executor has no script.
+    for name in ["contract", "rtl", "sdc", "sram_qualification", "producer"]
+        .iter()
+        .take(if native { 4 } else { 5 })
+    {
         if value["files"].get(name).is_none() {
             return Err(bad(format!("missing required input {name}")));
         }
@@ -172,7 +191,10 @@ pub fn input_paths(config: &Config) -> Result<Vec<PathBuf>> {
         &config.tools.rustroad,
         &config.tools.gnu_time,
         &config.tools.podman,
-    ] {
+    ]
+    .into_iter()
+    .skip(usize::from(native))
+    {
         files.insert(engine::resolve_tool(tool)?);
     }
     if files.len() > 512 {

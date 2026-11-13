@@ -99,12 +99,22 @@ pub fn prepare(root: &Path, base: &str, retry_failed: bool) -> Result<Value> {
         selected.ok_or_else(|| Error::new("ATTEMPT_BUDGET", "no unused worker attempt slot"))?;
     let config = &state.config;
     let road = config.road.as_ref().unwrap();
-    let program = engine::resolve_tool(&config.tools.python)?;
+    let native = config.native_executor();
+    // The native executor is this program itself; a driver script runs under its interpreter.
+    let program = if native {
+        fs::canonicalize(std::env::current_exe()?)?
+    } else {
+        engine::resolve_tool(&config.tools.python)?
+    };
     let rustroad = engine::resolve_tool(&config.tools.rustroad)?;
     let timer = engine::resolve_tool(&config.tools.gnu_time)?;
     let podman = engine::resolve_tool(&config.tools.podman)?;
-    let mut args = vec![
-        text(&road.driver)?,
+    let mut args = if native {
+        vec!["flow".to_owned(), "exec".to_owned()]
+    } else {
+        vec![text(&road.driver)?]
+    };
+    args.extend([
         "--project".into(),
         text(&road.project)?,
         "--manifest".into(),
@@ -117,7 +127,7 @@ pub fn prepare(root: &Path, base: &str, retry_failed: bool) -> Result<Value> {
         text(&rustroad)?,
         "--gnu-time".into(),
         text(&timer)?,
-    ];
+    ]);
     if config.pdk == crate::config::Pdk::IhpEz130 {
         args.extend(["--base-rev".into(), "empty".into()]);
     }
@@ -128,6 +138,9 @@ pub fn prepare(root: &Path, base: &str, retry_failed: bool) -> Result<Value> {
         "environment":{"PYTHONDONTWRITEBYTECODE":"1","OMP_NUM_THREADS":"2","OPENBLAS_NUM_THREADS":"2"}});
     if config.pdk == crate::config::Pdk::IhpEz130 {
         request["cpu_affinity"] = json!(crate::ihp::worker_cpu_affinity(config)?);
+    }
+    if native {
+        request["executor"] = json!("native");
     }
     let id = format!("{:x}", Sha256::digest(serde_json::to_vec(&request)?));
     request["request_id"] = json!(id);

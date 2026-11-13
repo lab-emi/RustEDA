@@ -109,7 +109,7 @@ pub fn plan(root: &Path, rev: &str) -> Result<Value> {
     let ws = Workspace::open(root, false, false)?;
     let state = load_checked(&ws, rev)?;
     let plan: Vec<_> = state.stages.iter().map(|s| json!({"id":s.id,"operation":s.operation,"status":s.status,
-        "capability":if s.operation=="RustROAD.RtlToGds" {"external_worker"} else if s.operation=="RustSTA.PostPnR" {"legacy_adapter_unverified"} else if s.operation.contains(':') {"caller_recipe_unverified"} else {"implemented"}})).collect();
+        "capability":if s.operation=="RustROAD.RtlToGds" {if state.config.native_executor() {"external_worker_native_executor"} else {"external_worker"}} else if s.operation=="RustSTA.PostPnR" {"legacy_adapter_unverified"} else if s.operation.contains(':') {"caller_recipe_unverified"} else {"implemented"}})).collect();
     Ok(
         json!({"schema":"rustlane.v1","ok":true,"rev":state.manifest.revision,"flow":state.config.flow,"pdk":state.config.pdk,"steps":plan,
         "limitations":["physical recipes are caller-supplied and not automatically equivalent to LibreLane Classic", "flow rusteda delegates qualified extracted timing to RustROAD; generic classic recipes remain unqualified"]}),
@@ -120,12 +120,17 @@ pub fn doctor(root: &Path, rev: &str) -> Result<Value> {
     let ws = Workspace::open(root, false, false)?;
     let state = load_checked(&ws, rev)?;
     let mut requested = if state.config.flow == FlowKind::Rusteda {
-        vec![
+        let mut tools = vec![
             ("python", &state.config.tools.python),
             ("rustroad", &state.config.tools.rustroad),
             ("gnu_time", &state.config.tools.gnu_time),
             ("podman", &state.config.tools.podman),
-        ]
+        ];
+        if state.config.native_executor() {
+            // The native executor is this program; step interpreters are manifest pins.
+            tools.remove(0);
+        }
+        tools
     } else {
         vec![
             ("rustsys", &state.config.tools.rustsys),
@@ -177,7 +182,7 @@ pub fn run(root: &Path, base: &str, until: Option<&str>, retry_failed: bool) -> 
     if state.config.flow == FlowKind::Rusteda {
         return Err(Error::new(
             "EXTERNAL_WORKER_REQUIRED",
-            "use prepare and finish, or the RustEDA dev flow runner",
+            "the worker's control group belongs to a controller: use prepare, run the published request (rusteda flow exec with road.executor native) under it, then finish; or use the RustEDA dev flow runner",
         ));
     }
     let last = if let Some(target) = until {

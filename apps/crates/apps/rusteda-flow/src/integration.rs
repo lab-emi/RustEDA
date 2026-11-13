@@ -73,6 +73,11 @@ pub fn validate_config(config: &Config) -> Result<()> {
         return crate::ihp::validate_config(config);
     }
     tag(&config.pdk)?;
+    if config.native_executor() {
+        return Err(bad(
+            "road.executor native runs the IHP step-graph manifest; this PDK's producer needs its driver",
+        ));
+    }
     if config.road.is_none()
         || !config.verilog_files.is_empty()
         || !config.libraries.is_empty()

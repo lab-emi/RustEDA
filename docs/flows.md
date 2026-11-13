@@ -20,6 +20,20 @@ Read-only queries inspect committed snapshots while a worker runs. Completed
 work can be reused only after its inputs, dependencies, outputs and gate results
 are revalidated. A cache hit is not a new physical run.
 
+## The native step-graph executor
+
+The step graph of the IHP SG13G2/EZ130 recipe (the `rusteda.ihp-flow.v1` manifest) is
+executed by `rusteda flow exec`, a Rust program, or by the reference script
+`producer.py`; both leave the same files. A flow configuration chooses the Rust executor
+as its worker program with `"road": {"executor": "native"}`. Its dry run, progress
+events and status query are described in
+[the native executor guide](workbench/flow/native-executor.md).
+
+```sh
+rusteda flow exec --manifest compose/be/prefix-manifest.json --output run/output --dry-run
+rusteda flow exec-status --output run/output
+```
+
 ## Recovery
 
 After interruption, inspect the workspace, then run `recover --base-rev <current>`.

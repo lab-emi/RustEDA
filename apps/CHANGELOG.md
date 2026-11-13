@@ -6,6 +6,16 @@ The format follows the "Keep a Changelog" convention; versions follow semantic v
 ## [Unreleased]
 
 ### Added
+- **`rusteda flow exec`, the native step-graph executor** (`docs/specs/flow/exec.md`,
+  FLOWEXEC-REQ-0001 to FLOWEXEC-REQ-0032; guide `docs/flow/native-executor.md`): executes the
+  `rusteda.ihp-flow.v1` manifest of the native RTL-to-GDS recipe without a script interpreter
+  on the executor path. Manifest and input-hash validation before anything is created, serial
+  steps and parallel groups with CPU lanes and memory reservations, deadlines, log and
+  stdout-artifact byte budgets, receipts and summary in the reference JSON text form,
+  progress events as JSON lines (`--events`), a status query for running and finished runs
+  (`rusteda flow exec-status`), a dry run that prints the resolved graph (`--dry-run`), coded
+  errors and cancellation on SIGINT/SIGTERM. A flow configuration selects it as the worker
+  program with `road.executor: "native"`.
 - **`rusteda-studio` 0.1, the workbench of the suite** (`docs/specs/studio/`, STUDIO-REQ-0001 to
   STUDIO-REQ-0252):
   - Headless model without graphics dependencies: read-only loading of a revision through

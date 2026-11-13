@@ -36,12 +36,27 @@ pub enum FlowKind {
     Rusteda,
 }
 
+/// The worker program that executes a `rusteda` flow's producer manifest.
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum RoadExecutor {
+    /// The configured driver script, run by the configured script interpreter.
+    #[default]
+    Driver,
+    /// `rusteda flow exec` of this program: the native step-graph executor.
+    Native,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RoadFlow {
     pub project: PathBuf,
     pub manifest: PathBuf,
+    /// The driver script; empty when `executor` is `native`.
+    #[serde(default)]
     pub driver: PathBuf,
+    #[serde(default)]
+    pub executor: RoadExecutor,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -398,7 +413,9 @@ impl Config {
                     "road manifest must be within its project",
                 ));
             }
-            road.driver = resolve_input(base, &road.driver)?;
+            if road.executor == RoadExecutor::Driver {
+                road.driver = resolve_input(base, &road.driver)?;
+            }
         }
         for path in &mut self.verilog_files {
             *path = resolve_input(base, path)?;
@@ -433,16 +450,29 @@ impl Config {
             }
         }
         if self.flow == FlowKind::Rusteda {
+            // The native executor needs no script interpreter of its own; interpreters that
+            // steps use are pinned by the manifest.
+            let native = self.native_executor();
             for path in [
                 &mut self.tools.python,
                 &mut self.tools.rustroad,
                 &mut self.tools.gnu_time,
                 &mut self.tools.podman,
-            ] {
+            ]
+            .into_iter()
+            .skip(usize::from(native))
+            {
                 *path = crate::engine::resolve_tool(path)?;
             }
         }
         Ok(())
+    }
+
+    /// True when the flow's producer manifest is executed by `rusteda flow exec`.
+    pub fn native_executor(&self) -> bool {
+        self.road
+            .as_ref()
+            .is_some_and(|road| road.executor == RoadExecutor::Native)
     }
 
     pub fn input_paths(&self) -> Result<Vec<PathBuf>> {
@@ -460,7 +490,9 @@ impl Config {
     pub fn replace_paths(&mut self, paths: &BTreeMap<PathBuf, PathBuf>) {
         if self.flow == FlowKind::Rusteda {
             let road = self.road.as_mut().unwrap();
-            road.driver = paths[&road.driver].clone();
+            if road.executor == RoadExecutor::Driver {
+                road.driver = paths[&road.driver].clone();
+            }
             // The qualified producer resolves its collateral relative to its
             // project. Originals AND immutable copies remain identity checked.
             return;
