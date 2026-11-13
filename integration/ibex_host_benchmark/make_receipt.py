@@ -281,7 +281,10 @@ def native_stage_times(receipts):
         "synthesis (RustSys)": lambda i: i in ("fe_synth_init", "fe_synth_import", "fe_synth", "fe_synth_export"),
         "placement and CTS (RustROAD)": lambda i: i.startswith("fe_") and any(
             t in i for t in ("pdk_import", "_place", "_cts", "_export", "_seed", "_def", "inspect")),
-        "frontend STA, ECO rounds and planning helpers (RustSTA, Python)": lambda i: i.startswith("fe_"),
+        # Every remaining fe_ step: STA runs (ruststa), the ECO rounds and planning helpers (rusteda,
+        # also built by RustSTA) and the pin-capacitance exports (RustEDA-Common). The receipts of 2026-11-05 and earlier label this stage
+        # "(RustSTA, Python)", from when the ECO rounds and planning helpers were Python scripts.
+        "frontend STA, ECO rounds and planning helpers (RustSTA)": lambda i: i.startswith("fe_"),
         "routing (RustROAD)": lambda i: i == "be_route",
         "post-route repair": lambda i: i in ("be_postroute", "be_postroute_inputs"),
         # be_antenna is the foundry antenna table (a signoff check, like be_main), not repair.
@@ -352,8 +355,8 @@ def librelane_stage_times(steps):
 
 
 # RustROAD steps whose thread count the receipt states: the recorded command's --threads value
-# ("default": recorded without --threads, RustROAD's default 2-thread pool) or, for the Python repair
-# helpers, the `limits.threads` of their input document. None means the step left no record.
+# ("default": recorded without --threads, RustROAD's default 2-thread pool) or, for the two repair
+# steps driven by an input document, its `limits.threads`. None means the step left no record.
 THREAD_STEPS = ("fe_final_place", "fe_final_cts", "be_route", "be_extract", "be_gds")
 THREAD_INPUTS = {"be_postroute": "backend/postroute-inputs.json", "be_antenna_repair": "backend/antenna-inputs.json"}
 
