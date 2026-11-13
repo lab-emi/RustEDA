@@ -157,6 +157,10 @@ def main() -> int:
                 shutil.rmtree(work, ignore_errors=True)
                 shutil.copytree(tdir, work, ignore=shutil.ignore_patterns("ruststa-*", "logs", "workspace.lock"))
                 (work / "logs").mkdir()
+                # The OpenSTA scripts name their report files by absolute path: point them into the
+                # copy, so that the replay never writes into the producer output it measures.
+                for script in (work / "reports").glob("native-*-tcl"):
+                    script.write_text(script.read_text().replace(str(tdir), str(work)))
                 def local(argv):
                     return [a.replace(str(tdir), str(work)) for a in strip_time(argv)]
                 total = dict(exit_code=0, wall_seconds=0.0, peak_rss_kib=0, cpu_seconds=0.0)
