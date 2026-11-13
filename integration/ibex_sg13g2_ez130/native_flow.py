@@ -288,6 +288,11 @@ def single_process_antenna(files):
 def assemble(backend, files, tools, logic_limits):
     """Pure bounded recipe construction; callers must verify all source records."""
     require(backend.get("schema") == "rusteda.native-backend-fragment.v1", "backend fragment schema")
+    # The qualification recipe and qualify_native.py bind the Python backend
+    # helpers by path and hash; a fragment composed with backend_steps=native
+    # (RustROAD flow-step commands) is a producer prefix only.
+    require(backend.get("backend_steps", "python") == "python",
+            "the qualification composer binds the Python backend steps (backend_steps=python)")
     policy = capture_policy(files['producer'])
     policy.validate_stdout_artifacts(backend['steps'], backend.get('stdout_artifacts'), backend['scope'])
     require(set(backend["gates"]) == {"drc", "antenna", "lvs", "timing", "timing_accuracy"}, "backend independent gate set")

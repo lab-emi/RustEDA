@@ -144,6 +144,23 @@ unannotated port, so the change does not affect its result.
   and `be_extract` extracts the final layout again, remains available as
   `native_backend.py` `postroute_order: extract_before_antenna`; the
   foundry-first capture protocol requires it.
+- **Native backend steps.** `native_backend.py` `backend_steps: native`
+  composes `be_profiles`, `be_antenna_repair`, `be_antenna_verify` and
+  `be_postroute` as commands of the pinned `rustroad` (`physical-inputs`,
+  `antenna-session`, `verify-antenna-lineage`, `postroute-repair`; RustROAD
+  `docs/flow-steps.md`) and pins none of the Python helpers
+  (`native_physical_inputs.py`, the RC-profile builder, the frozen
+  `antenna_session` scripts, `native_postroute.py`). The step ids, their
+  order, their output paths and the files they write are unchanged; the input
+  documents lose their Python pins (`rusteda.native-physical-inputs.v2`,
+  `rusteda.antenna-v3-independent-verifier-inputs.v2`,
+  `rusteda.native-postroute-inputs.v3`). It needs the screen order and the
+  grouped single-process antenna session. The default stays `python`: the
+  qualification composer (`native_flow.py`) and `qualify_native.py` bind the
+  Python helpers by path and hash and refuse a native-step fragment, and the
+  foundry-first protocol is bound to the earlier order. The host benchmark
+  composer (`integration/ibex_host_benchmark/compose_native.py`) selects
+  `native`.
 - **Composition and qualification.** `native_flow.py` checks either order; in
   the default one, verified antenna repair and the extraction precede
   `be_postroute`, which precedes every final export. `qualify_native.py` binds

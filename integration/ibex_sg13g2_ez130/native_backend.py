@@ -48,6 +48,19 @@ V2_FILES = {'antenna_group_policy', 'antenna_legacy', 'antenna_verifier', 'anten
 # (kept for the foundry-first capture/reuse protocol, which is bound to it).
 SCREEN_ORDER, LEGACY_ORDER = 'screen_after_extract', 'extract_before_antenna'
 POSTROUTE_ORDERS = (SCREEN_ORDER, LEGACY_ORDER)
+# Who runs the four backend design steps (be_profiles, be_antenna_repair,
+# be_antenna_verify, be_postroute). 'python' (default): this recipe's helpers
+# native_physical_inputs.py, antenna_session/native_antenna_groups.py and
+# verify.py, native_postroute.py; the full qualification composer
+# (native_flow.py, qualify_native.py) and the foundry-first protocol bind those
+# and nothing else. 'native': RustROAD's own flow-step commands physical-inputs,
+# antenna-session, verify-antenna-lineage and postroute-repair (RustROAD
+# docs/flow-steps.md), which write the same files; no Python helper is pinned
+# or run for these steps. Native steps exist for the screen order with the
+# grouped single-process antenna session only.
+PYTHON_STEPS, NATIVE_STEPS = 'python', 'native'
+BACKEND_STEPS = (PYTHON_STEPS, NATIVE_STEPS)
+PYTHON_STEP_FILES = {'physical_prepare', 'rc_builder', 'postroute_runner', 'antenna_runner', 'antenna_fields'}
 GROUP_POLICY = dict(group_names=128, max_groups=1024, max_attempts=64,
     max_total_jumpers=4096, max_commands=4096, max_report_bytes=8 << 30,
     max_selected_report_bytes=128 << 20, max_metadata_bytes=4 << 20,
@@ -84,14 +97,8 @@ def capture_policy(record):
     return module
 
 
-def grouped_antenna(files):
-    """An explicit policy opts in; all imported Python siblings are pinned."""
-    if 'antenna_group_policy' not in files:
-        require(not (V2_FILES & set(files)), 'v2 antenna sources require explicit group policy')
-        return None
-    require(V2_FILES <= set(files), 'incomplete explicit v2 antenna source pins')
-    for role in V2_FILES | {'antenna_runner', 'antenna_fields'}:
-        require(identity(Path(files[role]['path'])) == files[role], 'v2 source changed: ' + role)
+def group_policy(files):
+    """The pinned grouped-session policy: exactly the qualified integer budgets."""
     def unique(items):
         value = {}
         for key, item in items:
@@ -103,6 +110,30 @@ def grouped_antenna(files):
     policy = json.loads(policy_path.read_bytes(), object_pairs_hook=unique)
     require(policy == GROUP_POLICY and all(type(v) is int for v in policy.values()),
             'v2 antenna policy must match qualified integer budgets')
+    return policy
+
+
+def native_antenna(files):
+    """Native steps: the grouped policy and the single-process session policy are
+    pinned; the session and its verifier are commands of the pinned rustroad."""
+    require('antenna_group_policy' in files and 'antenna_session_policy' in files,
+            'native backend steps require the grouped single-process antenna session policies')
+    record = files['antenna_group_policy']
+    require(identity(Path(record['path'])) == record, 'v2 source changed: antenna_group_policy')
+    policy = group_policy(files)
+    require(single_process_antenna(files), 'native backend steps require the single-process antenna session')
+    return policy
+
+
+def grouped_antenna(files):
+    """An explicit policy opts in; all imported Python siblings are pinned."""
+    if 'antenna_group_policy' not in files:
+        require(not (V2_FILES & set(files)), 'v2 antenna sources require explicit group policy')
+        return None
+    require(V2_FILES <= set(files), 'incomplete explicit v2 antenna source pins')
+    for role in V2_FILES | {'antenna_runner', 'antenna_fields'}:
+        require(identity(Path(files[role]['path'])) == files[role], 'v2 source changed: ' + role)
+    policy = group_policy(files)
     runner = Path(files['antenna_runner']['path']).resolve(strict=True)
     require(runner.name == 'native_antenna_groups.py'
             and Path(files['antenna_legacy']['path']).resolve(strict=True) == runner.parent / 'native_antenna.py'
@@ -145,17 +176,24 @@ def single_process_antenna(files):
 
 def build(config):
     required = {'schema', 'frontend_fragment', 'files', 'tools', 'pdk_root'}
-    require(required <= set(config) and not set(config) - required - {'parallel_signoff', 'postroute_order'}
+    require(required <= set(config)
+            and not set(config) - required - {'parallel_signoff', 'postroute_order', 'backend_steps'}
             and config['schema'] == 'rusteda.native-backend-inputs.v1', 'backend config schema')
     require(type(config.get('parallel_signoff', False)) is bool, 'parallel_signoff must be explicit boolean')
     order = config.get('postroute_order', SCREEN_ORDER)
     require(order in POSTROUTE_ORDERS, 'postroute_order must be one of ' + ', '.join(POSTROUTE_ORDERS))
+    backend_steps = config.get('backend_steps', PYTHON_STEPS)
+    require(backend_steps in BACKEND_STEPS, 'backend_steps must be one of ' + ', '.join(BACKEND_STEPS))
+    native = backend_steps == NATIVE_STEPS
+    require(not native or order == SCREEN_ORDER, 'native backend steps require the screen_after_extract order')
     record = config['frontend_fragment']
     require(identity(Path(record['path'])) == record, 'frontend recipe changed')
     front = read(Path(record['path']))
     require(front['schema'] == 'rusteda.native-frontend-fragment.v1', 'frontend recipe schema')
-    require(REQUIRED <= set(config['files']) and len(config['files']) <= 128,
-            'backend collateral incomplete')
+    require(REQUIRED - (PYTHON_STEP_FILES if native else set()) <= set(config['files'])
+            and len(config['files']) <= 128, 'backend collateral incomplete')
+    require(not native or not (PYTHON_STEP_FILES | V2_FILES - {'antenna_group_policy'}) & set(config['files']),
+            'native backend steps pin no Python step helper')
     require(set(config['tools']) == {'appimage', 'opensta', 'yosys'}, 'reference tool set')
     files, tools = dict(front['files']), dict(front['tools'])
     policy = capture_policy(files['producer'])
@@ -166,8 +204,11 @@ def build(config):
             require(identity(Path(item['path'])) == item, 'backend input changed: ' + key)
             target[key] = item
     require(len(files) <= 256 and len(tools) <= 32, 'aggregate input budget')
-    antenna_grouping = grouped_antenna(files)
-    antenna_session = single_process_antenna(files)
+    if native:
+        antenna_grouping, antenna_session = native_antenna(files), True
+    else:
+        antenna_grouping = grouped_antenna(files)
+        antenna_session = single_process_antenna(files)
     require(not antenna_session or antenna_grouping is not None,
             'antenna session requires the explicit grouped policy')
     contract = read(Path(files['contract']['path']))
@@ -201,12 +242,20 @@ def build(config):
     def output_sha(path):
         return {'$sha256': path}
 
-    render('physical_inputs', 'physical-inputs.json',
-           dict(schema='rusteda.native-physical-inputs.v1', pdk_root=config['pdk_root'],
-                files={key: input_id(key) for key in ('std_gds', 'ram_gds', 'layer_map',
-                       'tech_lef', 'rules_nom', 'magic_tech', 'magic_extract', 'rc_builder')}))
-    command('profiles', 'python', ['{files:physical_prepare}', '--inputs', output + 'physical-inputs.json',
-            '--workspace', output + 'profiles', '--base-rev', 'empty'])
+    physical_keys = ('std_gds', 'ram_gds', 'layer_map', 'tech_lef', 'rules_nom', 'magic_tech', 'magic_extract')
+    if native:
+        # The v2 inputs are v1 without the pinned Python profile builder.
+        render('physical_inputs', 'physical-inputs.json',
+               dict(schema='rusteda.native-physical-inputs.v2', pdk_root=config['pdk_root'],
+                    files={key: input_id(key) for key in physical_keys}))
+        command('profiles', 'rustroad', ['physical-inputs', '--inputs', output + 'physical-inputs.json',
+                '--out-dir', output + 'profiles'])
+    else:
+        render('physical_inputs', 'physical-inputs.json',
+               dict(schema='rusteda.native-physical-inputs.v1', pdk_root=config['pdk_root'],
+                    files={key: input_id(key) for key in (*physical_keys, 'rc_builder')}))
+        command('profiles', 'python', ['{files:physical_prepare}', '--inputs', output + 'physical-inputs.json',
+                '--workspace', output + 'profiles', '--base-rev', 'empty'])
     command('route', 'rustroad', ['--workspace', road, '--threads', '{threads}',
             '--max-expansions', '80000000', 'route', '--base-rev', 'rev3', '--scope', 'all',
             '--config', '{output}/frontend/physical/routing.json'], 43200)
@@ -271,6 +320,21 @@ def build(config):
         if antenna_grouping is not None:
             antenna_content.update(schema='rusteda.native-antenna-inputs.v2', grouping=antenna_grouping)
         render('antenna_inputs', 'antenna-inputs.json', antenna_content)
+        if native:
+            # The same v2 session inputs; the verifier inputs (v2) are v1 without
+            # the manifest of frozen Python sources.
+            command('antenna_repair', 'rustroad', ['antenna-session', '--inputs',
+                    output + 'antenna-inputs.json', '--out-dir', output + 'antenna-repair'], 1860)
+            render('antenna_verify_inputs', 'antenna-verification-inputs.json',
+                   dict(schema='rusteda.antenna-v3-independent-verifier-inputs.v2',
+                        lineage=output_id('backend/antenna-repair/lineage.json'),
+                        tool={'$tool': 'rustroad'}, design_workspace=workspace,
+                        evidence_kind='actual_native_artifacts',
+                        controller_inputs=output_id('backend/antenna-inputs.json')))
+            command('antenna_verify', 'rustroad', ['verify-antenna-lineage', '--inputs',
+                    output + 'antenna-verification-inputs.json', '--out-dir',
+                    output + 'antenna-verification'], 180)
+            return
         command('antenna_repair', 'python', ['{files:antenna_runner}', '--inputs',
                 output + 'antenna-inputs.json', '--workspace', output + 'antenna-repair',
                 '--base-rev', 'empty'], 1860)
@@ -299,20 +363,33 @@ def build(config):
         antenna_steps(road)
         extract_step(road, trial_spef)
         grouped = antenna_grouping is not None
-        render('postroute_inputs', 'postroute-inputs.json', postroute_content(
-            'rusteda.native-postroute-inputs.v2', ('rustroad', 'rusteda', 'ruststa', 'python'),
-            final_spef=native_spef,
-            screen=dict(spef=output_id('backend/trial.native.nom.spef'),
-                        extract_report=output_id('logs/be_extract.stdout'),
-                        extract_command=output_id('logs/be_extract.command.json')),
-            antenna=dict(inputs=output_id('backend/antenna-inputs.json'),
-                         lineage=output_id('backend/antenna-repair/lineage.json'),
-                         runner=input_id('antenna_runner'),
-                         verifier=input_id('antenna_verifier') if grouped else None,
-                         verifier_inputs=output_id('backend/antenna-verification-inputs.json') if grouped else None,
-                         verification=output_id('backend/antenna-verification/result.json') if grouped else None)))
-        command('postroute', 'python', ['{files:postroute_runner}', '--inputs', output + 'postroute-inputs.json',
-                '--workspace', postroute, '--base-rev', 'empty'], 5460)
+        screen = dict(spef=output_id('backend/trial.native.nom.spef'),
+                      extract_report=output_id('logs/be_extract.stdout'),
+                      extract_command=output_id('logs/be_extract.command.json'))
+        if native:
+            # v3 is v2 without the Python tool and helper pins: an ECO rebuild is
+            # antenna-repaired and verified by the same pinned rustroad.
+            render('postroute_inputs', 'postroute-inputs.json', postroute_content(
+                'rusteda.native-postroute-inputs.v3', ('rustroad', 'rusteda', 'ruststa'),
+                final_spef=native_spef, screen=screen,
+                antenna=dict(inputs=output_id('backend/antenna-inputs.json'),
+                             lineage=output_id('backend/antenna-repair/lineage.json'),
+                             verifier_inputs=output_id('backend/antenna-verification-inputs.json'),
+                             verification=output_id('backend/antenna-verification/result.json'))))
+            command('postroute', 'rustroad', ['postroute-repair', '--inputs', output + 'postroute-inputs.json',
+                    '--out-dir', postroute], 5460)
+        else:
+            render('postroute_inputs', 'postroute-inputs.json', postroute_content(
+                'rusteda.native-postroute-inputs.v2', ('rustroad', 'rusteda', 'ruststa', 'python'),
+                final_spef=native_spef, screen=screen,
+                antenna=dict(inputs=output_id('backend/antenna-inputs.json'),
+                             lineage=output_id('backend/antenna-repair/lineage.json'),
+                             runner=input_id('antenna_runner'),
+                             verifier=input_id('antenna_verifier') if grouped else None,
+                             verifier_inputs=output_id('backend/antenna-verification-inputs.json') if grouped else None,
+                             verification=output_id('backend/antenna-verification/result.json') if grouped else None)))
+            command('postroute', 'python', ['{files:postroute_runner}', '--inputs', output + 'postroute-inputs.json',
+                    '--workspace', postroute, '--base-rev', 'empty'], 5460)
         road = final_road
         for name, operation in [('inspect', 'inspect'), ('def', 'export-def'),
                                 ('netlist', 'export-verilog')]:
@@ -407,6 +484,9 @@ def build(config):
     fragment = dict(schema='rusteda.native-backend-fragment.v1', files=files, tools=tools,
                     steps=steps, scope=front['scope'], outputs=outputs, artifacts=artifacts,
                     gates=gates, unverified=unverified, stdout_artifacts=stdout_artifacts)
+    if native:
+        # Marks the fragment for the qualification composer, which binds the Python steps.
+        fragment['backend_steps'] = NATIVE_STEPS
     prefix = dict(schema='rusteda.ihp-flow.v1', name='fresh native physical/signoff prefix',
                   pdk='ihp-sg13g2', library='ez130_8t', corners=['tt', 'ss'], files=files, tools=tools,
                   steps=steps, scope=front['scope'], gates={}, artifacts=artifacts, stdout_artifacts=stdout_artifacts)

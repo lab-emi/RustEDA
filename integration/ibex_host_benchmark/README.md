@@ -92,12 +92,63 @@ no quotient.
 [Host campaign results](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-02) ·
 [Receipt and evidence inventory](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json)
 
+## Native backend steps · 2026-11-13
+
+`compose_native.py` composes the four backend design steps as commands of the
+pinned `rustroad` (`native_backend.py` `backend_steps: native`; RustROAD
+`docs/flow-steps.md`): `be_profiles` = `physical-inputs`, `be_antenna_repair` =
+`antenna-session`, `be_antenna_verify` = `verify-antenna-lineage`,
+`be_postroute` = `postroute-repair`. They replace `native_physical_inputs.py`
+with the RC-profile builder, the frozen `native_antenna_groups.py` and
+`verify.py`, and `native_postroute.py`, which stay in the repository as the
+reference implementations (`"backend_steps": "python"` in `host.json` composes
+them, and needs `rc_builder`). The step ids, order, output paths and files are
+unchanged. The remaining backend steps that run `python` are the wrappers
+around external tools (`be_openrcx`, `be_timing`, `be_main`, `be_antenna`,
+`be_lvs`, `be_macro_contract`); the frontend's Python steps are untouched.
+
+Measured on the 4-vCPU host with RustROAD `9eef0ff` (other tools: the
+2026-11-05 set), in the finished producer tree of one run: each step five
+times with the Python helper and five times with the native command,
+interleaved, under GNU time and the producer's environment, the same pinned
+binaries as children, one-minute load 1.2-1.7. Median (range):
+
+| Step | Python helper, wall s | native, wall s | Python helper, CPU s | native, CPU s |
+| --- | ---: | ---: | ---: | ---: |
+| `be_profiles` | 0.12 (0.11-0.14) | 0.01 (0.01-0.02) | 0.11 (0.10-0.12) | 0.01 (0.01-0.01) |
+| `be_antenna_repair` | 8.78 (8.31-9.18) | 7.18 (6.83-7.50) | 11.25 (10.54-11.40) | 9.64 (9.31-9.96) |
+| `be_antenna_verify` | 2.07 (1.96-2.14) | 1.23 (1.11-1.28) | 2.04 (1.94-2.13) | 1.23 (1.10-1.27) |
+| `be_postroute` | 4.42 (4.35-4.63) | 4.26 (4.17-4.41) | 7.79 (7.68-7.96) | 7.72 (7.55-7.99) |
+| sum of the medians | 15.39 | 12.68 | 21.19 | 18.60 |
+
+The gain is small because these steps were mostly engine time already: in
+the producer run the antenna session's `repair-antenna-groups` child took
+6.9 s of the step's 7.3 s, and `rusteda import` plus `ruststa run` 4.5 s of
+the post-route step's 5.3 s.
+
+Outputs: two complete producer runs at one work path with the same tool
+paths, the first with the Python helpers and the 2026-11-05 `rustroad`, the
+second with the native steps, give the same GDS, DEF, final and powered
+netlists and native SPEF (`fba3206d…`, `b0ffd146…`, `a03ce194…`, `f97fe4c5…`,
+`a8d158e6…`, the 2026-11-05 values) and the same QoR. Of the 2,010 files under
+`backend/`, `logs/be_*` and the trial workspace, 1,890 are byte-identical; the
+other 120 differ in tool identity (the `rustroad` hash wherever it is pinned,
+the `build` field of the workspace receipts), the dropped Python records
+(`rc_builder`, the frozen-source manifest and its count in `checked_file_ids`,
+`verifier_source`, `policy_source`, `tools.python`, the three input schemas),
+run times, time stamps and memory telemetry with the hashes of the files that
+hold them, and the external tools' own run-to-run differences (OpenRCX SPEF,
+KLayout LVS database). `tests/test_native_backend_steps.py` checks the
+composition and, with `RUSTEDA_TEST_RUSTROAD` set to such a `rustroad`,
+compares `postroute-repair` with the Python runner on the protocol fixture
+(clean, forced resize with rebuild, round budget, rejected drift).
+
 ## Files
 
 | File | Purpose |
 | --- | --- |
 | `qualify_sram_lvs.py` | Runs the SRAM-only KLayout LVS and writes the macro qualification record the LVS gate requires. The record is `qualified` only when the run matches. |
-| `compose_native.py` | Writes the frontend/backend composer inputs (every file and tool pinned by path, SHA-256 and size) and calls the recipe's `native_frontend.py` and `native_backend.py`. |
+| `compose_native.py` | Writes the frontend/backend composer inputs (every file and tool pinned by path, SHA-256 and size) and calls the recipe's `native_frontend.py` and `native_backend.py`. The four backend design steps (`be_profiles`, `be_antenna_repair`, `be_antenna_verify`, `be_postroute`) are composed as RustROAD flow-step commands (`backend_steps: native`, see "Native backend steps"); `"backend_steps": "python"` in `host.json` composes the recipe's Python helpers instead. |
 | `run_logic.py` | Renders the `rusteda.logic-signoff-inputs.v1` document that `native_flow.py` would render, for a completed producer output. |
 | `signoff_layout.py` | Applies the recipe's gate scripts to one final layout: foundry main and antenna DRC, latch-up tap coverage (`tap_coverage_runner.py`: LU.a and LU.b, 20 µm, LU.a also along paths inside the n-well; the main deck checks LU.b only), OpenRCX, RustSTA + OpenSTA timing, full-device LVS, vendor-model simulation, synthesis/final equivalence and final density. The latch-up gate was added after the 2026-11-02 campaign; both published layouts pass it (LU.a/LU.b: 0 uncertified boxes on each). |
 | `netlist_qor.py` | Mapped-netlist QoR measured with one neutral toolchain: area and cell classes (`yosys stat -liberty`), logic depth with sequential cuts, ideal-wire OpenSTA timing (diagnostic). |
@@ -313,7 +364,10 @@ python3 integration/ibex_host_benchmark/qualify_sram_lvs.py \
 
 **4. Antenna session.** Freeze the patched helpers, then add the group policy.
 It must equal `GROUP_POLICY` in `native_backend.py`; the composer rejects any
-other value.
+other value. With native backend steps (the default) the composer pins only
+the two policy files of this directory (`antenna-group-policy.json`,
+`antenna-session-policy.json`); the frozen Python helpers are pinned and run
+only with `"backend_steps": "python"`.
 
 ```bash
 python3 "$HOSTCOPY/integration/ibex_sg13g2_ez130/antenna_session/freeze.py" \
@@ -347,7 +401,7 @@ cat > "$WORK/host.json" <<'EOF'
   "ez130_root": "/path/to/ez130_8t_v1p1",
   "ihp_root": "/path/to/IHP-Open-PDK/ihp-sg13g2",
   "combined_cell_lef": "/path/to/native-combined.lef",
-  "rc_builder": "/path/to/work/patched/build_rc_profile.py",
+  "rc_builder": "/path/to/work/patched/build_rc_profile.py (read only with \"backend_steps\": \"python\")",
   "signoff_deck": "/path/to/work/signoff",
   "sram_lvs": "/path/to/work/sram-lvs",
   "ez_lvs": "/path/to/work/ez-lvs",

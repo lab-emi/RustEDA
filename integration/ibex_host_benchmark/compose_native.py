@@ -115,8 +115,12 @@ def main() -> int:
                     "--workspace", str(work / "fe"), "--base-rev", "empty"], check=True)
 
     signoff, sram_lvs, ez_lvs = (Path(host[k]).resolve() for k in ("signoff_deck", "sram_lvs", "ez_lvs"))
+    # The four backend design steps run as RustROAD flow-step commands unless host.json
+    # says "backend_steps": "python" (the recipe's helpers; needs "rc_builder" too).
+    backend_steps = host.get("backend_steps", "native")
     be_files = {
-        "physical_prepare": recipe / "native_physical_inputs.py", "rc_builder": Path(host["rc_builder"]),
+        "physical_prepare": recipe / "native_physical_inputs.py",
+        "rc_builder": Path(host["rc_builder"]) if backend_steps == "python" else None,
         "reference_extract": recipe / "reference_extract.py", "timing_runner": recipe / "signoff_timing.py",
         "postroute_runner": recipe / "native_postroute.py", "lvs_runner": recipe / "signoff_lvs.py",
         "drc_runner": recipe / "signoff_drc.py", "macro_contract": recipe / "macro_contract.py",
@@ -144,6 +148,12 @@ def main() -> int:
             "antenna_group_policy": frozen / "antenna-group-policy.json",
             "antenna_session_policy": frozen / "antenna-session-policy.json",
         })
+    if backend_steps == "native":
+        # No Python step helper is pinned: the session, its verifier, the post-route
+        # runner and the physical-input preparation are commands of the pinned rustroad.
+        for key in ("physical_prepare", "rc_builder", "postroute_runner", "antenna_runner", "antenna_fields",
+                    "antenna_legacy", "antenna_verifier", "antenna_source_manifest"):
+            be_files.pop(key, None)
     be = {"schema": "rusteda.native-backend-inputs.v1",
           "frontend_fragment": identity(work / "fe/fragment.json"),
           "files": {k: identity(v) for k, v in be_files.items()},
@@ -151,7 +161,8 @@ def main() -> int:
           "pdk_root": str(ihp.parent),
           # The producer's foundry checks (be_main, be_antenna -> be_lvs) run as two concurrent
           # two-core lanes on a four-CPU host (producer.signoff_parallel_group); host.json can opt out.
-          "parallel_signoff": bool(host.get("parallel_signoff", threads == 4))}
+          "parallel_signoff": bool(host.get("parallel_signoff", threads == 4)),
+          "backend_steps": backend_steps}
     (work / "backend-inputs.json").write_text(json.dumps(be, indent=2) + "\n")
     subprocess.run([python, str(recipe / "native_backend.py"), "--inputs", str(work / "backend-inputs.json"),
                     "--workspace", str(work / "be"), "--base-rev", "empty"], check=True)
