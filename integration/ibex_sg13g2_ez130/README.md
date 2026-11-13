@@ -303,22 +303,27 @@ unknown, so these files and the module pins change together.
   removed.
 - **Clock tree.** `clock.seed_from_placement`: the CTS re-placement starts from
   the current placement.
-- **Routing.** Metal2 pin access, `via_cost` 2520, `wrong_way_factor` 3,
+- **Routing.** Metal2 pin access, `via_cost` 2520, `wrong_way_factor` 6,
   `heuristic_weight` 2 and `track_router.qor` (`prim_order`, `drop_portals`,
   `net_aware_access`, `small_net_terminals` 10, `small_net_weight` 1,
   `notch_bridge`, `strict_wide_cycles`, `via_reduction`, `dedupe_vias`,
-  `straighten`). Metal2 access needs `notch_bridge`. With vias priced
-  higher (2520 instead of 1680) and wrong-way steps lower (3 instead of 4),
-  a short wrong-way Metal2 jog often costs less than a pair of vias. Such
+  `straighten`, `bend_cost` 100, `def_tracks`). Metal2 access needs
+  `notch_bridge`. With vias priced higher (2520 instead of 1680) and
+  wrong-way steps at 3 instead of 4 (the setting until 2026-11-12), a short
+  wrong-way Metal2 jog often cost less than a pair of vias; each such jog is
+  a DEF wire piece that the OpenRCX extraction pays for, so the factor is
+  now 6, with a bend surcharge in the main search, and the stronger via
+  reduction below takes the extra vias back (last item of the list of
+  runs below). Such
   jogs can close small loops through a pin's own escape that cleanup fills
   into wide metal; `strict_wide_cycles`
   cuts them (without it, routing the placement of the RustSys published on
   2026-11-02 ends with an unresolved wide-metal pair). `via_reduction`
-  re-routes, after repair, every net with at most 10 terminals and at most
-  20 µm of routed wire per connection against the fixed metal of all others,
-  with vias at twice their price (5,040 DBU) and an admissible search capped
-  at 10,000 expansions per net, and keeps a route only when it removes vias
-  for at most 1.68 µm of extra wire each. In a post-route ECO it re-routes
+  re-routes, after repair, every net with at most 20 terminals and at most
+  40 µm of routed wire per connection against the fixed metal of all others,
+  with vias at three times their price (7,560 DBU) and an admissible search
+  capped at 20,000 expansions per net, in two passes, and keeps a route only
+  when it removes vias for at most 1.68 µm of extra wire each. In a post-route ECO it re-routes
   only the nets the ECO routed; the nets kept from the prior routing stay as
   they were (RustROAD `docs/routing-budget.md`). `dedupe_vias` keeps one via
   per net, layer pair and point: on 24 nets, two neighbouring pins' escapes
@@ -334,7 +339,15 @@ unknown, so these files and the module pins change together.
   leave a junction along the other axis). Its optional bend-priced re-route
   stays off: it cost 25 to 31 s more per `be_route` for about 1 % fewer
   pieces (RustROAD `docs/routing-budget.md`, "Coincident same-net vias" and
-  "Post-route topology cleanup").
+  "Post-route topology cleanup"). Its `escape_jogs` first moves the turn at
+  a pin escape's top to the escape's via, and its `neighbors` rewrites a
+  chain that other nets' routes wall in together with those nets (at most
+  two, of at most 10 terminals) when the nets involved then hold fewer
+  pieces. `def_tracks` makes `export-def` declare the router's track grid
+  (the same 14 `TRACKS` statements as LibreLane's DEF), which OpenRCX reads
+  faster (RustROAD `docs/routing-budget.md`, "Wire pieces against vias").
+  `escape_jogs`, `neighbors` and `def_tracks` need RustROAD `d010664` or
+  later; older builds reject them.
 - **Repair margins.** `target_fanout` 9 against the SDC limit of 10
   (`native_ecos.py` admits 2 to 9), `drv_margin` 0.15, `hold_drv_margin` 0.1.
 - **Frontend STA and ECO helpers.** Every `rusteda import` of the frontend
@@ -651,6 +664,44 @@ brackets:
   DEFs are not separated there). The optional re-route, which the recipe
   leaves off, made OpenRCX about 0.25 s faster per run in the same batches
   (DEF of a run with it) for 25 to 31 s more `be_route` time.
+- **Fewer wire pieces: `wrong_way_factor` 6, `bend_cost` 100, a stronger
+  via reduction, joint moves, escape jogs and track statements** (RustROAD
+  `261d49c`, merged as `d010664`; the other binaries of the 2026-11-05 campaign;
+  recipe `3cf7323` with this change and the Python backend steps), two
+  complete runs with byte-identical GDS, DEF, netlists and native SPEF
+  (the OpenRCX SPEF files differ, every timing value read from them is
+  equal): 120,585 vias (Via1
+  53,239, Via2 51,104, Via3 13,020, Via4 2,846, TopVia1 374, TopVia2 2)
+  against 118,525 and LibreLane's 122,194, 895,279.2 µm of routed signal
+  wire against 897,357.3 (LibreLane 969,571.6), the same area (187,585.2
+  µm²) and cells; the synthesis, final and powered netlists are
+  byte-identical to the campaign's. The final DEF has 160,069 wire pieces
+  against 192,328 (LibreLane 129,901) and declares the router's 14 track
+  statements. Every shared gate passed; the producer completed all 114
+  steps of the kit manifest (`timing_accuracy` 0.27 ps); on OpenRCX SPEF
+  the TT and SS worst slacks are 49.628/0.108 ns and 49.429/0.206 ns
+  (setup/hold), with no setup, hold, slew, capacitance or fanout violation.
+  `be_route` took 243.4 s and 221.1 s (243.1 s and 220.2 s CPU); in three
+  interleaved pairs of route replays of the campaign's `be_route` input it
+  took a median 230.6 s of CPU against 220.2 s with the campaign's routing
+  and binary (1.05x; paired differences +4.8, +14.9 and +13.8 s): negotiated
+  repair ends about 40 s earlier, and the two via-reduction passes and the
+  rewrites spend that and 5 to 15 s more. OpenRCX on this layout
+  against LibreLane's and the campaign's, interleaved in one hold of the
+  heavy-job lock (five runs each, load 1.5 to 2.9): the shared `extraction`
+  gate 3.80 s (3.63–4.03) against 3.84 s (3.44–4.23) and 5.10 s, 0.99x
+  LibreLane (1.33x before); the producer's `be_openrcx` step 3.81 s
+  (3.77–4.18) against 3.60 s (3.45–3.63) and 5.02 s, 1.06x (1.39x
+  before); the gate's OpenRCX script alone 3.32 s (3.15–3.51) against
+  3.29 s (3.19–3.35), 1.01x; on an almost idle host (seven runs each,
+  load 0.9 to 1.0) the script took 3.48 s against 3.23 s (1.08x) and
+  4.51 s (1.40x). The extraction phase itself is
+  still about 1.1x LibreLane's (2,190 against 1,946 ms); the native DEF
+  reads 0.2 s faster. The remaining pieces are mostly Metal1 escape wires
+  and the Metal2 stubs of stacked pin accesses, which LibreLane writes as
+  `RECT` patches that OpenRCX does not extract (RustROAD
+  `docs/routing-budget.md`, "Wire pieces against vias";
+  `docs/extraction.md`).
 
 `timing_accuracy` passing is a property of these layouts, not a fix: on the
 2026-11-02 layout RustSTA and OpenSTA differed by 1.405 ps in TT setup worst

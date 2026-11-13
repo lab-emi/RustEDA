@@ -135,7 +135,7 @@
   "expand_margin": 4,
   "max_ripups_per_net": 256,
   "max_repair_rounds": 2000000,
-  "wrong_way_factor": 3,
+  "wrong_way_factor": 6,
   "max_history_entries": 4000000,
   "repair_heuristic_weight": 2,
   "single_owner_repair": {
@@ -160,18 +160,27 @@
    "notch_bridge": true,
    "strict_wide_cycles": true,
    "via_reduction": {
-    "passes": 1,
-    "via_milli": 2000,
-    "max_terminals": 10,
+    "passes": 2,
+    "via_milli": 3000,
+    "max_terminals": 20,
     "length_per_via": 1680,
-    "net_expansions": 10000,
-    "max_connection_length": 20000
+    "net_expansions": 20000,
+    "max_connection_length": 40000
    },
    "dedupe_vias": true,
    "straighten": {
     "passes": 2,
-    "turn_at_ends": true
-   }
+    "turn_at_ends": true,
+    "escape_jogs": true,
+    "neighbors": {
+     "max_victims": 2,
+     "max_terminals": 10,
+     "net_expansions": 10000,
+     "length_per_piece": 420
+    }
+   },
+   "bend_cost": 100,
+   "def_tracks": true
   }
  },
  "batch_terminals": 100000
