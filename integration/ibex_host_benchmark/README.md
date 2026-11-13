@@ -10,9 +10,59 @@ the same independent gate scripts to both final layouts.
 
 Results, scope and the module-by-module comparison are published on the
 [benchmark page](../../docs/benchmarks.md) and in the machine-readable receipts
+[`docs/benchmarks/ibex-sg13g2-ez130-host-20261113.json`](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261113.json)
+(newest),
 [`docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json`](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261105.json)
-(newest) and
+and
 [`docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json`](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261102.json).
+
+## Results · 2026-11-13
+
+One timed sample per flow on 4 vCPUs, with the committed recipe and engines of
+superproject `820ffc8`, every engine built with Rust 1.100.0 and the native step
+graph run by the Rust executor `rusteda flow exec` instead of `producer.py`.
+**RustEDA passes every shared gate that gives a pass/fail verdict; LibreLane
+fails the timing gate and leaves equivalence unverified, so the receipt's
+end-to-end ratios are null.** RustEDA's producer completed all 114 manifest
+steps in 717.301 s, including `timing_accuracy` (largest RustSTA/OpenSTA
+difference 0.2697 ps) and its own foundry main DRC, antenna DRC, LVS and macro
+contract, which the receipt verified to be the identical checks of the shared
+gates; its layout passes the eight shared gates that give a pass/fail verdict
+(DRC and antenna 0 violations, latch-up LU.a/LU.b 0 uncertified boxes, LVS
+`passed`, TT/SS timing with 0 setup, hold, slew, capacitance and fanout
+violations, simulation `passed`, synthesis and final equivalence `proven`,
+density `passed`); the ninth, OpenRCX extraction, reports
+`extracted_not_qualified` on both layouts, as before. LibreLane's layout passes
+DRC, antenna, latch-up, LVS, simulation and density, fails timing on 28 (TT)
+and 24 (SS) capacitance and 30 fanout violations with setup and hold met, and
+its equivalence is `unverified` (433 renamed registers).
+
+End to end, RustEDA took 751.54 s (sv2v preparation, producer, and the
+latch-up, simulation, equivalence and density gates) and LibreLane 3,675.96 s
+(preparation, flow through `Checker.XOR`, all nine shared gates); with both
+flows' DRC, antenna and LVS charged one after another, 1,052.46 s, and with
+LibreLane's charged on the producer's two-lane schedule, 3,283.05 s. No ratio is
+published. The native layout has 187,585.2 µm² standard-cell area,
+895,279.2 µm of routed signal wire and 120,585 vias, against 197,913.7 µm²,
+969,571.6 µm and 122,194. GDS, DEF, all netlists and the native SPEF were
+byte-identical in a second producer run after the campaign (through
+`be_timing`); the OpenRCX SPEF differed. The host is a different virtual
+machine from 2026-11-05's, on which every LibreLane stage took less time (host
+deviation 7).
+
+After the campaign, same-load reruns (5 interleaved repetitions) put the native
+frontend STA and ECO stage at 0.30× LibreLane's four resizer steps and 0.73×
+its two steps before global routing. The shared gates, rerun interleaved on
+another VM after a container restart, took 0.73× (main DRC), 0.75× (antenna
+DRC), 0.69× (LVS), 0.76× (latch-up), 0.73× (simulation) and 0.78× (density)
+of their time on LibreLane's layout, and were level on timing (0.98×) and
+OpenRCX extraction (1.00×). The benchmark page lists every stage, gate and
+module comparison, including the two module head-to-heads RustEDA loses:
+RustROAD's extraction against OpenRCX and RustSTA's peak memory at 4 threads.
+
+[Host campaign results](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-13) ·
+[Receipt and evidence inventory](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261113.json) ·
+[Same-load comparisons](../../docs/benchmarks/evidence/ibex-host-20261113-same-load/summary.json)
 
 ## Results · 2026-11-05
 
@@ -105,7 +155,8 @@ reference implementations (`"backend_steps": "python"` in `host.json` composes
 them, and needs `rc_builder`). The step ids, order, output paths and files are
 unchanged. The remaining backend steps that run `python` are the wrappers
 around external tools (`be_openrcx`, `be_timing`, `be_main`, `be_antenna`,
-`be_lvs`, `be_macro_contract`); the frontend's Python steps are untouched.
+`be_lvs`, `be_macro_contract`); the frontend has had no Python step since its
+ECO rounds and planning helpers became `rusteda` commands on 2026-11-12.
 
 Measured on the 4-vCPU host with RustROAD `9eef0ff` (other tools: the
 2026-11-05 set), in the finished producer tree of one run: each step five
@@ -262,13 +313,39 @@ Each deviation applies to both flows unless stated otherwise.
      after the campaign), and a 1.8 MB copy overlapped LibreLane's first Yosys
      step.
 
+7. **Host of the 2026-11-13 campaign.** The 2026-11-13 campaign ran on another
+   4-vCPU virtual machine of the same kind: Intel Xeon @ 2.10 GHz, 15.7 GiB RAM,
+   kernel 6.18.44-fc-v445 (`host-facts.json` of the receipt). With the same
+   LibreLane configuration and tool builds every LibreLane stage took less time
+   than on 2026-11-05 (floorplan level; flow 2,766.392 s against 3,409.108 s),
+   with byte-identical DEF and netlists; compare the two flows within one
+   campaign. Deviation 6 applies, with these differences:
+   - `run_native.sh` runs `rusteda flow exec`, the step-graph executor of
+     `apps/` at the campaign commit (copied as `rusteda-flow` so that it does
+     not shadow RustSTA's `rusteda`), with the arguments that `producer.py`
+     took; the host copy's `producer.py` hunk still applies but is not used;
+   - every engine was built with rustc 1.100.0;
+   - the preparation steps were re-run into a new campaign directory with the
+     same external inputs, and the converted RTL is the same file
+     (`da905268…`);
+   - the timed campaign, the determinism run and the repair A/B ran on this
+     VM; the container was then restarted during the first repetition of the
+     shared-gate A/B and came back on a different VM (Intel Xeon @ 2.30 GHz,
+     4 vCPUs, the same kernel). Every gate run of the published same-load
+     summary ran there, after one cold-cache warm-up repetition per gate and
+     layout, which is excluded; the six gate runs completed before the restart
+     are kept in its run records;
+   - each timed stage ran with no other measured job; light operator activity
+     (reading and editing text files) was not excluded.
+
 ## Reproduce
 
-This command sequence reproduces the 2026-11-05 campaign (and, with the
-2026-11-02 recipe and host patch, the 2026-11-02 one) with the current scripts,
+This command sequence reproduces the 2026-11-13 campaign (and, with the
+recipes, binaries and host patches of their day, the earlier ones) with the current scripts,
 run from the repository root. Replace `/path/to/…` with local paths.
 `WORK` is a new, empty campaign directory (the 2026-11-02 campaign used
-`.work/ibex-host`, the 2026-11-05 campaign `.work/campaign-20261105`) and
+`.work/ibex-host`, the 2026-11-05 campaign `.work/campaign-20261105`, the
+2026-11-13 campaign `.work/campaign-20261113`) and
 `HOSTCOPY` holds the patched recipe copy; every preparation step refuses a
 nonempty workspace with `REVISION_CONFLICT`.
 
@@ -277,7 +354,9 @@ without rerunning any stage; its preparation steps were re-run into a new
 campaign directory with the 2026-11-02 external inputs (host deviation 6). Its
 determinism record (`bringup-native-record.json`) comes from a second producer
 run of the same composition after the campaign, stopped after `be_timing`, and
-it repeated no prepared-config diagnostic.
+it repeated no prepared-config diagnostic. The 2026-11-13 campaign likewise ran
+`final_campaign.sh` once, without interruption or rerun, with the same kind of
+determinism record (host deviation 7).
 
 In the original 2026-11-02 run, the SPICE head-to-head and the GDS replay were rerun after
 the campaign script had finished, once the missing `bench-spice` directory
@@ -297,6 +376,8 @@ Before starting, provide:
 - release builds of RustSys (with its `check_config` example), RustSTA
   (`ruststa`, `rusteda`), RustROAD, RustSpice and RustEDA-Common's
   `export_pin_caps` example under `.work/target/<Engine>/release/`;
+- the `rusteda` step-graph executor built from `apps/` (`cargo build --release
+  --locked -p rusteda-cli --no-default-features` in `apps/`), which `run_native.sh` runs (step 6);
 - the combined cell LEF: the EZ130 cell LEF with the SRAM macro's `MACRO`
   block inserted before `END LIBRARY` (no script for it is in the repository).
 
@@ -435,13 +516,16 @@ python3 integration/ibex_host_benchmark/compose_native.py \
 **6. Timed campaign and receipt.** `final_campaign.sh` also expects two
 host-local wrappers in `$WORK`, which are not in the repository:
 
-- `run_native.sh RUNDIR` runs the host copy's `producer.py --project
+- `run_native.sh RUNDIR` runs `rusteda flow exec --project
   $WORK/compose/be --manifest $WORK/compose/be/prefix-manifest.json --output
   RUNDIR/output --base-rev empty --pdk ihp --rustroad … --gnu-time …
   --stop-after be_macro_contract` under the executor with an 8192 MiB limit,
   after exporting a random 64-hex-digit `RUSTEDA_WORKER_ID`,
   `RUSTEDA_OWNERSHIP=RUNDIR/ownership`,
   `CGROUP_NAME=rusteda-worker-<first 24 hex digits>` and `SWAP_MIB=2048`.
+  `rusteda` here is the step-graph executor built from `apps/`; on 2026-11-05
+  and before, the wrapper ran the host copy's `producer.py` with the same
+  arguments.
 - `run_signoff.sh NAME LAYOUT_JSON WORKSPACE` writes the ownership record
   `WORKSPACE.ownership/native.json` (`request_id`, `implementation`, and the
   prefix manifest's path, SHA-256 and size), then runs `signoff_layout.py
@@ -473,14 +557,14 @@ diagnostic come from two bring-up runs that no repository script performs.
 `make_receipt.py` adds each only when its inputs are present in `$WORK`:
 
 - **Determinism.** A second native producer run (on 2026-11-02, an earlier
-  complete `run_native.sh` bring-up under shared host load; on 2026-11-05, a
-  run of the same composition after the campaign, stopped after `be_timing`,
+  complete `run_native.sh` bring-up under shared host load; on 2026-11-05 and
+  2026-11-13, a run of the same composition after the campaign, stopped after `be_timing`,
   which writes every compared artifact). Record its
   artifacts in `bringup-native-record.json`: `run` (a label) and `artifacts`,
   which maps `gds`, `def_`, `netlist_synth`, `netlist_final`,
   `netlist_powered`, `spef_native` and `spef_openrcx` to `{sha256, bytes}`.
-  Both campaigns' records also hold the run's `summary` and timing `parity`
-  documents (the 2026-11-05 record also `resources`), which `make_receipt.py`
+  Each campaign's record also holds the run's `summary` and timing `parity`
+  documents (the 2026-11-05 and 2026-11-13 records also `resources`), which `make_receipt.py`
   does not read.
 - **Prepared-config diagnostic.** LibreLane on the prepared `config.json` with
   only `DRT_THREADS` set to 4, run tag `full` in `$WORK/ll-full` (read from

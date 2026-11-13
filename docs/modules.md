@@ -30,17 +30,26 @@ Each engine README and development-status page records its supported scope.
 The G1 CPU/CUDA crossing session is published separately as experimental work;
 GPU-integrated RTL-to-GDS remains unchecked.
 
-The newest results are the 2026-11-05 host campaign: Ibex on SG13G2/EZ130 with
+The newest results are the 2026-11-13 host campaign: Ibex on SG13G2/EZ130 with
 two real SRAMs on a 4-vCPU cloud host, against LibreLane 3.0.17 on the same
 prepared inputs, plus module head-to-heads for RustSys, RustSTA, RustROAD and
-RustSpice. Its receipt lists the engine revisions that superproject `397bfa6`
-pins (`engine_commits`) and identifies each executable by SHA-256; the native
-layout passes every shared gate that gives a pass/fail verdict, LibreLane's
-fails the timing gate, so the receipt keeps its ratio fields null; divided, the recorded times give RustEDA a 4.2× shorter end-to-end time (3.4× with every check serial). The receipt's commit IDs predate the rewrite of the branch's commit metadata; [commit-map.json](benchmarks/commit-map.json) maps them to the current IDs. The earlier 2026-11-02 host campaign is kept on the same page. In both campaigns each flow has one timed sample, the EZ130 tech LEF and cell
-GDS are reconstructed, and the native run is `unqualified`; the benchmark page
-lists the tool and host deviations.
+RustSpice. Every engine was built with Rust 1.100.0, and the native step graph
+ran under the Rust executor `rusteda flow exec`. Its receipt lists the engine
+revisions that superproject `820ffc8` pins (`engine_commits`) and identifies
+each executable by SHA-256; the native layout passes every shared gate that
+gives a pass/fail verdict, LibreLane's fails the timing gate, so the receipt
+keeps its ratio fields null; divided, the recorded times give RustEDA a 4.4×
+shorter end-to-end time (3.5× with every check serial). Two module head-to-heads
+are losses: RustROAD's extraction takes 1.22× OpenRCX's time at 4 threads, and
+RustSTA's peak memory at 4 threads is 11.8 % above OpenSTA's. The earlier
+2026-11-05 and 2026-11-02 host campaigns are kept on the same page; the
+2026-11-05 receipt's commit IDs predate the rewrite of the branch's commit
+metadata, and [commit-map.json](benchmarks/commit-map.json) maps them to the
+current IDs. In every campaign each flow has one timed sample, the EZ130 tech
+LEF and cell GDS are reconstructed, and the native run is `unqualified`; the
+benchmark page lists the tool and host deviations.
 
 [All engine updates](engine-status.md) ·
-[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-05) ·
+[Host campaign](benchmarks.md#ibex-host-campaign-2026-11-13) ·
 [Retained runs](benchmarks.md#latest-native-development-results-2026-11-01) ·
-[Receipt](benchmarks/ibex-sg13g2-ez130-host-20261105.json)
+[Receipt](benchmarks/ibex-sg13g2-ez130-host-20261113.json)

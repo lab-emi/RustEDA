@@ -226,6 +226,41 @@ reach R20/R21's QoR; those recipe inputs are not in the repository
 [run16 receipt](../../docs/benchmarks/ibex-sg13g2-ez130.json) ·
 [Harness and reproduction commands](../ibex_host_benchmark/README.md)
 
+## Host campaign · 2026-11-13
+
+The committed recipe (superproject `820ffc8`, with every setting of the sections
+below, including the route topology controls of 2026-11-12) ran through
+[`../ibex_host_benchmark/final_campaign.sh`](../ibex_host_benchmark/README.md)
+on another 4-vCPU cloud host beside LibreLane 3.0.17 Classic, from freshly
+prepared inputs and with every engine built from its pinned commit with Rust
+1.100.0. For the first time `run_native.sh` ran the step graph with the Rust
+executor `rusteda flow exec` instead of `producer.py`. Results, receipt and
+method: [benchmark page](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-13) ·
+[receipt](../../docs/benchmarks/ibex-sg13g2-ez130-host-20261113.json).
+
+- The producer completed all 114 manifest steps in 717.301 s (`timing_accuracy`
+  0.2697 ps; its own foundry DRC, antenna DRC, LVS and macro contract passed),
+  and the layout passed every shared gate that gives a pass/fail verdict (the
+  OpenRCX extraction gate reports `extracted_not_qualified` on both layouts).
+  LibreLane's layout failed the timing gate (capacitance and fanout) and its
+  equivalence is `unverified`, so the receipt's ratios are null.
+- The synthesis, final and powered netlists are byte-identical to 2026-11-05's;
+  GDS, DEF and the native SPEF changed with the route: 187,585.2 µm²
+  standard-cell area, 895,279.2 µm of routed signal wire and 120,585 vias,
+  against LibreLane's 197,913.7 µm², 969,571.6 µm and 122,194 (LibreLane's DEF
+  and netlists are byte-identical to 2026-11-05's). A second producer run of the
+  campaign's composition (through `be_timing`) produced byte-identical GDS, DEF,
+  netlists and native SPEF.
+- Same-load reruns after the campaign: the frontend STA and ECO stage took a
+  median 13.21 s against 43.83 s for LibreLane's four resizer steps (0.30x) and
+  18.20 s for its two steps before global routing (0.73x, faster); shared gates
+  on this layout against LibreLane's, rerun on another VM after a container
+  restart: foundry main DRC 0.73x (faster), antenna 0.75x (faster), LVS 0.69x
+  (faster), simulation 0.73x (faster), density 0.78x (faster), latch-up 0.76x
+  (faster), timing 0.98x (level), OpenRCX extraction 1.00x (level). The
+  equivalence gate has no valid comparison (it does not complete on LibreLane's
+  layout).
+
 ## Host campaign · 2026-11-05
 
 The committed recipe (superproject `397bfa6`, with every setting of the next

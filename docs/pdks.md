@@ -71,8 +71,8 @@ LVS, or RustEDA RTL-to-GDS integration. The qualified SKY130/GF180 small-block
 `./rusteda flow` cases use no SRAM macros. SRAM RTL-to-GDS evidence is limited
 to the [Ibex SG13G2/EZ130 campaigns](benchmarks.md) with two IHP
 `RM_IHPSG13_1P_1024x32_c2_bm_bist` macros. The IHP flow takes an explicit
-`ihp_sg13g2_ez130` worker configuration. The 2026-11-02 and 2026-11-05 host
-campaigns are `unqualified` because their recipe was composed without the
+`ihp_sg13g2_ez130` worker configuration. The 2026-11-02, 2026-11-05 and 2026-11-13
+host campaigns are `unqualified` because their recipe was composed without the
 unpublished component-qualification evidence. Separately, each ran a host-local copy of the
 Ibex recipe with a reconstructed EZ130 tech LEF and cell GDS; 5 of the 7
 contract-pinned EZ130 files are byte-identical.

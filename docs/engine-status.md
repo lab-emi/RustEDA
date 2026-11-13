@@ -1,8 +1,21 @@
 # Engine development
 
-Updated **2026-11-05**. RustEDA’s five engine repositories keep independent
+Updated **2026-11-13**. RustEDA’s five engine repositories keep independent
 Git histories. The superproject pins their source revisions; flow, CLI and
 workbench live directly in `apps/`. Version labels describe source previews.
+
+The [2026-11-13 host campaign](benchmarks.md#ibex-host-campaign-2026-11-13)
+rebuilt Ibex on SG13G2/EZ130 with two real IHP SRAMs on another 4-vCPU cloud
+host (Xeon 2.10 GHz, 15.7 GiB RAM, no swap; every LibreLane stage took less time
+than on 2026-11-05, with byte-identical DEF and netlists) with the engine
+revisions that superproject `820ffc8` pins (RustSys `86187e6`, RustSTA
+`d453782`, RustROAD `f90f2dd`, RustSpice `71875bf`, RustEDA-Common `002f8f6`),
+every engine built with Rust 1.100.0 and the native step graph run by the Rust
+executor `rusteda flow exec`. The native producer completed all 114 steps and its
+layout passed every shared gate with a pass/fail verdict (the OpenRCX extraction
+gate reports `extracted_not_qualified` on both layouts); LibreLane's layout failed
+the timing gate and its equivalence is `unverified`, so no end-to-end ratio is
+published. Each flow has one timed sample.
 
 The [2026-11-05 host campaign](benchmarks.md#ibex-host-campaign-2026-11-05)
 rebuilt Ibex on SG13G2/EZ130 with two real IHP SRAMs on a 4-vCPU cloud host
@@ -38,14 +51,15 @@ limitation rather than evidence of non-equivalence, and its vendor-model
 simulation `passed`. Neither flow passed every gate, so no end-to-end ratio was
 published. Each section below summarizes its part of each campaign and the
 scope of each comparison; the method sections
-([2026-11-05](benchmarks.md#host-campaign-method-and-deviations-2026-11-05),
+([2026-11-13](benchmarks.md#host-campaign-method-and-deviations-2026-11-13),
+[2026-11-05](benchmarks.md#host-campaign-method-and-deviations-2026-11-05),
 [2026-11-02](benchmarks.md#host-campaign-method-and-deviations)) list every
 deviation.
 
 The retained R20/R21 native runs completed all 129 steps and all 16 gates in
 **472.2 s and 472.6 s** on 16 logical CPUs, with frozen executables and an
 explicit early-check schedule. The [benchmark page](benchmarks.md) separates
-both campaigns from the older matched-reference comparison and records each
+the host campaigns from the older matched-reference comparison and records each
 host and analysis scope.
 
 ## RustEDA-Common
@@ -63,6 +77,11 @@ The [G1 crossing-query CPU/CUDA session](https://github.com/lab-emi/RustEDA-Comm
 comparisons on captured geometry do not qualify a GPU-enabled RTL-to-GDS flow;
 production Road integration and its runtime-image gate remain unchecked.
 
+**2026-11-13 host campaign.** Common `002f8f69f6ad` is compiled into the
+RustSys and RustSTA binaries the campaign timed, including the `rusteda`
+workspace CLI; its `export_pin_caps` example is one of the native frontend's
+declared tools. It has no separate head-to-head.
+
 **2026-11-05 host campaign.** Common `6668eecae9bb` is compiled into the
 RustSys and RustSTA binaries the campaign timed, including the `rusteda`
 workspace CLI; its `export_pin_caps` example is one of the native frontend's
@@ -75,7 +94,7 @@ it. Its `export_pin_caps` example is one of the native frontend's declared
 tools. It has no separate head-to-head.
 
 [Module source and qualification](../modules/RustEDA-Common/docs/development-status.md) ·
-[Host campaign 2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
+[Host campaign 2026-11-13](benchmarks.md#ibex-host-campaign-2026-11-13) · [2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustSys
 
@@ -92,6 +111,14 @@ coverage; one successful IHP design does not qualify other SRAM configurations.
 
 The bounded native equivalence checker and external CEC retain arbitrary initial
 state and explicit work limits. A budget exhaustion is not an equivalence proof.
+
+**2026-11-13 host campaign.** On the same synthesis task (three measured runs
+each), RustSys `86187e6` took a median 3.07 s in the two-thread workspace
+sequence and 2.19 s in direct mode, against 103.91 s for Yosys 0.70 + ABC with
+LibreLane's script (33.8× and 47.4× shorter), at 116,264 against 765,624 KiB
+worst peak RSS. The flow's synthesis netlist is byte-identical to 2026-11-05's,
+so its QoR is unchanged (145,226.592 µm² against 147,866.947 µm², logic depth 36
+against 40), and the flow's synthesis equivalence is `proven`.
 
 **2026-11-05 host campaign.** On the same synthesis task (three measured runs
 each), RustSys `86e59d8` took a median 3.81 s in the two-thread workspace
@@ -114,7 +141,7 @@ renamed registers, a checker limitation rather than evidence of
 non-equivalence.
 
 [Module source and qualification](../modules/RustSys/docs/development-status.md) ·
-[Host campaign 2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
+[Host campaign 2026-11-13](benchmarks.md#ibex-host-campaign-2026-11-13) · [2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustSTA
 
@@ -137,6 +164,18 @@ publication. GPU, Ngspice and scale tests listed as unchecked in that source QA
 record remain unchecked for this revision. Generated clocks, CPPR, CCS and
 crosstalk remain outside the supported flow scope.
 
+**2026-11-13 host campaign.** On the same netlist, Liberty, SDC and native SPEF
+(three measured runs), RustSTA `d453782`'s TT+SS pipeline took a median 4.692 s
+at 2 threads and 3.403 s at 4, against 7.349 s and 6.881 s for OpenSTA's two
+corner processes. Its worst peak RSS was 152,088 against 176,060 KiB at 2
+threads but **197,060 against 176,252 KiB at 4 threads (11.8 % more)**, where it
+was below OpenSTA's on 2026-11-05; the cause is not yet investigated. The parity
+gate `passed`: on identical SPEF the eight compared worst slacks differ by at
+most 0.270 ps. The native frontend's ECO rounds and planning helpers are now
+`rusteda` commands built in RustSTA's tree; in same-load runs the frontend STA
+and ECO stage took a median 13.21 s against 18.20 s for LibreLane's two resizer
+steps before global routing (0.73×; 1.18× on 2026-11-05).
+
 **2026-11-05 host campaign.** On the same netlist, Liberty, SDC and native SPEF
 (three measured runs), RustSTA `3550739`'s TT+SS pipeline took a median 6.825 s
 at 2 threads and 5.317 s at 4, against 11.168 s and 10.566 s for OpenSTA's two
@@ -155,7 +194,7 @@ OpenRCX SPEF, above the 1 ps tolerance; the other six compared values agree
 within 0.22 ps.
 
 [Module source and qualification](../modules/RustSTA/docs/development-status.md) ·
-[Host campaign 2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
+[Host campaign 2026-11-13](benchmarks.md#ibex-host-campaign-2026-11-13) · [2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustROAD
 
@@ -177,6 +216,23 @@ The spacing-aware placer and diagnostic settings are opt-in. Dual-PDK physical
 smokes cover Sky130 and GF180. OpenC910 physical closure, general macro flows
 and GPU-integrated extraction remain unverified. The R20/R21 measurements use a
 pinned campaign recipe, not every default CLI configuration.
+
+**2026-11-13 host campaign.** RustROAD `f90f2dd`'s layout has 187,585.2 µm²
+standard-cell area, 895,279.2 µm of routed signal wire and 120,585 vias,
+against LibreLane's 197,913.7 µm², 969,571.6 µm and 122,194 (different
+netlists; no ratio formed). New route topology controls cut the routed DEF from
+about 192 thousand wire pieces to 160 thousand for 2,060 more vias, and OpenRCX
+now extracts the native layout in LibreLane's time (1.00× in same-load runs,
+overlapping ranges; 1.36× on 2026-11-05). Routing took 266.71 s (global and
+detailed, 4 threads) against 75.68 s of global routing with antenna repair plus
+2,007.72 s of detailed routing; post-route and antenna repair took 4.74 s and
+8.93 s. On the same final layout (three measured runs), **RustROAD extraction was
+slower than OpenRCX**: 4.664 s at 4 threads against 3.829 s (1.22×, ranges not
+overlapping) and 7.951 s at 2 threads against 3.625 s, with about 3.7 times
+OpenRCX's CPU time; GDS export took 0.498 s against 1.375 s for KLayout. In
+same-load reruns of the shared gates the native layout took 0.73× LibreLane's
+time in foundry DRC, 0.75× in antenna DRC, 0.69× in LVS and 0.76× in the
+latch-up gate.
 
 **2026-11-05 host campaign.** RustROAD `1921481`'s layout has 187,585.2 µm²
 standard-cell area, 897,357.3 µm of routed signal wire and 118,525 vias,
@@ -210,7 +266,7 @@ published) has 1,679,076.6 µm of routed signal wire and 301,099 vias against
 LibreLane's 969,571.6 µm and 122,194.
 
 [Module source and qualification](../modules/RustROAD/docs/development-status.md) ·
-[Host campaign 2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
+[Host campaign 2026-11-13](benchmarks.md#ibex-host-campaign-2026-11-13) · [2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## RustSpice
 
@@ -231,6 +287,14 @@ result. BJT, JFET, MESFET and MOS levels above 1 remain unsupported. The
 benchmark command writes its report outside published documentation unless an
 output is explicit.
 
+**2026-11-13 host campaign.** On the RC decks of the new route (eight single
+nets of 173–237 unknowns, decks of 10 and 40 nets with 1,836 and 5,614 unknowns)
+all 10 cases `passed` the accuracy check, closer to the reference than
+default-tolerance ngspice in all 10 on the nominal grid but in only 6 of 10 at
+each simulator's own output points; RustSpice `71875bf`'s median per-deck time
+was 4.14–7.02× shorter than the faster ngspice solver, at lower peak RSS in
+every case (21,664 against 31,216 KiB on the 40-net deck).
+
 **2026-11-05 host campaign.** On the RC decks of the new layout (eight single
 nets of 198–291 unknowns, decks of 10 and 40 nets with 2,262 and 6,865 unknowns)
 all 10 cases `passed` the accuracy check; RustSpice `d4d6a50`'s median
@@ -246,7 +310,7 @@ than the faster ngspice solver (seven repetitions per case), at higher peak RSS
 (144,152 KiB against 71,608 KiB on the 40-net deck).
 
 [Module source and qualification](../modules/RustSpice/docs/development-status.md) ·
-[Host campaign 2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
+[Host campaign 2026-11-13](benchmarks.md#ibex-host-campaign-2026-11-13) · [2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## Flow, CLI and workbench
 
@@ -258,6 +322,21 @@ coverage and maximal-deck results bind the actual producer receipts and immutabl
 layout. Early-check schedules require byte-identical final GDS; a repair requires
 a new serial run. The general recipe composer retains its conservative serial
 selection; the latest optimized schedule is recorded as a campaign recipe.
+
+**2026-11-13 host campaign.** Still `unqualified`, the native producer, now
+driven by the Rust executor `rusteda flow exec` instead of `producer.py`,
+completed all 114 manifest steps in 717.301 s, including its own foundry main DRC
+beside the antenna DRC and LVS on two two-CPU lanes, which the receipt verified
+to be the identical checks of the shared gates. No frontend step runs Python any
+more; six backend steps still run Python wrappers, five around external referee
+tools and one for the SRAM macro contract. End to end, in one sample each,
+RustEDA measured 751.54 s (sv2v preparation + producer + the latch-up,
+simulation, equivalence and density gates) and LibreLane 3,675.96 s
+(preparation + flow through `Checker.XOR` + all nine shared gates). LibreLane
+fails the timing gate, so the receipt keeps its ratio fields null; divided, the
+times give 4.4× with LibreLane's foundry checks on the producer's two-lane
+schedule (751.54 s against 3,283.05 s) and 3.5× with every check run one after
+another (1,052.46 s against 3,675.96 s).
 
 **2026-11-05 host campaign.** Still `unqualified` (composed without the
 unpublished component-qualification evidence), the native producer completed all
@@ -285,7 +364,7 @@ gates). The receipt derives no ratio from them, because neither flow passed
 every gate.
 
 [Flow operation](flows.md) · [Workbench](workbench/index.md) ·
-[Qualification boundaries](verification.md) · [Host campaign 2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
+[Qualification boundaries](verification.md) · [Host campaign 2026-11-13](benchmarks.md#ibex-host-campaign-2026-11-13) · [2026-11-05](benchmarks.md#ibex-host-campaign-2026-11-05) · [2026-11-02](benchmarks.md#ibex-host-campaign-2026-11-02)
 
 ## Experimental source branches
 
