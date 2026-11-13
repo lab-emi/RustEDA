@@ -22,9 +22,15 @@ On a four-CPU allocation (a host adaptation admits it) the prefix is one
 producer parallel group (frontend_parallel_group): each step waits only for
 the steps whose files and workspaces it uses, and the two-corner STA runs use
 all four CPUs; every command, argument (but those STA thread counts), output
-and the step order are the serial prefix's. Each ECO round is one helper
-process: native_frontend_inputs.py bundles and then runs native_ecos.py's
-stage on what it read (bundle --eco-workspace).
+and the step order are the serial prefix's. The planning helpers are native
+commands of the pinned rusteda: `frontend-profiles`, `frontend-physical`,
+`frontend-pins`, `frontend-validate` and, for each ECO round, `eco-round`
+(bundle, plan and apply in one process). They write the files of the pinned
+reference helpers (files:prepare native_frontend_inputs.py and files:ecos
+native_ecos.py, which stay the definition and are still hash-pinned) byte for
+byte. A hold round with post-route capacitance feedback
+(selection.electrical.cap_feedback) is planned by the reference helper itself
+(bundle --eco-workspace).
 """
 from __future__ import annotations
 import argparse
@@ -119,8 +125,8 @@ def build(config):
 # The validate step reads every round's outputs and the producer's step receipts; it runs after the
 # group, so --stop-after fe_frontend_validate leaves the group concurrent.
 FRONTEND_GROUP_EXCLUDES = ('fe_frontend_validate',)
-# Deadline of an ECO round's one helper process (bundle, then the ECO stage): the two former
-# steps' 180 s each.
+# Deadline of an ECO round's one process (bundle, then the ECO stage): the two former steps'
+# 180 s each.
 ECO_STEP_SECONDS = 360
 
 
@@ -164,14 +170,26 @@ def recipe(config, four):
                         files={k:{'$input':k} for k in files}, tools={k:{'$tool':k} for k in tools},
                         selection=config['selection'])
     context=render('context', 'context.json', base_context)
-    profiles=command('profiles','python',['{files:prepare}','profiles','--context',out+'context.json','--workspace',out+'profiles','--base-rev','empty'],after=[context],slots=[2,3])
+    # A planning helper: the native form (`rusteda frontend-<name>`) of the pinned reference
+    # helper's command of that name (files:prepare), writing the same files byte for byte.
+    def helper(step, name, workspace, extra=(), **lane):
+        return command(step,'rusteda',['frontend-'+name,'--context',out+'context.json','--workspace',out+workspace,'--base-rev','empty',*extra],**lane)
+    # The helpers of the first moments share the two CPUs that synthesis leaves free: the
+    # profiles (the run's first helper, which hashes every pinned input) take CPU 2 with the
+    # two small SRAM pin tables; the two standard-cell pin tables and the timing workspaces'
+    # inits take CPU 3, side by side.
+    profiles=helper('profiles','profiles','profiles',after=[context],slots=[2])
     caps=[]
     for corner in ['tt','ss']:
         for kind,key in [('std','std_'+corner),('ram','ram_'+corner)]:
-            caps.append(command('caps_'+corner+'_'+kind,'pin_caps',['{files:'+key+'}'],slots=[3],memory=256))
+            caps.append(command('caps_'+corner+'_'+kind,'pin_caps',['{files:'+key+'}'],slots=[2 if kind=='ram' else 3],memory=256))
     ws=out+'synth'
     init=command('synth_init','rusteda',['init','-w',ws,'--format','json'],slots=[0],memory=128)
-    imp=command('synth_import','rusteda',['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib','{files:std_tt}','--corner','tt','--lib','{files:ram_tt}','--corner','tt','--rtl','{files:rtl}','--top',config['selection']['top']],after=[init])
+    # The run's Liberty compile cache (see the timing imports below): the synthesis import publishes
+    # its two TT libraries there, while the timing steps wait for synthesis, so the first timing
+    # import compiles only the SS libraries (its workspace files are the same either way).
+    lib_cache=out+'lib-cache'
+    imp=command('synth_import','rusteda',['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache,'--lib','{files:std_tt}','--corner','tt','--lib','{files:ram_tt}','--corner','tt','--rtl','{files:rtl}','--top',config['selection']['top']],after=[init])
     synth=command('synth','rustsys',['--workspace',ws,'synth','--base-rev','rev1','--threads','2'],600,after=[imp])
     mapped=command('synth_export','rusteda',['export','-w',ws,'--rev','rev2','--netlist',out+'mapped.v','--cell-buses',out+'profiles/cell-buses.json'],after=[synth,profiles],slots=[0])
     libargs=[]
@@ -180,10 +198,9 @@ def recipe(config, four):
     # The timing imports share one Liberty compile cache in this run's tree: a library compiled
     # by an earlier timing import of the run is copied into the next workspace instead of parsed
     # again (rusteda import --lib-cache; the workspace cache files are the same either way). The
-    # synthesis import keeps its own compile, so the frontend timing steps compile every library
-    # they use themselves (fe_mapped_import compiles all four). The cache writes each file under a
-    # temporary name and renames it, so imports may run beside each other.
-    lib_cache=out+'lib-cache'
+    # synthesis import publishes the TT libraries, so fe_mapped_import compiles the two SS ones.
+    # The cache writes each file under a temporary name and renames it, so imports may run beside
+    # each other.
     # STA steps by timing tag: the graph step and every report the next ECO bundle reads.
     graph_step,report_steps={},{}
     def timing(tag, source, hold=False, run=True, spef=None, after=()):
@@ -211,27 +228,35 @@ def recipe(config, four):
             if hold:report_steps[tag].append(command(tag+'_hold','ruststa',['report','-w',ws,'--threads','2','--section','hold_fix','--target-margin','0.5','--limit','0','--format','json'],after=[last],slots=[3]))
         return ws
     eco_step={}
+    feedback=config['selection'].get('electrical',{}).get('cap_feedback') is not None
     def eco(op, tag, source, timed=None, graph_tag=None, after=()):
-        args=['{files:prepare}','bundle','--context',out+'context.json','--workspace',out+'bundle-'+op,'--base-rev','empty','--operation',op,'--timing-tag',tag,'--source',source,'--graph',out+(graph_tag or tag)+'-graph.json']
-        if timed: args += ['--timed',timed]
-        # One process bundles and plans: after the bundle, native_frontend_inputs.py runs the ECO
-        # stage of native_ecos.py on it (--eco-workspace), reusing the documents, digests and
-        # netlist graph the bundle read; the bundle and ECO outputs are those of two processes.
-        # The run's flow digest cache spares hashing the pinned tools and libraries again; the
-        # final input check still reads every file (on up to four threads).
+        # One process bundles, plans and applies: `rusteda eco-round` is the native form of the
+        # reference helper's `bundle --eco-workspace` (native_frontend_inputs.py, then the ECO
+        # stage of native_ecos.py): the bundle and ECO files are those helpers' byte for byte
+        # (but the receipt's run time, peak memory and planner hash). The run's flow digest cache
+        # spares hashing the pinned tools and libraries first; the final input check still reads
+        # every file in full (the settled ones beside the apply step).
         # The bundle binds the pin tables, this tag's reports (and placement estimate) and the
         # graph of graph_tag; `after` names the producers of its source, timed netlist, placement
         # and estimate, and, after the first round, the reset round's root policy.
-        # The step's deadline is the sum of the two steps' it replaces (180 s each): the bundle runs
-        # under the helper's own 180 s alarm, and the ECO stage then sets its 180 s planner budget.
-        eco_step[op]=command('eco_'+op,'python',args+['--eco-workspace',out+'eco-'+op,'--digest-cache',out+'sha256-cache.json'],ECO_STEP_SECONDS,after=[context,profiles,*caps,graph_step[graph_tag or tag],*report_steps[tag],*after],slots=[0,1,2,3] if four else [0,1])
+        # The step's deadline is the sum of the two steps' it replaces (180 s each): the bundle
+        # has 180 s, and the ECO stage then its 180 s planner budget.
+        common=['--operation',op,'--timing-tag',tag,'--source',source,'--graph',out+(graph_tag or tag)+'-graph.json']
+        if timed: common += ['--timed',timed]
+        lane=dict(after=[context,profiles,*caps,graph_step[graph_tag or tag],*report_steps[tag],*after],slots=[0,1,2,3] if four else [0,1])
+        if op=='hold' and feedback:
+            # Post-route capacitance feedback binds the hold round to an extracted witness: that
+            # variant is planned by the reference helper.
+            eco_step[op]=command('eco_'+op,'python',['{files:prepare}','bundle','--context',out+'context.json','--workspace',out+'bundle-'+op,'--base-rev','empty',*common,'--eco-workspace',out+'eco-'+op,'--digest-cache',out+'sha256-cache.json'],ECO_STEP_SECONDS,**lane)
+        else:
+            eco_step[op]=command('eco_'+op,'rusteda',['eco-round','--context',out+'context.json','--bundle',out+'bundle-'+op,'--workspace',out+'eco-'+op,'--base-rev','empty',*common],ECO_STEP_SECONDS,**lane)
         return out+'eco-'+op+'/netlist.v'
     source=out+'mapped.v'; timing('mapped',source,after=[mapped])
     source=eco('reset','mapped',source,after=[mapped])
     timing('reset',source,after=[eco_step['reset']]); source=eco('fanout','reset',source,after=[eco_step['reset']])
     timing('fanout',source,after=[eco_step['fanout']]); source=eco('primary-clock','fanout',source,after=[eco_step['fanout'],eco_step['reset']])
     timing('primary',source,run=False,after=[eco_step['primary-clock']])
-    physical_config=command('physical_config','python',['{files:prepare}','physical','--context',out+'context.json','--workspace',out+'physical','--base-rev','empty','--roots',out+'bundle-reset/roots.json'],after=[context,eco_step['reset']],slots=[1])
+    physical_config=helper('physical_config','physical','physical',['--roots',out+'bundle-reset/roots.json'],after=[context,eco_step['reset']],slots=[1])
     export_step,seed_step,def_step,estimate_step={},{},{},{}
     def physical(tag, source, seed=None, weights=None, config='physical', after=()):
         ws=out+'road-'+tag
@@ -248,7 +273,10 @@ def recipe(config, four):
         cts='fe_'+tag+'_cts'
         if seed:seed_step[tag]=command(tag+'_seed','rustroad',['--workspace',ws,'export-placement-seed'],after=[cts],slots=[1])
         def_step[tag]=command(tag+'_def','rustroad',['--workspace',ws,'export-def'],after=[cts],slots=[2])
-        estimate_step[tag]=command(tag+'_estimate','python',['{files:estimator}','--def','{output}/logs/fe_'+tag+'_def.stdout','--lef','{files:cell_lef}','--policy','{files:rc_policy}','--workspace',out+'estimate-'+tag,'--base-rev','empty'],after=[def_step[tag]],slots=[2])
+        # `rusteda estimate-spef` is the native form of the pinned estimator (files:estimator):
+        # the same estimate.spef, result.json and summary line, byte for byte, from the same
+        # DEF, LEF and policy.
+        estimate_step[tag]=command(tag+'_estimate','rusteda',['estimate-spef','--def','{output}/logs/fe_'+tag+'_def.stdout','--lef','{files:cell_lef}','--policy','{files:rc_policy}','--workspace',out+'estimate-'+tag,'--base-rev','empty'],after=[def_step[tag]],slots=[2])
         return out+'estimate-'+tag+'/estimate.spef'
     # overlay16: one pin-planning placement moves every signal pin next to its loads before the
     # temporary round, so the electrical ECO seeds its isolation buffers beside the planned pins.
@@ -256,7 +284,7 @@ def recipe(config, four):
     last=command('pins_pdk_import','rustroad',plan+['import-pdk','--base-rev','rev0','--tech-lef','{files:tech_lef}','--cell-lef','{files:cell_lef}','--netlist',source,'--floorplan','{files:floorplan}','--physical-config',out+'physical/physical.json'],after=[physical_config,eco_step['primary-clock']])
     last=command('pins_place','rustroad',plan+['place','--base-rev','rev1'],after=[last])
     last=command('pins_def','rustroad',['--workspace',out+'road-pins','export-def'],after=[last],slots=[0])
-    pins=command('pins','python',['{files:prepare}','pins','--context',out+'context.json','--workspace',out+'physical-pins','--base-rev','empty','--def','{output}/logs/fe_pins_def.stdout'],after=[context,physical_config,last],slots=[0])
+    pins=helper('pins','pins','physical-pins',['--def','{output}/logs/fe_pins_def.stdout'],after=[context,physical_config,last],slots=[0])
     temp,temp_net=physical('temporary',source,config='physical-pins',after=[pins,eco_step['primary-clock']])
     # overlay14: the electrical round balances ungated launch clocks from this round's hold report.
     timing('temporary',temp_net,hold=True,spef=estimate('temporary',temp),after=[export_step['temporary'],estimate_step['temporary']])
@@ -269,7 +297,7 @@ def recipe(config, four):
     final,final_net=physical('final',final_source,'{output}/frontend/eco-hold/seed.json','{output}/frontend/eco-hold/weights.json','physical-pins',after=[pins,eco_step['hold']])
     command('final_inspect','rustroad',['--workspace',final,'inspect'],after=['fe_final_cts'],slots=[1])
     timing('final',final_net,spef=estimate('final',final,seed=False),after=[export_step['final'],estimate_step['final']])
-    command('frontend_validate','python',['{files:prepare}','validate','--context',out+'context.json','--workspace',out+'result','--base-rev','empty'])
+    helper('frontend_validate','validate','result')
     return steps, lanes
 
 

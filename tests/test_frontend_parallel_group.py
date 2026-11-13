@@ -23,7 +23,12 @@ from integration.ibex_sg13g2_ez130 import producer
 OUT = '{output}/'
 # Commands that commit a new revision of the workspace they name (the others only read it).
 WRITERS = {('rusteda', 'init'), ('rusteda', 'import'), ('ruststa', 'run'), ('rustsys', 'synth'),
-           ('rustroad', 'import-pdk'), ('rustroad', 'place'), ('rustroad', 'clock-tree')}
+           ('rustroad', 'import-pdk'), ('rustroad', 'place'), ('rustroad', 'clock-tree'),
+           ('rusteda', 'estimate-spef')}
+# The planning helpers as native commands of rusteda, by the reference helper's command they are the
+# native form of (native_frontend_inputs.py profiles|physical|pins|validate|bundle --eco-workspace).
+HELPERS = {'frontend-profiles': 'profiles', 'frontend-physical': 'physical', 'frontend-pins': 'pins',
+           'frontend-validate': 'validate', 'eco-round': 'bundle'}
 READERS = {('rusteda', 'export'), ('ruststa', 'report'), ('rustroad', 'export-verilog'),
            ('rustroad', 'export-def'), ('rustroad', 'export-placement-seed'), ('rustroad', 'inspect')}
 # Shared by design: the Liberty compile cache (files written under temporary names and renamed) and
@@ -58,10 +63,13 @@ def uses(step):
     written, read = {'logs/' + tag + '.stdout'}, set()
     paths = {rel(a) for a in args if rel(a)}
     workspace = rel(value(args, '-w', '--workspace') or '')
-    if tool == 'python':
-        written |= {workspace} | ({rel(value(args, '--eco-workspace'))} if '--eco-workspace' in args else set())
+    native = tool == 'rusteda' and args[0] in HELPERS
+    if tool == 'python' or native:
+        # A helper writes its workspace; an ECO round also its second one (the reference helper's
+        # --eco-workspace, the native command's --bundle).
+        written |= {workspace} | {rel(value(args, flag)) for flag in ('--eco-workspace', '--bundle') if flag in args}
         read |= paths - written
-        command = args[1] if args[0] == '{files:prepare}' else None
+        command = HELPERS[args[0]] if native else args[1] if args[0] == '{files:prepare}' else None
         if command == 'bundle':
             op, timing, graph = value(args, '--operation'), value(args, '--timing-tag'), rel(value(args, '--graph'))
             read |= {graph, 'frontend/profiles', 'frontend/sta-' + timing}
@@ -169,17 +177,42 @@ class FrontendGroup(unittest.TestCase):
         ids = [s['id'] for s in self.steps]
         self.assertFalse(any(i.startswith('fe_bundle_') for i in ids))
         for op in ('reset', 'fanout', 'primary-clock', 'electrical', 'hold'):
-            args = next(s['arguments'] for s in self.steps if s['id'] == 'fe_eco_' + op)
-            self.assertEqual(args[:2], ['{files:prepare}', 'bundle'])
+            step = next(s for s in self.steps if s['id'] == 'fe_eco_' + op)
+            args = step['arguments']
+            self.assertEqual((step['tool'], args[0]), ('rusteda', 'eco-round'))
             self.assertEqual(value(args, '--operation'), op)
-            self.assertEqual(value(args, '--workspace'), OUT + 'frontend/bundle-' + op)
-            self.assertEqual(value(args, '--eco-workspace'), OUT + 'frontend/eco-' + op)
-            self.assertEqual(value(args, '--digest-cache'), OUT + 'frontend/sha256-cache.json')
+            self.assertEqual(value(args, '--bundle'), OUT + 'frontend/bundle-' + op)
+            self.assertEqual(value(args, '--workspace'), OUT + 'frontend/eco-' + op)
+            self.assertEqual(value(args, '--context'), OUT + 'frontend/context.json')
         # One deadline for both stages: the two former steps' 180 s each, at every allocation.
         for four in (True, False):
             steps, _ = fe.recipe(config(), four)
             self.assertEqual({s['timeout_s'] for s in steps if s['id'].startswith('fe_eco_')}, {360})
             self.assertEqual(fe.ECO_STEP_SECONDS, 2 * 180)
+
+    def test_the_planning_helpers_are_native_commands_but_the_feedback_hold_round(self):
+        # No step of the prefix runs Python: every helper is a command of the pinned rusteda.
+        self.assertEqual([s['id'] for s in self.steps if s.get('tool') == 'python'], [])
+        native = {s['id']: s['arguments'][0] for s in self.steps
+                  if s.get('tool') == 'rusteda' and s['arguments'][0] in HELPERS}
+        self.assertEqual(native, {'fe_profiles': 'frontend-profiles', 'fe_physical_config': 'frontend-physical',
+                                  'fe_pins': 'frontend-pins', 'fe_frontend_validate': 'frontend-validate',
+                                  **{'fe_eco_' + op: 'eco-round' for op in ('reset', 'fanout', 'primary-clock', 'electrical', 'hold')}})
+        # Post-route capacitance feedback binds the hold round to an extracted witness: that round
+        # alone is planned by the reference helper, with the reference's arguments.
+        with_feedback = config()
+        with_feedback['selection']['electrical'] = dict(cap_feedback=dict(path='/x/f', sha256='0' * 64, bytes=1))
+        steps, lanes = fe.recipe(with_feedback, True)
+        python = [s for s in steps if s.get('tool') == 'python']
+        self.assertEqual([s['id'] for s in python], ['fe_eco_hold'])
+        args = python[0]['arguments']
+        self.assertEqual(args[:2], ['{files:prepare}', 'bundle'])
+        self.assertEqual(value(args, '--workspace'), OUT + 'frontend/bundle-hold')
+        self.assertEqual(value(args, '--eco-workspace'), OUT + 'frontend/eco-hold')
+        self.assertEqual(value(args, '--digest-cache'), OUT + 'frontend/sha256-cache.json')
+        # The round's dependencies and CPUs do not depend on which form plans it.
+        self.assertEqual(lanes['fe_eco_hold'], self.lanes['fe_eco_hold'])
+        self.assertEqual([uses(s) for s in steps], [uses(s) for s in self.steps])
 
     def test_native_flow_accepts_frontend_groups_before_the_signoff_group_only(self):
         tail = [dict(id=t, kind='command', tool='python', arguments=['{files:producer}', t], timeout_s=1800)

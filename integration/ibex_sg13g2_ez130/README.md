@@ -426,6 +426,72 @@ unknown, so these files and the module pins change together.
   sixteen-CPU composition now has five steps fewer, so that proof, which
   already rejects this recipe's contract and lattice (*Taps* above), would
   also reject the step count.
+- **Native planning helpers, native RC estimate, early TT library compile.**
+  No step of the frontend prefix runs Python any more. The five ECO rounds run
+  `rusteda eco-round` (bundle, plan and `rustroad apply-eco` in one process),
+  and the other planning helpers run `rusteda frontend-profiles`,
+  `frontend-physical`, `frontend-pins` and `frontend-validate`
+  (RustEDA-Common, RCLI-REQ-0027 and RCLI-REQ-0028): the native forms of
+  `native_frontend_inputs.py` and `native_ecos.py`. The three placement RC
+  estimates run `rusteda estimate-spef` (RCLI-REQ-0026), the native form of
+  `estimate_spef.py`. Each command writes its reference helper's files byte
+  for byte from the same inputs (key order, shortest round-trip floats,
+  decimal rounding, compensated sums, stable sorts and the planner's work-unit
+  count are the reference's); an ECO receipt differs in its run time, peak
+  memory and planner hash, which is now the executable's. The reference
+  helpers stay in the recipe and stay hash-pinned (`files:prepare`,
+  `files:ecos`, `files:estimator`): they define the outputs, the commands'
+  fixture test is generated with them, and a hold round with post-route
+  capacitance feedback (`selection.electrical.cap_feedback`) is still planned
+  by them (`bundle --eco-workspace`). The final input check of a round still
+  reads every input in full: the pinned tools and libraries, whose file status
+  is settled, while `apply-eco` runs (their identity is compared afterwards),
+  the run's own files after it.
+
+  The RustEDA-Common of these commands also computes the shared `expm1` and
+  pole-ramp factors of the RC waveform crossings once (the same operations on
+  the same operands, so every timing table is bit-identical, with about 7 %
+  less CPU time in the estimated-RC runs), and RustSTA prepares the RC
+  waveforms of each node as soon as the last of its sources is done instead of
+  level by level (each node reads only its sources' final waves, so every
+  value is the level sweep's in every bit; no thread waits for the slowest
+  node of a level). The synthesis import publishes its two TT libraries to the
+  run's compile cache (`--lib-cache`; its workspace is the same), so
+  `fe_mapped_import` compiles only the two SS libraries (0.32 s instead of
+  0.51 s), and on a four-CPU allocation the profiles command (the run's first
+  helper, which hashes every pinned input) takes CPU 2 with the two SRAM pin
+  tables while the standard-cell pin tables and the timing inits take CPU 3.
+  With the baseline and the change run at the same path, all 464 frontend
+  files but the provenance records (tool and recipe hashes in `context.json`,
+  the receipts and digest records, the library-cache records' executable hash)
+  and the fields that differ between any two runs (timestamps, run times, peak
+  RSS) are byte-identical, among them every netlist, ECO plan, bundle, seed,
+  weight file, profile, pin plan, DEF, SPEF, timing table, report and graph.
+
+  On 2026-11-13, on a 4-vCPU host shared with other work, in five interleaved
+  same-load repetitions on four CPUs (1-minute load 0.9 to 2.3), the receipt's
+  frontend STA/ECO stage took a median 12.16 s (11.89 to 12.58 s, 22.69 s CPU)
+  against 16.89 s with the 2026-11-05 binaries and frontend recipe (16.73 to
+  17.19 s, 27.53 s CPU) and 16.12 s (15.91 to 16.58 s, 15.86 s CPU) for
+  LibreLane's two repair steps before global routing (32 + 37, replayed as a
+  black box from the 2026-11-05 campaign run with byte-identical DEF, netlist
+  and metrics outputs), 15.43 s by LibreLane's own `runtime.txt`: 0.75x and
+  0.79x of the medians, and every repetition of the stage was faster than the
+  fastest repetition of those steps (0.74x to 0.78x and 0.77x to 0.81x per
+  repetition). An earlier batch of five repetitions, two of them beside
+  another job's compilation (load up to 4.7), gave 13.38 s (12.38 to 15.58 s)
+  against 17.12 s (16.54 to 17.24 s; 16.36 s by `runtime.txt`), 0.78x and
+  0.82x; there the same configuration with the level-by-level RC sweep took
+  13.48 s (12.73 to 17.87 s). On two CPUs (1-minute load 1.3 to 1.6) the stage
+  took 16.18 s (16.12 to 16.63 s) against 20.71 s before and 15.57 s for steps
+  32 + 37 (14.92 s by `runtime.txt`; 1.04x, 1.33x before). No step of the
+  frontend runs Python; the producer's waits between the dependent steps of
+  the timing and ECO chain add up to about 0.1 s. A complete run of this
+  configuration (all 114 manifest steps, with the rustroad of the native
+  backend steps) passed every producer gate (`timing_accuracy` 0.1639 ps) and
+  every shared gate, and its GDS, DEF, all netlists and native SPEF are
+  byte-identical to those of the 2026-11-05 campaign; its RustSTA/OpenSTA
+  signoff values are the campaign's.
 - **GDS stream.** `be_gds` (and every export that must reproduce its bytes:
   `qualify_native.py`'s early export, the foundry-first initial export) passes
   `--merge-shapes rectangles --vias flat` (`native_backend.GDS_STYLE`): each
