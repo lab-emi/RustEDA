@@ -134,13 +134,13 @@ fn inversions(seq: &[usize], max: usize) -> u64 {
         let mut le = 0u64;
         while i > 0 {
             le += tree[i];
-            i -= i & i.wrapping_neg();
+            i -= i.isolate_lowest_one();
         }
         total += seen as u64 - le;
         let mut i = v + 1;
         while i <= max {
             tree[i] += 1;
-            i += i & i.wrapping_neg();
+            i += i.isolate_lowest_one();
         }
     }
     total
