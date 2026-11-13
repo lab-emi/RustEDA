@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.host-measured-run.v1",
+  "name": "native",
+  "command": "/home/user/RustEDA/.work/bins/final-20261113/rusteda-flow flow exec --project /home/user/RustEDA/.work/campaign-20261113/compose/be --manifest /home/user/RustEDA/.work/campaign-20261113/compose/be/prefix-manifest.json --output /home/user/RustEDA/.work/campaign-20261113/native-final/output --base-rev empty --pdk ihp --rustroad /home/user/RustEDA/.work/target/RustROAD/release/rustroad --gnu-time /opt/eda/time/bin/time --stop-after be_macro_contract",
+  "started": "2026-11-13T08:20:01+00:00",
+  "wall_seconds": 717.301,
+  "exit_code": 0,
+  "gnu_time_max_rss_kib": 2254980,
+  "cgroup_v1_memory_max_usage_bytes": 4930203648,
+  "cgroup_v1_memsw_max_usage_bytes": 4930203648,
+  "cgroup_v1_failcnt": 0,
+  "cgroup_limit_bytes": 8589934592,
+  "sampled_peak_total_rss_bytes": 3093696512,
+  "loadavg_1m_mean": 1.69,
+  "loadavg_1m_max": 2.75,
+  "samples": 144,
+  "cpus_online": 4
+}

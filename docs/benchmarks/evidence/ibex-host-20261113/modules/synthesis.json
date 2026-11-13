@@ -1,0 +1,95 @@
+{
+ "task": "prepared Ibex RTL (sv2v) to EZ130 TT + SRAM Liberty mapped netlist",
+ "runs": {
+  "rustsys_flow": {
+   "runs": 3,
+   "median_wall_seconds": 3.07,
+   "min_wall_seconds": 3.06,
+   "worst_peak_rss_kib": 116264
+  },
+  "rustsys_direct": {
+   "runs": 3,
+   "median_wall_seconds": 2.19,
+   "min_wall_seconds": 2.05,
+   "worst_peak_rss_kib": 112660
+  },
+  "yosys_librelane": {
+   "runs": 3,
+   "median_wall_seconds": 103.91,
+   "min_wall_seconds": 102.47,
+   "worst_peak_rss_kib": 765624
+  }
+ },
+ "qor": {
+  "rustsys": {
+   "path": "/home/user/RustEDA/.work/campaign-20261113/bench-synth/rustsys_flow-1/mapped.v",
+   "yosys_stat": {
+    "area_um2_including_macros": 425591.9808,
+    "standard_cell_area_um2": 145226.592,
+    "logic_depth": {
+     "cells": 36,
+     "logic_cells_excluding_buffers": 36
+    },
+    "cells": {
+     "total": 11433,
+     "sequential": 1998,
+     "buffer_inverter": 950,
+     "physical": 0,
+     "macro": 2,
+     "other": 8483
+    }
+   },
+   "ideal_timing": {
+    "tt": {
+     "setup_wns_ns": 49.6663,
+     "hold_wns_ns": -8.5315,
+     "setup_tns_ns": 0.0,
+     "max_data_arrival_ns": 50.2875
+    },
+    "ss": {
+     "setup_wns_ns": 49.4893,
+     "hold_wns_ns": -12.8764,
+     "setup_tns_ns": 0.0,
+     "max_data_arrival_ns": 50.4572
+    }
+   }
+  },
+  "yosys_librelane": {
+   "path": "/home/user/RustEDA/.work/campaign-20261113/bench-synth/yosys_librelane-1/mapped.v",
+   "yosys_stat": {
+    "area_um2_including_macros": 428232.336,
+    "standard_cell_area_um2": 147866.947,
+    "logic_depth": {
+     "cells": 40,
+     "logic_cells_excluding_buffers": 40
+    },
+    "cells": {
+     "total": 12605,
+     "sequential": 1905,
+     "buffer_inverter": 186,
+     "physical": 0,
+     "macro": 2,
+     "other": 10512
+    }
+   },
+   "ideal_timing": {
+    "tt": {
+     "setup_wns_ns": 30.3506,
+     "hold_wns_ns": -21.5932,
+     "setup_tns_ns": 0.0,
+     "max_data_arrival_ns": 50.2874
+    },
+    "ss": {
+     "setup_wns_ns": -0.2864,
+     "hold_wns_ns": -32.752,
+     "setup_tns_ns": -0.2864,
+     "max_data_arrival_ns": 71.749
+    }
+   }
+  }
+ },
+ "equivalence": {
+  "rustsys": "proven",
+  "yosys_librelane": "unverified"
+ }
+}

@@ -1,0 +1,1900 @@
+{
+ "schema": "rusteda.ibex-host-benchmark.v1",
+ "date": "2026-11-13",
+ "status": "comparison_incomplete",
+ "summary": "Ibex SG13G2/EZ130 RTL-to-GDS on a 4-vCPU cloud host: RustEDA native flow against LibreLane 3.0.17 with the same prepared inputs and the same independent gate scripts, plus module head-to-heads.",
+ "design": {
+  "family": "Ibex",
+  "top": "ibex_sram_bench",
+  "rtl_source": "lowRISC Ibex v2.1.0, default RV32IMC",
+  "rtl_commit": "38c070939183cc10940b66c8e9e04eeca6b65470",
+  "rtl_sha256": "da905268162cfbbbfdbd17f24016c9128c455207dad23b062b5f9529d0c47497",
+  "rtl_note": "sv2v 0.0.13.1 output; the 2026-10-30 campaign's file was 8a8fe84b\u2026 (different sv2v build)",
+  "testbench_sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+  "sram_instances_required": 2,
+  "sram_instances": [
+   "u_imem",
+   "u_dmem"
+  ],
+  "sram_macro": "RM_IHPSG13_1P_1024x32_c2_bm_bist"
+ },
+ "technology": {
+  "process": "IHP SG13G2",
+  "pdk_commit": "5cccb161f7492697cfa52eb14dc03beb00bdca9e",
+  "standard_cell_library": "EZ130 8T v1.1 (tech LEF and GDS reconstructed; see ez130_files)",
+  "ez130_files": {
+   "ez130/lib/ez130_8t_tt_1p20v_25c.lib": {
+    "contract_sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+    "host_sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+    "byte_identical": true
+   },
+   "ez130/lib/ez130_8t_ss_1p08v_125c.lib": {
+    "contract_sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+    "host_sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+    "byte_identical": true
+   },
+   "ez130/lef/ez130_sg13g2_tech.lef": {
+    "contract_sha256": "375ae19dcb365d712b682ce366cef8b55c939990e52c152e2b52ebcb8e8c5f27",
+    "host_sha256": "df2eed23e93b12af2a7cd6755d13b12044e46a5d39a21130ed1ae07e9d3fc911",
+    "byte_identical": false
+   },
+   "ez130/lef/ez130_8t.lef": {
+    "contract_sha256": "841070a0650462ac9d14ec042347d0c518f5c78bc55ccbb06c2d5b3f518f55d4",
+    "host_sha256": "841070a0650462ac9d14ec042347d0c518f5c78bc55ccbb06c2d5b3f518f55d4",
+    "byte_identical": true
+   },
+   "ez130/gds/ez130_8t.gds": {
+    "contract_sha256": "628767647a34b36a3710bf698387373183d84a43963cd0b722cf7a9e95441042",
+    "host_sha256": "b4bed12dd9eef1f5592ab70d6ed1dbc9d10e172068c248652312d301e0e84058",
+    "byte_identical": false
+   },
+   "ez130/cdl/ez130_8t.cdl": {
+    "contract_sha256": "d65b17d5c209ad3fca60a451ffc2bb88aaf604656b518a09037f8feb5b50a542",
+    "host_sha256": "d65b17d5c209ad3fca60a451ffc2bb88aaf604656b518a09037f8feb5b50a542",
+    "byte_identical": true
+   },
+   "ez130/verilog/ez130_8t.v": {
+    "contract_sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12",
+    "host_sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12",
+    "byte_identical": true
+   }
+  },
+  "ez130_summary": "5 of 7 contract-pinned EZ130 files byte-identical; SG13G2 tech LEF and GDS reconstructed; the catalog-pinned FF Liberty is also byte-identical",
+  "corners": [
+   "tt_1p20v_25c",
+   "ss_1p08v_125c"
+  ],
+  "rc_corner": "nominal",
+  "clock_period_ns": 100,
+  "contract_sha256_repository": "36fedd932cdc2b1dfa8369ae44ce672db972e169e9af76a3e836d10872321105"
+ },
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "logical_cpus": 4,
+  "memory_bytes": 16867405824,
+  "kernel": "6.18.44-fc-v445",
+  "cgroup": "v1 memory controller; each timed stage alone in its own child group",
+  "allocation": "all 4 vCPUs to each flow; RustEDA 8 GiB cap (+2 GiB memsw), LibreLane 10 GiB cap; no swap device",
+  "sampling": "one timed sample per flow; module stages one warm-up plus three measured repetitions",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "producer_executor": "rusteda flow exec (native step-graph executor, superproject apps/ at the same commit)",
+  "facts_source": "captured on the campaign host on 2026-11-13 before the timed campaign (superproject 820ffc8; /proc/cpuinfo, sysconf, uname, lscpu in host-lscpu.txt); engine commits are the gitlinks pinned by 820ffc8; every engine binary was built from them with rustc 1.100.0"
+ },
+ "preparation": {
+  "seconds": 4.13,
+  "peak_rss_kib": 283932,
+  "tool": "sv2v 0.0.13.1"
+ },
+ "tools": {
+  "rustsys": {
+   "path": "/home/user/RustEDA/.work/target/RustSys/release/rustsys",
+   "sha256": "d84e0810827654bdc7ad1c8dee9174bf1c2c314400f358571d560f61c82359df",
+   "version": "rustsys 0.1.0 (runtimes: cpu, cuda)"
+  },
+  "ruststa": {
+   "path": "/home/user/RustEDA/.work/target/RustSTA/release/ruststa",
+   "sha256": "fc223e3617b3c7a9a8ab38f222506fc0a98aa6b1f8b87200df9045fbabee6dbb",
+   "version": "ruststa 0.4.3 (backends: cpu)"
+  },
+  "rustroad": {
+   "path": "/home/user/RustEDA/.work/target/RustROAD/release/rustroad",
+   "sha256": "fde7f04c182bf9b1f980afda22dbc4e473143b4668ae3517b9b96d137f9bcefd",
+   "version": "rustroad-cli 0.5.0"
+  },
+  "rusteda_workspace_cli": {
+   "path": "/home/user/RustEDA/.work/target/RustSTA/release/rusteda",
+   "sha256": "440351bdec0c3f206517f9a9d552635c21d0c08f49c7b68f47ca50eb9e2e051c",
+   "version": "rusteda 0.4.3"
+  },
+  "rustspice": {
+   "path": "/home/user/RustEDA/.work/target/RustSpice/release/rustspice",
+   "sha256": "f59f844dee890852a0b49f432261654d2b38ec105595ebe8dc1c922988b5652e",
+   "version": "rustspice 0.1.0"
+  },
+  "yosys": {
+   "path": "/nix/store/cfry5mn7l5qk6cy730gspaa51fahc108-yosys-0.70/bin/yosys",
+   "sha256": "f6ddbbc9579497d60f2799df28e11cacf93d93f1cdb399f049d30cb85e537838",
+   "version": "Yosys 0.70+post (git sha1 v0.70, Release, GNU /nix/store/r5ri78axx1qggkjq3vawywlzglg70b5w-gcc-wrapper-16.2.0/bin/g++ 16."
+  },
+  "openroad": {
+   "path": "/nix/store/6qbn5zjnnnyna6md4rsmiqw4y26y8556-openroad-26Q3/bin/openroad",
+   "sha256": "3b2a6e9f448e1e6ac55b27a7d173e61e8bcf2475d3023caa7caa8e0a979a8dc5",
+   "version": "26Q3"
+  },
+  "opensta": {
+   "path": "/nix/store/6qbn5zjnnnyna6md4rsmiqw4y26y8556-openroad-26Q3/bin/sta",
+   "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+   "version": "OpenSTA 3.1.0 (OpenROAD 26Q3 build)"
+  },
+  "klayout": {
+   "path": "/nix/store/1whjbzm6gw6l4h0sjxdv92lyw7lq1ar8-klayout-0.30.12/bin/klayout",
+   "sha256": "b9950f39d84d62d30c0828715be14b36e7022fb60b7b4a3b57aee4f1d7eca283",
+   "version": "KLayout 0.30.12"
+  },
+  "magic": {
+   "path": "/nix/store/1a38jkimmkcc8wzl374m0zja0b24mp8l-magic-vlsi-8.3.689/bin/magic",
+   "sha256": "ee2e3cd35420919d68a23ea2f62507fe75aef33c7785c5c0a6fa357b89f77de7",
+   "version": "8.3.689"
+  },
+  "netgen": {
+   "path": "/nix/store/ikmvxpm38pkj42lw42zpbxjs59csd44d-netgen-1.5.325/bin/netgen",
+   "sha256": "865569cf57a7b2901291201953ec4bcab4ba81c62c6c9b0b9b245d46260be393",
+   "version": "1.5.325"
+  },
+  "iverilog": {
+   "path": "/nix/store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/iverilog",
+   "sha256": "6184eb3ff556d1bb0c86aaf096c15d124ed33037fcb8a4cf442d42ce09e0db82",
+   "version": "13.0"
+  },
+  "ngspice": {
+   "path": "/nix/store/gy4jdjlgzqcyr9wprwrv8n7p7n52x3db-ngspice-45/bin/ngspice",
+   "sha256": "3fe1b888513369f7895364805c835de209f0098fd9ac7bcb7d9576bcccb55524",
+   "version": "ngspice-45"
+  },
+  "sv2v": {
+   "path": "/nix/store/x8k28s12f0llzr0bflkh80878vlamhln-sv2v-0.0.13.1/bin/sv2v",
+   "sha256": "a678ba7e872340be6e227014c639c77f5a940e21eee4c14264fe03921d896ac9",
+   "version": "sv2v 0.0.13.1"
+  },
+  "librelane": {
+   "version": "3.0.17",
+   "source": "PyPI wheel; OpenROAD/Yosys/KLayout/Magic/Netgen from nixpkgs"
+  }
+ },
+ "engine_commits": {
+  "RustSys": "86187e69c3111ad79ae4b651ad53d652b7609867",
+  "RustSTA": "d453782b118224ee27517857a59ad5a597a0fb4c",
+  "RustROAD": "f90f2dd805cbad1ba03dcc4fb84c2d36dfb4d5f7",
+  "RustSpice": "71875bf9a8c937fb6ada641c45f52df67f0cfa30",
+  "RustEDA-Common": "002f8f69f6adcec4c75973dbdccb42f04cdd7a37"
+ },
+ "implementations": {
+  "RustEDA": {
+   "configuration": "repository recipe (integration/ibex_sg13g2_ez130 at the campaign commit), composed by compose_native.py; grouped single-process antenna session; RustROAD frontend placement, CTS at --threads 2; route, extract, post-route repair, antenna repair at --threads 4; export-gds on the default 2-thread pool (no --threads); producer foundry checks on the schedule in foundry_check_schedule; unqualified",
+   "rustroad_threads": {
+    "fe_final_place": 2,
+    "fe_final_cts": 2,
+    "be_route": 4,
+    "be_extract": 4,
+    "be_gds": "default",
+    "be_postroute": 4,
+    "be_antenna_repair": 4
+   },
+   "producer": {
+    "status": "frontend_completed",
+    "error": null,
+    "failed_items": [],
+    "steps_completed": 114,
+    "manifest_steps": 114,
+    "wall_seconds": 717.301,
+    "peak_rss_kib": 2254980,
+    "cgroup_v1_memory_peak_bytes": 4930203648,
+    "loadavg_1m_mean": 1.69,
+    "producer_gates": {
+     "timing": "passed",
+     "timing_accuracy": {
+      "status": "passed",
+      "max_abs_difference_ps": 0.2697,
+      "tolerance_ps": 1.0,
+      "differences": [
+       {
+        "source": "native",
+        "corner": "tt",
+        "field": "setup_ws_ns",
+        "ruststa_ns": 49.626212,
+        "opensta_ns": 49.626266,
+        "abs_difference_ps": 0.0547
+       },
+       {
+        "source": "native",
+        "corner": "tt",
+        "field": "hold_ws_ns",
+        "ruststa_ns": 0.110628,
+        "opensta_ns": 0.110898,
+        "abs_difference_ps": 0.2697
+       },
+       {
+        "source": "native",
+        "corner": "ss",
+        "field": "setup_ws_ns",
+        "ruststa_ns": 49.426056,
+        "opensta_ns": 49.425957,
+        "abs_difference_ps": 0.0988
+       },
+       {
+        "source": "native",
+        "corner": "ss",
+        "field": "hold_ws_ns",
+        "ruststa_ns": 0.20981,
+        "opensta_ns": 0.209803,
+        "abs_difference_ps": 0.0064
+       },
+       {
+        "source": "openrcx",
+        "corner": "tt",
+        "field": "setup_ws_ns",
+        "ruststa_ns": 49.627847,
+        "opensta_ns": 49.627903,
+        "abs_difference_ps": 0.0565
+       },
+       {
+        "source": "openrcx",
+        "corner": "tt",
+        "field": "hold_ws_ns",
+        "ruststa_ns": 0.10839,
+        "opensta_ns": 0.108633,
+        "abs_difference_ps": 0.2431
+       },
+       {
+        "source": "openrcx",
+        "corner": "ss",
+        "field": "setup_ws_ns",
+        "ruststa_ns": 49.428841,
+        "opensta_ns": 49.428783,
+        "abs_difference_ps": 0.0574
+       },
+       {
+        "source": "openrcx",
+        "corner": "ss",
+        "field": "hold_ws_ns",
+        "ruststa_ns": 0.20605,
+        "opensta_ns": 0.20601,
+        "abs_difference_ps": 0.0401
+       }
+      ]
+     }
+    },
+    "stage_seconds": {
+     "synthesis (RustSys)": 3.1,
+     "placement and CTS (RustROAD)": 19.56,
+     "frontend STA, ECO rounds and planning helpers (RustSTA)": 13.85,
+     "routing (RustROAD)": 266.71,
+     "post-route repair": 4.74,
+     "antenna repair and verification": 8.93,
+     "GDS/DEF/netlist export": 1.67,
+     "native extraction (RustROAD)": 5.27,
+     "OpenRCX extraction": 4.24,
+     "signoff timing (RustSTA + OpenSTA)": 26.96,
+     "foundry DRC, LVS, macro contract": 362.78,
+     "other (renders, profiles, physical inputs)": 0.03
+    }
+   },
+   "shared_gates": {
+    "drc": {
+     "status": "passed",
+     "violations": 0,
+     "scope": "complete_foundry_main",
+     "disabled_rules": [
+      "recommended"
+     ]
+    },
+    "antenna": {
+     "status": "passed",
+     "violations": 0,
+     "scope": "complete_foundry_antenna",
+     "disabled_rules": []
+    },
+    "latchup": {
+     "status": "passed",
+     "scope": "tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate, LU.a also in-well",
+     "rules": {
+      "LU.a": {
+       "status": "passed",
+       "target_polygons": 37250,
+       "uncertified_boxes": 0
+      },
+      "LU.b": {
+       "status": "passed",
+       "target_polygons": 54216,
+       "uncertified_boxes": 0
+      }
+     }
+    },
+    "lvs": {
+     "status": "passed",
+     "top_port_identity": true,
+     "macro_instances": 2,
+     "macro_devices_verified": true
+    },
+    "timing": {
+     "status": "passed",
+     "source": "OpenRCX nominal SPEF; min(RustSTA, OpenSTA)",
+     "corners": {
+      "tt": {
+       "setup_ws_ns": 49.62784652162024,
+       "hold_ws_ns": 0.1083902066268545,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 0,
+       "fanout_violations": 0,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      },
+      "ss": {
+       "setup_ws_ns": 49.428783416748,
+       "hold_ws_ns": 0.2060097754,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 0,
+       "fanout_violations": 0,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      }
+     }
+    },
+    "simulation": {
+     "status": "passed"
+    },
+    "synthesis_equivalence": {
+     "status": "proven",
+     "error": null
+    },
+    "final_equivalence": {
+     "status": "proven",
+     "error": null
+    },
+    "density": {
+     "status": "passed",
+     "max_percent": 70,
+     "final_nonfiller_utilization_percent": 26.666794222490864,
+     "macro_inclusive_core_utilization_percent": 46.1157517919518,
+     "standard_cell_area_um2": 187585.2,
+     "filler_decap_area_um2": 512766.6
+    }
+   },
+   "shared_gate_seconds": {
+    "drc": 386.803,
+    "antenna": 171.365,
+    "latchup": 5.944,
+    "extraction": 4.236,
+    "timing": 21.464,
+    "lvs": 120.418,
+    "simulation": 4.542,
+    "logic": 19.406,
+    "density": 0.222
+   },
+   "shared_gate_peak_rss_kib": 2259344,
+   "completion_gate_seconds": 30.11,
+   "completion_gates": [
+    "latchup",
+    "simulation",
+    "logic",
+    "density"
+   ],
+   "producer_identical_checks": {
+    "drc": {
+     "step": "be_main",
+     "identical": true,
+     "reason": null
+    },
+    "antenna": {
+     "step": "be_antenna",
+     "identical": true,
+     "reason": null
+    },
+    "lvs": {
+     "step": "be_lvs",
+     "identical": true,
+     "reason": null
+    }
+   },
+   "foundry_check_schedule": {
+    "mode": "concurrent",
+    "lanes": [
+     [
+      "antenna",
+      "lvs"
+     ],
+     [
+      "drc"
+     ]
+    ],
+    "serial_gates": [],
+    "serial_sum_seconds": 663.34,
+    "span_seconds": 362.42
+   },
+   "end_to_end_seconds": 751.54,
+   "end_to_end_seconds_serial_checks": 1052.46,
+   "end_to_end_scope": "sv2v preparation + producer (synthesis through extraction, OpenRCX and RustSTA/OpenSTA signoff timing, and the foundry main/antenna DRC and LVS when it reaches them, on the producer's own schedule: see foundry_check_schedule) + shared gates the producer did not run as the identical check (see completion_gates: of foundry main and antenna DRC, latch-up, LVS, vendor simulation, synthesis/final equivalence, density); end_to_end_seconds_serial_checks charges the producer's covered checks their serial sum instead of their elapsed span",
+   "qor": {
+    "standard_cell_area_um2": 187585.2,
+    "final_nonfiller_utilization_percent": 26.666794222490864,
+    "macro_inclusive_core_utilization_percent": 46.1157517919518,
+    "routed_signal_wirelength_um": 895279.2,
+    "vias": 120585,
+    "routed_nets": 14178,
+    "components": {
+     "standard": 14058,
+     "macro": 2,
+     "antenna": 52,
+     "tap": 5934,
+     "filler": 34322
+    },
+    "timing_openrcx": {
+     "tt": {
+      "setup_ws_ns": 49.62784652162024,
+      "hold_ws_ns": 0.1083902066268545,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 0,
+      "cap_violations": 0,
+      "fanout_violations": 0,
+      "active_unconstrained_endpoints": 0,
+      "unconstrained_endpoints": 156
+     },
+     "ss": {
+      "setup_ws_ns": 49.428783416748,
+      "hold_ws_ns": 0.2060097754,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 0,
+      "cap_violations": 0,
+      "fanout_violations": 0,
+      "active_unconstrained_endpoints": 0,
+      "unconstrained_endpoints": 156
+     }
+    }
+   },
+   "artifacts": {
+    "gds": {
+     "sha256": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+     "bytes": 24992568
+    },
+    "def_": {
+     "sha256": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+     "bytes": 12526876
+    },
+    "netlist_synth": {
+     "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+     "bytes": 1546032
+    },
+    "netlist_final": {
+     "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+     "bytes": 2049571
+    },
+    "spef_native_nom": {
+     "sha256": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+     "bytes": 24192178
+    }
+   },
+   "determinism": {
+    "reference_run": "second complete native producer run after the timed campaign (identical composition, binaries and host copy; idle host; stopped after be_timing, which writes every compared artifact)",
+    "identical": {
+     "gds": true,
+     "def_": true,
+     "netlist_synth": true,
+     "netlist_final": true,
+     "netlist_powered": true,
+     "spef_native": true,
+     "spef_openrcx": false
+    },
+    "note": "artifact identity across two native producer runs (reference_run names the second); the OpenRCX SPEF is written by OpenROAD"
+   }
+  },
+  "LibreLane": {
+   "configuration": "LibreLane 3.0.17 Classic flow through Checker.XOR, prepared contract config, DRT_THREADS=4, RUN_POST_GRT_DESIGN_REPAIR=true (LibreLane's own post-GRT repair instead of the historical RustEDA-authored DRV ECO loop)",
+   "flow": {
+    "exit_code": 0,
+    "wall_seconds": 2766.392,
+    "peak_rss_kib": 2331372,
+    "cgroup_v1_memory_peak_bytes": 3981176832,
+    "loadavg_1m_mean": 2.99,
+    "steps": 65,
+    "stage_seconds": {
+     "synthesis (Yosys + ABC)": 124.93,
+     "lint and checks": 4.44,
+     "floorplan, PDN, taps, IO": 16.13,
+     "placement (global + detailed)": 17.88,
+     "resizer repair (design/timing)": 48.36,
+     "CTS": 23.33,
+     "global routing and antenna repair": 75.68,
+     "detailed routing": 2007.72,
+     "STA (OpenSTA, pre/mid/post)": 138.93,
+     "fill, RCX, IR drop, reports": 38.97,
+     "streamout, render, LEF, XOR": 266.29,
+     "other": 0.0
+    }
+   },
+   "shared_gates": {
+    "drc": {
+     "status": "passed",
+     "violations": 0,
+     "scope": "complete_foundry_main",
+     "disabled_rules": [
+      "recommended"
+     ]
+    },
+    "antenna": {
+     "status": "passed",
+     "violations": 0,
+     "scope": "complete_foundry_antenna",
+     "disabled_rules": []
+    },
+    "latchup": {
+     "status": "passed",
+     "scope": "tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate, LU.a also in-well",
+     "rules": {
+      "LU.a": {
+       "status": "passed",
+       "target_polygons": 42506,
+       "uncertified_boxes": 0
+      },
+      "LU.b": {
+       "status": "passed",
+       "target_polygons": 64817,
+       "uncertified_boxes": 0
+      }
+     }
+    },
+    "lvs": {
+     "status": "passed",
+     "top_port_identity": true,
+     "macro_instances": 2,
+     "macro_devices_verified": true
+    },
+    "timing": {
+     "status": "failed",
+     "source": "OpenRCX nominal SPEF; min(RustSTA, OpenSTA)",
+     "corners": {
+      "tt": {
+       "setup_ws_ns": 48.602638244629,
+       "hold_ws_ns": 0.171842768788,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 28,
+       "fanout_violations": 30,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      },
+      "ss": {
+       "setup_ws_ns": 47.843684408958296,
+       "hold_ws_ns": 0.312215387821,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 24,
+       "fanout_violations": 30,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      }
+     }
+    },
+    "simulation": {
+     "status": "passed"
+    },
+    "synthesis_equivalence": {
+     "status": "unverified",
+     "error": "synthesis: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/synthesis/obligations/manifest.json; final: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/final/obligations/manifest.json"
+    },
+    "final_equivalence": {
+     "status": "unverified",
+     "error": "synthesis: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/synthesis/obligations/manifest.json; final: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/final/obligations/manifest.json"
+    },
+    "density": {
+     "status": "passed",
+     "max_percent": 70,
+     "final_nonfiller_utilization_percent": 28.1350868583515,
+     "macro_inclusive_core_utilization_percent": 47.13361551586722,
+     "standard_cell_area_um2": 197913.7,
+     "filler_decap_area_um2": 472691.3
+    }
+   },
+   "shared_gate_seconds": {
+    "drc": 458.884,
+    "antenna": 224.397,
+    "latchup": 7.754,
+    "extraction": 3.681,
+    "timing": 20.929,
+    "lvs": 168.507,
+    "simulation": 5.695,
+    "logic": 15.39,
+    "density": 0.202
+   },
+   "shared_gate_peak_rss_kib": 2298484,
+   "equivalence_checker_note": "obligation export: 433 implementation states lack a unique named RTL counterpart; first _21851_ (DFFRQX1)",
+   "end_to_end_seconds": 3675.96,
+   "end_to_end_seconds_native_check_schedule": 3283.05,
+   "end_to_end_scope": "sv2v preparation + LibreLane flow through Checker.XOR + every shared gate (foundry main and antenna DRC, OpenRCX, RustSTA/OpenSTA timing, latch-up, LVS, vendor simulation, equivalence, density), one gate at a time; end_to_end_seconds_native_check_schedule charges the shared gates the native producer covered under the producer's schedule (RustEDA foundry_check_schedule: lanes side by side) instead of their serial sum",
+   "qor": {
+    "standard_cell_area_um2": 197913.7,
+    "final_nonfiller_utilization_percent": 28.1350868583515,
+    "macro_inclusive_core_utilization_percent": 47.13361551586722,
+    "routed_signal_wirelength_um": 969571.6,
+    "vias": 122194,
+    "routed_nets": 15227,
+    "components": {
+     "antenna": 504,
+     "filler": 44672,
+     "tap": 6900,
+     "standard": 15191,
+     "macro": 2
+    },
+    "timing_openrcx": {
+     "tt": {
+      "setup_ws_ns": 48.602638244629,
+      "hold_ws_ns": 0.171842768788,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 0,
+      "cap_violations": 28,
+      "fanout_violations": 30,
+      "active_unconstrained_endpoints": 0,
+      "unconstrained_endpoints": 156
+     },
+     "ss": {
+      "setup_ws_ns": 47.843684408958296,
+      "hold_ws_ns": 0.312215387821,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 0,
+      "cap_violations": 24,
+      "fanout_violations": 30,
+      "active_unconstrained_endpoints": 0,
+      "unconstrained_endpoints": 156
+     }
+    }
+   },
+   "artifacts": {
+    "gds": {
+     "sha256": "e745d80e8014754973e3da739e578eeef83b7f2ff26955844aef9db8d6d8511f",
+     "bytes": 17717408
+    },
+    "def_": {
+     "sha256": "53d259734016ff18fe33d53cfe9281d99e9811670aeaf2d2b5dc9380811f119d",
+     "bytes": 21286918
+    },
+    "netlist_synth": {
+     "sha256": "fa3562115025a414779d1456f08769ddd21b19c85e515ba9a65c96f61cb381ed",
+     "bytes": 1994925
+    },
+    "netlist_final": {
+     "sha256": "6fdd5348ff7ae889f04224b130dfce310617dd6400296fae34ea1a726d84a22f",
+     "bytes": 3491698
+    }
+   }
+  }
+ },
+ "diagnostics": {
+  "librelane_prepared_config": null
+ },
+ "gate_pass": {
+  "RustEDA": {
+   "drc": true,
+   "antenna": true,
+   "latchup": true,
+   "lvs": true,
+   "timing": true,
+   "simulation": true,
+   "synthesis_equivalence": true,
+   "final_equivalence": true,
+   "density": true,
+   "timing_accuracy": true
+  },
+  "LibreLane": {
+   "drc": true,
+   "antenna": true,
+   "latchup": true,
+   "lvs": true,
+   "timing": false,
+   "simulation": true,
+   "synthesis_equivalence": false,
+   "final_equivalence": false,
+   "density": true
+  }
+ },
+ "modules": {
+  "synthesis": {
+   "task": "prepared Ibex RTL (sv2v) to EZ130 TT + SRAM Liberty mapped netlist",
+   "runs": {
+    "rustsys_flow": {
+     "runs": 3,
+     "median_wall_seconds": 3.07,
+     "min_wall_seconds": 3.06,
+     "worst_peak_rss_kib": 116264
+    },
+    "rustsys_direct": {
+     "runs": 3,
+     "median_wall_seconds": 2.19,
+     "min_wall_seconds": 2.05,
+     "worst_peak_rss_kib": 112660
+    },
+    "yosys_librelane": {
+     "runs": 3,
+     "median_wall_seconds": 103.91,
+     "min_wall_seconds": 102.47,
+     "worst_peak_rss_kib": 765624
+    }
+   },
+   "qor": {
+    "rustsys": {
+     "path": "/home/user/RustEDA/.work/campaign-20261113/bench-synth/rustsys_flow-1/mapped.v",
+     "yosys_stat": {
+      "area_um2_including_macros": 425591.9808,
+      "standard_cell_area_um2": 145226.592,
+      "logic_depth": {
+       "cells": 36,
+       "logic_cells_excluding_buffers": 36
+      },
+      "cells": {
+       "total": 11433,
+       "sequential": 1998,
+       "buffer_inverter": 950,
+       "physical": 0,
+       "macro": 2,
+       "other": 8483
+      }
+     },
+     "ideal_timing": {
+      "tt": {
+       "setup_wns_ns": 49.6663,
+       "hold_wns_ns": -8.5315,
+       "setup_tns_ns": 0.0,
+       "max_data_arrival_ns": 50.2875
+      },
+      "ss": {
+       "setup_wns_ns": 49.4893,
+       "hold_wns_ns": -12.8764,
+       "setup_tns_ns": 0.0,
+       "max_data_arrival_ns": 50.4572
+      }
+     }
+    },
+    "yosys_librelane": {
+     "path": "/home/user/RustEDA/.work/campaign-20261113/bench-synth/yosys_librelane-1/mapped.v",
+     "yosys_stat": {
+      "area_um2_including_macros": 428232.336,
+      "standard_cell_area_um2": 147866.947,
+      "logic_depth": {
+       "cells": 40,
+       "logic_cells_excluding_buffers": 40
+      },
+      "cells": {
+       "total": 12605,
+       "sequential": 1905,
+       "buffer_inverter": 186,
+       "physical": 0,
+       "macro": 2,
+       "other": 10512
+      }
+     },
+     "ideal_timing": {
+      "tt": {
+       "setup_wns_ns": 30.3506,
+       "hold_wns_ns": -21.5932,
+       "setup_tns_ns": 0.0,
+       "max_data_arrival_ns": 50.2874
+      },
+      "ss": {
+       "setup_wns_ns": -0.2864,
+       "hold_wns_ns": -32.752,
+       "setup_tns_ns": -0.2864,
+       "max_data_arrival_ns": 71.749
+      }
+     }
+    }
+   },
+   "equivalence": {
+    "rustsys": "proven",
+    "yosys_librelane": "unverified"
+   }
+  },
+  "extraction": {
+   "contenders": {
+    "rustroad_extract_t2": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 8.094,
+       "peak_rss_kib": 286840,
+       "cpu_seconds": 14.38
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 7.951,
+       "peak_rss_kib": 287428,
+       "cpu_seconds": 14.37
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 7.662,
+       "peak_rss_kib": 285540,
+       "cpu_seconds": 13.76
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 7.951,
+     "min_wall_seconds": 7.662,
+     "worst_peak_rss_kib": 287428
+    },
+    "rustroad_extract_t4": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 4.687,
+       "peak_rss_kib": 324408,
+       "cpu_seconds": 13.78
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 4.664,
+       "peak_rss_kib": 316472,
+       "cpu_seconds": 14.04
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 4.644,
+       "peak_rss_kib": 320728,
+       "cpu_seconds": 13.89
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 4.664,
+     "min_wall_seconds": 4.644,
+     "worst_peak_rss_kib": 324408
+    },
+    "openrcx_t2": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.625,
+       "peak_rss_kib": 202728,
+       "cpu_seconds": 3.59
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.967,
+       "peak_rss_kib": 202768,
+       "cpu_seconds": 3.9
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.46,
+       "peak_rss_kib": 202832,
+       "cpu_seconds": 3.44
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 3.625,
+     "min_wall_seconds": 3.46,
+     "worst_peak_rss_kib": 202832
+    },
+    "openrcx_t4": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.987,
+       "peak_rss_kib": 203308,
+       "cpu_seconds": 3.89
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.829,
+       "peak_rss_kib": 203036,
+       "cpu_seconds": 3.79
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.641,
+       "peak_rss_kib": 203164,
+       "cpu_seconds": 3.6
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 3.829,
+     "min_wall_seconds": 3.641,
+     "worst_peak_rss_kib": 203308
+    }
+   },
+   "spef": {
+    "rustroad": {
+     "nets": 14178,
+     "total_cap_pf": 162.713,
+     "total_res_kohm": 2788.416
+    },
+    "openrcx": {
+     "nets": 14178,
+     "total_cap_pf": 153.557,
+     "total_res_kohm": 2802.709
+    }
+   },
+   "thread_note": "RustROAD sizes its thread pool from --threads (default 2; RAYON_NUM_THREADS does not size it); module_bench.py sets --threads to each listed value on the recorded extract command, so the _t2 and _t4 rows ran 2 and 4 threads (the flow's be_extract: --threads 4). OpenRCX used set_thread_count 2 and 4."
+  },
+  "timing": {
+   "contenders": {
+    "ruststa_t2": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 4.441,
+       "peak_rss_kib": 152088,
+       "cpu_seconds": 6.19
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 4.692,
+       "peak_rss_kib": 151940,
+       "cpu_seconds": 6.45
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 4.788,
+       "peak_rss_kib": 146392,
+       "cpu_seconds": 6.56
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 4.692,
+     "min_wall_seconds": 4.441,
+     "worst_peak_rss_kib": 152088
+    },
+    "ruststa_t4": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.292,
+       "peak_rss_kib": 197060,
+       "cpu_seconds": 6.25
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.439,
+       "peak_rss_kib": 193020,
+       "cpu_seconds": 6.42
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 3.403,
+       "peak_rss_kib": 177884,
+       "cpu_seconds": 6.36
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 3.403,
+     "min_wall_seconds": 3.292,
+     "worst_peak_rss_kib": 197060
+    },
+    "opensta_t2": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 7.218,
+       "peak_rss_kib": 175960,
+       "cpu_seconds": 8.63
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 7.349,
+       "peak_rss_kib": 176060,
+       "cpu_seconds": 8.79
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 7.528,
+       "peak_rss_kib": 175712,
+       "cpu_seconds": 9.03
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 7.349,
+     "min_wall_seconds": 7.218,
+     "worst_peak_rss_kib": 176060
+    },
+    "opensta_t4": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 6.738,
+       "peak_rss_kib": 175824,
+       "cpu_seconds": 9.69
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 7.298,
+       "peak_rss_kib": 176252,
+       "cpu_seconds": 10.63
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 6.881,
+       "peak_rss_kib": 175936,
+       "cpu_seconds": 9.9
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 6.881,
+     "min_wall_seconds": 6.738,
+     "worst_peak_rss_kib": 176252
+    }
+   },
+   "scope": "RustSTA: init+import+run (TT and SS in one run)+8 reports; OpenSTA: one process per corner (read, link, SDC, SPEF, full reports)",
+   "agreement": {
+    "status": "passed",
+    "max_abs_difference_ps": 0.2697,
+    "tolerance_ps": 1.0,
+    "differences": [
+     {
+      "source": "native",
+      "corner": "tt",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.626212,
+      "opensta_ns": 49.626266,
+      "abs_difference_ps": 0.0547
+     },
+     {
+      "source": "native",
+      "corner": "tt",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.110628,
+      "opensta_ns": 0.110898,
+      "abs_difference_ps": 0.2697
+     },
+     {
+      "source": "native",
+      "corner": "ss",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.426056,
+      "opensta_ns": 49.425957,
+      "abs_difference_ps": 0.0988
+     },
+     {
+      "source": "native",
+      "corner": "ss",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.20981,
+      "opensta_ns": 0.209803,
+      "abs_difference_ps": 0.0064
+     },
+     {
+      "source": "openrcx",
+      "corner": "tt",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.627847,
+      "opensta_ns": 49.627903,
+      "abs_difference_ps": 0.0565
+     },
+     {
+      "source": "openrcx",
+      "corner": "tt",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.10839,
+      "opensta_ns": 0.108633,
+      "abs_difference_ps": 0.2431
+     },
+     {
+      "source": "openrcx",
+      "corner": "ss",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.428841,
+      "opensta_ns": 49.428783,
+      "abs_difference_ps": 0.0574
+     },
+     {
+      "source": "openrcx",
+      "corner": "ss",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.20605,
+      "opensta_ns": 0.20601,
+      "abs_difference_ps": 0.0401
+     }
+    ]
+   }
+  },
+  "gds": {
+   "contenders": {
+    "rustroad_export_gds": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 0.514,
+       "peak_rss_kib": 104108,
+       "cpu_seconds": 0.5
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 0.498,
+       "peak_rss_kib": 104144,
+       "cpu_seconds": 0.48
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 0.46,
+       "peak_rss_kib": 104212,
+       "cpu_seconds": 0.45
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 0.498,
+     "min_wall_seconds": 0.46,
+     "worst_peak_rss_kib": 104212
+    },
+    "klayout_def2gds": {
+     "runs": [
+      {
+       "exit_code": 0,
+       "wall_seconds": 1.255,
+       "peak_rss_kib": 204276,
+       "cpu_seconds": 1.23
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 1.375,
+       "peak_rss_kib": 204424,
+       "cpu_seconds": 1.36
+      },
+      {
+       "exit_code": 0,
+       "wall_seconds": 1.389,
+       "peak_rss_kib": 204316,
+       "cpu_seconds": 1.37
+      }
+     ],
+     "measured": 3,
+     "failed": 0,
+     "median_wall_seconds": 1.375,
+     "min_wall_seconds": 1.255,
+     "worst_peak_rss_kib": 204424
+    }
+   },
+   "bytes": {
+    "rustroad": 24992568,
+    "klayout": 22493830
+   },
+   "thread_note": "RustROAD export-gds replays the recorded be_gds command (no --threads: default 2-thread pool); KLayout's LEF/DEF reader is single-process."
+  },
+  "spice": {
+   "decks": {
+    "spef": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/backend/native.nom.spef",
+    "decks": [
+     {
+      "id": "ibex_net_00",
+      "net": "native_electrical_133_n",
+      "unknowns": 237,
+      "sinks": 10
+     },
+     {
+      "id": "ibex_net_01",
+      "net": "native_electrical_62_n",
+      "unknowns": 206,
+      "sinks": 8
+     },
+     {
+      "id": "ibex_net_02",
+      "net": "native_fanout_337_0_1_n",
+      "unknowns": 190,
+      "sinks": 9
+     },
+     {
+      "id": "ibex_net_03",
+      "net": "n2708",
+      "unknowns": 186,
+      "sinks": 10
+     },
+     {
+      "id": "ibex_net_04",
+      "net": "n2677",
+      "unknowns": 175,
+      "sinks": 7
+     },
+     {
+      "id": "ibex_net_05",
+      "net": "native_electrical_245_n",
+      "unknowns": 174,
+      "sinks": 8
+     },
+     {
+      "id": "ibex_net_06",
+      "net": "n619",
+      "unknowns": 173,
+      "sinks": 10
+     },
+     {
+      "id": "ibex_net_07",
+      "net": "native_fanout_164_0_0_n",
+      "unknowns": 173,
+      "sinks": 9
+     },
+     {
+      "id": "ibex_bulk_10",
+      "nets": 10,
+      "unknowns": 1836
+     },
+     {
+      "id": "ibex_bulk_40",
+      "nets": 40,
+      "unknowns": 5614
+     }
+    ]
+   },
+   "suite": {
+    "verdict": "PASS",
+    "counts": {
+     "both_error": 0,
+     "fail_accuracy": 0,
+     "fail_robustness": 0,
+     "fail_silent": 0,
+     "gap_closed": 0,
+     "info": 0,
+     "known_gap_confirmed": 0,
+     "ngspice_error": 0,
+     "panic": 0,
+     "pass": 10,
+     "skipped_budget": 0,
+     "timeout": 0,
+     "unverified": 0
+    },
+    "ngspice": {
+     "version": "ngspice-45",
+     "path": "/nix/store/gy4jdjlgzqcyr9wprwrv8n7p7n52x3db-ngspice-45/bin/ngspice",
+     "installed": true,
+     "solvers_tested": [
+      "sparse",
+      "klu"
+     ],
+     "unusable_reason": null
+    },
+    "startup_floor": {
+     "status": "ok",
+     "reps": 15,
+     "ngspice_us": {
+      "n": 15,
+      "min": 5527.016,
+      "median": 6530.763999999999,
+      "mean": 6850.8602,
+      "stddev": 958.9359700401722,
+      "noisy": false,
+      "samples": [
+       8891.031,
+       7939.311,
+       7441.47,
+       6129.971,
+       8446.729,
+       6933.12,
+       7102.521,
+       6530.763999999999,
+       6760.293,
+       6306.763,
+       5944.836,
+       5527.016,
+       6336.724,
+       6092.5830000000005,
+       6379.771000000001
+      ],
+      "spread_status": "ok",
+      "dropped_non_finite": 0
+     },
+     "rustspice_us": {
+      "n": 15,
+      "min": 2049.716,
+      "median": 2327.757,
+      "mean": 2437.1036666666673,
+      "stddev": 357.79720882498845,
+      "noisy": false,
+      "samples": [
+       3192.328,
+       2247.3940000000002,
+       2075.8759999999997,
+       2617.337,
+       2616.841,
+       2457.847,
+       2049.716,
+       3109.808,
+       2327.757,
+       2107.266,
+       2178.7870000000003,
+       2475.41,
+       2176.807,
+       2716.344,
+       2207.037
+      ],
+      "spread_status": "ok",
+      "dropped_non_finite": 0
+     }
+    },
+    "cases": [
+     {
+      "id": "ibex_bulk_10",
+      "status": "pass",
+      "size": 1836,
+      "accuracy": {
+       "err_rustspice": 0.0005986895385085509,
+       "err_ngspice": 0.0015923386358861463,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 298.95,
+        "analysis_ms": 275.01,
+        "rss_kib": 19000.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 348.62,
+        "analysis_ms": 317.47,
+        "rss_kib": 19396.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 46.94,
+        "analysis_ms": 32.03,
+        "rss_kib": 11040.0,
+        "failed_reps": 0,
+        "noisy": true
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 6.37,
+      "speedup_solve_vs_faster_ngspice": 8.59,
+      "reps": 7
+     },
+     {
+      "id": "ibex_bulk_40",
+      "status": "pass",
+      "size": 5614,
+      "accuracy": {
+       "err_rustspice": 0.0005499480275451369,
+       "err_ngspice": 0.0015923386375830332,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 1158.88,
+        "analysis_ms": 1092.95,
+        "rss_kib": 31216.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 1234.75,
+        "analysis_ms": 1181.39,
+        "rss_kib": 32200.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 165.03,
+        "analysis_ms": 114.99,
+        "rss_kib": 21664.0,
+        "failed_reps": 0,
+        "noisy": false
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 7.02,
+      "speedup_solve_vs_faster_ngspice": 9.5,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_00",
+      "status": "pass",
+      "size": 237,
+      "accuracy": {
+       "err_rustspice": 1.045870973159644e-05,
+       "err_ngspice": 3.124372281966064e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 256.92,
+        "analysis_ms": 246.89,
+        "rss_kib": 14060.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 307.41,
+        "analysis_ms": 296.57,
+        "rss_kib": 14216.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 47.97,
+        "analysis_ms": 38.8,
+        "rss_kib": 6764.0,
+        "failed_reps": 0,
+        "noisy": false
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 5.36,
+      "speedup_solve_vs_faster_ngspice": 6.36,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_01",
+      "status": "pass",
+      "size": 206,
+      "accuracy": {
+       "err_rustspice": 1.1753616236755478e-05,
+       "err_ngspice": 5.7857980646743895e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 243.97,
+        "analysis_ms": 234.22,
+        "rss_kib": 14004.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 276.56,
+        "analysis_ms": 266.2,
+        "rss_kib": 14052.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 42.12,
+        "analysis_ms": 34.51,
+        "rss_kib": 6740.0,
+        "failed_reps": 0,
+        "noisy": false
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 5.79,
+      "speedup_solve_vs_faster_ngspice": 6.79,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_02",
+      "status": "pass",
+      "size": 190,
+      "accuracy": {
+       "err_rustspice": 5.752865772815878e-06,
+       "err_ngspice": 2.5684146874326845e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 194.77,
+        "analysis_ms": 186.32,
+        "rss_kib": 13800.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 234.42,
+        "analysis_ms": 225.24,
+        "rss_kib": 13792.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 40.92,
+        "analysis_ms": 33.25,
+        "rss_kib": 6816.0,
+        "failed_reps": 0,
+        "noisy": false
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 4.76,
+      "speedup_solve_vs_faster_ngspice": 5.6,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_03",
+      "status": "pass",
+      "size": 186,
+      "accuracy": {
+       "err_rustspice": 5.803097609346413e-06,
+       "err_ngspice": 2.9413680386194357e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 220.89,
+        "analysis_ms": 209.63,
+        "rss_kib": 13860.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 257.42,
+        "analysis_ms": 247.19,
+        "rss_kib": 13976.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 53.33,
+        "analysis_ms": 43.21,
+        "rss_kib": 6760.0,
+        "failed_reps": 0,
+        "noisy": true
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 4.14,
+      "speedup_solve_vs_faster_ngspice": 4.85,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_04",
+      "status": "pass",
+      "size": 175,
+      "accuracy": {
+       "err_rustspice": 1.7422524856650322e-05,
+       "err_ngspice": 8.233529317045706e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 195.48,
+        "analysis_ms": 186.18,
+        "rss_kib": 13716.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 230.38,
+        "analysis_ms": 219.93,
+        "rss_kib": 13856.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 39.4,
+        "analysis_ms": 31.97,
+        "rss_kib": 6624.0,
+        "failed_reps": 0,
+        "noisy": true
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 4.96,
+      "speedup_solve_vs_faster_ngspice": 5.82,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_05",
+      "status": "pass",
+      "size": 174,
+      "accuracy": {
+       "err_rustspice": 2.43993285051937e-05,
+       "err_ngspice": 6.194999299211106e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 213.02,
+        "analysis_ms": 199.14,
+        "rss_kib": 13856.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 230.18,
+        "analysis_ms": 220.31,
+        "rss_kib": 13872.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 41.36,
+        "analysis_ms": 33.87,
+        "rss_kib": 6632.0,
+        "failed_reps": 0,
+        "noisy": true
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 5.15,
+      "speedup_solve_vs_faster_ngspice": 5.88,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_06",
+      "status": "pass",
+      "size": 173,
+      "accuracy": {
+       "err_rustspice": 1.5007930963649483e-05,
+       "err_ngspice": 6.720879445086758e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 200.86,
+        "analysis_ms": 190.19,
+        "rss_kib": 13840.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 222.27,
+        "analysis_ms": 213.78,
+        "rss_kib": 13968.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 37.86,
+        "analysis_ms": 30.64,
+        "rss_kib": 6676.0,
+        "failed_reps": 0,
+        "noisy": false
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 5.31,
+      "speedup_solve_vs_faster_ngspice": 6.21,
+      "reps": 7
+     },
+     {
+      "id": "ibex_net_07",
+      "status": "pass",
+      "size": 173,
+      "accuracy": {
+       "err_rustspice": 5.474419637948945e-06,
+       "err_ngspice": 2.735689142482345e-05,
+       "passed": true
+      },
+      "median": {
+       "ngspice_sparse": {
+        "e2e_ms": 236.17,
+        "analysis_ms": 225.42,
+        "rss_kib": 13792.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "ngspice_klu": {
+        "e2e_ms": 277.16,
+        "analysis_ms": 265.95,
+        "rss_kib": 13760.0,
+        "failed_reps": 0,
+        "noisy": false
+       },
+       "rustspice": {
+        "e2e_ms": 49.94,
+        "analysis_ms": 37.15,
+        "rss_kib": 6716.0,
+        "failed_reps": 0,
+        "noisy": true
+       }
+      },
+      "speedup_end_to_end_vs_faster_ngspice": 4.73,
+      "speedup_solve_vs_faster_ngspice": 6.07,
+      "reps": 7
+     }
+    ]
+   }
+  },
+  "placement_cts_routing": {
+   "rustroad": {
+    "synthesis (RustSys)": 3.1,
+    "placement and CTS (RustROAD)": 19.56,
+    "frontend STA, ECO rounds and planning helpers (RustSTA)": 13.85,
+    "routing (RustROAD)": 266.71,
+    "post-route repair": 4.74,
+    "antenna repair and verification": 8.93,
+    "GDS/DEF/netlist export": 1.67,
+    "native extraction (RustROAD)": 5.27,
+    "OpenRCX extraction": 4.24,
+    "signoff timing (RustSTA + OpenSTA)": 26.96,
+    "foundry DRC, LVS, macro contract": 362.78,
+    "other (renders, profiles, physical inputs)": 0.03
+   },
+   "openroad": {
+    "synthesis (Yosys + ABC)": 124.93,
+    "lint and checks": 4.44,
+    "floorplan, PDN, taps, IO": 16.13,
+    "placement (global + detailed)": 17.88,
+    "resizer repair (design/timing)": 48.36,
+    "CTS": 23.33,
+    "global routing and antenna repair": 75.68,
+    "detailed routing": 2007.72,
+    "STA (OpenSTA, pre/mid/post)": 138.93,
+    "fill, RCX, IR drop, reports": 38.97,
+    "streamout, render, LEF, XOR": 266.29,
+    "other": 0.0
+   },
+   "qor": {
+    "rustroad": {
+     "standard_cell_area_um2": 187585.2,
+     "final_nonfiller_utilization_percent": 26.666794222490864,
+     "macro_inclusive_core_utilization_percent": 46.1157517919518,
+     "routed_signal_wirelength_um": 895279.2,
+     "vias": 120585,
+     "routed_nets": 14178,
+     "components": {
+      "standard": 14058,
+      "macro": 2,
+      "antenna": 52,
+      "tap": 5934,
+      "filler": 34322
+     },
+     "timing_openrcx": {
+      "tt": {
+       "setup_ws_ns": 49.62784652162024,
+       "hold_ws_ns": 0.1083902066268545,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 0,
+       "fanout_violations": 0,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      },
+      "ss": {
+       "setup_ws_ns": 49.428783416748,
+       "hold_ws_ns": 0.2060097754,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 0,
+       "fanout_violations": 0,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      }
+     }
+    },
+    "openroad": {
+     "standard_cell_area_um2": 197913.7,
+     "final_nonfiller_utilization_percent": 28.1350868583515,
+     "macro_inclusive_core_utilization_percent": 47.13361551586722,
+     "routed_signal_wirelength_um": 969571.6,
+     "vias": 122194,
+     "routed_nets": 15227,
+     "components": {
+      "antenna": 504,
+      "filler": 44672,
+      "tap": 6900,
+      "standard": 15191,
+      "macro": 2
+     },
+     "timing_openrcx": {
+      "tt": {
+       "setup_ws_ns": 48.602638244629,
+       "hold_ws_ns": 0.171842768788,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 28,
+       "fanout_violations": 30,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      },
+      "ss": {
+       "setup_ws_ns": 47.843684408958296,
+       "hold_ws_ns": 0.312215387821,
+       "setup_violations": 0,
+       "hold_violations": 0,
+       "slew_violations": 0,
+       "cap_violations": 24,
+       "fanout_violations": 30,
+       "active_unconstrained_endpoints": 0,
+       "unconstrained_endpoints": 156
+      }
+     }
+    }
+   }
+  }
+ },
+ "ratios": {
+  "eligibility": "not eligible: a flow failed or left a gate unverified; see gates",
+  "end_to_end_convention": "end_to_end_speedup charges LibreLane's shared main/antenna DRC and LVS on the native producer's check schedule (foundry_check_schedule); end_to_end_speedup_serial_checks charges both flows those checks one after another",
+  "end_to_end_speedup": null,
+  "end_to_end_speedup_serial_checks": null,
+  "standard_cell_area_ratio": null,
+  "wirelength_ratio": null
+ },
+ "deviations": [
+  "EZ130 SG13G2 tech LEF and cell GDS reconstructed from public sources (not byte-identical to the pinned archive)",
+  "nixpkgs tool builds (OpenROAD 26Q3, Yosys 0.70) instead of LibreLane's pinned OpenROAD dcf36133 / Yosys 0.62",
+  "native recipe composed without component-qualification evidence: eight derived qualification gates not produced",
+  "native recipe is the repository recipe of the campaign commit; the R20/R21 recipe inputs are not published",
+  "host-local helper patches: thread allow-lists (4), cgroup-v1 ownership, RC-profile rules path, density DEF parser",
+  "LibreLane without the historical RustEDA-authored repair loop; its own post-GRT design repair enabled",
+  "4 vCPUs (Intel(R) Xeon(R) Processor @ 2.10GHz) instead of 16 logical CPUs of an i9-13900HX"
+ ],
+ "publication_rule": "Only complete independently checked runs with frozen matching inputs may populate end-to-end comparative ratios. Module head-to-heads report each contender's measured time on the identical task. Failed runs are preserved and reported; missing values stay null.",
+ "evidence_inventory": [
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/bringup-artifacts.json",
+   "sha256": "8a0ca7c42b2eddee232178467fbce7d249658cb6fdf16c5cbfe092d17bf7024b",
+   "bytes": 1089
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/summary.json",
+   "sha256": "29c9e503e1814ebe8d0b9b2cd7478a901ad8064b30c35fbe8042a6781b60b349",
+   "bytes": 3363
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/step-receipts.json",
+   "sha256": "5c57153133c81f86876db5625a8c2c97ec636dd009957c26fc6c2b2777ea9376",
+   "bytes": 84962
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/producer-resources.json",
+   "sha256": "dee0e9ba05ffbdadb92e79964db4dc2d48db3e906f9523db590dcd72a7dec7c1",
+   "bytes": 953
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/timing-parity.json",
+   "sha256": "bdf55a910b8c3cab5af27eda4f90577f5e963aecdca58c6448b3610d368270c8",
+   "bytes": 2444
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/shared-gates.json",
+   "sha256": "aa704f15f3195eff68912a846dc8b6a60091732dc1cdb737aa2a452ebc8740e7",
+   "bytes": 3645
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/native/def-metrics.json",
+   "sha256": "b56de006c5f44657f9b7a5e0c5d45f6ebf4a9d414d10c293bfd4032c219fee0e",
+   "bytes": 800
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/librelane/step-runtimes.json",
+   "sha256": "23c62348bc832f72848497cef41e8b617132880a30e8640cd13553c0a8e77887",
+   "bytes": 4222
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/librelane/flow-resources.json",
+   "sha256": "f0fbdfdec1162080a04b624c9755db0a1ebe2b3aab739f390760d8039292be60",
+   "bytes": 522
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/librelane/shared-gates.json",
+   "sha256": "360a54feb2adf6d00e9eb103aa7cce55f49072de73ea5539678981d021cf19e5",
+   "bytes": 4207
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/librelane/def-metrics.json",
+   "sha256": "a16398397c063c33fab7ff5a2c23e1941ca938085a2429919e16d41c9211beef",
+   "bytes": 764
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/modules/synthesis.json",
+   "sha256": "f705e8fde795e4547865ffd9d54659862dd2725c8aa1fce47cbd43b01046f56a",
+   "bytes": 2149
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/modules/replay.json",
+   "sha256": "3ac823fda11a20d3e50ec836f1d40173a93159ce95b89bf192a98e8fda31ab2d",
+   "bytes": 8257
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/modules/spice-suite.json",
+   "sha256": "78457766dee9d1991cd69c1e962a7f5ab27dddd56ed8a9b4634f681594e4e7de",
+   "bytes": 190301
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/modules/spice-suite.md",
+   "sha256": "710ae9fe4282df3e9f62080233f8e04025aa05f77bdd4af2e69c14f8315b8b6b",
+   "bytes": 7938
+  },
+  {
+   "path": "benchmarks/evidence/ibex-host-20261113/host-facts.json",
+   "sha256": "2076dfa640e89cb9a956d5fb38be348dd7961c85281f33992446226f66a26d46",
+   "bytes": 1209
+  }
+ ]
+}

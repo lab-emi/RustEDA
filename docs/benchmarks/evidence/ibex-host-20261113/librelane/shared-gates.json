@@ -1,0 +1,152 @@
+{
+ "gates": {
+  "drc": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_main",
+   "disabled_rules": [
+    "recommended"
+   ]
+  },
+  "antenna": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_antenna",
+   "disabled_rules": []
+  },
+  "latchup": {
+   "status": "passed",
+   "scope": "tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate, LU.a also in-well",
+   "rules": {
+    "LU.a": {
+     "status": "passed",
+     "target_polygons": 42506,
+     "uncertified_boxes": 0
+    },
+    "LU.b": {
+     "status": "passed",
+     "target_polygons": 64817,
+     "uncertified_boxes": 0
+    }
+   }
+  },
+  "lvs": {
+   "status": "passed",
+   "top_port_identity": true,
+   "macro_instances": 2,
+   "macro_devices_verified": true
+  },
+  "timing": {
+   "status": "failed",
+   "source": "OpenRCX nominal SPEF; min(RustSTA, OpenSTA)",
+   "corners": {
+    "tt": {
+     "setup_ws_ns": 48.602638244629,
+     "hold_ws_ns": 0.171842768788,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 0,
+     "cap_violations": 28,
+     "fanout_violations": 30,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    },
+    "ss": {
+     "setup_ws_ns": 47.843684408958296,
+     "hold_ws_ns": 0.312215387821,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 0,
+     "cap_violations": 24,
+     "fanout_violations": 30,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    }
+   }
+  },
+  "simulation": {
+   "status": "passed"
+  },
+  "synthesis_equivalence": {
+   "status": "unverified",
+   "error": "synthesis: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/synthesis/obligations/manifest.json; final: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/final/obligations/manifest.json"
+  },
+  "final_equivalence": {
+   "status": "unverified",
+   "error": "synthesis: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/synthesis/obligations/manifest.json; final: missing or oversized JSON: /home/user/RustEDA/.work/campaign-20261113/signoff-librelane/logic/final/obligations/manifest.json"
+  },
+  "density": {
+   "status": "passed",
+   "max_percent": 70,
+   "final_nonfiller_utilization_percent": 28.1350868583515,
+   "macro_inclusive_core_utilization_percent": 47.13361551586722,
+   "standard_cell_area_um2": 197913.7,
+   "filler_decap_area_um2": 472691.3
+  }
+ },
+ "resources": {
+  "drc": {
+   "exit_code": 0,
+   "wall_seconds": 458.884,
+   "peak_rss_kib": 2298484
+  },
+  "antenna": {
+   "exit_code": 0,
+   "wall_seconds": 224.397,
+   "peak_rss_kib": 1692980
+  },
+  "latchup": {
+   "exit_code": 0,
+   "wall_seconds": 7.754,
+   "peak_rss_kib": 294160
+  },
+  "extraction": {
+   "exit_code": 0,
+   "wall_seconds": 3.681,
+   "peak_rss_kib": 202832
+  },
+  "timing": {
+   "exit_code": 1,
+   "wall_seconds": 20.929,
+   "peak_rss_kib": 182280
+  },
+  "lvs": {
+   "exit_code": 0,
+   "wall_seconds": 168.507,
+   "peak_rss_kib": 866160
+  },
+  "simulation": {
+   "exit_code": 0,
+   "wall_seconds": 5.695,
+   "peak_rss_kib": 307784
+  },
+  "logic": {
+   "exit_code": 1,
+   "wall_seconds": 15.39,
+   "peak_rss_kib": 307692
+  },
+  "density": {
+   "exit_code": 0,
+   "wall_seconds": 0.202,
+   "peak_rss_kib": null
+  }
+ },
+ "measure": {
+  "schema": "rusteda.host-measured-run.v1",
+  "name": "signoff-librelane",
+  "command": "/usr/local/bin/python3 /home/user/RustEDA/integration/ibex_host_benchmark/signoff_layout.py --host /home/user/RustEDA/.work/campaign-20261113/host.json --layout /home/user/RustEDA/.work/campaign-20261113/layout-librelane.json --workspace /home/user/RustEDA/.work/campaign-20261113/signoff-librelane",
+  "started": "2026-11-13T09:33:40+00:00",
+  "wall_seconds": 905.992,
+  "exit_code": 0,
+  "gnu_time_max_rss_kib": 2298484,
+  "cgroup_v1_memory_max_usage_bytes": 2283171840,
+  "cgroup_v1_memsw_max_usage_bytes": 2283171840,
+  "cgroup_v1_failcnt": 0,
+  "cgroup_limit_bytes": 8589934592,
+  "sampled_peak_total_rss_bytes": 2276900864,
+  "loadavg_1m_mean": 1.16,
+  "loadavg_1m_max": 1.69,
+  "samples": 181,
+  "cpus_online": 4
+ }
+}

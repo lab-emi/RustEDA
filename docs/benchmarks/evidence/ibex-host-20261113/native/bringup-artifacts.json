@@ -1,0 +1,33 @@
+{
+ "run": "second complete native producer run after the timed campaign (identical composition, binaries and host copy; idle host; stopped after be_timing, which writes every compared artifact)",
+ "artifacts": {
+  "gds": {
+   "sha256": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+   "bytes": 24992568
+  },
+  "def_": {
+   "sha256": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+   "bytes": 12526876
+  },
+  "netlist_synth": {
+   "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+   "bytes": 1546032
+  },
+  "netlist_final": {
+   "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+   "bytes": 2049571
+  },
+  "netlist_powered": {
+   "sha256": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+   "bytes": 4369272
+  },
+  "spef_native": {
+   "sha256": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+   "bytes": 24192178
+  },
+  "spef_openrcx": {
+   "sha256": "4b99492f8297e7da3bb2c344e6811f09a83320665352acb087425c945ba9b15d",
+   "bytes": 18890790
+  }
+ }
+}

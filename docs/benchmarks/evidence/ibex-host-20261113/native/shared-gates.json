@@ -1,0 +1,152 @@
+{
+ "gates": {
+  "drc": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_main",
+   "disabled_rules": [
+    "recommended"
+   ]
+  },
+  "antenna": {
+   "status": "passed",
+   "violations": 0,
+   "scope": "complete_foundry_antenna",
+   "disabled_rules": []
+  },
+  "latchup": {
+   "status": "passed",
+   "scope": "tap_coverage.py: LU.a and LU.b, 20 um, conservative L1 box certificate, LU.a also in-well",
+   "rules": {
+    "LU.a": {
+     "status": "passed",
+     "target_polygons": 37250,
+     "uncertified_boxes": 0
+    },
+    "LU.b": {
+     "status": "passed",
+     "target_polygons": 54216,
+     "uncertified_boxes": 0
+    }
+   }
+  },
+  "lvs": {
+   "status": "passed",
+   "top_port_identity": true,
+   "macro_instances": 2,
+   "macro_devices_verified": true
+  },
+  "timing": {
+   "status": "passed",
+   "source": "OpenRCX nominal SPEF; min(RustSTA, OpenSTA)",
+   "corners": {
+    "tt": {
+     "setup_ws_ns": 49.62784652162024,
+     "hold_ws_ns": 0.1083902066268545,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 0,
+     "cap_violations": 0,
+     "fanout_violations": 0,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    },
+    "ss": {
+     "setup_ws_ns": 49.428783416748,
+     "hold_ws_ns": 0.2060097754,
+     "setup_violations": 0,
+     "hold_violations": 0,
+     "slew_violations": 0,
+     "cap_violations": 0,
+     "fanout_violations": 0,
+     "active_unconstrained_endpoints": 0,
+     "unconstrained_endpoints": 156
+    }
+   }
+  },
+  "simulation": {
+   "status": "passed"
+  },
+  "synthesis_equivalence": {
+   "status": "proven",
+   "error": null
+  },
+  "final_equivalence": {
+   "status": "proven",
+   "error": null
+  },
+  "density": {
+   "status": "passed",
+   "max_percent": 70,
+   "final_nonfiller_utilization_percent": 26.666794222490864,
+   "macro_inclusive_core_utilization_percent": 46.1157517919518,
+   "standard_cell_area_um2": 187585.2,
+   "filler_decap_area_um2": 512766.6
+  }
+ },
+ "resources": {
+  "drc": {
+   "exit_code": 0,
+   "wall_seconds": 386.803,
+   "peak_rss_kib": 2259344
+  },
+  "antenna": {
+   "exit_code": 0,
+   "wall_seconds": 171.365,
+   "peak_rss_kib": 1589300
+  },
+  "latchup": {
+   "exit_code": 0,
+   "wall_seconds": 5.944,
+   "peak_rss_kib": 260872
+  },
+  "extraction": {
+   "exit_code": 0,
+   "wall_seconds": 4.236,
+   "peak_rss_kib": 202380
+  },
+  "timing": {
+   "exit_code": 0,
+   "wall_seconds": 21.464,
+   "peak_rss_kib": 167072
+  },
+  "lvs": {
+   "exit_code": 0,
+   "wall_seconds": 120.418,
+   "peak_rss_kib": 627144
+  },
+  "simulation": {
+   "exit_code": 0,
+   "wall_seconds": 4.542,
+   "peak_rss_kib": 245404
+  },
+  "logic": {
+   "exit_code": 0,
+   "wall_seconds": 19.406,
+   "peak_rss_kib": 245448
+  },
+  "density": {
+   "exit_code": 0,
+   "wall_seconds": 0.222,
+   "peak_rss_kib": null
+  }
+ },
+ "measure": {
+  "schema": "rusteda.host-measured-run.v1",
+  "name": "signoff-native",
+  "command": "/usr/local/bin/python3 /home/user/RustEDA/integration/ibex_host_benchmark/signoff_layout.py --host /home/user/RustEDA/.work/campaign-20261113/host.json --layout /home/user/RustEDA/.work/campaign-20261113/layout-native.json --workspace /home/user/RustEDA/.work/campaign-20261113/signoff-native",
+  "started": "2026-11-13T08:33:19+00:00",
+  "wall_seconds": 734.911,
+  "exit_code": 0,
+  "gnu_time_max_rss_kib": 2259344,
+  "cgroup_v1_memory_max_usage_bytes": 2243493888,
+  "cgroup_v1_memsw_max_usage_bytes": 2243493888,
+  "cgroup_v1_failcnt": 0,
+  "cgroup_limit_bytes": 8589934592,
+  "sampled_peak_total_rss_bytes": 2237005824,
+  "loadavg_1m_mean": 1.17,
+  "loadavg_1m_max": 1.79,
+  "samples": 147,
+  "cpus_online": 4
+ }
+}

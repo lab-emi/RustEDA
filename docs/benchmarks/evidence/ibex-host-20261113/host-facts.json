@@ -1,0 +1,21 @@
+{
+ "source": "captured on the campaign host on 2026-11-13 before the timed campaign (superproject 820ffc8; /proc/cpuinfo, sysconf, uname, lscpu in host-lscpu.txt); engine commits are the gitlinks pinned by 820ffc8; every engine binary was built from them with rustc 1.100.0",
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "logical_cpus": 4,
+  "memory_bytes": 16867405824,
+  "kernel": "6.18.44-fc-v445",
+  "cgroup": "v1 memory controller; each timed stage alone in its own child group",
+  "allocation": "all 4 vCPUs to each flow; RustEDA 8 GiB cap (+2 GiB memsw), LibreLane 10 GiB cap; no swap device",
+  "sampling": "one timed sample per flow; module stages one warm-up plus three measured repetitions",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "producer_executor": "rusteda flow exec (native step-graph executor, superproject apps/ at the same commit)"
+ },
+ "engine_commits": {
+  "RustSys": "86187e69c3111ad79ae4b651ad53d652b7609867",
+  "RustSTA": "d453782b118224ee27517857a59ad5a597a0fb4c",
+  "RustROAD": "f90f2dd805cbad1ba03dcc4fb84c2d36dfb4d5f7",
+  "RustSpice": "71875bf9a8c937fb6ada641c45f52df67f0cfa30",
+  "RustEDA-Common": "002f8f69f6adcec4c75973dbdccb42f04cdd7a37"
+ }
+}

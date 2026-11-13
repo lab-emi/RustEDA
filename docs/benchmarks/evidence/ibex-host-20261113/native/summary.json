@@ -1,0 +1,101 @@
+{
+  "schema": "rusteda.ihp-frontend.v1",
+  "status": "frontend_completed",
+  "implementation": "rusteda",
+  "stop_after": "be_macro_contract",
+  "manifest_sha256": "84a99a6b0ecc867370597ecd6898729eb7f3ebb49bef0845360addca8f0efbed",
+  "scope": {
+    "threads": 4,
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "max_log_bytes": 67108864,
+    "memory_mib": 8192,
+    "max_memory_bytes": 8589934592,
+    "max_stdout_artifact_bytes": 1610612736,
+    "wire_model": "ideal_diagnostic",
+    "cppr": "off"
+  },
+  "artifacts": {
+    "gds": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/backend/ibex_sram_bench.gds",
+      "sha256": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+      "bytes": 24992568
+    },
+    "def": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/logs/be_def.stdout",
+      "sha256": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+      "bytes": 12526876
+    },
+    "netlist_synth": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/frontend/mapped.v",
+      "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+      "bytes": 1546032
+    },
+    "netlist_final": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/logs/be_netlist.stdout",
+      "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+      "bytes": 2049571
+    },
+    "netlist_powered_final": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/logs/be_powered.stdout",
+      "sha256": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+      "bytes": 4369272
+    },
+    "spef_native_nom": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/backend/native.nom.spef",
+      "sha256": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+      "bytes": 24192178
+    },
+    "spef_openrcx_nom": {
+      "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/backend/openrcx/nom.spef",
+      "sha256": "063e4c05a79b3f82766d9fd1d3f862459e950241b5632000d21355fbbf53ebdc",
+      "bytes": 18890790
+    }
+  },
+  "unavailable_artifacts": [],
+  "failed_items": [],
+  "unverified_items": [
+    "complete_flow",
+    "routing",
+    "extraction",
+    "gds",
+    "drc",
+    "antenna",
+    "lvs",
+    "extracted_timing",
+    "timing_accuracy",
+    "benchmark"
+  ],
+  "capture_accounting": {
+    "mode": "explicit_stdout_artifacts",
+    "declared_bytes": 1358954496,
+    "aggregate_limit_bytes": 1610612736,
+    "files": 34,
+    "diagnostic_bytes": 1088086,
+    "diagnostic_limit_bytes": 67108864,
+    "stdout_artifact_bytes": 121211291,
+    "stderr_policy": "every stderr byte is diagnostic, without exemptions",
+    "raw_paths": "logs/<step>.stdout and logs/<step>.stderr; preserved and hashed",
+    "overflow_policy": "failed capture; bounded extra chunks retained, never a truncated success"
+  },
+  "resources": {
+    "wall_seconds": 717.289632529,
+    "peak_reaped_process_rss_kib": 2254980,
+    "cgroup": {
+      "memory_peak_bytes": 4930203648,
+      "swap_peak_bytes": 0
+    },
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "threads": 4,
+    "scope": "whole worker including parsing, plans, tool I/O, extraction and signoff"
+  }
+}

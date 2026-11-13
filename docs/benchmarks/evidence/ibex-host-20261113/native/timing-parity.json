@@ -1,0 +1,90 @@
+{
+  "schema": "rusteda.signoff-timing-parity.v1",
+  "status": "passed",
+  "comparison": "ruststa_vs_opensta_on_identical_spef",
+  "ruststa_vs_opensta_on_identical_spef": true,
+  "cppr": "off",
+  "corners": [
+    "tt",
+    "ss"
+  ],
+  "spef_sources": [
+    "native",
+    "openrcx"
+  ],
+  "compared_values": 8,
+  "tolerance_ns": 0.001,
+  "netlist_sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+  "spef_sha256": {
+    "native": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+    "openrcx": "063e4c05a79b3f82766d9fd1d3f862459e950241b5632000d21355fbbf53ebdc"
+  },
+  "differences": [
+    {
+      "source": "native",
+      "corner": "tt",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.62621178871462,
+      "opensta_ns": 49.626266479492,
+      "abs_difference_ns": 5.4690777382404576e-05
+    },
+    {
+      "source": "native",
+      "corner": "tt",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.11062823341264894,
+      "opensta_ns": 0.110897958279,
+      "abs_difference_ns": 0.0002697248663510593
+    },
+    {
+      "source": "native",
+      "corner": "ss",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.42605555585799,
+      "opensta_ns": 49.425956726074,
+      "abs_difference_ns": 9.88297839938923e-05
+    },
+    {
+      "source": "native",
+      "corner": "ss",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.20980961152740152,
+      "opensta_ns": 0.209803178906,
+      "abs_difference_ns": 6.432621401514238e-06
+    },
+    {
+      "source": "openrcx",
+      "corner": "tt",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.62784652162024,
+      "opensta_ns": 49.627902984619,
+      "abs_difference_ns": 5.646299875650129e-05
+    },
+    {
+      "source": "openrcx",
+      "corner": "tt",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.1083902066268545,
+      "opensta_ns": 0.108633324504,
+      "abs_difference_ns": 0.00024311787714549615
+    },
+    {
+      "source": "openrcx",
+      "corner": "ss",
+      "field": "setup_ws_ns",
+      "ruststa_ns": 49.42884078915134,
+      "opensta_ns": 49.428783416748,
+      "abs_difference_ns": 5.7372403340139044e-05
+    },
+    {
+      "source": "openrcx",
+      "corner": "ss",
+      "field": "hold_ws_ns",
+      "ruststa_ns": 0.20604987527148744,
+      "opensta_ns": 0.2060097754,
+      "abs_difference_ns": 4.0099871487425665e-05
+    }
+  ],
+  "max_abs_difference_ns": 0.0002697248663510593,
+  "inputs_unchanged": true
+}

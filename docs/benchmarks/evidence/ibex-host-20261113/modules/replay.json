@@ -1,0 +1,382 @@
+{
+ "schema": "rusteda.host-module-bench.v1",
+ "producer_output": "/home/user/RustEDA/.work/campaign-20261113/native-final/output",
+ "reps": 3,
+ "threads": [
+  2,
+  4
+ ],
+ "host_cpus": 4,
+ "extraction": {
+  "contenders": {
+   "rustroad_extract_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 8.094,
+      "peak_rss_kib": 286840,
+      "cpu_seconds": 14.38
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 7.951,
+      "peak_rss_kib": 287428,
+      "cpu_seconds": 14.37
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 7.662,
+      "peak_rss_kib": 285540,
+      "cpu_seconds": 13.76
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 7.951,
+    "min_wall_seconds": 7.662,
+    "worst_peak_rss_kib": 287428
+   },
+   "rustroad_extract_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 4.687,
+      "peak_rss_kib": 324408,
+      "cpu_seconds": 13.78
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 4.664,
+      "peak_rss_kib": 316472,
+      "cpu_seconds": 14.04
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 4.644,
+      "peak_rss_kib": 320728,
+      "cpu_seconds": 13.89
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 4.664,
+    "min_wall_seconds": 4.644,
+    "worst_peak_rss_kib": 324408
+   },
+   "openrcx_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.625,
+      "peak_rss_kib": 202728,
+      "cpu_seconds": 3.59
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.967,
+      "peak_rss_kib": 202768,
+      "cpu_seconds": 3.9
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.46,
+      "peak_rss_kib": 202832,
+      "cpu_seconds": 3.44
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 3.625,
+    "min_wall_seconds": 3.46,
+    "worst_peak_rss_kib": 202832
+   },
+   "openrcx_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.987,
+      "peak_rss_kib": 203308,
+      "cpu_seconds": 3.89
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.829,
+      "peak_rss_kib": 203036,
+      "cpu_seconds": 3.79
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.641,
+      "peak_rss_kib": 203164,
+      "cpu_seconds": 3.6
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 3.829,
+    "min_wall_seconds": 3.641,
+    "worst_peak_rss_kib": 203308
+   }
+  },
+  "spef": {
+   "rustroad": {
+    "nets": 14178,
+    "total_cap_pf": 162.713,
+    "total_res_kohm": 2788.416
+   },
+   "openrcx": {
+    "nets": 14178,
+    "total_cap_pf": 153.557,
+    "total_res_kohm": 2802.709
+   }
+  },
+  "thread_note": "RustROAD sizes its thread pool from --threads (default 2; RAYON_NUM_THREADS does not size it); module_bench.py sets --threads to each listed value on the recorded extract command, so the _t2 and _t4 rows ran 2 and 4 threads (the flow's be_extract: --threads 4). OpenRCX used set_thread_count 2 and 4."
+ },
+ "timing": {
+  "contenders": {
+   "ruststa_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 4.441,
+      "peak_rss_kib": 152088,
+      "cpu_seconds": 6.19
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 4.692,
+      "peak_rss_kib": 151940,
+      "cpu_seconds": 6.45
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 4.788,
+      "peak_rss_kib": 146392,
+      "cpu_seconds": 6.56
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 4.692,
+    "min_wall_seconds": 4.441,
+    "worst_peak_rss_kib": 152088
+   },
+   "ruststa_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.292,
+      "peak_rss_kib": 197060,
+      "cpu_seconds": 6.25
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.439,
+      "peak_rss_kib": 193020,
+      "cpu_seconds": 6.42
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 3.403,
+      "peak_rss_kib": 177884,
+      "cpu_seconds": 6.36
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 3.403,
+    "min_wall_seconds": 3.292,
+    "worst_peak_rss_kib": 197060
+   },
+   "opensta_t2": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 7.218,
+      "peak_rss_kib": 175960,
+      "cpu_seconds": 8.63
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 7.349,
+      "peak_rss_kib": 176060,
+      "cpu_seconds": 8.79
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 7.528,
+      "peak_rss_kib": 175712,
+      "cpu_seconds": 9.03
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 7.349,
+    "min_wall_seconds": 7.218,
+    "worst_peak_rss_kib": 176060
+   },
+   "opensta_t4": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 6.738,
+      "peak_rss_kib": 175824,
+      "cpu_seconds": 9.69
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 7.298,
+      "peak_rss_kib": 176252,
+      "cpu_seconds": 10.63
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 6.881,
+      "peak_rss_kib": 175936,
+      "cpu_seconds": 9.9
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 6.881,
+    "min_wall_seconds": 6.738,
+    "worst_peak_rss_kib": 176252
+   }
+  },
+  "scope": "RustSTA: init+import+run (TT and SS in one run)+8 reports; OpenSTA: one process per corner (read, link, SDC, SPEF, full reports)",
+  "agreement": {
+   "status": "passed",
+   "max_abs_difference_ps": 0.2697,
+   "tolerance_ps": 1.0,
+   "differences": [
+    {
+     "source": "native",
+     "corner": "tt",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 49.626212,
+     "opensta_ns": 49.626266,
+     "abs_difference_ps": 0.0547
+    },
+    {
+     "source": "native",
+     "corner": "tt",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.110628,
+     "opensta_ns": 0.110898,
+     "abs_difference_ps": 0.2697
+    },
+    {
+     "source": "native",
+     "corner": "ss",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 49.426056,
+     "opensta_ns": 49.425957,
+     "abs_difference_ps": 0.0988
+    },
+    {
+     "source": "native",
+     "corner": "ss",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.20981,
+     "opensta_ns": 0.209803,
+     "abs_difference_ps": 0.0064
+    },
+    {
+     "source": "openrcx",
+     "corner": "tt",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 49.627847,
+     "opensta_ns": 49.627903,
+     "abs_difference_ps": 0.0565
+    },
+    {
+     "source": "openrcx",
+     "corner": "tt",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.10839,
+     "opensta_ns": 0.108633,
+     "abs_difference_ps": 0.2431
+    },
+    {
+     "source": "openrcx",
+     "corner": "ss",
+     "field": "setup_ws_ns",
+     "ruststa_ns": 49.428841,
+     "opensta_ns": 49.428783,
+     "abs_difference_ps": 0.0574
+    },
+    {
+     "source": "openrcx",
+     "corner": "ss",
+     "field": "hold_ws_ns",
+     "ruststa_ns": 0.20605,
+     "opensta_ns": 0.20601,
+     "abs_difference_ps": 0.0401
+    }
+   ]
+  }
+ },
+ "gds": {
+  "contenders": {
+   "rustroad_export_gds": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 0.514,
+      "peak_rss_kib": 104108,
+      "cpu_seconds": 0.5
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 0.498,
+      "peak_rss_kib": 104144,
+      "cpu_seconds": 0.48
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 0.46,
+      "peak_rss_kib": 104212,
+      "cpu_seconds": 0.45
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 0.498,
+    "min_wall_seconds": 0.46,
+    "worst_peak_rss_kib": 104212
+   },
+   "klayout_def2gds": {
+    "runs": [
+     {
+      "exit_code": 0,
+      "wall_seconds": 1.255,
+      "peak_rss_kib": 204276,
+      "cpu_seconds": 1.23
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 1.375,
+      "peak_rss_kib": 204424,
+      "cpu_seconds": 1.36
+     },
+     {
+      "exit_code": 0,
+      "wall_seconds": 1.389,
+      "peak_rss_kib": 204316,
+      "cpu_seconds": 1.37
+     }
+    ],
+    "measured": 3,
+    "failed": 0,
+    "median_wall_seconds": 1.375,
+    "min_wall_seconds": 1.255,
+    "worst_peak_rss_kib": 204424
+   }
+  },
+  "bytes": {
+   "rustroad": 24992568,
+   "klayout": 22493830
+  },
+  "thread_note": "RustROAD export-gds replays the recorded be_gds command (no --threads: default 2-thread pool); KLayout's LEF/DEF reader is single-process."
+ }
+}
