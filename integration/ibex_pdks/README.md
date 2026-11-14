@@ -61,5 +61,11 @@ LibreLane's defaults and are stated here because they affect the competitor:
   without these three attributes (`macro/…_TT_1p8V_25C.lib`, source and derived SHA-256 in `preparation.json`);
   the library's `default_max_transition` of 0.5 ns then applies to those pins. Both flows and the shared timing
   gate read the copy. The macro publishes a typical-corner Liberty only, so it is used at both corners.
+- **The KLayout stream-out is the reference layout on `sky130hd`, and the Magic/KLayout XOR is skipped there**
+  (`PRIMARY_GDSII_STREAMOUT_TOOL`, `RUN_KLAYOUT_XOR`). Magic's stream-out does not reproduce the OpenRAM macro's
+  GDS: the XOR of the two stream-outs reported 7,213,274 differences, the largest counts on the mask-data layers
+  33/43 and 33/42, and wrote a 2.2 GB report. KLayout copies the macro's GDS as it is, so its stream-out is the
+  layout the shared gates judge. On `gf180mcu` and IHP the two stream-outs are identical (0 differences) and
+  the XOR stays in the reference flow.
 - **Detailed placement may move a cell across a macro** (`PL_MAX_DISPLACEMENT_X/Y`), as in the IHP reference:
   with the default, a clock buffer that lands on a macro cannot be legalized (`DPL-0036`).
