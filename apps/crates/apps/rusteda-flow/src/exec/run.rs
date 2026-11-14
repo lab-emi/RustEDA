@@ -14,7 +14,7 @@ use super::{
     identity::{self, Identity, utf8},
     manifest::{self, ArtifactSpec, Kind, Manifest, Step},
     pyjson::Json,
-    query::{load_manifest, pinned_tool, verify_pins},
+    query::{check_identity, load_manifest, pinned_tool, verify_pins},
     sys::{self, Exit, Launch, Sink},
     template::{Context, resolve_lenient},
 };
@@ -659,9 +659,10 @@ impl Run<'_> {
                 for (name, path) in &manifest.artifacts {
                     artifacts.set(name.clone(), produced(path)?.json());
                 }
-                summary.set("schema", Json::str("rusteda.ihp-rtl2gds.v1"));
+                summary.set("schema", Json::str(summary_schema(manifest, true)));
                 summary.set("status", Json::str("completed"));
                 summary.set("implementation", Json::str("rusteda"));
+                identity_members(manifest, &mut summary);
                 summary.set("manifest_sha256", Json::str(manifest_sha256));
                 summary.set("scope", manifest.scope.raw.clone());
                 summary.set("gates", gates);
@@ -680,9 +681,10 @@ impl Run<'_> {
                         missing.push(Json::str(name.clone()));
                     }
                 }
-                summary.set("schema", Json::str("rusteda.ihp-frontend.v1"));
+                summary.set("schema", Json::str(summary_schema(manifest, false)));
                 summary.set("status", Json::str("frontend_completed"));
                 summary.set("implementation", Json::str("rusteda"));
+                identity_members(manifest, &mut summary);
                 summary.set("stop_after", Json::str(manifest.steps[stop].id.clone()));
                 summary.set("manifest_sha256", Json::str(manifest_sha256));
                 summary.set("scope", manifest.scope.raw.clone());
@@ -701,6 +703,30 @@ impl Run<'_> {
             }
         }
         Ok(summary)
+    }
+}
+
+/// The schema of a run summary: the IHP recipe keeps its published names; a profile-bound
+/// manifest of any PDK has the PDK-neutral ones.
+fn summary_schema(manifest: &Manifest, full: bool) -> &'static str {
+    match (manifest.identity.profile_bound, full) {
+        (false, true) => "rusteda.ihp-rtl2gds.v1",
+        (false, false) => "rusteda.ihp-frontend.v1",
+        (true, true) => "rusteda.native-rtl2gds.v1",
+        (true, false) => "rusteda.native-frontend.v1",
+    }
+}
+
+/// The summary of a profile-bound manifest names its PDK, library and corners.
+fn identity_members(manifest: &Manifest, summary: &mut Json) {
+    let identity = &manifest.identity;
+    if identity.profile_bound {
+        summary.set("pdk", Json::str(identity.pdk.clone()));
+        summary.set("library", Json::str(identity.library.clone()));
+        summary.set(
+            "corners",
+            Json::Array(identity.corners.iter().map(Json::str).collect()),
+        );
     }
 }
 
@@ -812,6 +838,7 @@ pub(super) fn execute(options: &Options) -> Result<Outcome> {
     }
     let (manifest, stop_after) = load_manifest(&options.manifest, options.stop_after.as_deref())?;
     let records = verify_pins(&manifest, &options.project)?;
+    check_identity(&manifest, &records, options.pdk.as_deref())?;
     pinned_tool(&records, "rustroad", options.rustroad.as_deref())?;
     let gnu_time = pinned_tool(&records, "gnu_time", options.gnu_time.as_deref())?;
     check_cpus(&manifest)?;
@@ -919,23 +946,24 @@ pub(super) fn execute(options: &Options) -> Result<Outcome> {
         });
     let (mut summary, failure) = match result {
         Ok(summary) => (summary, None),
-        Err(failure) => (
-            Json::object([
-                ("schema", Json::str("rusteda.ihp-rtl2gds.v1")),
+        Err(failure) => {
+            let mut summary = Json::object([
+                ("schema", Json::str(summary_schema(&manifest, true))),
                 ("status", Json::str("failed")),
                 ("implementation", Json::str("rusteda")),
-                ("error", Json::str(failure.message.clone())),
-                (
-                    "failed_items",
-                    Json::Array(vec![Json::str(failure.message.clone())]),
-                ),
-                (
-                    "unverified_items",
-                    Json::Array(vec![Json::str("complete_flow")]),
-                ),
-            ]),
-            Some(failure),
-        ),
+            ]);
+            identity_members(&manifest, &mut summary);
+            summary.set("error", Json::str(failure.message.clone()));
+            summary.set(
+                "failed_items",
+                Json::Array(vec![Json::str(failure.message.clone())]),
+            );
+            summary.set(
+                "unverified_items",
+                Json::Array(vec![Json::str("complete_flow")]),
+            );
+            (summary, Some(failure))
+        }
     };
     let number = |value: u64| Json::int(value);
     let mut accounting = Json::object([

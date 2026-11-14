@@ -31,6 +31,18 @@ native_ecos.py, which stay the definition and are still hash-pinned) byte for
 byte. A hold round with post-route capacitance feedback
 (selection.electrical.cap_feedback) is planned by the reference helper itself
 (bundle --eco-workspace).
+
+The prefix is composed for a native PDK profile (rusteda.native-pdk-profile.v1,
+integration/ibex_pdks/NATIVE.md): build --profile FILE. The profile gives the
+manifest identity (pdk, library), the timing corners and the Liberty groups
+(the cell library and one per macro master: files <group>_<corner>), the cells
+excluded from synthesis and the CPU allocations the flow is qualified for.
+Without --profile the profile is the IHP SG13G2/EZ130 one
+(integration/ibex_pdks/ihp_sg13g2_ez130/native/profile.json), whose manifest
+is the published rusteda.ihp-flow.v1 recipe, byte for byte. Any other profile
+composes a rusteda.native-flow.v1 manifest that pins the profile and its
+contract (files:profile, files:contract), which the planning helpers and the
+executor read.
 """
 from __future__ import annotations
 import argparse
@@ -43,11 +55,19 @@ import re
 import resource
 import sys
 
-FILE_KEYS = {'rtl','sdc','std_tt','ram_tt','std_ss','ram_ss','tech_lef','cell_lef','std_lef',
+# Frontend inputs every profile pins; a profile adds its Liberty files (<group>_<corner>) and,
+# unless it is the published IHP recipe, the profile and its contract.
+COMMON_FILE_KEYS = {'rtl','sdc','tech_lef','cell_lef','std_lef',
              'floorplan','physical','routing','interfaces','ecos','frontend','prepare',
              'delay_helper','sizing_helper','liberty_reader','pin_caps_source','producer',
              'estimator','rc_policy'}
 TOOL_KEYS = {'rustsys','rusteda','ruststa','rustroad','python','gnu_time','xxhsum','pin_caps'}
+PROFILE_SCHEMA = 'rusteda.native-pdk-profile.v1'
+# The published IHP SG13G2/EZ130 recipe and the same step graph for any other PDK profile.
+IHP_FLOW, NATIVE_FLOW = 'rusteda.ihp-flow.v1', 'rusteda.native-flow.v1'
+DEFAULT_PROFILE = Path(__file__).resolve().parents[1] / 'ibex_pdks/ihp_sg13g2_ez130/native/profile.json'
+PROFILE_FIELDS = {'schema','name','flow_schema','pdk','library','top','corners','lef','gds','macros',
+                  'gds_layer_map','rc','synthesis','policies','allocations','referee_steps','referee_files'}
 
 
 def require(ok, text):
@@ -65,6 +85,86 @@ def identity(path):
     return dict(path=str(path), sha256=digest, bytes=path.stat().st_size)
 
 
+def load_profile(path=None):
+    """The native PDK profile document (default: the IHP SG13G2/EZ130 one), validated."""
+    path = Path(path) if path is not None else DEFAULT_PROFILE
+    require(path.is_file(), 'PDK profile missing: ' + str(path) + ' (pass --profile)')
+    return Profile(read(path))
+
+
+class Profile:
+    """What the composers read of a rusteda.native-pdk-profile.v1 document. File references are
+    resolved by the host driver (compose_native.py); here only names and structure matter."""
+
+    def __init__(self, data):
+        name = re.compile(r'[A-Za-z0-9_.-]{1,64}\Z')
+        short = re.compile(r'[a-z][a-z0-9]{0,7}\Z')
+        require(isinstance(data, dict) and data.get('schema') == PROFILE_SCHEMA, 'PDK profile schema')
+        require(not set(data) - PROFILE_FIELDS, 'unknown PDK profile field: ' + ', '.join(sorted(set(data) - PROFILE_FIELDS)))
+        self.data = data
+        self.flow_schema = data.get('flow_schema', NATIVE_FLOW)
+        require(self.flow_schema in (IHP_FLOW, NATIVE_FLOW), 'PDK profile flow_schema')
+        # The published IHP recipe: its manifest has no profile record and keeps its own names.
+        self.legacy = self.flow_schema == IHP_FLOW
+        self.pdk, self.library, self.top = data['pdk'], data['library'], data['top']
+        require(all(isinstance(x, str) and name.match(x) for x in (self.pdk, self.library, self.top)),
+                'PDK profile identity: pdk, library and top names')
+        self.macros = data.get('macros', [])
+        require(isinstance(self.macros, list) and len(self.macros) <= 8, 'PDK profile macros: at most eight masters')
+        ids = [m['id'] for m in self.macros]
+        # `std` names the cell library (std_<corner>, std_gds, std2_gds, ...).
+        require(all(isinstance(i, str) and short.match(i) and not re.match(r'std[0-9]*\Z', i) for i in ids)
+                and len(set(ids)) == len(ids), 'PDK profile macro identifiers')
+        for macro in self.macros:
+            require(isinstance(macro['master'], str) and macro['master']
+                    and isinstance(macro['instances'], list) and macro['instances']
+                    and all(isinstance(i, str) and i for i in macro['instances'])
+                    and len(set(macro['instances'])) == len(macro['instances']),
+                    'PDK profile macro master and instances: ' + macro['id'])
+        # Liberty groups: the cell library, then one per macro master.
+        self.groups = ['std', *ids]
+        corners = data['corners']
+        require(isinstance(corners, list) and 1 <= len(corners) <= 4, 'PDK profile corners: one to four required')
+        self.corners = [c['name'] for c in corners]
+        require(all(isinstance(c, str) and short.match(c) for c in self.corners)
+                and len(set(self.corners)) == len(self.corners), 'PDK profile corner names')
+        for corner in corners:
+            require(corner.get('rc') == 'nom', 'PDK profile corner ' + corner['name'] + ': only the nom extraction corner is supported')
+            require(set(corner['liberty']) == set(self.groups) and len(corner['liberty']) == len(self.groups),
+                    'PDK profile corner ' + corner['name'] + ': liberty needs std and every macro identifier')
+        require(not self.legacy or (self.pdk, self.library, self.corners) == ('ihp-sg13g2', 'ez130_8t', ['tt', 'ss']),
+                'the rusteda.ihp-flow.v1 recipe is the IHP SG13G2/EZ130 identity')
+        self.allocations = data.get('allocations', [2, 4, 16])
+        require(isinstance(self.allocations, list) and self.allocations
+                and all(type(n) is int and 1 <= n <= 16 for n in self.allocations), 'PDK profile allocations')
+        self.dont_use = data.get('synthesis', {}).get('dont_use', [])
+        require(not set(data.get('synthesis', {})) - {'dont_use'} and isinstance(self.dont_use, list)
+                and all(isinstance(g, str) and re.match(r'[A-Za-z0-9_*?.-]{1,128}\Z', g) for g in self.dont_use),
+                'PDK profile synthesis.dont_use globs')
+
+    def liberty_keys(self):
+        """Pinned Liberty files in the order the host driver records them: by group, then corner."""
+        return [g + '_' + c for g in self.groups for c in self.corners]
+
+    def frontend_file_keys(self):
+        keys = COMMON_FILE_KEYS | set(self.liberty_keys())
+        return keys if self.legacy else keys | {'profile', 'contract'}
+
+    def manifest_identity(self):
+        return dict(pdk=self.pdk, library=self.library, corners=list(self.corners))
+
+    def declare_stdout_artifacts(self, policy, steps):
+        """The pinned producer's stdout-artifact declaration for this profile's corners and groups."""
+        if self.legacy:
+            return policy.declare_stdout_artifacts(steps)
+        return policy.declare_stdout_artifacts(steps, corners=self.corners, groups=self.groups)
+
+    def validate_stdout_artifacts(self, policy, steps, registry, scope):
+        if self.legacy:
+            return policy.validate_stdout_artifacts(steps, registry, scope)
+        return policy.validate_stdout_artifacts(steps, registry, scope, corners=self.corners, groups=self.groups)
+
+
 def capture_policy(record):
     """Import only the explicitly pinned producer's side-effect-free policy."""
     path = Path(record['path'])
@@ -77,7 +177,8 @@ def capture_policy(record):
     return module
 
 
-def build(config):
+def build(config, profile=None):
+    profile = profile if profile is not None else load_profile()
     require(config['schema'] == 'rusteda.native-frontend-inputs.v1', 'frontend config schema')
     require(set(config)=={'schema','files','tools','scope','selection'},'unknown frontend config field')
     feedback = config['selection'].get('electrical', {}).get('cap_feedback')
@@ -90,9 +191,12 @@ def build(config):
         feedback_keys = {'cap_feedback'} | {'cap_feedback_' + role for role in roles}
         require(all(config['files'].get('cap_feedback_' + role) == record
                     for role, record in evidence['source_files'].items()), 'cap feedback sources must be frozen inputs')
-    require(set(config['files']) == FILE_KEYS | feedback_keys and set(config['tools']) == TOOL_KEYS, 'explicit frontend file/tool set required')
-    require(type(config['scope']['threads']) is int and config['scope']['threads'] in {2,16},
-            'physical allocation must be 2 or 16; qualified frontend stages use two workers')
+    require(set(config['files']) == profile.frontend_file_keys() | feedback_keys and set(config['tools']) == TOOL_KEYS, 'explicit frontend file/tool set required')
+    require(config['selection']['top'] == profile.top, 'selection top differs from the PDK profile')
+    require(not feedback_keys or profile.legacy, 'post-route capacitance feedback is bound to the IHP recipe')
+    require(type(config['scope']['threads']) is int and config['scope']['threads'] in set(profile.allocations),
+            'physical allocation must be one of ' + ', '.join(map(str, sorted(profile.allocations)))
+            + '; qualified frontend stages use two workers')
     for group in ['files','tools']:
         for name, record in config[group].items():
             require(identity(Path(record['path'])) == record, 'input changed: '+name)
@@ -101,12 +205,12 @@ def build(config):
                 with Path(record['path']).open('rb') as f: require(f.read(4) == b'\x7fELF', 'direct native ELF required')
     files, tools = config['files'], config['tools']
     four = 4 <= config['scope']['threads'] < 6
-    steps, lanes = recipe(config, four)
+    steps, lanes = recipe(config, four, profile)
     require(len(steps)<=128,'producer step budget')
     require(len({s['id']for s in steps})==len(steps),'duplicate producer step identity')
     policy = capture_policy(files['producer'])
-    steps, stdout_artifacts = policy.declare_stdout_artifacts(steps)
-    policy.validate_stdout_artifacts(steps, stdout_artifacts, config['scope'])
+    steps, stdout_artifacts = profile.declare_stdout_artifacts(policy, steps)
+    profile.validate_stdout_artifacts(policy, steps, stdout_artifacts, config['scope'])
     groups=[frontend_parallel_group(steps, lanes)] if four else []
     if groups:policy.validate_parallel_groups(steps, groups, config['scope'])
     outputs=dict(final_workspace='frontend/road-final',final_netlist='logs/fe_final_export.stdout',
@@ -117,7 +221,7 @@ def build(config):
     artifacts={k:v for k,v in outputs.items() if k in ['final_netlist','prects_netlist','temporary_seed','receipt']}
     fragment=dict(schema='rusteda.native-frontend-fragment.v1',files=files,tools=tools,steps=steps,outputs=outputs,artifacts=artifacts,
                   stdout_artifacts=stdout_artifacts,scope=config['scope'],unverified=['route','extracted RC','GDS','DRC','antenna','LVS','extracted_timing','CEC','benchmark'])
-    manifest=dict(schema='rusteda.ihp-flow.v1',name='fresh Ibex IHP native frontend',pdk='ihp-sg13g2',library='ez130_8t',corners=['tt','ss'],files=files,tools=tools,scope=config['scope'],steps=steps,gates={},artifacts=artifacts,stdout_artifacts=stdout_artifacts)
+    manifest=dict(schema=profile.flow_schema,name='fresh Ibex IHP native frontend' if profile.legacy else 'fresh Ibex native frontend ('+profile.data['name']+')',**profile.manifest_identity(),files=files,tools=tools,scope=config['scope'],steps=steps,gates={},artifacts=artifacts,stdout_artifacts=stdout_artifacts)
     if groups:fragment['parallel_groups']=manifest['parallel_groups']=groups
     return fragment,manifest
 
@@ -146,10 +250,14 @@ def frontend_parallel_group(steps, lanes):
     return dict(max_parallel=4,max_memory_mib=7168,steps=members)
 
 
-def recipe(config, four):
+def recipe(config, four, profile=None):
     """The prefix's steps and, for frontend_parallel_group, each step's dependencies, CPU slots and
-    memory reservation. `four`: a four-CPU allocation (one dependency graph, four-thread STA runs)."""
+    memory reservation. `four`: a four-CPU allocation (one dependency graph, four-thread STA runs).
+    `profile`: the PDK profile, whose corners and Liberty groups (the cell library `std` and one
+    per macro master) name the pinned Liberty files <group>_<corner> and the steps that read them."""
+    profile = profile if profile is not None else load_profile()
     files, tools, steps = config['files'], config['tools'], []
+    corners, groups = profile.corners, profile.groups
     out = '{output}/frontend/'
     # A four-CPU allocation runs the prefix as one dependency graph (frontend_parallel_group): every
     # step keeps its arguments, order and outputs, and waits only for the steps whose files it
@@ -180,21 +288,22 @@ def recipe(config, four):
     # inits take CPU 3, side by side.
     profiles=helper('profiles','profiles','profiles',after=[context],slots=[2])
     caps=[]
-    for corner in ['tt','ss']:
-        for kind,key in [('std','std_'+corner),('ram','ram_'+corner)]:
-            caps.append(command('caps_'+corner+'_'+kind,'pin_caps',['{files:'+key+'}'],slots=[2 if kind=='ram' else 3],memory=256))
+    for corner in corners:
+        for kind in groups:
+            caps.append(command('caps_'+corner+'_'+kind,'pin_caps',['{files:'+kind+'_'+corner+'}'],slots=[3 if kind=='std' else 2],memory=256))
     ws=out+'synth'
     init=command('synth_init','rusteda',['init','-w',ws,'--format','json'],slots=[0],memory=128)
     # The run's Liberty compile cache (see the timing imports below): the synthesis import publishes
     # its two TT libraries there, while the timing steps wait for synthesis, so the first timing
     # import compiles only the SS libraries (its workspace files are the same either way).
     lib_cache=out+'lib-cache'
-    imp=command('synth_import','rusteda',['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache,'--lib','{files:std_tt}','--corner','tt','--lib','{files:ram_tt}','--corner','tt','--rtl','{files:rtl}','--top',config['selection']['top']],after=[init])
-    synth=command('synth','rustsys',['--workspace',ws,'synth','--base-rev','rev1','--threads','2'],600,after=[imp])
+    # Synthesis maps with the libraries of the first (typical) corner; a profile may exclude cells
+    # (rustsys synth --dont-use).
+    typical=[x for kind in groups for x in ('--lib','{files:'+kind+'_'+corners[0]+'}','--corner',corners[0])]
+    imp=command('synth_import','rusteda',['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache,*typical,'--rtl','{files:rtl}','--top',config['selection']['top']],after=[init])
+    excluded=[x for glob in profile.dont_use for x in ('--dont-use',glob)]
+    synth=command('synth','rustsys',['--workspace',ws,'synth','--base-rev','rev1','--threads','2',*excluded],600,after=[imp])
     mapped=command('synth_export','rusteda',['export','-w',ws,'--rev','rev2','--netlist',out+'mapped.v','--cell-buses',out+'profiles/cell-buses.json'],after=[synth,profiles],slots=[0])
-    libargs=[]
-    for c in ['tt','ss']:
-        for k in ['std','ram']:libargs += ['--lib','{files:'+k+'_'+c+'}','--corner',c]
     # The timing imports share one Liberty compile cache in this run's tree: a library compiled
     # by an earlier timing import of the run is copied into the next workspace instead of parsed
     # again (rusteda import --lib-cache; the workspace cache files are the same either way). The
@@ -208,8 +317,8 @@ def recipe(config, four):
         init=command(tag+'_init','rusteda',['init','-w',ws,'--format','json'],slots=[3],memory=128)
         imp=['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache]
         if spef:imp+=['--max-spef-mib','64','--max-rc-name-mib','64','--max-rc-nodes','2000000','--max-rc-elements','4000000','--max-rc-nets','100000']
-        for c in ['tt','ss']:
-            for k in ['std','ram']:imp+=['--lib','{files:'+k+'_'+c+'}','--corner',c]
+        for c in corners:
+            for k in groups:imp+=['--lib','{files:'+k+'_'+c+'}','--corner',c]
             if spef:imp+=['--spef',spef,'--spef-corner',c]
         last=command(tag+'_import','rusteda',imp+['--netlist',source,'--sdc','{files:sdc}'],after=[init,*after],slots=[2,3])
         # The two corners share the run's workers (--concurrent-corners): same tables, less wall time.
@@ -220,7 +329,7 @@ def recipe(config, four):
         graph_step[tag]=command(tag+'_graph','rusteda',['export','-w',ws,'--rev','rev2' if run else 'rev1','--kind','connectivity-json','--cell-buses',out+'profiles/cell-buses.json','--netlist',out+tag+'-graph.json','--format','json'],after=[last,profiles],slots=[next(lane)])
         report_steps[tag]=[]
         if run:
-            for c in ['tt','ss']:
+            for c in corners:
                 # Estimated rounds also list near-limit rows for the ECO's DRV margin.
                 report_steps[tag].append(command(tag+'_'+c+'_drv','ruststa',['report','-w',ws,'--corner',c,'--threads','2','--section','drv','--filter','slack<0.2' if spef else 'violating','--limit','100000','--format','json'],after=[last],slots=[next(lane)]))
                 if hold:report_steps[tag].append(command(tag+'_'+c+'_endpoints','ruststa',['report','-w',ws,'--corner',c,'--threads','2','--section','endpoints','--limit','0','--format','json'],after=[last],slots=[next(lane)]))
@@ -302,11 +411,12 @@ def recipe(config, four):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['build']);p.add_argument('--config',type=Path,required=True);p.add_argument('--workspace',type=Path,required=True);p.add_argument('--base-rev',required=True);args=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['build']);p.add_argument('--config',type=Path,required=True);p.add_argument('--workspace',type=Path,required=True);p.add_argument('--base-rev',required=True)
+    p.add_argument('--profile',type=Path,help='native PDK profile (profile.json); default: the IHP SG13G2/EZ130 profile');args=p.parse_args()
     resource.setrlimit(resource.RLIMIT_AS,(512<<20,512<<20));args.workspace.mkdir(parents=True,exist_ok=True)
     with (args.workspace/'workspace.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);require(args.base_rev=='empty' and not any(x.name!='workspace.lock'for x in args.workspace.iterdir()),'REVISION_CONFLICT')
-        fragment,manifest=build(read(args.config))
+        fragment,manifest=build(read(args.config),load_profile(args.profile))
         for name,value in [('fragment.json',fragment),('manifest.json',manifest)]:
             (args.workspace/name).write_text(json.dumps(value,indent=2,allow_nan=False)+'\n')
         (args.workspace/'HEAD').write_text('rev1\n');print(json.dumps(fragment['outputs']))

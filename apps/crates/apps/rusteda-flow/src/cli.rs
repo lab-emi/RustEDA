@@ -24,7 +24,7 @@ struct Cli {
 
 #[derive(Debug, clap::Args)]
 struct ExecArguments {
-    /// The `rusteda.ihp-flow.v1` manifest to execute.
+    /// The step-graph manifest to execute (`rusteda.ihp-flow.v1` or `rusteda.native-flow.v1`).
     #[arg(long)]
     manifest: PathBuf,
     /// Base directory of relative pinned inputs [default: the manifest's directory].
@@ -36,8 +36,10 @@ struct ExecArguments {
     /// Must be `empty`: a run never continues another one.
     #[arg(long, required_unless_present = "dry_run")]
     base_rev: Option<String>,
-    #[arg(long, default_value = "ihp", value_parser = ["ihp"])]
-    pdk: String,
+    /// The PDK the manifest must be for: a family (`ihp`, `sky130`, `gf180`) or the manifest's
+    /// own `pdk` name [default: the manifest's PDK].
+    #[arg(long, value_parser = pdk_argument)]
+    pdk: Option<String>,
     /// When given, must be the pinned `rustroad` tool.
     #[arg(long)]
     rustroad: Option<PathBuf>,
@@ -59,6 +61,15 @@ struct ExecArguments {
     /// Validate and print the resolved step graph; create and run nothing.
     #[arg(long)]
     dry_run: bool,
+}
+
+/// `--pdk`: a PDK name of `[A-Za-z0-9_.-]{1,64}`.
+fn pdk_argument(text: &str) -> std::result::Result<String, String> {
+    if exec::manifest::pdk_name(text) {
+        Ok(text.to_owned())
+    } else {
+        Err("a PDK name of 1 to 64 letters, digits, '_', '.' or '-'".into())
+    }
 }
 
 #[derive(Debug, Subcommand)]
@@ -196,7 +207,7 @@ fn execute(cli: Cli) -> Result<Reply> {
                 project,
                 output,
                 base_rev,
-                pdk: _,
+                pdk,
                 rustroad,
                 gnu_time,
                 stop_after,
@@ -216,6 +227,7 @@ fn execute(cli: Cli) -> Result<Reply> {
                 manifest,
                 output: directory(output, cli.workspace)?,
                 base_rev: base_rev.unwrap_or_else(|| "empty".into()),
+                pdk,
                 rustroad,
                 gnu_time,
                 stop_after,
@@ -338,8 +350,22 @@ mod tests {
         assert_eq!(arguments.base_rev.as_deref(), Some("empty"));
         assert_eq!(arguments.stop_after.as_deref(), Some("b"));
         assert!(!arguments.dry_run);
+        assert_eq!(arguments.pdk.as_deref(), Some("ihp"));
+        // FLOWEXEC-REQ-0033: `--pdk` admits the other PDK families and full PDK names.
+        for pdk in ["sky130", "gf180", "sky130A", "gf180mcuD", "ihp-sg13g2"] {
+            let line = [
+                "rusteda flow",
+                "exec",
+                "--manifest",
+                "m",
+                "--dry-run",
+                "--pdk",
+                pdk,
+            ];
+            assert!(Cli::try_parse_from(line).is_ok(), "{pdk}");
+        }
         assert!(
-            Cli::try_parse_from(["rusteda flow", "exec", "--manifest", "m", "--pdk", "sky130"])
+            Cli::try_parse_from(["rusteda flow", "exec", "--manifest", "m", "--pdk", "a/b"])
                 .is_err()
         );
         assert!(

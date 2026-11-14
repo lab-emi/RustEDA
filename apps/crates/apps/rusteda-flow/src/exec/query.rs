@@ -94,6 +94,60 @@ pub(super) fn verify_pins(manifest: &Manifest, project: &Path) -> Result<Vec<(St
     Ok(records)
 }
 
+/// The PDK a `--pdk` argument names: a family (`ihp`, `sky130`, `gf180`) or the manifest's
+/// own `pdk` name.
+fn pdk_matches(given: &str, pdk: &str) -> bool {
+    let family = match given {
+        "ihp" => Some("ihp-sg13g2"),
+        "sky130" => Some("sky130"),
+        "gf180" => Some("gf180mcu"),
+        _ => None,
+    };
+    given == pdk || family.is_some_and(|prefix| pdk.starts_with(prefix))
+}
+
+/// The identity checks that follow the verification of the pinned inputs: `--pdk`, when
+/// given, names the manifest's PDK (`PDK_MISMATCH`), and a `rusteda.native-flow.v1` manifest
+/// agrees with its pinned PDK profile (`MANIFEST_IDENTITY`).
+pub(super) fn check_identity(
+    manifest: &Manifest,
+    records: &[(String, Identity)],
+    pdk: Option<&str>,
+) -> Result<()> {
+    let identity = &manifest.identity;
+    if let Some(given) = pdk
+        && !pdk_matches(given, &identity.pdk)
+    {
+        return Err(Error::new(
+            "PDK_MISMATCH",
+            format!(
+                "--pdk {given} does not name the manifest's PDK {}",
+                identity.pdk
+            ),
+        ));
+    }
+    if !identity.profile_bound {
+        return Ok(());
+    }
+    let profile = records
+        .iter()
+        .find(|(key, _)| key == "files:profile")
+        .map(|(_, record)| record)
+        .ok_or_else(|| {
+            Error::new(
+                "MANIFEST_IDENTITY",
+                "a rusteda.native-flow.v1 manifest must pin its PDK profile (files:profile)",
+            )
+        })?;
+    if profile.bytes > manifest::MAX_PROFILE_BYTES {
+        return Err(Error::new(
+            "MANIFEST_IDENTITY",
+            "manifest identity differs from its pinned PDK profile: profile byte budget exceeded",
+        ));
+    }
+    identity.check_profile(&fs::read(&profile.path)?)
+}
+
 /// A tool path given on the command line must be the pinned file; the given spelling is
 /// the one commands are launched and recorded with.
 pub(super) fn pinned_tool(
@@ -132,6 +186,7 @@ pub(super) fn pinned_tool(
 pub fn plan(options: &Options) -> Result<Value> {
     let (manifest, stop_after) = load_manifest(&options.manifest, options.stop_after.as_deref())?;
     let records = verify_pins(&manifest, &options.project)?;
+    check_identity(&manifest, &records, options.pdk.as_deref())?;
     pinned_tool(&records, "rustroad", options.rustroad.as_deref())?;
     let gnu_time = pinned_tool(&records, "gnu_time", options.gnu_time.as_deref())?;
     let output = resolve_lenient(&options.output);
@@ -286,6 +341,8 @@ pub fn plan(options: &Options) -> Result<Value> {
     Ok(
         json!({"schema": "rustlane.v1", "ok": true, "status": "planned",
         "manifest": value(&manifest_identity.json()), "name": manifest.name,
+        "pdk": manifest.identity.pdk, "library": manifest.identity.library,
+        "corners": manifest.identity.corners,
         "output": output_text, "output_ready": output_ready,
         "stop_after": options.stop_after, "scope": value(&manifest.scope.raw),
         "inputs_verified": context.records.len(),

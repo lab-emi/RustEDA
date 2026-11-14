@@ -1,7 +1,10 @@
 # `rusteda flow exec`: the native step-graph executor
 
-`rusteda flow exec` executes a `rusteda.ihp-flow.v1` manifest: a hash-pinned list of
-render and command steps with optional parallel groups. It is implemented in
+`rusteda flow exec` executes a step-graph manifest: a hash-pinned list of
+render and command steps with optional parallel groups. Two schemas are accepted:
+`rusteda.ihp-flow.v1`, the published IHP SG13G2/EZ130 recipe with its fixed identity, and
+`rusteda.native-flow.v1`, the same step graph for any PDK, bound to the PDK profile it
+pins (FLOWEXEC-REQ-0033). It is implemented in
 `crates/apps/rusteda-flow/src/exec/` and replaces the reference executor script
 `integration/ibex_sg13g2_ez130/producer.py`, whose files it reproduces. The guide is
 [the native executor](../../flow/native-executor.md).
@@ -16,7 +19,7 @@ render and command steps with optional parallel groups. It is implemented in
 
 **FLOWEXEC-REQ-0004** The output directory must be new or hold only `workspace.lock`, and `--base-rev` must be `empty`; otherwise the run is refused with `REVISION_CONFLICT`. The executor holds `workspace.lock` exclusively for the whole run; a second executor on the same directory is refused with `WORKSPACE_BUSY` instead of waiting.
 
-**FLOWEXEC-REQ-0005** The manifest is at most 2 MiB and is validated as a whole before anything runs: schema, PDK, library and corner identity (`MANIFEST_IDENTITY`), exactly the known top-level members (`MANIFEST_FIELDS`), at most 129 steps, 256 files, 32 tools and 128 artifacts (`MANIFEST_BUDGET`), unique step handles of `[A-Za-z0-9_-]{1,128}`, exactly the members of a render or command step, a pinned tool, 1 to 256 string arguments and a deadline of 1 to 86,400 s (`STEP_INVALID`), a log budget of 1 KiB to 64 MiB (`SCOPE_INVALID`) and a CPU allocation of 1 to 16 distinct CPUs equal in number to `scope.threads` (`CPU_ALLOCATION_INVALID`). The allocated CPUs must be available to the process and be distinct physical cores.
+**FLOWEXEC-REQ-0005** The manifest is at most 2 MiB and is validated as a whole before anything runs: schema, PDK, library and corner identity (`MANIFEST_IDENTITY`, FLOWEXEC-REQ-0033), exactly the known top-level members (`MANIFEST_FIELDS`), at most 129 steps, 256 files, 32 tools and 128 artifacts (`MANIFEST_BUDGET`), unique step handles of `[A-Za-z0-9_-]{1,128}`, exactly the members of a render or command step, a pinned tool, 1 to 256 string arguments and a deadline of 1 to 86,400 s (`STEP_INVALID`), a log budget of 1 KiB to 64 MiB (`SCOPE_INVALID`) and a CPU allocation of 1 to 16 distinct CPUs equal in number to `scope.threads` (`CPU_ALLOCATION_INVALID`). The allocated CPUs must be available to the process and be distinct physical cores.
 
 **FLOWEXEC-REQ-0006** `parallel_groups` holds at most eight groups. A group is a contiguous region of the step list, disjoint from every other group, with `max_parallel` of 1 to 16 and `max_memory_mib` of at most `scope.memory_mib - 128`. Every step of a group lists `depends_on`: unique earlier steps of the same group. A command step also lists `cpu_slots` (distinct indices into `scope.cpu_affinity`) and `memory_mib` (1 to the group's cap); a render step lists nothing else. Any violation is `PARALLEL_GROUP_INVALID`.
 
@@ -32,7 +35,7 @@ render and command steps with optional parallel groups. It is implemented in
 
 **FLOWEXEC-REQ-0011** A render step writes its `content` to `destination` (a normal relative path that must stay inside the output directory). Strings are expanded as arguments are. An object with the single member `$identity` or `$sha256` becomes the identity (or the hash) of a file of this run, `$input` and `$tool` the verified identity of a pinned file or tool. One render visits at most 65,536 nodes to depth 32.
 
-**FLOWEXEC-REQ-0012** `--stop-after <ID>` ends the run after that step and writes a `rusteda.ihp-frontend.v1` summary (`status: frontend_completed`) that lists the produced artifacts, the unavailable ones and the fixed set of unverified items, without gates. A group that holds the stop target runs as a serial prefix in manifest order, with serial receipts.
+**FLOWEXEC-REQ-0012** `--stop-after <ID>` ends the run after that step and writes a `rusteda.ihp-frontend.v1` summary (`rusteda.native-frontend.v1` for a profile-bound manifest; `status: frontend_completed`) that lists the produced artifacts, the unavailable ones and the fixed set of unverified items, without gates. A group that holds the stop target runs as a serial prefix in manifest order, with serial receipts.
 
 **FLOWEXEC-REQ-0013** A serial step that exits with a non-zero code (`step failed: <id>, exit=<code>`), exceeds its deadline (`step deadline exceeded: <id>`), brings the diagnostic bytes of the run over `scope.max_log_bytes`, or a render that fails, ends the run: no later step runs, the summary has `status: failed` with the message as `error` and only `failed_items`, and `unverified_items` is `["complete_flow"]`. On a deadline or budget failure the whole process group of the step is killed. After the last step every pinned input is hashed again; a change fails the run (`producer input changed during execution`).
 
@@ -52,11 +55,11 @@ render and command steps with optional parallel groups. It is implemented in
 
 **FLOWEXEC-REQ-0020** `step-receipts.json` is an array in manifest order, published atomically after every step. A render receipt has exactly `id`, `kind`, `wall_seconds`; a serial command receipt exactly `id`, `kind`, `wall_seconds`, `exit_code`, `stdout`, `stderr` (the two stream identities), then `stdout_artifact` and `capture_error` when they apply. `exit_code` is the exit status, the negated signal number, or `null` when the step was stopped by the executor.
 
-**FLOWEXEC-REQ-0021** A run without stop target that succeeds writes a `rusteda.ihp-rtl2gds.v1` summary with `status: completed`, the manifest hash, the scope, the identity of each of the sixteen gate reports and of every artifact; a different gate set fails the run. Every summary ends with `capture_accounting` and `resources` (wall seconds, peak resident set of the reaped processes, the control group's memory and swap peaks for cgroup v2 or v1, the CPU allocation). The run writes `HEAD` (`rev0` at start, `rev1` at end), `<ownership>/native.json` (worker identity, `implementation: native`, manifest identity) and `worker-metrics.json` beside the ownership directory.
+**FLOWEXEC-REQ-0021** A run without stop target that succeeds writes a `rusteda.ihp-rtl2gds.v1` summary (`rusteda.native-rtl2gds.v1` for a profile-bound manifest) with `status: completed`, the manifest hash, the scope, the identity of each of the sixteen gate reports and of every artifact; a different gate set fails the run. Every summary ends with `capture_accounting` and `resources` (wall seconds, peak resident set of the reaped processes, the control group's memory and swap peaks for cgroup v2 or v1, the CPU allocation). The run writes `HEAD` (`rev0` at start, `rev1` at end), `<ownership>/native.json` (worker identity, `implementation: native`, manifest identity) and `worker-metrics.json` beside the ownership directory.
 
 **FLOWEXEC-REQ-0022** A group command receipt has exactly `id`, `kind`, `exit_code`, `wall_seconds`, `stdout`, `stderr`, `started_seconds`, `cpu_affinity`, `memory_reservation_mib`, `depends_on`, then `stdout_artifact` and `capture_error` when they apply. Receipts of a group are stored in manifest order, never in completion order.
 
-**FLOWEXEC-REQ-0023** Without `stdout_artifacts` every byte of every stream is a diagnostic. With it, a command step may declare its standard output a data stream only if it is one of the pinned exports (pin capacitances, RustROAD Verilog, DEF and placement seed, RustSTA design-rule, endpoint and hold-fix reports) recognised from its unexpanded arguments; the entry must be `{"path": "logs/<id>.stdout", "format", "max_bytes"}` with the format of that export and at most its cap (16, 64 or 128 MiB), every entry must be referenced exactly once, and `scope.max_stdout_artifact_bytes` bounds the sum (`STDOUT_ARTIFACT_POLICY`).
+**FLOWEXEC-REQ-0023** Without `stdout_artifacts` every byte of every stream is a diagnostic. With it, a command step may declare its standard output a data stream only if it is one of the pinned exports (pin capacitances, RustROAD Verilog, DEF and placement seed, RustSTA design-rule, endpoint and hold-fix reports) recognised from its unexpanded arguments (a pin-capacitance export names `{files:<group>_<corner>}` and a corner report `--corner <corner>` with one of the manifest's corners; the groups of the IHP recipe are `std` and `ram`, a profile-bound manifest admits any `[a-z][a-z0-9]{0,7}`); the entry must be `{"path": "logs/<id>.stdout", "format", "max_bytes"}` with the format of that export and at most its cap (16, 64 or 128 MiB), every entry must be referenced exactly once, and `scope.max_stdout_artifact_bytes` bounds the sum (`STDOUT_ARTIFACT_POLICY`).
 
 **FLOWEXEC-REQ-0024** A declared stdout artifact is charged to its own cap and to the aggregate cap, not to the log budget; all standard error stays a diagnostic. An overflow fails the step (`capture_error`, non-zero `exit_code`) and is never reported as a success; a serial capture is streamed and stops within one 64 KiB chunk and a 1 MiB drain.
 
@@ -66,7 +69,7 @@ render and command steps with optional parallel groups. It is implemented in
 
 **FLOWEXEC-REQ-0026** `rusteda flow exec-status --output <DIR> [--manifest <FILE>]` reads a running or finished output directory without changing it and reports `state` (`absent`, `empty`, `running`, `completed`, `frontend_completed`, `failed`, `interrupted`), `HEAD`, whether an executor holds the lock, the finished, failed, running and last finished steps, the pending steps when the manifest is known (given, or named by the ownership record beside the directory), and the summary's status and error.
 
-**FLOWEXEC-REQ-0027** `rusteda flow exec --dry-run` validates the manifest, hashes the pinned inputs and prints the resolved step graph: per step its index, kind, whether it will run, its mode (`serial` or `parallel`), the steps that must finish before it, and for a command its full command line, working directory, deadline, CPU set, tool thread count, memory reservation, stream files and stdout artifact. It needs no worker identity and creates nothing.
+**FLOWEXEC-REQ-0027** `rusteda flow exec --dry-run` validates the manifest, hashes the pinned inputs and prints the manifest's `pdk`, `library` and `corners` and the resolved step graph: per step its index, kind, whether it will run, its mode (`serial` or `parallel`), the steps that must finish before it, and for a command its full command line, working directory, deadline, CPU set, tool thread count, memory reservation, stream files and stdout artifact. It needs no worker identity and creates nothing.
 
 ## Command-line contract
 
@@ -77,6 +80,10 @@ render and command steps with optional parallel groups. It is implemented in
 **FLOWEXEC-REQ-0030** With `--events -` standard output is the event stream, and its last line is the result document with `event: result`.
 
 **FLOWEXEC-REQ-0031** SIGINT and SIGTERM stop the run: the process groups of the live steps are killed, their receipts carry `capture_error: "cancelled by signal <n>"`, the summary is `failed` with that message, the error code is `CANCELLED` and the exit code is 130.
+
+## Other PDKs
+
+**FLOWEXEC-REQ-0033** The identity of a manifest is its `pdk`, `library` and `corners`. A `rusteda.ihp-flow.v1` manifest must have exactly `ihp-sg13g2`, `ez130_8t` and `["tt", "ss"]` and is executed as before. A `rusteda.native-flow.v1` manifest states its own: `pdk` and `library` of `[A-Za-z0-9_.-]{1,64}`, one to four distinct corner names of `[a-z][a-z0-9]{0,7}`, and a pinned `files:profile`, the `rusteda.native-pdk-profile.v1` document (at most 2 MiB) the manifest was composed from. Once the pinned inputs are verified, the profile's `pdk`, `library` and the names of its `corners` (in order) must equal the manifest's. Any violation, another schema included, refuses the run with `MANIFEST_IDENTITY` before anything is created. `--pdk <NAME>` is optional; when given it must name the manifest's PDK, either exactly or as a family (`ihp` for `ihp-sg13g2`, `sky130` for `sky130*`, `gf180` for `gf180mcu*`), else the run is refused with `PDK_MISMATCH`. The summaries of a profile-bound manifest have the schemas `rusteda.native-rtl2gds.v1` and `rusteda.native-frontend.v1` and add `pdk`, `library` and `corners` after `implementation`; everything else (validation, execution, receipts, accounting, exit codes) is the same for both schemas.
 
 ## Use as the worker program of a flow
 

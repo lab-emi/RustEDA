@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2026 RustEDA contributors
-"""Foreground, revision-bound IHP native-flow worker; no EDA algorithm here.
+"""Foreground, revision-bound native-flow worker; no EDA algorithm here.
+
+The reference executor of the step-graph manifests that `rusteda flow exec` runs:
+the published IHP SG13G2/EZ130 recipe (rusteda.ihp-flow.v1, a fixed identity) and
+the same graph for any other PDK (rusteda.native-flow.v1, whose pdk, library and
+corners are those of the PDK profile it pins as files:profile).
 
 An explicit hash-pinned manifest supplies bounded commands and JSON templates.
 Commands never run through a shell. Every optimization plan is regenerated from
@@ -157,12 +162,22 @@ def validate_parallel_groups(steps, groups, scope):
     return result
 
 
-def stdout_artifact_format(step):
+# The identity of the published IHP recipe and its Liberty groups (cell library, SRAM).
+IHP_FLOW, NATIVE_FLOW = "rusteda.ihp-flow.v1", "rusteda.native-flow.v1"
+IHP_IDENTITY = dict(pdk="ihp-sg13g2", library="ez130_8t", corners=["tt", "ss"])
+IHP_GROUPS = ("std", "ram")
+PROFILE_SCHEMA = "rusteda.native-pdk-profile.v1"
+
+
+def stdout_artifact_format(step, corners=("tt", "ss"), groups=IHP_GROUPS):
     """Pure allowlist over unexpanded, pinned-native command arguments.
 
     These are the data streams consumed by the current native recipe. Merely
     naming a tool or using an export-looking suffix does not exempt a command.
     In particular inspect, route, run and Python commands are diagnostics.
+    `corners` and `groups` are the flow's timing corners and Liberty groups
+    (default: the IHP recipe's); a pin-capacitance export reads the pinned
+    Liberty file <group>_<corner>.
     """
     if step.get("kind") != "command":
         return None
@@ -177,7 +192,7 @@ def stdout_artifact_format(step):
         return bool(re.fullmatch(r"[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*", suffix))
 
     if tool == "pin_caps" and len(args) == 1 and args[0] in {
-            "{files:std_tt}", "{files:std_ss}", "{files:ram_tt}", "{files:ram_ss}"}:
+            "{files:" + group + "_" + corner + "}" for group in groups for corner in corners}:
         return "pin_capacitance"
     if tool == "rustroad" and len(args) >= 3 and args[0] == "--workspace" and fresh_workspace(args[1]):
         tail = args[2:]
@@ -189,7 +204,7 @@ def stdout_artifact_format(step):
             return "placement_seed"
     if tool == "ruststa" and len(args) >= 3 and args[:2] == ["report", "-w"] and fresh_workspace(args[2]):
         tail = args[3:]
-        for corner in ("tt", "ss"):
+        for corner in corners:
             prefix = ["--corner", corner, "--threads", "2", "--section"]
             if tail in (prefix + ["drv", "--filter", flt, "--limit", "100000", "--format", "json"] for flt in ("violating", "slack<0.2")):
                 return "timing_drv"
@@ -201,14 +216,14 @@ def stdout_artifact_format(step):
     return None
 
 
-def declare_stdout_artifacts(steps):
+def declare_stdout_artifacts(steps, corners=("tt", "ss"), groups=IHP_GROUPS):
     """Return copied steps and explicit stream declarations; no I/O or commands."""
     result, registry = [], {}
     if not isinstance(steps, list) or not 1 <= len(steps) <= 129:
         raise ValueError("stdout artifact step count budget exceeded")
     for original in steps:
         step = dict(original)
-        kind = stdout_artifact_format(step)
+        kind = stdout_artifact_format(step, corners, groups)
         if kind is not None:
             tag = step["id"]
             if tag in registry or not re.fullmatch(r"[a-zA-Z0-9_-]{1,128}", tag):
@@ -222,7 +237,7 @@ def declare_stdout_artifacts(steps):
     return result, registry
 
 
-def validate_stdout_artifacts(steps, registry, scope):
+def validate_stdout_artifacts(steps, registry, scope, corners=("tt", "ss"), groups=IHP_GROUPS):
     """Validate exact stream ownership and bounded declarations, before launch."""
     if registry is None:
         if any("stdout_artifact" in step for step in steps):
@@ -245,7 +260,7 @@ def validate_stdout_artifacts(steps, registry, scope):
             raise ValueError("invalid or multiply referenced stdout artifact handle")
         seen.add(handle)
         spec = registry.get(handle)
-        kind = stdout_artifact_format(step)
+        kind = stdout_artifact_format(step, corners, groups)
         if kind is None:
             raise ValueError("non-export command cannot declare a stdout artifact")
         if (not isinstance(spec, dict) or set(spec) != {"path", "format", "max_bytes"}
@@ -428,6 +443,53 @@ def cgroup_resources():
     return result
 
 
+def flow_identity(manifest):
+    """The identity of a manifest: (profile bound, corners, Liberty groups).
+
+    The IHP recipe has its fixed identity. A rusteda.native-flow.v1 manifest states its own
+    pdk, library and corners and pins the PDK profile they come from (files:profile); the
+    comparison with that profile follows the verification of the pinned inputs."""
+    schema = manifest.get("schema")
+    if schema == IHP_FLOW:
+        if any(manifest.get(key) != value for key, value in IHP_IDENTITY.items()):
+            raise ValueError("IHP producer identity mismatch")
+        return False, tuple(IHP_IDENTITY["corners"]), IHP_GROUPS
+    if schema != NATIVE_FLOW:
+        raise ValueError("IHP producer identity mismatch")
+    corners = manifest.get("corners")
+    if (not all(isinstance(manifest.get(key), str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", manifest[key])
+                for key in ("pdk", "library"))
+            or not isinstance(corners, list) or not 1 <= len(corners) <= 4 or len(set(map(str, corners))) != len(corners)
+            or not all(isinstance(c, str) and re.fullmatch(r"[a-z][a-z0-9]{0,7}", c) for c in corners)):
+        raise ValueError("invalid PDK, library or corner identity")
+    if not isinstance(manifest.get("files"), dict) or "profile" not in manifest["files"]:
+        raise ValueError("a rusteda.native-flow.v1 manifest must pin its PDK profile (files:profile)")
+    # Any Liberty group name: the cell library and one per macro master of the profile.
+    groups = sorted({name.rsplit("_", 1)[0] for name in manifest["files"]
+                     if any(name.endswith("_" + c) for c in corners)
+                     and re.fullmatch(r"[a-z][a-z0-9]{0,7}", name.rsplit("_", 1)[0])})
+    return True, tuple(corners), tuple(groups)
+
+
+def check_profile(manifest, record):
+    """A profile-bound manifest has the pdk, library and corner names of its pinned profile."""
+    if record["bytes"] > 2 * 1024**2:
+        raise ValueError("manifest identity differs from its pinned PDK profile: profile byte budget exceeded")
+    profile = read_json(Path(record["path"]))
+    corners = profile.get("corners") if isinstance(profile, dict) else None
+    if (not isinstance(profile, dict) or profile.get("schema") != PROFILE_SCHEMA
+            or profile.get("pdk") != manifest["pdk"] or profile.get("library") != manifest["library"]
+            or not isinstance(corners, list)
+            or [c.get("name") if isinstance(c, dict) else None for c in corners] != manifest["corners"]):
+        raise ValueError("manifest identity differs from its pinned PDK profile")
+
+
+def pdk_matches(given, pdk):
+    """--pdk names a family (ihp, sky130, gf180) or the manifest's own pdk."""
+    family = dict(ihp="ihp-sg13g2", sky130="sky130", gf180="gf180mcu").get(given)
+    return given == pdk or (family is not None and pdk.startswith(family))
+
+
 def main():
     started = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
@@ -435,7 +497,8 @@ def main():
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--output", "--workspace", dest="workspace", type=Path, required=True)
     parser.add_argument("--base-rev", required=True)
-    parser.add_argument("--pdk", choices=("ihp",), required=True)
+    parser.add_argument("--pdk", required=True,
+                        help="the manifest's PDK: a family (ihp, sky130, gf180) or its exact pdk name")
     parser.add_argument("--rustroad", type=Path, required=True)
     parser.add_argument("--gnu-time", type=Path, required=True)
     parser.add_argument("--stop-after", help="Run a bounded prefix; always leave full-flow qualification unverified")
@@ -450,10 +513,9 @@ def main():
         if args.base_rev != "empty" or any(p.name != "workspace.lock" for p in output.iterdir()):
             raise ValueError("REVISION_CONFLICT: producer requires an empty workspace")
         manifest = read_json(args.manifest)
-        if (manifest.get("schema") != "rusteda.ihp-flow.v1"
-                or manifest.get("pdk") != "ihp-sg13g2" or manifest.get("library") != "ez130_8t"
-                or manifest.get("corners") != ["tt", "ss"]):
-            raise ValueError("IHP producer identity mismatch")
+        profile_bound, corners, groups = flow_identity(manifest)
+        if not pdk_matches(args.pdk, manifest["pdk"]):
+            raise ValueError(f"--pdk {args.pdk} does not name the manifest's PDK {manifest['pdk']}")
         required_fields = {"schema", "name", "pdk", "library", "corners", "files", "tools",
                            "scope", "steps", "gates", "artifacts"}
         if (not required_fields <= set(manifest)
@@ -481,15 +543,22 @@ def main():
                 if actual["sha256"] != spec["sha256"] or actual["bytes"] != spec["bytes"]:
                     raise ValueError(f"input identity changed: {name}")
                 records[group + ":" + name] = actual
+        if profile_bound:
+            check_profile(manifest, records["files:profile"])
         for key, path in (("rustroad", args.rustroad), ("gnu_time", args.gnu_time)):
             if identity(path) != records["tools:" + key]:
                 raise ValueError(f"worker argument differs from pinned {key}")
+        # The summaries of a profile-bound manifest have PDK-neutral schemas and name the PDK.
+        summary_schema = (("rusteda.native-rtl2gds.v1", "rusteda.native-frontend.v1") if profile_bound
+                          else ("rusteda.ihp-rtl2gds.v1", "rusteda.ihp-frontend.v1"))
+        identity_members = ({key: manifest[key] for key in ("pdk", "library", "corners")}
+                            if profile_bound else {})
         scope = manifest["scope"]
         log_budget = scope["max_log_bytes"]
         if type(log_budget) is not int or not 1024 <= log_budget <= 64 * 1024**2:
             raise ValueError("invalid aggregate log byte budget")
         stdout_artifacts = manifest.get("stdout_artifacts")
-        capture_policy = validate_stdout_artifacts(steps, stdout_artifacts, scope)
+        capture_policy = validate_stdout_artifacts(steps, stdout_artifacts, scope, corners, groups)
         parallel_groups = validate_parallel_groups(steps, manifest.get('parallel_groups'), scope)
         if stdout_artifacts is not None:
             source, running = records.get("files:producer"), identity(Path(__file__))
@@ -811,8 +880,8 @@ def main():
                     raise ValueError("full-flow gate set differs")
                 gates = {name: identity(output_path(path)) for name, path in manifest["gates"].items()}
                 artifacts = {name: identity(output_path(path)) for name, path in manifest["artifacts"].items()}
-                summary = dict(schema="rusteda.ihp-rtl2gds.v1", status="completed", implementation="rusteda",
-                               manifest_sha256=identity(args.manifest)["sha256"], scope=scope,
+                summary = dict(schema=summary_schema[0], status="completed", implementation="rusteda",
+                               **identity_members, manifest_sha256=identity(args.manifest)["sha256"], scope=scope,
                                gates=gates, artifacts=artifacts, failed_items=[], unverified_items=[])
             else:
                 artifacts, missing = {}, []
@@ -822,8 +891,8 @@ def main():
                         artifacts[name] = identity(source)
                     else:
                         missing.append(name)
-                summary = dict(schema="rusteda.ihp-frontend.v1", status="frontend_completed",
-                               implementation="rusteda", stop_after=args.stop_after,
+                summary = dict(schema=summary_schema[1], status="frontend_completed",
+                               implementation="rusteda", **identity_members, stop_after=args.stop_after,
                                manifest_sha256=identity(args.manifest)["sha256"], scope=scope,
                                artifacts=artifacts, unavailable_artifacts=missing, failed_items=[],
                                unverified_items=["complete_flow", "routing", "extraction", "gds", "drc",
@@ -831,8 +900,9 @@ def main():
             write_json(output / "step-receipts.json", receipts)
             exit_code = 0
         except (OSError, ValueError, KeyError, RuntimeError, TimeoutError, subprocess.SubprocessError) as error:
-            summary = dict(schema="rusteda.ihp-rtl2gds.v1", status="failed", implementation="rusteda",
-                           error=str(error), failed_items=[str(error)], unverified_items=["complete_flow"])
+            summary = dict(schema=summary_schema[0], status="failed", implementation="rusteda",
+                           **identity_members, error=str(error), failed_items=[str(error)],
+                           unverified_items=["complete_flow"])
             exit_code = 1
         usage = resource.getrusage(resource.RUSAGE_SELF)
         child = resource.getrusage(resource.RUSAGE_CHILDREN)
