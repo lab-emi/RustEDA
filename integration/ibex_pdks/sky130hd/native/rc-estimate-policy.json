@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.rc-estimate-policy.v1",
+  "r_ohm_per_um": 0.59,
+  "c_pf_per_um": 0.000162,
+  "detour": 1.25,
+  "max_segment_um": 50,
+  "limits": {
+    "max_nets": 200000,
+    "max_pins_per_net": 4096,
+    "max_nodes": 2000000
+  },
+  "evidence": "Provisional. Native extraction (rc-nom.json, Magic resistance model) of the routed one-SRAM micro block of the SKY130 bring-up: nets with at least 100 um routed length (126 nets): median 0.593 ohm/um including vias (quartiles 0.470, 0.593, 0.881), median 0.162 fF/um (quartiles 0.144, 0.162, 0.183). The detour factor is the IHP policy's value; the micro block's routed/MST quartiles (0.45, 0.95, 1.17) are not usable because its MST is taken over instance origins only. To be re-derived from the routed benchmark.",
+  "macro_blockage": {
+    "grid_um": 10,
+    "max_searches": 200000
+  },
+  "macro_blockage_evidence": "As on IHP: CLASS BLOCK macros obstruct met1-met4 in their LEF (OpenRAM: met1-met4 completely), so estimated routes go around them."
+}

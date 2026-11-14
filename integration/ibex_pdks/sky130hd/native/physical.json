@@ -1,0 +1,121 @@
+{
+  "power_net": "VPWR",
+  "ground_net": "VGND",
+  "power_pin": "VPWR",
+  "ground_pin": "VGND",
+  "body_power_pins": [
+    "VPB",
+    "vccd1"
+  ],
+  "body_ground_pins": [
+    "VNB",
+    "vssd1"
+  ],
+  "rail_layer": "met1",
+  "strap_layer": "met4",
+  "via": "M1M2_PR",
+  "rail_via_stack": [
+    "M1M2_PR",
+    "M2M3_PR",
+    "M3M4_PR"
+  ],
+  "io_layer": "met3",
+  "tie_high": {
+    "cell": "sky130_fd_sc_hd__inv_1",
+    "pin": "Y",
+    "rail_input": {
+      "pin": "A",
+      "supply": "ground"
+    }
+  },
+  "tie_low": {
+    "cell": "sky130_fd_sc_hd__inv_1",
+    "pin": "Y",
+    "rail_input": {
+      "pin": "A",
+      "supply": "power"
+    }
+  },
+  "constant_cells": [
+    {
+      "cell": "sky130_fd_sc_hd__conb_1",
+      "high": [
+        "HI"
+      ],
+      "low": [
+        "LO"
+      ]
+    }
+  ],
+  "filler_cells": [
+    "sky130_fd_sc_hd__fill_8",
+    "sky130_fd_sc_hd__fill_4",
+    "sky130_fd_sc_hd__fill_2",
+    "sky130_fd_sc_hd__fill_1"
+  ],
+  "alternating_rows": true,
+  "io_min_area": true,
+  "io_width": 400,
+  "io_spacing": 800,
+  "strap_width": 1600,
+  "strap_spacing": 1000,
+  "max_added_cells": 250000,
+  "max_tie_fanout": 1,
+  "cell_spacing_sites": 0,
+  "tap": {
+    "cell": "sky130_fd_sc_hd__tapvpwrvgnd_1",
+    "max_gap": 20000,
+    "well_layer": "nwell",
+    "substrate_layer": "pwell"
+  },
+  "macro_supply": {
+    "collection_layer": "met5",
+    "pin_layer": "met4",
+    "pin_via": "M4M5_PR",
+    "via_stack": [
+      "M4M5_PR"
+    ],
+    "wire_width": 1600,
+    "wire_spacing": 1600,
+    "nearest_spine": true
+  },
+  "placer": {
+    "retarget_isolated": true,
+    "new_cells_first": true,
+    "local_detail": true,
+    "electrostatic": {
+      "target_density_milli": 550,
+      "max_iterations": 200,
+      "max_evaluations": 512,
+      "max_backtracks": 4,
+      "workers": 2,
+      "spacing_aware_density": true
+    }
+  },
+  "clock": {
+    "port": "clk_i",
+    "cell": "sky130_fd_sc_hd__clkbuf_4",
+    "level_cells": [
+      "sky130_fd_sc_hd__clkbuf_4",
+      "sky130_fd_sc_hd__clkbuf_8",
+      "sky130_fd_sc_hd__clkbuf_16"
+    ],
+    "input_pin": "A",
+    "output_pin": "X",
+    "sink_pin": "CLK",
+    "max_fanout": 8,
+    "max_buffers": 4096,
+    "max_work": 1000000,
+    "clustering": "hilbert",
+    "root_at_driver": true,
+    "seed_from_placement": true
+  },
+  "placement_blockages": [
+    {
+      "lx": 5520,
+      "ly": 346320,
+      "ux": 1499600,
+      "uy": 805120
+    }
+  ]
+}

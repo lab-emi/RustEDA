@@ -1,0 +1,5 @@
+{
+  "schema": "rusteda.antenna-session-policy.v1",
+  "execution_mode": "single_native_process",
+  "actual_native_processes": 1
+}
