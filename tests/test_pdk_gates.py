@@ -370,6 +370,93 @@ class MacroAttribution(Fixture):
         self.assertIn("MACRO_BASELINE_DIFFERS", foreign["error"])
 
 
+CONTROL_LAYOUT = """
+import pya
+ly = pya.Layout(); ly.dbu = 0.001
+m2, v2 = ly.layer(36, 0), ly.layer(38, 0)
+ram = ly.create_cell("RAM")
+sub = ly.create_cell("RAM_bit")
+sub.shapes(m2).insert(pya.Box(0, 0, 100, 100))
+ram.insert(pya.CellInstArray(sub.cell_index(), pya.Trans(pya.Vector(10, 10))))
+ram.shapes(m2).insert(pya.Box(0, 0, 50000, 50000))
+diode = ly.create_cell("DIODE")
+diode.shapes(m2).insert(pya.Box(0, 0, 500, 500))
+top = ly.create_cell("top")
+top.insert(pya.CellInstArray(ram.cell_index(), pya.Trans(pya.Vector(100000, 100000))))
+for x in (0, 2000, 4000):
+    top.insert(pya.CellInstArray(diode.cell_index(), pya.Trans(pya.Vector(x, 90000))))
+top.shapes(m2).insert(pya.Box(110000, 110000, 110280, 140000))   # long wire over the macro: must not be chosen
+top.shapes(m2).insert(pya.Box(5000, 0, 5280, 30000))             # long wire: the stub candidate
+top.shapes(m2).insert(pya.Box(0, 0, 280, 1000))                  # short wire: not a candidate
+top.shapes(v2).insert(pya.Box(5010, 100, 5270, 360))             # single cut
+top.shapes(v2).insert(pya.Box(1000, 5000, 1260, 5260))           # pair of cuts 0.26 um apart: not single
+top.shapes(v2).insert(pya.Box(1520, 5000, 1780, 5260))
+ly.write(out_path)
+"""
+FACTS = """
+import json, pya
+ly = pya.Layout(); ly.read(gds_path)
+top = ly.cell("top")
+m2, v2 = ly.find_layer(36, 0), ly.find_layer(38, 0)
+facts = dict(cells=sorted(c.name for c in ly.each_cell()),
+             m2=sorted([s.box.left, s.box.bottom, s.box.right, s.box.top] for s in top.shapes(m2).each()),
+             v2=sorted([s.box.left, s.box.bottom, s.box.right, s.box.top] for s in top.shapes(v2).each()),
+             instances=sorted(i.cell.name for i in top.each_inst()),
+             ram_empty=ly.cell("RAM").is_empty() if ly.cell("RAM") else None)
+json.dump(facts, open(out_path, "w"))
+"""
+
+
+@unittest.skipUnless(KLAYOUT, "needs KLayout (RUSTEDA_TEST_KLAYOUT)")
+class LayoutEditors(Fixture):
+    """The two GDS editing scripts on a generated layout."""
+
+    def klayout(self, script, **variables):
+        argv = [KLAYOUT, "-b", "-r", str(script)]
+        for name, value in variables.items():
+            argv += ["-rd", f"{name}={value}"]
+        subprocess.run(argv, check=True, capture_output=True)
+
+    def facts(self, gds):
+        script, out = self.root / "facts.py", self.root / (Path(gds).name + ".json")
+        script.write_text(FACTS)
+        self.klayout(script, gds_path=gds, out_path=out)
+        return json.loads(out.read_text())
+
+    def setUp(self):
+        super().setUp()
+        build = self.root / "control_layout.py"
+        build.write_text(CONTROL_LAYOUT)
+        self.gds = self.root / "top.gds"
+        self.klayout(build, out_path=self.gds)
+
+    def test_prune_empties_the_macro_and_nothing_else(self):
+        out, record = self.root / "pruned.gds", self.root / "pruned.json"
+        self.klayout(GATES / "prune_macros.py", gds_path=self.gds, top_name="top", masters="RAM", out_path=out, record_path=record)
+        before, after = self.facts(self.gds), self.facts(out)
+        self.assertEqual(json.loads(record.read_text())["masters"]["RAM"],
+                         dict(placements=1, private_cells_removed=1, bbox_um=[0.0, 0.0, 50.0, 50.0]))
+        self.assertEqual(after["cells"], ["DIODE", "RAM", "top"])
+        self.assertTrue(after["ram_empty"])
+        self.assertEqual((after["m2"], after["v2"], after["instances"]), (before["m2"], before["v2"], before["instances"]))
+
+    def test_controls_change_exactly_what_they_record(self):
+        out, record = self.root / "bad.gds", self.root / "bad.json"
+        self.klayout(GATES / "negative_controls.py", gds_path=self.gds, top_name="top", out_path=out, record_path=record,
+                     ops="stub,via,diodes", wire_layer="36/0", cut_layer="38/0", diode_cells="DIODE", avoid="RAM")
+        before, after, changes = self.facts(self.gds), self.facts(out), json.loads(record.read_text())["operations"]
+        stub, via, diodes = changes
+        self.assertEqual((stub["wire_um"], stub["stub_um"], stub["stub_area_um2"]),
+                         ([5.0, 0.0, 5.28, 30.0], [5.0, 14.86, 5.28, 15.14], 0.0784))
+        self.assertEqual(via["removed_cut_um"], [5.01, 0.1, 5.27, 0.36])
+        self.assertEqual(diodes["removed_instances"], 3)
+        self.assertEqual(after["instances"], ["RAM"])
+        self.assertEqual(len(after["v2"]), len(before["v2"]) - 1)
+        self.assertIn([110000, 110000, 110280, 140000], after["m2"])      # the wire over the macro is untouched
+        self.assertIn([5000, 14860, 5280, 15140], after["m2"])
+        self.assertNotIn([5000, 0, 5280, 30000], after["m2"])
+
+
 class DriverDispatch(unittest.TestCase):
     def test_ihp_defaults_are_untouched_and_profiles_dispatch(self):
         source = (ROOT / "integration/ibex_host_benchmark/signoff_layout.py").read_text()
