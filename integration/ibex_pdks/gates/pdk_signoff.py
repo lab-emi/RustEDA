@@ -61,6 +61,21 @@ def magic_fields(profile, host):
                 abstract_gds=[profile.file(macros[n]["gds"]) for n in names], abstract_cells=names)
 
 
+def rc_rules(profile, host) -> dict:
+    """The nominal OpenRCX rules: the profile's pinned file, for every flow's layout on this PDK.
+
+    A host map may name the rules file (`rc_rules`, e.g. the one a native profile pins under
+    `rc.rules`); it must then be byte-identical to the profile's pin."""
+    record = profile.file(profile["gates"]["extraction"]["rules"])
+    if host.get("rc_rules"):
+        named = common.identity(host["rc_rules"])
+        if named["sha256"] != record["sha256"]:
+            raise SystemExit(f"RC_RULES_DIFFER_FROM_PROFILE: host map rc_rules {named['path']} is not the profile's "
+                             f"{profile['gates']['extraction']['rules']}")
+        record = named
+    return record
+
+
 def baseline_dir(host, gate, engine, master) -> Path:
     return Path(host["macro_baselines"]).resolve() / f"{gate}_{engine}" / master
 
@@ -198,7 +213,7 @@ def main(args) -> int:
     if "extraction" in gates or "timing" in gates:
         plan = dict(schema="rusteda.pdk-gate.openrcx.v1", top=top,
                     files=dict(tech_lef=profile.file(collateral["tech_lef"]), lefs=[*cell_lefs, *macro_lefs],
-                               rules_nom=profile.file(profile["gates"]["extraction"]["rules"])),
+                               rules_nom=rc_rules(profile, host)),
                     tools={k: tools[k] for k in ("openroad", "gnu_time")},
                     budgets=dict(threads=2, timeout_seconds=900, max_spef_bytes=256 * MIB, max_nets=200000,
                                  max_log_bytes=32 * MIB))

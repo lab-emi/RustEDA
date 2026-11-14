@@ -133,6 +133,23 @@ class ProfilePins(Fixture):
         with self.assertRaisesRegex(common.GateError, "PROFILE_UNPINNED_FILE"):
             self.profile(sha).file("other.lef")
 
+    def test_host_map_rc_rules_must_be_the_pinned_file(self):
+        import pdk_signoff
+        rules = self.root / "rules.nom"
+        rules.write_text("rules")
+        path = self.root / "gates.json"
+        path.write_text(json.dumps(dict(schema=common.PROFILE_SCHEMA, files={"rules.nom": common.identity(rules)["sha256"]},
+                                        gates=dict(extraction=dict(rules="rules.nom")))))
+        profile = common.Profile(path, self.root)
+        self.assertEqual(pdk_signoff.rc_rules(profile, {})["path"], str(rules))
+        copy = self.root / "copy.nom"
+        copy.write_text("rules")
+        self.assertEqual(pdk_signoff.rc_rules(profile, dict(rc_rules=str(copy)))["path"], str(copy))
+        copy.write_text("other rules")
+        with self.assertRaises(SystemExit) as raised:
+            pdk_signoff.rc_rules(profile, dict(rc_rules=str(copy)))
+        self.assertIn("RC_RULES_DIFFER_FROM_PROFILE", str(raised.exception))
+
     def test_unpinned_include_is_refused(self):
         (self.root / "decks").mkdir()
         (self.root / "decks/a.drc").write_text("a")
@@ -521,6 +538,7 @@ class DriverDispatch(unittest.TestCase):
     def test_ihp_defaults_are_untouched_and_profiles_dispatch(self):
         source = (ROOT / "integration/ibex_host_benchmark/signoff_layout.py").read_text()
         self.assertIn('args.gates = "drc,antenna,latchup,extraction,timing,lvs,simulation,logic,density"', source)
+        self.assertIn('rules_nom=identity(host.get("rc_rules") or ihp / "libs.tech/librelane/openrcx/IHP_rcx_patterns.rules")', source)
         self.assertIn("pdk_signoff.main(args)", source)
         self.assertIn('TOP = "ibex_sram_bench"', source)
         self.assertIn('MACRO = "RM_IHPSG13_1P_1024x32_c2_bm_bist"', source)

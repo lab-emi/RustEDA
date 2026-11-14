@@ -64,6 +64,11 @@ Everything host-specific is in the host map; the profile and the scripts name no
   flows must have.
 - `checker` is RustSys' `check_config` example binary; `rusteda`, `ruststa`, `opensta` and
   `gnu_time` must be ELF executables (the timing policy refuses wrappers).
+- `rc_rules` (optional) names the nominal OpenRCX rules file (for example the one a native
+  profile pins under `rc.rules`). The extraction gate uses the gate profile's pinned rules for
+  every layout of the PDK; a host map file that is not byte-identical to that pin stops the run
+  (`RC_RULES_DIFFER_FROM_PROFILE`). In the IHP mode (no `--profile`) the same key replaces the
+  IHP default `libs.tech/librelane/openrcx/IHP_rcx_patterns.rules`; without it nothing changes.
 - `relation_checker` (optional) is the path of RustSys'
   `verification/benchmarks/open-hardware/large_lec.py`; by default it is taken from
   `modules/RustSys` of the checkout the driver runs from.

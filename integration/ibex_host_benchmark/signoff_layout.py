@@ -105,7 +105,7 @@ def main() -> int:
         ram_tt=identity(sram / f"lib/{MACRO}_typ_1p20V_25C.lib"), ram_ss=identity(sram / f"lib/{MACRO}_slow_1p08V_125C.lib"),
         std_lef=identity(ez / "lef/ez130_8t.lef"), tech_lef=identity(ez / "lef/ez130_sg13g2_tech.lef"),
         ram_lef=identity(sram / f"lef/{MACRO}.lef"),
-        rules_nom=identity(ihp / "libs.tech/librelane/openrcx/IHP_rcx_patterns.rules"),
+        rules_nom=identity(host.get("rc_rules") or ihp / "libs.tech/librelane/openrcx/IHP_rcx_patterns.rules"),
         vendor_0=identity(ez / "verilog/ez130_8t.v"), vendor_1=identity(sram / f"verilog/{MACRO}.v"),
         vendor_2=identity(sram / "verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v"),
         physical_policy=identity(recipe / "signoff_timing.py"),
