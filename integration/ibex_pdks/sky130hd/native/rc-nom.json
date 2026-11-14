@@ -15,19 +15,19 @@
  "sources": [
   {
    "role": "capacitance_calibration_table",
-   "path": "/home/user/RustEDA/.work/opt-impl/lane-pdk-sky130/derived/pdkroot/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.tech/librelane/rules.openrcx.sky130A.nom.calibre",
+   "path": "/opt/eda/pdk/sky130/sky130A/libs.tech/openlane/rules.openrcx.sky130A.nom.calibre",
    "sha256": "0b0678968a3d8665ee1ac882df2b0eb31e3896ac05130b9de6bd67ef2027c757",
    "bytes": 45409
   },
   {
    "role": "resistance_and_crosscheck_tech",
-   "path": "/home/user/RustEDA/.work/opt-impl/lane-pdk-sky130/derived/pdkroot/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.tech/magic/sky130A.tech",
+   "path": "/opt/eda/pdk/sky130/sky130A/libs.tech/magic/sky130A.tech",
    "sha256": "df9596bcf40114ff5af9f22fd4040e8cdd840c00841fa00c6cf6e9da853b7c3f",
    "bytes": 164779
   },
   {
    "role": "technology_lef",
-   "path": "/home/user/RustEDA/.work/opt-impl/lane-pdk-sky130/derived/pdkroot/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/techlef/sky130_fd_sc_hd__nom.tlef",
+   "path": "/opt/eda/pdk/sky130/sky130A/libs.ref/sky130_fd_sc_hd/techlef/sky130_fd_sc_hd__nom.tlef",
    "sha256": "5de46c6f7c2cf82599b93d30a6459465f770f63c85b36182c672782219938519",
    "bytes": 18167
   }
