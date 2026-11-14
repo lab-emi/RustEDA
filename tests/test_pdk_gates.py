@@ -1,12 +1,17 @@
 """Profile-driven signoff gates (SKY130, GF180MCU): parsers, policies and profile consistency.
 
-No referee tool and no PDK tree is used: every fixture is a few lines of text written by the test.
+No PDK tree is used: every fixture is a few lines of text written by the test. One class runs the
+marker attribution with KLayout on a generated two-macro layout and a three-line deck; it is
+skipped where KLayout or GNU time is missing.
 The controls fail when a gate would accept what it must refuse (a foreign die, a moved macro, an
 unpinned or changed file, a limit row at a standard-cell pin, a short black-box interface) or when
 a profile names a file it does not pin.
 """
 import json
+import os
 from pathlib import Path
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -276,6 +281,93 @@ class LogicCut(Fixture):
             self.cut("\tRAM u_m(\n\t\t.CLK(clk),\n\t\t.D(d),\n\t\t.Q(q),\n\t\t.VDD(clk)\n\t);\n")
         with self.assertRaisesRegex(common.GateError, "RTL_MACRO_INSTANCES"):
             self.cut("\tRAM u_other(\n\t\t.CLK(clk),\n\t\t.D(d),\n\t\t.Q(q)\n\t);\n")
+
+
+KLAYOUT = os.environ.get("RUSTEDA_TEST_KLAYOUT") or shutil.which("klayout")
+GNU_TIME = os.environ.get("RUSTEDA_TEST_GNU_TIME") or shutil.which("time")
+BUILD = """
+import pya
+ly = pya.Layout(); ly.dbu = 0.001
+m1 = ly.layer(1, 0)
+macro = ly.create_cell("RAM")
+macro.shapes(m1).insert(pya.Box(0, 0, 1000, 1000))
+macro.shapes(m1).insert(pya.Box(1050, 0, 2050, 1000))
+macro.shapes(m1).insert(pya.Box(0, 5000, 1000, 6000))
+if int(altered):
+    macro.shapes(m1).insert(pya.Box(3000, 3000, 4000, 4000))
+import os
+if not os.path.exists(macro_out):   # a GDS carries its write time: keep the bytes of the first write
+    ly.write(macro_out)
+top = ly.create_cell("top")
+top.insert(pya.CellInstArray(macro.cell_index(), pya.Trans(pya.Vector(0, 0))))
+top.insert(pya.CellInstArray(macro.cell_index(), pya.Trans(1, False, pya.Vector(20000, 20000))))
+if int(variant) >= 1:
+    top.shapes(m1).insert(pya.Box(30000, 0, 31000, 1000))
+    top.shapes(m1).insert(pya.Box(31050, 0, 32050, 1000))
+if int(variant) >= 2:
+    top.shapes(m1).insert(pya.Box(0, 6050, 1000, 7050))
+ly.write(top_out)
+"""
+DECK = """
+source($input, $top_cell)
+report("control deck", $report)
+deep
+input(1, 0).space(0.1.um).output("space", "spacing below 0.1 um")
+"""
+
+
+@unittest.skipUnless(KLAYOUT and GNU_TIME, "needs KLayout and GNU time (RUSTEDA_TEST_KLAYOUT, RUSTEDA_TEST_GNU_TIME)")
+class MacroAttribution(Fixture):
+    """A three-line deck on a two-macro layout: the attribution rule itself, with the real geometry engine."""
+
+    def layout(self, variant, altered=0):
+        script = self.root / "build.py"
+        script.write_text(BUILD)
+        macro, top = self.root / f"macro{altered}.gds", self.root / f"top{variant}{altered}.gds"
+        subprocess.run([KLAYOUT, "-b", "-r", str(script), "-rd", f"macro_out={macro}", "-rd", f"top_out={top}",
+                        "-rd", f"variant={variant}", "-rd", f"altered={altered}"], check=True, capture_output=True)
+        return macro, top
+
+    def run_gate(self, mode, gds, top, baseline=None, macro=None):
+        deck = self.root / "control.drc"
+        deck.write_text(DECK)
+        plan = dict(schema="rusteda.pdk-gate.klayout-drc.v1", mode=mode, top=top, gds=common.identity(gds),
+                    deck=common.identity(deck), deck_files=[], switches=[], top_switch="top_cell", threads_switch="thr",
+                    threads=1, timeout_seconds=120,
+                    tools=dict(klayout=common.identity(KLAYOUT), gnu_time=common.identity(GNU_TIME)))
+        if baseline is not None:
+            plan["macros"] = dict(RAM=dict(gds=common.identity(macro), instances=2, baseline=dict(
+                report=common.identity(baseline / "drc.lyrdb"), summary=common.identity(baseline / "summary.json"))))
+        work = Path(tempfile.mkdtemp(dir=self.root))
+        path = work.with_suffix(".json")
+        path.write_text(json.dumps(plan))
+        subprocess.run([sys.executable, str(GATES / "klayout_drc.py"), "--inputs", str(path), "--workspace", str(work),
+                        "--base-rev", "empty"], capture_output=True, env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
+        return work, json.loads((work / "summary.json").read_text())
+
+    def test_macro_markers_are_attributed_and_every_other_marker_gates(self):
+        macro, clean = self.layout(0)
+        baseline, recorded = self.run_gate("baseline", macro, "RAM")
+        self.assertEqual((recorded["status"], recorded["items"]), ("recorded", 1))
+        _, result = self.run_gate("layout", clean, "top", baseline, macro)
+        self.assertEqual((result["status"], result["violations"], result["macro_interior"],
+                          result["macro_baseline_expected"], result["macro_baseline_reproduced"]), ("passed", 0, 2, 2, 2))
+        _, far = self.run_gate("layout", self.layout(1)[1], "top", baseline, macro)
+        self.assertEqual((far["status"], far.get("violations"), far.get("macro_interior"), far.get("error")), ("failed", 1, 2, None))
+        # a top-level wire 0.05 um from a macro shape, inside the macro's bounding box, gates as well
+        _, near = self.run_gate("layout", self.layout(2)[1], "top", baseline, macro)
+        self.assertEqual((near["status"], near["violations"], near["macro_interior"]), ("failed", 2, 2))
+        self.assertEqual(near["gating_rules"], {"space": 2})
+
+    def test_altered_macro_and_foreign_baseline_are_refused(self):
+        macro, _ = self.layout(0)
+        baseline, _ = self.run_gate("baseline", macro, "RAM")
+        _, altered = self.run_gate("layout", self.layout(0, altered=1)[1], "top", baseline, macro)
+        self.assertEqual(altered["status"], "failed")
+        self.assertIn("MACRO_GEOMETRY_DIFFERS_FROM_ITS_GDS", altered["error"])
+        other_macro, other_top = self.layout(0, altered=1)
+        _, foreign = self.run_gate("layout", other_top, "top", baseline, other_macro)
+        self.assertIn("MACRO_BASELINE_DIFFERS", foreign["error"])
 
 
 class DriverDispatch(unittest.TestCase):
