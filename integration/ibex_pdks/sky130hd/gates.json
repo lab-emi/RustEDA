@@ -15,7 +15,8 @@
     "LVS scope: black-box-macro LVS; standard cells are compared at device level, every macro instance pin is checked.",
     "Latch-up has no separate gate: the tap-distance rules are part of the foundry DRC run by the drc gate.",
     "Macro interiors: the KLayout deck sees the complete GDS; a marker is attributed to the SRAM only when the same deck with the same options reports it, under the same rule, on the SRAM GDS alone. Magic (DRC, antenna, LVS extraction) reads the SRAM as its LEF abstract view: it checks all top-level and standard-cell geometry, including its spacing to the SRAM's pins and obstructions, and nothing inside the SRAM.",
-    "KLayout DRC options are the PDK flow configuration's (beol, feol, offgrid, seal on; floating metal off)."
+    "KLayout DRC options are the PDK flow configuration's (beol, feol, offgrid, seal on; floating metal off).",
+    "SKY130 LVS: the extracted layout netlist writes the antenna diode sky130_fd_pr__diode_pw2nd_05v5 in the reference library's form (D element, pj= for Magic's perim= of the same value); nothing else of the netlist is changed and the PDK setup's diode tolerances apply."
   ],
   "macros": {
     "sky130_sram_2kbyte_1rw1r_32x512_8": {
@@ -122,7 +123,19 @@
       "netgen_env": {
         "MAGIC_EXT_USE_GDS": "1"
       },
-      "timeout_seconds": 7200
+      "timeout_seconds": 7200,
+      "layout_rewrites": [
+        {
+          "models": [
+            "sky130_fd_pr__diode_pw2nd_05v5"
+          ],
+          "element": "D",
+          "properties": {
+            "perim": "pj"
+          },
+          "reason": "Magic's default extract style writes this diode as a subcircuit call with perim=, the PDK cell SPICE (sky130_fd_sc_hd__diode_2) as a D element with pj= of the same value; terminals, area and perimeter are compared unchanged"
+        }
+      ]
     },
     "simulation": {
       "vendor": [

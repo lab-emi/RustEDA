@@ -10,6 +10,9 @@ Input schema `rusteda.pdk-gate.netgen-lvs.v1`:
   cell_spice                  pinned device-level SPICE libraries of the standard cells
   macros                      {master: instance count}
   netgen_env                  environment switches the PDK setup file reads (profile data)
+  layout_rewrites             optional, profile data: two-terminal device calls of the extracted
+                              netlist written in the reference library's element form (see
+                              `rewrite_devices`); the rewritten cards are counted in the report
   tools                       {magic, netgen, klayout, gnu_time}; timeout_seconds
 
 Scope. Standard cells are compared at device level: Magic extracts their transistors from the
@@ -79,6 +82,58 @@ def subcircuits(path) -> dict:
         finish(card)
     common.require(current is None, "SPICE_UNFINISHED_SUBCKT")
     return result
+
+
+def declaration_order(pins) -> list:
+    """LEF pins with every bus most significant bit first, at the position of its first bit.
+
+    Netgen binds a Verilog concatenation such as `.A({a1, a0})` to the pins of a cell declared in
+    SPICE by position, in declaration order; the OpenRAM LEF lists buses least significant bit
+    first, which would bind every bus reversed. Scalar pins keep their LEF order."""
+    buses, order = {}, []
+    for pin in pins:
+        match = re.fullmatch(r"(.+)\[(\d+)\]", pin)
+        key = match[1] if match else pin
+        if key not in buses:
+            buses[key] = []
+            order.append(key)
+        buses[key].append((int(match[2]) if match else None, pin))
+    result = []
+    for key in order:
+        bits = buses[key]
+        if all(index is not None for index, _ in bits):
+            common.require(len({index for index, _ in bits}) == len(bits), f"DUPLICATE_BUS_BIT: {key}")
+            result += [pin for _, pin in sorted(bits, reverse=True)]
+        else:
+            common.require(len(bits) == 1, f"MIXED_BUS_AND_SCALAR_PIN: {key}")
+            result.append(bits[0][1])
+    return result
+
+
+def rewrite_devices(source, target, rules) -> dict:
+    """Write the extracted netlist with two-terminal device calls in the reference library's element form.
+
+    A rule {models, element, properties} turns `X<n> a b <model> k=v ...` into `<element><n> a b
+    <model> ...` with the properties renamed; terminals, models and values are unchanged. Every
+    other card is copied as it is. Returns the number of cards rewritten per model."""
+    counts = {}
+    lookup = {model: rule for rule in rules for model in rule["models"]}
+    out = []
+    with Path(source).open(errors="replace") as stream:
+        for line in stream:
+            tokens = line.split()
+            if tokens and tokens[0][:1] in "Xx" and not line.startswith("+"):
+                plain = [t for t in tokens[1:] if "=" not in t]
+                if len(plain) == 3 and plain[-1] in lookup:
+                    rule = lookup[plain[-1]]
+                    common.require(re.fullmatch(r"[A-Z]", rule["element"]) is not None, "REWRITE_ELEMENT")
+                    props = [t.split("=", 1) for t in tokens[1:] if "=" in t]
+                    props = [f"{rule['properties'].get(k, k)}={v}" for k, v in props]
+                    line = " ".join([rule["element"] + tokens[0][1:], *plain, *props]) + "\n"
+                    counts[plain[-1]] = counts.get(plain[-1], 0) + 1
+            out.append(line)
+    Path(target).write_text("".join(out))
+    return counts
 
 
 def verilog_modules(path) -> list:
@@ -228,9 +283,17 @@ def main() -> int:
                        shorted_ports=[list(pair) for pair in shorted[:50]], shorted_port_count=len(shorted),
                        layout_top_ports=len(extracted[top]["ports"]), layout_top_cards=extracted[top]["cards"])
         black = output / "macro-blackbox.spice"
-        black.write_text("* Macro black-box declarations: the pins of each macro's LEF, in LEF order.\n" + "".join(
-            ".subckt " + master + " " + " ".join(lef[master]["pins"]) + "\n.ends\n" for master in sorted(macros)))
-        env_netgen = dict(env, GATE_LAYOUT=str(layout), GATE_REF=str(reference), GATE_SETUP=str(setup),
+        black.write_text("* Macro black-box declarations: the pins of each macro's LEF, every bus most significant bit\n"
+                         "* first, the order in which a Verilog concatenation binds them.\n" + "".join(
+            ".subckt " + master + " " + " ".join(declaration_order(lef[master]["pins"])) + "\n.ends\n"
+            for master in sorted(macros)))
+        compared = layout
+        rewrites = config.get("layout_rewrites", [])
+        if rewrites:
+            compared = output / "layout-compared.spice"
+            summary["layout_rewrites"] = dict(rules=rewrites, rewritten=rewrite_devices(layout, compared, rewrites),
+                                              source=common.identity(layout), result=common.identity(compared))
+        env_netgen = dict(env, GATE_LAYOUT=str(compared), GATE_REF=str(reference), GATE_SETUP=str(setup),
                           GATE_OUT=str(output / "comp.out"), GATE_CELLS=":".join(map(str, [*cells, black])))
         for name, value in config.get("netgen_env", {}).items():
             common.require(re.fullmatch(r"[A-Z][A-Z0-9_]*", name) is not None and not name.startswith("GATE_"), "NETGEN_ENV_NAME")

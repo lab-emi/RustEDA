@@ -210,6 +210,17 @@ Black-box-macro LVS.
   Tie cells are ordinary cells (`conb_1` on SKY130, `tieh`/`tiel` on GF180MCU).
 - `extract unique all`: equally named but unconnected nets get distinct names, so an open in a
   labelled net shows up as an extra port.
+- The black-box declaration lists every bus most significant bit first: Netgen binds a Verilog
+  concatenation `.A({a1, a0})` to SPICE-declared pins by position, and the OpenRAM LEF lists its
+  buses least significant bit first (with LEF order every SKY130 SRAM bus was bound reversed and
+  LibreLane's layout failed; GF180's LEF is MSB first).
+- SKY130 only (`layout_rewrites` in the profile): Magic's default extract style writes the antenna
+  diode `sky130_fd_pr__diode_pw2nd_05v5` as a subcircuit call with `perim=`, the PDK cell SPICE
+  (`sky130_fd_sc_hd__diode_2`) as a `D` element with `pj=` of the same value. The gate writes the
+  extracted call in the reference form before Netgen runs (one card, the cell definition; the
+  count and both hashes are in the report). Terminals, area and perimeter are unchanged and the
+  setup's diode tolerances apply. Without it every layout with `diode_2` cells fails on a
+  property and pin mismatch of that cell.
 
 Passes when the layout holds the expected SRAM instances with exactly the LEF pins, Magic reports
 no shorted ports, the top circuits were compared, every compared circuit is clean and the final

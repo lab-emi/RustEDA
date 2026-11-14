@@ -241,6 +241,24 @@ class LvsFacts(Fixture):
         self.assertTrue(netgen_lvs.netgen_facts(swapped, good, "top")["problems"])
         self.assertTrue(netgen_lvs.netgen_facts(clean, good, "other")["problems"])
 
+    def test_black_box_buses_are_declared_msb_first(self):
+        # Netgen binds `.A({a1, a0})` to SPICE-declared pins by position; the OpenRAM LEF lists LSB first.
+        pins = ["din0[0]", "din0[1]", "din0[2]", "csb0", "addr0[1]", "addr0[0]", "vccd1"]
+        self.assertEqual(netgen_lvs.declaration_order(pins),
+                         ["din0[2]", "din0[1]", "din0[0]", "csb0", "addr0[1]", "addr0[0]", "vccd1"])
+        with self.assertRaisesRegex(common.GateError, "MIXED_BUS_AND_SCALAR_PIN"):
+            netgen_lvs.declaration_order(["A", "A[0]"])
+
+    def test_device_rewrite_changes_only_the_named_two_terminal_calls(self):
+        source, target = self.root / "layout.spice", self.root / "rewritten.spice"
+        source.write_text(".subckt d2 VNB DIODE\nX0 VNB DIODE diode_model perim=2.64e+06 area=4.347e+11\n.ends\n"
+                          ".subckt inv A Y VNB\nX0 Y A VNB VNB nfet w=1 l=1\nX1 a b other_model perim=1\n.ends\n")
+        rules = [dict(models=["diode_model"], element="D", properties=dict(perim="pj"))]
+        self.assertEqual(netgen_lvs.rewrite_devices(source, target, rules), {"diode_model": 1})
+        lines = target.read_text().splitlines()
+        self.assertEqual(lines[1], "D0 VNB DIODE diode_model pj=2.64e+06 area=4.347e+11")
+        self.assertEqual(lines[4:6], ["X0 Y A VNB VNB nfet w=1 l=1", "X1 a b other_model perim=1"])
+
     def test_reference_module_list(self):
         path = self.root / "ref.v"
         path.write_text("// module ghost\nmodule top (a);\n input a;\nendmodule\n")

@@ -251,7 +251,8 @@ def main(args) -> int:
                     powered_netlist=final["powered_netlist"], netgen_setup=profile.file(spec["netgen_setup"]),
                     cell_spice=[profile.file(p) for p in spec["cell_spice"]],
                     macros={name: len(entry["instances"]) for name, entry in macros.items()},
-                    netgen_env=spec.get("netgen_env", {}), timeout_seconds=int(spec.get("timeout_seconds", 7200)),
+                    netgen_env=spec.get("netgen_env", {}), layout_rewrites=spec.get("layout_rewrites", []),
+                    timeout_seconds=int(spec.get("timeout_seconds", 7200)),
                     tools={k: tools[k] for k in ("magic", "netgen", "klayout", "gnu_time")}, **magic_fields(profile, host))
         code, report = helper("lvs", "netgen_lvs.py", plan, 2 * int(spec.get("timeout_seconds", 7200)) + 300)
         summary["gates"]["lvs"] = dict(exit_code=code, report=report)
