@@ -47,6 +47,9 @@ Everything host-specific is in the host map; the profile and the scripts name no
   flows must have.
 - `checker` is RustSys' `check_config` example binary; `rusteda`, `ruststa`, `opensta` and
   `gnu_time` must be ELF executables (the timing policy refuses wrappers).
+- `relation_checker` (optional) is the path of RustSys'
+  `verification/benchmarks/open-hardware/large_lec.py`; by default it is taken from
+  `modules/RustSys` of the checkout the driver runs from.
 - Every tool is recorded with its SHA-256 in the plans and reports.
 
 ## Provenance

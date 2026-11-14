@@ -31,6 +31,7 @@ import common  # noqa: E402
 MIB = common.MIB
 ORDER = ("drc", "antenna", "extraction", "timing", "lvs", "simulation", "logic", "density")
 IHP_RECIPE = ROOT / "integration/ibex_sg13g2_ez130"
+RELATION_CHECKER = "modules/RustSys/verification/benchmarks/open-hardware/large_lec.py"
 
 
 def load(host_path, profile_path):
@@ -219,6 +220,10 @@ def main(args) -> int:
         code, report = helper("timing", "timing.py", plan, 1800)
         summary["gates"]["timing"] = dict(exit_code=code, report=report)
         save()
+    elif "timing" in gates:
+        summary["gates"]["timing"] = dict(exit_code=2, report=dict(status="failed", complete=False,
+                                                                   error="extraction produced no SPEF"))
+        save()
     if "lvs" in gates:
         spec = profile["gates"]["lvs"]
         plan = dict(schema="rusteda.pdk-gate.netgen-lvs.v1", top=top, gds=final["gds"],
@@ -250,7 +255,7 @@ def main(args) -> int:
                     library=liberty["std_tt"], macro_bb=files["macro_bb"], macro=master, macro_instances=macro["instances"],
                     tie_cells=spec["tie_cells"],
                     physical=dict(physical_lef=common.identity(cells_lef), policy=policy, **liberty),
-                    relation_checker=common.identity(ROOT / "modules/RustSys/verification/benchmarks/open-hardware/large_lec.py"),
+                    relation_checker=common.identity(host.get("relation_checker") or ROOT / RELATION_CHECKER),
                     tools={k: tools[k] for k in ("yosys", "abc", "checker", "gnu_time", "python")}, limits=spec["limits"],
                     expected=spec.get("expected", {}))
         code, report = helper("logic", "logic.py", plan, 7200)
