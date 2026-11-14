@@ -1,0 +1,85 @@
+{
+  "top": "ibex_sram_bench",
+  "primary_clock": "clk_i",
+  "clock_sink_pin": "CLK",
+  "gating_cells": [
+    "sky130_fd_sc_hd__and2_2"
+  ],
+  "buffers": [
+    {
+      "cell": "sky130_fd_sc_hd__buf_1",
+      "input": "A",
+      "output": "X"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__buf_2",
+      "input": "A",
+      "output": "X"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__buf_4",
+      "input": "A",
+      "output": "X"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__buf_6",
+      "input": "A",
+      "output": "X"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__buf_8",
+      "input": "A",
+      "output": "X"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__buf_12",
+      "input": "A",
+      "output": "X"
+    }
+  ],
+  "primary_buffer": "sky130_fd_sc_hd__buf_12",
+  "reset": {
+    "pin": "RESET_B",
+    "leaf": "sky130_fd_sc_hd__buf_8",
+    "trunk": "sky130_fd_sc_hd__buf_12"
+  },
+  "delay_cells": [
+    "sky130_fd_sc_hd__dlygate4sd3_1"
+  ],
+  "target_fanout": 9,
+  "cap_fraction": 0.8,
+  "hold_margin_ns": 0.075,
+  "setup_margin_ns": 0.05,
+  "port_diode": {
+    "cell": "sky130_fd_sc_hd__diode_2",
+    "pin": "DIODE"
+  },
+  "electrical": {
+    "driver_cells": [
+      "sky130_fd_sc_hd__buf_2",
+      "sky130_fd_sc_hd__buf_4",
+      "sky130_fd_sc_hd__buf_6",
+      "sky130_fd_sc_hd__buf_8",
+      "sky130_fd_sc_hd__buf_12"
+    ],
+    "sram_buffer": "sky130_fd_sc_hd__buf_4",
+    "sram_clock_buffer": "sky130_fd_sc_hd__buf_8",
+    "sram_masters": [
+      "sky130_sram_2kbyte_1rw1r_32x512_8"
+    ],
+    "load_fraction": 0.6,
+    "max_wire_um": 1200,
+    "antenna_cells": [
+      "sky130_fd_sc_hd__diode_2"
+    ],
+    "drv_margin": 0.15,
+    "hold_drv_margin": 0.1,
+    "clock_balance": {
+      "cell": "sky130_fd_sc_hd__dlygate4sd3_1",
+      "max_stages": 32,
+      "margin_ns": 0.1,
+      "wire_pf": 0.002
+    }
+  },
+  "launch_chain_max": 32
+}

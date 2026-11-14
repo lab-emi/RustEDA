@@ -1,0 +1,11 @@
+{
+  "group_names": 128,
+  "max_groups": 1024,
+  "max_attempts": 64,
+  "max_total_jumpers": 4096,
+  "max_commands": 4096,
+  "max_report_bytes": 8589934592,
+  "max_selected_report_bytes": 134217728,
+  "max_metadata_bytes": 4194304,
+  "max_cumulative_work": 200000000000
+}
