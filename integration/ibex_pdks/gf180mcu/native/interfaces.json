@@ -1,0 +1,12 @@
+{
+  "cell_buses": {
+    "gf180mcu_fd_ip_sram__sram512x8m8wm1": {
+      "A": [8, 0],
+      "D": [7, 0],
+      "Q": [7, 0],
+      "WEN": [7, 0]
+    }
+  },
+  "top_buses": {},
+  "body_ties": {}
+}

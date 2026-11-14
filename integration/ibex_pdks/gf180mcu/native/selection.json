@@ -1,0 +1,88 @@
+{
+  "top": "ibex_sram_bench",
+  "primary_clock": "clk_i",
+  "clock_sink_pin": "CLK",
+  "gating_cells": [
+    "gf180mcu_fd_sc_mcu7t5v0__and2_1"
+  ],
+  "buffers": [
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_1",
+      "input": "I",
+      "output": "Z"
+    },
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_2",
+      "input": "I",
+      "output": "Z"
+    },
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_3",
+      "input": "I",
+      "output": "Z"
+    },
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_4",
+      "input": "I",
+      "output": "Z"
+    },
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_8",
+      "input": "I",
+      "output": "Z"
+    },
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_12",
+      "input": "I",
+      "output": "Z"
+    },
+    {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__buf_16",
+      "input": "I",
+      "output": "Z"
+    }
+  ],
+  "primary_buffer": "gf180mcu_fd_sc_mcu7t5v0__buf_16",
+  "reset": {
+    "pin": "RN",
+    "leaf": "gf180mcu_fd_sc_mcu7t5v0__buf_8",
+    "trunk": "gf180mcu_fd_sc_mcu7t5v0__buf_16"
+  },
+  "delay_cells": [
+    "gf180mcu_fd_sc_mcu7t5v0__dlya_1",
+    "gf180mcu_fd_sc_mcu7t5v0__dlyb_1"
+  ],
+  "target_fanout": 9,
+  "cap_fraction": 0.8,
+  "hold_margin_ns": 0.075,
+  "setup_margin_ns": 0.05,
+  "port_diode": {
+    "cell": "gf180mcu_fd_sc_mcu7t5v0__antenna",
+    "pin": "I"
+  },
+  "electrical": {
+    "driver_cells": [
+      "gf180mcu_fd_sc_mcu7t5v0__buf_3",
+      "gf180mcu_fd_sc_mcu7t5v0__buf_4"
+    ],
+    "sram_buffer": "gf180mcu_fd_sc_mcu7t5v0__buf_4",
+    "sram_clock_buffer": "gf180mcu_fd_sc_mcu7t5v0__buf_8",
+    "sram_masters": [
+      "gf180mcu_fd_ip_sram__sram512x8m8wm1"
+    ],
+    "load_fraction": 0.6,
+    "max_wire_um": 1200,
+    "antenna_cells": [
+      "gf180mcu_fd_sc_mcu7t5v0__antenna"
+    ],
+    "drv_margin": 0.15,
+    "hold_drv_margin": 0.1,
+    "clock_balance": {
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__dlya_1",
+      "max_stages": 32,
+      "margin_ns": 0.1,
+      "wire_pf": 0.002
+    }
+  },
+  "launch_chain_max": 32
+}

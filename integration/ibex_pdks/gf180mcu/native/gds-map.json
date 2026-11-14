@@ -1,0 +1,216 @@
+{
+  "schema": "rustroad.gds-layer-map.v1",
+  "pdk": "gf180mcuD",
+  "library": "gf180mcu_fd_sc_mcu7t5v0",
+  "sources": [
+    {
+      "id": "klayout_map",
+      "role": "klayout_lefdef_layer_map",
+      "path": "/home/cgao/.local/share/containers/storage/overlay/a2565b13ab35f5571d6aab9328dc383594b36360107bd8dd9c5516a02dc64674/diff/foss/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.tech/klayout/tech/gf180mcu.map",
+      "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+      "bytes": 667
+    },
+    {
+      "id": "magic_tech",
+      "role": "magic_tech_cifoutput_gdsii",
+      "path": "/home/cgao/.local/share/containers/storage/overlay/a2565b13ab35f5571d6aab9328dc383594b36360107bd8dd9c5516a02dc64674/diff/foss/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.tech/magic/gf180mcuD.tech",
+      "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+      "bytes": 114040
+    }
+  ],
+  "layers": [
+    {
+      "lef": "Metal1",
+      "kind": "routing",
+      "net": [[34, 0]],
+      "special_net": [[34, 0]],
+      "via": [[34, 0]],
+      "pin": [[34, 0], [34, 10]],
+      "label": [34, 10],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [7, 8, 9]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [897, 899, 901, 903]
+        }
+      ]
+    },
+    {
+      "lef": "Via1",
+      "kind": "cut",
+      "via": [[35, 0]],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [1]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [920, 923]
+        }
+      ]
+    },
+    {
+      "lef": "Metal2",
+      "kind": "routing",
+      "net": [[36, 0]],
+      "special_net": [[36, 0]],
+      "via": [[36, 0]],
+      "pin": [[36, 0], [36, 10]],
+      "label": [36, 10],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [11, 12, 13]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [933, 935, 937, 939]
+        }
+      ]
+    },
+    {
+      "lef": "Via2",
+      "kind": "cut",
+      "via": [[38, 0]],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [2]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [956, 959]
+        }
+      ]
+    },
+    {
+      "lef": "Metal3",
+      "kind": "routing",
+      "net": [[42, 0]],
+      "special_net": [[42, 0]],
+      "via": [[42, 0]],
+      "pin": [[42, 0], [42, 10]],
+      "label": [42, 10],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [15, 16, 17]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [970, 972, 974, 976]
+        }
+      ]
+    },
+    {
+      "lef": "Via3",
+      "kind": "cut",
+      "via": [[40, 0]],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [3]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [993, 996]
+        }
+      ]
+    },
+    {
+      "lef": "Metal4",
+      "kind": "routing",
+      "net": [[46, 0]],
+      "special_net": [[46, 0]],
+      "via": [[46, 0]],
+      "pin": [[46, 0], [46, 10]],
+      "label": [46, 10],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [19, 20, 21]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [1007, 1009, 1011, 1013]
+        }
+      ]
+    },
+    {
+      "lef": "Via4",
+      "kind": "cut",
+      "via": [[41, 0]],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [4]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [1031, 1034]
+        }
+      ]
+    },
+    {
+      "lef": "Metal5",
+      "kind": "routing",
+      "net": [[81, 0]],
+      "special_net": [[81, 0]],
+      "via": [[81, 0]],
+      "pin": [[81, 0], [81, 10]],
+      "label": [81, 10],
+      "cite": [
+        {
+          "source": "klayout_map",
+          "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+          "lines": [23, 24, 25]
+        },
+        {
+          "source": "magic_tech",
+          "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+          "lines": [1049, 1051, 1053, 1055]
+        }
+      ]
+    }
+  ],
+  "boundary": {
+    "layer": [0, 0],
+    "cite": [
+      {
+        "source": "klayout_map",
+        "sha256": "ac49b08c732c00945c054bce61a4d7f413f84887e0e4e1a66fd20018db2f5d28",
+        "lines": [27]
+      },
+      {
+        "source": "magic_tech",
+        "sha256": "f0c3a445aa0a2a9b7a1f10530a6c011800a41fcad36c12d8bb9b792a59c74f44",
+        "lines": [1079, 1080]
+      }
+    ]
+  },
+  "notes": [
+    "Ciel/open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7, 5-metal gf180mcuD (Metal5 81/0 is the top metal; MetalTop 53/0 and Via5 are 6LM only and not mapped).",
+    "GF180 has no separate pin datatype: PIN shapes go to drawing XX/0 and to XX/10, labels to XX/10. PR boundary is PR_bndry 0/0.",
+    "LEF/DEF use 2000 DBU/um; the GDS database unit must be 0.001 um, so export-gds divides coordinates by 2 exactly and rejects odd coordinates."
+  ]
+}

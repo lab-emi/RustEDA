@@ -1,0 +1,21 @@
+{
+  "schema": "rusteda.ibex-pdk-native-cell-policy.v1",
+  "library": "gf180mcu_fd_sc_mcu7t5v0",
+  "synthesis_dont_use": [
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__dly*", "reason": "delay cells: excluded in the reference flow (EXTRA_EXCLUDED_CELLS); reserved for hold repair"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__sdff*", "reason": "scan flops: the PDK's synth_exclude.cells"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__mux2_1", "reason": "the PDK's pnr_exclude.cells"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__oai33_2", "reason": "the PDK's pnr_exclude.cells"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__invz_*", "reason": "tri-state cells: no tri-state nets in the design; invz_12 and invz_16 are wider than the 28 um tap gap"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__bufz_*", "reason": "tri-state cells: no tri-state nets in the design; bufz_16 is wider than the 28 um tap gap"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__buf_20", "reason": "34.72 um wide: wider than the 28 um clear gap between taps"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__clkbuf_20", "reason": "34.72 um wide: wider than the 28 um clear gap between taps"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__oai33_4", "reason": "28.56 um wide: wider than the 28 um clear gap between taps"},
+    {"glob": "gf180mcu_fd_sc_mcu7t5v0__oai222_4", "reason": "28.56 um wide: wider than the 28 um clear gap between taps"}
+  ],
+  "double_height_masters": [],
+  "notes": [
+    "Every master of the library is 3.92 um high (one row); none is excluded for its height.",
+    "The widest admitted masters are buf_16 and clkbuf_16 (28.0 um); the tap profile's max_gap is 28 um."
+  ]
+}
