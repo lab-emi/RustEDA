@@ -4658,7 +4658,7 @@ dependencies = [
 [[package]]
 name = "rusteda-cli-common"
 version = "0.1.0"
-source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a#24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a"
+source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=8639db1e01682877d4af8633607ffa8a970f20fd#8639db1e01682877d4af8633607ffa8a970f20fd"
 dependencies = [
  "clap",
  "clap_complete",
@@ -4676,7 +4676,7 @@ dependencies = [
 [[package]]
 name = "rusteda-core"
 version = "0.1.0"
-source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a#24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a"
+source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=8639db1e01682877d4af8633607ffa8a970f20fd#8639db1e01682877d4af8633607ffa8a970f20fd"
 dependencies = [
  "bytemuck",
  "rustc-hash 2.1.2",
@@ -4699,7 +4699,7 @@ dependencies = [
 [[package]]
 name = "rusteda-formats"
 version = "0.1.0"
-source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a#24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a"
+source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=8639db1e01682877d4af8633607ffa8a970f20fd#8639db1e01682877d4af8633607ffa8a970f20fd"
 dependencies = [
  "flate2",
  "rayon",
@@ -4726,7 +4726,7 @@ dependencies = [
 [[package]]
 name = "rusteda-workspace"
 version = "0.1.0"
-source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a#24498a5b14ab2ba145fe8a0d28a6edc238bf2d9a"
+source = "git+https://github.com/lab-emi/RustEDA-Common.git?rev=8639db1e01682877d4af8633607ffa8a970f20fd#8639db1e01682877d4af8633607ffa8a970f20fd"
 dependencies = [
  "bytemuck",
  "memmap2",
