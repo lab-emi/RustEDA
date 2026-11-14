@@ -322,7 +322,8 @@ needs a contract edit, visibly.
 ```
 
 - `physical.filler_cells`: the number of entries `physical.json` `filler_cells` must have.
-- `physical.tap.body_view`: the required `physical.json` `tap.body_view` (`gds` or `lef`).
+- `physical.tap.body_view`: the required `physical.json` `tap.body_view` (`gds` or `lef`; a `physical.json`
+  without it counts as `lef`, RustROAD's default).
 - `physical.tap.lattices`: the admitted tap lattices; `physical.json` `tap.max_gap` and `tap.pattern` (absent
   counts as `null`) must equal one entry. One entry is enough.
 - `routing.min_routing_layer`, `routing.max_routing_layer`: the required `routing.json` `track_router` values.
