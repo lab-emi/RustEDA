@@ -2,7 +2,7 @@
 
 **Second design benchmark.** [PULPissimo Ibex-core synthesis on SKY130 HD](benchmarks/pulpissimo.md) is a separate, synthesis-only comparison with Yosys 0.70/ABC. It is not part of the Ibex RTL-to-GDS campaigns below and does not extend its qualification. The full PULPissimo SoC now passes hierarchy elaboration. On SKY130 with behavioral L2 memory it exceeds a 2 h synthesis budget; the [elaboration analysis](benchmarks/pulpissimo-elaboration.md) traces the cost to those L2 banks. A separate [IHP SG13G2 / EZ130 synthesis-only test](benchmarks/pulpissimo-ihp.md) with 80 official SRAM macros completes in 426 s. Neither is physical signoff.
 
-This page holds five Ibex result sets for RustEDA and its modules, newest first: the [host campaign of 2026-11-13](#ibex-host-campaign-2026-11-13), which runs the current RustEDA recipe and engines, built with Rust 1.100.0 and driven by the Rust step-graph executor, against LibreLane on a 4-vCPU cloud host, with module head-to-heads and same-load reruns; the [host campaign of 2026-11-05](#ibex-host-campaign-2026-11-05), the same comparison with the recipe and engines of that date; the [host campaign of 2026-11-02](#ibex-host-campaign-2026-11-02), the first such campaign on another host; the [R20/R21 native development runs of 2026-11-01](#latest-native-development-results-2026-11-01); and the [historical matched comparison of 2026-10-30](#historical-matched-comparison-2026-10-30). Between the two newest campaigns, the [latch-up checker change of 2026-11-12](#latch-up-checker-change-2026-11-12) records a change to a shared gate, measured on both layouts. After the newest campaign, [RustSTA peak memory and RustROAD extraction · 2026-11-13](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13) records two module changes, measured against the campaign's binaries in the same runs, and [RustROAD extraction, second round · 2026-11-14](#rustroad-extraction-second-round-2026-11-14) a further RustROAD change, measured the same way. Each set names its own host, inputs and schedule, and times from different hosts are not comparable. The target is Ibex on the IHP SG13G2 process, using the EZ130 standard-cell library and **two real SRAM macros**. EZ130 is a cell library for SG13G2, not a separate process.
+This page holds five Ibex result sets for RustEDA and its modules, newest first: the [host campaign of 2026-11-13](#ibex-host-campaign-2026-11-13), which runs the current RustEDA recipe and engines, built with Rust 1.100.0 and driven by the Rust step-graph executor, against LibreLane on a 4-vCPU cloud host, with module head-to-heads and same-load reruns; the [host campaign of 2026-11-05](#ibex-host-campaign-2026-11-05), the same comparison with the recipe and engines of that date; the [host campaign of 2026-11-02](#ibex-host-campaign-2026-11-02), the first such campaign on another host; the [R20/R21 native development runs of 2026-11-01](#latest-native-development-results-2026-11-01); and the [historical matched comparison of 2026-10-30](#historical-matched-comparison-2026-10-30). Between the two newest campaigns, the [latch-up checker change of 2026-11-12](#latch-up-checker-change-2026-11-12) records a change to a shared gate, measured on both layouts. After the newest campaign, [RustSTA peak memory and RustROAD extraction · 2026-11-13](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13) records two module changes, measured against the campaign's binaries in the same runs, and [RustROAD extraction, second round · 2026-11-14](#rustroad-extraction-second-round-2026-11-14) and [third round · 2026-11-14](#rustroad-extraction-third-round-2026-11-14) two further RustROAD changes, measured the same way. Each set names its own host, inputs and schedule, and times from different hosts are not comparable. The target is Ibex on the IHP SG13G2 process, using the EZ130 standard-cell library and **two real SRAM macros**. EZ130 is a cell library for SG13G2, not a separate process.
 
 ## At a glance · 2026-11-13
 
@@ -40,7 +40,7 @@ violations** where LibreLane's layout has 112.
 | RustSys vs Yosys + ABC (LibreLane script) | **33.8× faster** (47.4× in direct mode) | **6.6× less** | 1.8 % less area, logic depth 36 vs 40, equivalence proven |
 | RustSTA vs OpenSTA | **1.6× faster** at 2 threads, **2.0×** at 4 | **29.5 % less** at 2 threads, **12.6 % less** at 4³ | worst slacks within 0.270 ps |
 | RustROAD routing vs OpenROAD (in the flow) | **7.8× faster** | — | 7.7 % less wire, 1.3 % fewer vias |
-| RustROAD extraction vs OpenRCX | level at 4 threads (0.91×, faster in 15 of 15 runs, ranges overlap), **1.64× slower** at 2³ | **1.3× more**³ | total capacitance 6.0 % above OpenRCX's |
+| RustROAD extraction vs OpenRCX | narrowly **faster** at 4 threads (0.85×, faster in 30 of 30 runs; ranges apart in one of two A/Bs), **1.52× slower** at 2³ | **1.3× more**³ | total capacitance 6.0 % above OpenRCX's |
 | RustROAD GDS export vs KLayout | **2.8× faster** | **2.0× less** | — |
 | RustSpice vs ngspice-45 (extracted RC nets) | **4.1–7.0× faster** | **1.4–2.1× less** | closer to the reference in 10 of 10 cases on the nominal grid, 6 of 10 at each simulator's own output points |
 
@@ -48,11 +48,85 @@ violations** where LibreLane's layout has 112.
 moved to after a container restart (see the shared gates below).
 ² RustEDA's flow time includes its own foundry DRC, antenna and LVS; LibreLane's does not.
 ³ After the campaign: RustSTA `de210a6` ([RustSTA peak memory and RustROAD extraction](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13))
-and RustROAD `8d29a61` ([RustROAD extraction, second round](#rustroad-extraction-second-round-2026-11-14)) against OpenSTA, OpenRCX and the
+and RustROAD `e623e82` ([RustROAD extraction, third round](#rustroad-extraction-third-round-2026-11-14)) against OpenSTA, OpenRCX and the
 campaign's binaries in the same runs. In the campaign, RustSTA used
 13.6 % less at 2 threads and 11.8 % more at 4, and RustROAD's extraction was 1.22× slower at 4 threads and 2.19× at 2.
 
-LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. Against the three losses of 2026-11-05, in same-load runs: repair before global routing now takes 0.73× the time of LibreLane's two pre-route resizer steps (ranges do not overlap; 1.18× on 2026-11-05), OpenRCX on RustEDA's layout is level with its time on LibreLane's (1.00×, ranges overlap; 1.36× on 2026-11-05) and the latch-up check on RustEDA's layout takes 0.76× its time on LibreLane's (1.11× with the checker of that campaign). RustEDA is still not faster or not better everywhere: RustROAD's standalone extraction took 1.22× OpenRCX's time at 4 threads in the campaign and, after two changes since, is level at 4 threads (0.91×, faster in every run but with overlapping ranges) and 1.64× slower at 2; the timing gate is level (0.98×, ranges overlap) and its layout keeps less hold margin. RustSTA's peak memory at 4 threads, 11.8 % above OpenSTA's in the campaign, is 12.6 % below it since a change after the campaign ([details](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)). [All stages, gates and losses](#ibex-host-campaign-2026-11-13)
+LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. Against the three losses of 2026-11-05, in same-load runs: repair before global routing now takes 0.73× the time of LibreLane's two pre-route resizer steps (ranges do not overlap; 1.18× on 2026-11-05), OpenRCX on RustEDA's layout is level with its time on LibreLane's (1.00×, ranges overlap; 1.36× on 2026-11-05) and the latch-up check on RustEDA's layout takes 0.76× its time on LibreLane's (1.11× with the checker of that campaign). RustEDA is still not faster or not better everywhere: RustROAD's standalone extraction took 1.22× OpenRCX's time at 4 threads in the campaign and, after three changes since, is narrowly faster at 4 threads (0.85×, faster in all 30 runs of two A/Bs; the ranges are apart in one and overlap by 47 ms in the other) and still 1.52× slower at 2; the timing gate is level (0.98×, ranges overlap) and its layout keeps less hold margin. RustSTA's peak memory at 4 threads, 11.8 % above OpenSTA's in the campaign, is 12.6 % below it since a change after the campaign ([details](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)). [All stages, gates and losses](#ibex-host-campaign-2026-11-13)
+
+## RustROAD extraction, third round · 2026-11-14
+
+After the second round, RustROAD `e623e82` (four extraction commits and a docs commit on top of `8d29a61`)
+extracts the campaign's final Ibex layout in **0.66× the campaign binary's time at 4 threads and 0.70× at 2**
+(0.93× and 0.91× of `8d29a61`'s, and faster than `8d29a61` in all 15 paired runs at both thread counts), with
+8–9 % less CPU time than `8d29a61` and the same SPEF. Against OpenRCX it was **faster in all 15 runs at 4
+threads** (median 2.620 s against 3.081 s, 0.85×; paired in each rotation, 0.74× to 0.92×), and in this A/B the
+ranges are apart (RustROAD 2.419–2.856 s, OpenRCX 2.927–3.385 s). An earlier A/B with the same protocol, on a
+development build of the same sources, was also faster in all 15 runs (2.643 s against 3.163 s, 0.84×), but
+there the ranges overlapped by 47 ms (2.521–2.917 s against 2.870–3.418 s). RustROAD is therefore faster than
+OpenRCX at 4 threads, **narrowly**: one of the two A/Bs shows it beyond noise and the other does not. At 2
+threads it is **still 1.52× slower** (4.770 s against 3.143 s), with 2.9 times OpenRCX's CPU time and 1.31× its
+peak RSS at 4 threads.
+
+| Same-load A/B, 15 runs after a warm-up, order rotated | Campaign binary | Second round | New binary | Competitor |
+| --- | ---: | ---: | ---: | ---: |
+| **Extraction** (final routed layout, nominal corner) | RustROAD `f90f2dd` | RustROAD `8d29a61` | RustROAD `e623e82` | OpenRCX |
+| Median wall, 4 threads (range) | 3.997 (3.833–4.198) s | 2.821 (2.713–3.040) s | **2.620 (2.419–2.856) s** | 3.081 (2.927–3.385) s |
+| Median wall, 2 threads (range) | 6.798 (6.432–7.363) s | 5.231 (4.884–5.651) s | **4.770 (4.370–4.995) s** | 3.143 (2.933–3.351) s |
+| Median CPU, 4 threads (range) | 12.15 (11.50–12.63) s | 9.85 (9.51–10.64) s | 9.06 (8.49–10.01) s | 3.07 (2.92–3.36) s |
+| Median CPU, 2 threads (range) | 12.18 (11.65–13.28) s | 9.94 (9.30–10.68) s | 9.05 (8.33–9.43) s | 3.12 (2.92–3.31) s |
+| Median peak RSS, 4 threads (range) | 319,520 (292,828–322,724) KiB | 262,628 (259,200–265,736) KiB | 264,848 (262,964–271,576) KiB | 201,828 (201,516–202,260) KiB |
+| Median peak RSS, 2 threads (range) | 311,276 (285,056–312,212) KiB | 249,036 (247,928–249,904) KiB | 250,808 (249,532–253,248) KiB | 201,496 (201,076–201,832) KiB |
+| Runs in which `e623e82` was faster, 4 / 2 threads | 15 / 15 of 15 | 15 / 15 of 15 | — | 15 / 0 of 15 |
+
+The new binary's wall ranges do not overlap with the campaign binary's at either thread count; they overlap
+with `8d29a61`'s at both, although it was faster than `8d29a61` in every paired run (0.83× to 0.99×). Its peak RSS
+is 0.8 % above `8d29a61`'s at 4 threads, with overlapping ranges. On this host the campaign binary takes 1.30×
+OpenRCX's time at 4 threads.
+
+**How it was measured.** As in the second round: per repetition and thread count, the four contenders ran one
+after another in an order shifted by one place each repetition, one warm-up and 15 measured repetitions, on the
+same 4-vCPU 2.30 GHz VM, with the host's measurement and build locks held for the whole run. Each RustROAD replays
+the campaign's recorded command with the campaign's RC profile, under GNU time, on a private copy of a routed
+workspace whose validation receipt that same binary wrote (the campaign's run, the second round's run and a new
+full run), and writes its SPEF at one shared work path; OpenRCX replays the shared extraction gate's script. The
+earlier A/B ran the development build of the same sources on a workspace copy whose receipt that build wrote.
+([Runs and summary of both A/Bs](benchmarks/evidence/ibex-host-20261114-extraction-r3/summary.json).)
+
+**Same results.** Every run of the RustROAD binaries in both A/Bs wrote the same SPEF (SHA-256 `468051be…`, the
+campaign's); the digest over every bit of the extracted network and the report's statistics, the work counters
+of the extraction budget included, are unchanged at 1 to 4 threads. A full native run with RustROAD `e623e82` and
+the RustSTA and `rusteda` binaries of the 2026-11-13 follow-up (114 of 114 steps, the campaign's prepared inputs,
+recipe and executor) produced a GDS, DEF, native SPEF, netlists and mapped netlist byte-identical to the
+campaign's, and all nine shared gates passed with the campaign's verdicts.
+
+**What changed in RustROAD** (`8d29a61..e623e82`). The four commits remove work inside the parallel strip phase
+that changes no accumulated value. Instruction counts are whole-run totals from cachegrind, which are
+deterministic (this VM exposes no hardware counters, and its wall times vary by about 5 % between identical runs):
+
+- passive strips that cannot record anything are counted rather than swept, charging the same work: 362,336 of
+  872,538 passive strips skip the sweep (1 thread: 63.82 to 60.94 billion instructions);
+- the sweep re-evaluates its state only when its inputs change: the list of layered neighbours is rebuilt only
+  when one enters or leaves, side templates are kept per side, and no active-set bitmap is kept (59.40 billion;
+  the sweep itself 20.63 to 19.16 billion);
+- the gathering predicates and the grid cell scan are specialized (58.54 billion; pair visits 2.58 to 1.94
+  billion);
+- ground records that are exactly zero (4.63 million of 23.5 million) are no longer stored by the parallel
+  workers, since no accumulator ever holds −0.0 and adding ±0.0 leaves every other value's bits unchanged
+  (IEEE 754-2019, section 6.3), and each chunk is grouped by shard through an open-addressing table (Knuth,
+  TAOCP vol. 3, section 6.4) whose slots carry the chunk's generation, so it is never cleared (compare Briggs and
+  Torczon, 1993): at 2 threads 63.23 to 60.60 billion instructions, `memset` 1.36 to 0.04 billion.
+
+Over the four commits: 63.82 to 58.52 billion instructions at 1 thread (−8.3 %) and 68.43 to 60.60 billion at 2
+threads (−11.4 %).
+
+**What remains.** RustROAD's extraction still spends 2.9 times OpenRCX's CPU time (about 9.1 s against 3.1 s), so
+it is 1.52× slower at 2 threads; to be faster there, about 3.3 s more CPU would have to go. The interval sweep is
+30 % of that time with a flat profile, candidate gathering (17 %) waits on memory for about 17 million grid-cell
+visits, and the ordered commit of the strips is 13 %. The order of the units fixes every floating-point sum, so
+neither the sweep nor the gathering can be reordered without changing the SPEF; such a change would be a QoR
+change and measured as one. Peak RSS is unchanged at 1.31× OpenRCX's at 4 threads, and the SPEF's total
+capacitance stays 6.0 % above OpenRCX's.
 
 ## RustROAD extraction, second round · 2026-11-14
 
@@ -120,6 +194,8 @@ grouping 6.5 %), and about 0.75 s is spent outside it (workspace read 0.12 s, ne
 0.12 s, virtual crossings 0.08–0.15 s, and smaller phases). Its peak RSS is 1.31× OpenRCX's at 4 threads; at the
 peak about 73 MiB are snapshot remainder and input, 55 MiB coupling accumulators, 49 MiB grid, 45 MiB net trees and
 35 MiB retained shapes. The SPEF is unchanged, so its total capacitance stays 6.0 % above OpenRCX's.
+
+RustROAD's next change is measured in [RustROAD extraction, third round · 2026-11-14](#rustroad-extraction-third-round-2026-11-14).
 
 ## RustSTA peak memory and RustROAD extraction · 2026-11-13
 
@@ -448,7 +524,8 @@ peak RSS. On 2026-11-05, on another host and layout, it was level at 4 threads (
 Its total capacitance is 6.0 % above
 OpenRCX's and its total resistance 0.5 % below. After the campaign, RustROAD `fe4b286` took 0.83× this time at
 4 threads, level with OpenRCX there and still 1.85× slower at 2 threads, with the same SPEF: [RustSTA peak memory and RustROAD extraction](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13);
-RustROAD `8d29a61` took 0.71×, level with OpenRCX at 4 threads (0.91×, ranges overlap) and 1.64× slower at 2: [RustROAD extraction, second round](#rustroad-extraction-second-round-2026-11-14).
+RustROAD `8d29a61` took 0.71×, level with OpenRCX at 4 threads (0.91×, ranges overlap) and 1.64× slower at 2: [RustROAD extraction, second round](#rustroad-extraction-second-round-2026-11-14);
+RustROAD `e623e82` took 0.66×, narrowly faster than OpenRCX at 4 threads (0.85×) and 1.52× slower at 2: [RustROAD extraction, third round](#rustroad-extraction-third-round-2026-11-14).
 
 #### RustROAD GDS export vs KLayout · 2026-11-13
 
@@ -524,7 +601,7 @@ frontend and timing steps and by the shared timing gate; it has no separate head
 
 Every stage, gate or module where RustEDA is not faster, or not better, in this campaign:
 
-- **RustROAD extraction against OpenRCX** (module head-to-head, loss): 4.664 s against 3.829 s at 4 threads (1.22×, ranges do not overlap) and 2.19× at 2 threads, with about 3.7 times OpenRCX's CPU time and 1.60× its peak RSS. On 2026-11-05, on another host and layout, it was level at 4 threads (1.05×, overlapping ranges); since then OpenRCX's median fell from 5.944 s to 3.829 s (0.64×) and RustROAD's from 6.260 s to 4.664 s (0.75×). The route change of 2026-11-12 (superproject `3cd3061`) cut the routed DEF's wire pieces by about a sixth; in its interleaved A/B, the OpenRCX gate on the native layout went from 1.33× to 0.99× its time on LibreLane's. RustROAD's extraction is a native step of the flow, not a shared gate: the flow's `be_extract` took 5.27 s. After the campaign, RustROAD `fe4b286` is level with OpenRCX at 4 threads (1.07×, ranges overlap) and 1.85× slower at 2, in same-load runs ([RustSTA peak memory and RustROAD extraction](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)), and RustROAD `8d29a61` is level at 4 threads (0.91×, faster in all 15 runs, ranges overlap) and 1.64× slower at 2 ([second round](#rustroad-extraction-second-round-2026-11-14)).
+- **RustROAD extraction against OpenRCX** (module head-to-head, loss): 4.664 s against 3.829 s at 4 threads (1.22×, ranges do not overlap) and 2.19× at 2 threads, with about 3.7 times OpenRCX's CPU time and 1.60× its peak RSS. On 2026-11-05, on another host and layout, it was level at 4 threads (1.05×, overlapping ranges); since then OpenRCX's median fell from 5.944 s to 3.829 s (0.64×) and RustROAD's from 6.260 s to 4.664 s (0.75×). The route change of 2026-11-12 (superproject `3cd3061`) cut the routed DEF's wire pieces by about a sixth; in its interleaved A/B, the OpenRCX gate on the native layout went from 1.33× to 0.99× its time on LibreLane's. RustROAD's extraction is a native step of the flow, not a shared gate: the flow's `be_extract` took 5.27 s. After the campaign, RustROAD `fe4b286` is level with OpenRCX at 4 threads (1.07×, ranges overlap) and 1.85× slower at 2, in same-load runs ([RustSTA peak memory and RustROAD extraction](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)), RustROAD `8d29a61` is level at 4 threads (0.91×, faster in all 15 runs, ranges overlap) and 1.64× slower at 2 ([second round](#rustroad-extraction-second-round-2026-11-14)), and RustROAD `e623e82` is narrowly faster at 4 threads (0.85×; the ranges are apart in one of two A/Bs and overlap by 47 ms in the other) and 1.52× slower at 2 ([third round](#rustroad-extraction-third-round-2026-11-14)).
 - **RustSTA peak memory at 4 threads** (module head-to-head): 197,060 KiB against 176,252 KiB (11.8 % more; 13.6 % less at 2 threads). On 2026-11-05 it used 6.3 % less at 4 threads. RustSTA's one analysis change since then prepares each node's RC waveforms as soon as its sources are done (RustSTA `c55e325`); in the campaign its effect on peak memory was not measured and the cause of the increase was not investigated. RustSTA is still faster at both thread counts. The cause was found and fixed afterwards: RustSTA `de210a6` uses 12.6 % less than OpenSTA at 4 threads ([RustSTA peak memory and RustROAD extraction](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)).
 - **OpenRCX extraction gate** (parity, 1.00×): median 3.37 s against 3.38 s in same-load runs.
 - **Timing gate** (parity, 0.98×): median 17.02 s against 17.32 s in same-load runs.

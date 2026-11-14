@@ -1,0 +1,560 @@
+{
+ "schema": "rusteda.host-followup.v1",
+ "date": "2026-11-14",
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+  "logical_cpus": 4,
+  "note": "the 4-vCPU VM of the follow-up of 2026-11-13"
+ },
+ "engines": {
+  "RustROAD": {
+   "campaign": "f90f2dd (binary of the campaign)",
+   "previous": "8d29a61f82b47c9cb26726134d8eec24823ae359",
+   "candidate": "e623e82 (same sources under crates/ as 9c569fa, rebased onto 771cb64, the merge of main)"
+  },
+  "RustSTA": {
+   "candidate": "de210a66e5cef12e9e0cb11eec8a2e11ee77f0ba (unchanged since the follow-up)"
+  }
+ },
+ "binaries_sha256": {
+  "rustroad": "21aa03e648a36fb98e91e41fa9a2aa8e11cf070d9a382c588c2fdfec6b044d01",
+  "previous_rustroad": "637cb51bef451a3a896ae5d144328960c2cd4452503c7854bde791d3b1a323c6",
+  "campaign_rustroad": "fde7f04c182bf9b1f980afda22dbc4e473143b4668ae3517b9b96d137f9bcefd",
+  "ruststa": "b4a48fe196868376e539a1c507088321e9a69772541d9f78fe6f58e238d79169",
+  "rusteda": "c902a152126ccc5c3f1eb19c80b3343628d75e1ff03befef3f15127a01ddee6f",
+  "rusteda_flow": "a48ec94d5575fe3671b950bdb3dfab0496a561581cee2cfdbb2eac070ecb6701"
+ },
+ "full_run": {
+  "steps_completed": 114,
+  "steps_total": 114,
+  "wall_seconds": 532.694077709,
+  "executor": "rusteda flow exec (campaign binary)",
+  "inputs": "the 2026-11-13 campaign prepared inputs, recipe and host copy",
+  "outputs_identical_to_campaign": {
+   "backend/ibex_sram_bench.gds": {
+    "campaign": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+    "followup": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107"
+   },
+   "logs/be_def.stdout": {
+    "campaign": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+    "followup": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0"
+   },
+   "backend/native.nom.spef": {
+    "campaign": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+    "followup": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+   },
+   "logs/be_netlist.stdout": {
+    "campaign": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+    "followup": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7"
+   },
+   "logs/be_powered.stdout": {
+    "campaign": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+    "followup": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076"
+   },
+   "frontend/mapped.v": {
+    "campaign": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+    "followup": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40"
+   }
+  },
+  "shared_gates": {
+   "drc": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "antenna": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "latchup": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "extraction": {
+    "exit_code": 0,
+    "status": "extracted_not_qualified",
+    "campaign_status": "extracted_not_qualified"
+   },
+   "timing": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "lvs": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "simulation": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "logic": {
+    "exit_code": 0,
+    "status": {
+     "synthesis_equivalence": "proven",
+     "final_equivalence": "proven",
+     "summary": "passed"
+    },
+    "campaign_status": {
+     "synthesis_equivalence": "proven",
+     "final_equivalence": "proven",
+     "summary": "passed"
+    }
+   },
+   "density": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   }
+  }
+ },
+ "ab": {
+  "protocol": "ab3.py: per repetition and thread count, the campaign binary, 8d29a61, e623e82 and OpenRCX's black-box replay, in an order shifted by one each repetition; repetition 0 is a warm-up and is excluded; heavy and build locks held; GNU time",
+  "summary": {
+   "per_contender": {
+    "extraction/t2/8d29a61": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 5.231,
+      "min": 4.884,
+      "max": 5.651
+     },
+     "cpu_seconds": {
+      "median": 9.94,
+      "min": 9.3,
+      "max": 10.68
+     },
+     "peak_rss_kib": {
+      "median": 249036,
+      "min": 247928,
+      "max": 249904
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/campaign": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 6.798,
+      "min": 6.432,
+      "max": 7.363
+     },
+     "cpu_seconds": {
+      "median": 12.18,
+      "min": 11.65,
+      "max": 13.28
+     },
+     "peak_rss_kib": {
+      "median": 311276,
+      "min": 285056,
+      "max": 312212
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/e623e82": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 4.77,
+      "min": 4.37,
+      "max": 4.995
+     },
+     "cpu_seconds": {
+      "median": 9.05,
+      "min": 8.33,
+      "max": 9.43
+     },
+     "peak_rss_kib": {
+      "median": 250808,
+      "min": 249532,
+      "max": 253248
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/openrcx": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.143,
+      "min": 2.933,
+      "max": 3.351
+     },
+     "cpu_seconds": {
+      "median": 3.12,
+      "min": 2.92,
+      "max": 3.31
+     },
+     "peak_rss_kib": {
+      "median": 201496,
+      "min": 201076,
+      "max": 201832
+     }
+    },
+    "extraction/t4/8d29a61": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 2.821,
+      "min": 2.713,
+      "max": 3.04
+     },
+     "cpu_seconds": {
+      "median": 9.85,
+      "min": 9.51,
+      "max": 10.64
+     },
+     "peak_rss_kib": {
+      "median": 262628,
+      "min": 259200,
+      "max": 265736
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/campaign": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.997,
+      "min": 3.833,
+      "max": 4.198
+     },
+     "cpu_seconds": {
+      "median": 12.15,
+      "min": 11.5,
+      "max": 12.63
+     },
+     "peak_rss_kib": {
+      "median": 319520,
+      "min": 292828,
+      "max": 322724
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/e623e82": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 2.62,
+      "min": 2.419,
+      "max": 2.856
+     },
+     "cpu_seconds": {
+      "median": 9.06,
+      "min": 8.49,
+      "max": 10.01
+     },
+     "peak_rss_kib": {
+      "median": 264848,
+      "min": 262964,
+      "max": 271576
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/openrcx": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.081,
+      "min": 2.927,
+      "max": 3.385
+     },
+     "cpu_seconds": {
+      "median": 3.07,
+      "min": 2.92,
+      "max": 3.36
+     },
+     "peak_rss_kib": {
+      "median": 201828,
+      "min": 201516,
+      "max": 202260
+     }
+    },
+    "identity": {}
+   },
+   "paired_wall_ratio": {
+    "t2/e623e82_over_campaign": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.701,
+     "min": 0.64,
+     "max": 0.761
+    },
+    "t2/e623e82_over_8d29a61": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.906,
+     "min": 0.828,
+     "max": 0.987
+    },
+    "t2/e623e82_over_openrcx": {
+     "rotations": 15,
+     "faster_in": 0,
+     "median": 1.491,
+     "min": 1.41,
+     "max": 1.669
+    },
+    "t4/e623e82_over_campaign": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.659,
+     "min": 0.592,
+     "max": 0.716
+    },
+    "t4/e623e82_over_8d29a61": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.925,
+     "min": 0.831,
+     "max": 0.986
+    },
+    "t4/e623e82_over_openrcx": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.829,
+     "min": 0.744,
+     "max": 0.92
+    }
+   }
+  }
+ },
+ "development_ab": {
+  "protocol": "the same protocol, run once before the integration on the development build of 9c569fa (same sources under crates/ as e623e82) on a workspace copy whose receipt that build wrote; OpenRCX on the campaign's extraction script, whose DEF is byte-identical to int4's",
+  "rows": "dev-ab-runs.jsonl",
+  "summary": {
+   "per_contender": {
+    "extraction/t2/8d29a61": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 5.221,
+      "min": 4.821,
+      "max": 5.532
+     },
+     "cpu_seconds": {
+      "median": 9.89,
+      "min": 9.2,
+      "max": 10.53
+     },
+     "peak_rss_kib": {
+      "median": 248712,
+      "min": 248120,
+      "max": 249832
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/9c569fa": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 4.677,
+      "min": 4.424,
+      "max": 5.041
+     },
+     "cpu_seconds": {
+      "median": 8.88,
+      "min": 8.42,
+      "max": 9.6
+     },
+     "peak_rss_kib": {
+      "median": 250920,
+      "min": 249656,
+      "max": 252176
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/campaign": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 6.9,
+      "min": 6.497,
+      "max": 7.156
+     },
+     "cpu_seconds": {
+      "median": 12.41,
+      "min": 11.63,
+      "max": 12.93
+     },
+     "peak_rss_kib": {
+      "median": 310480,
+      "min": 287016,
+      "max": 312016
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/openrcx": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.185,
+      "min": 2.925,
+      "max": 3.334
+     },
+     "cpu_seconds": {
+      "median": 3.17,
+      "min": 2.9,
+      "max": 3.3
+     },
+     "peak_rss_kib": {
+      "median": 201384,
+      "min": 200896,
+      "max": 201884
+     }
+    },
+    "extraction/t4/8d29a61": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 2.908,
+      "min": 2.75,
+      "max": 3.076
+     },
+     "cpu_seconds": {
+      "median": 10.04,
+      "min": 9.63,
+      "max": 10.74
+     },
+     "peak_rss_kib": {
+      "median": 262920,
+      "min": 260272,
+      "max": 267820
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/9c569fa": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 2.643,
+      "min": 2.521,
+      "max": 2.917
+     },
+     "cpu_seconds": {
+      "median": 9.14,
+      "min": 8.66,
+      "max": 10.01
+     },
+     "peak_rss_kib": {
+      "median": 265768,
+      "min": 262756,
+      "max": 270420
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/campaign": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 4.091,
+      "min": 3.814,
+      "max": 4.372
+     },
+     "cpu_seconds": {
+      "median": 12.41,
+      "min": 11.61,
+      "max": 13.2
+     },
+     "peak_rss_kib": {
+      "median": 318420,
+      "min": 292348,
+      "max": 322728
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/openrcx": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.163,
+      "min": 2.87,
+      "max": 3.418
+     },
+     "cpu_seconds": {
+      "median": 3.14,
+      "min": 2.86,
+      "max": 3.39
+     },
+     "peak_rss_kib": {
+      "median": 201676,
+      "min": 201420,
+      "max": 201980
+     }
+    },
+    "identity": {}
+   },
+   "paired_wall_ratio": {
+    "t2/9c569fa_over_campaign": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.7,
+     "min": 0.618,
+     "max": 0.753
+    },
+    "t2/9c569fa_over_8d29a61": {
+     "rotations": 15,
+     "faster_in": 14,
+     "median": 0.911,
+     "min": 0.858,
+     "max": 1.017
+    },
+    "t2/9c569fa_over_openrcx": {
+     "rotations": 15,
+     "faster_in": 0,
+     "median": 1.544,
+     "min": 1.339,
+     "max": 1.721
+    },
+    "t4/9c569fa_over_campaign": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.655,
+     "min": 0.612,
+     "max": 0.703
+    },
+    "t4/9c569fa_over_8d29a61": {
+     "rotations": 15,
+     "faster_in": 14,
+     "median": 0.909,
+     "min": 0.852,
+     "max": 1.042
+    },
+    "t4/9c569fa_over_openrcx": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.838,
+     "min": 0.754,
+     "max": 0.903
+    }
+   }
+  }
+ }
+}

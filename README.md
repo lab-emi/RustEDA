@@ -81,7 +81,7 @@ violations** where LibreLane's layout has 112.
 | RustSys vs Yosys + ABC (LibreLane script) | **33.8× faster** (47.4× in direct mode) | **6.6× less** | 1.8 % less area, logic depth 36 vs 40, equivalence proven |
 | RustSTA vs OpenSTA | **1.6× faster** at 2 threads, **2.0×** at 4 | **29.5 % less** at 2 threads, **12.6 % less** at 4³ | worst slacks within 0.270 ps |
 | RustROAD routing vs OpenROAD (in the flow) | **7.8× faster** | — | 7.7 % less wire, 1.3 % fewer vias |
-| RustROAD extraction vs OpenRCX | level at 4 threads (0.91×, faster in 15 of 15 runs, ranges overlap), **1.64× slower** at 2³ | **1.3× more**³ | total capacitance 6.0 % above OpenRCX's |
+| RustROAD extraction vs OpenRCX | narrowly **faster** at 4 threads (0.85×, faster in 30 of 30 runs; ranges apart in one of two A/Bs), **1.52× slower** at 2³ | **1.3× more**³ | total capacitance 6.0 % above OpenRCX's |
 | RustROAD GDS export vs KLayout | **2.8× faster** | **2.0× less** | — |
 | RustSpice vs ngspice-45 (extracted RC nets) | **4.1–7.0× faster** | **1.4–2.1× less** | closer to the reference in 10 of 10 cases on the nominal grid, 6 of 10 at each simulator's own output points |
 
@@ -89,11 +89,11 @@ violations** where LibreLane's layout has 112.
 moved to after a container restart ([shared gates](docs/benchmarks.md#shared-gates-2026-11-13)).
 ² RustEDA's flow time includes its own foundry DRC, antenna and LVS; LibreLane's does not.
 ³ After the campaign: RustSTA `de210a6` ([RustSTA peak memory and RustROAD extraction](docs/benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13))
-and RustROAD `8d29a61` ([RustROAD extraction, second round](docs/benchmarks.md#rustroad-extraction-second-round-2026-11-14)) against OpenSTA, OpenRCX and the
+and RustROAD `e623e82` ([RustROAD extraction, third round](docs/benchmarks.md#rustroad-extraction-third-round-2026-11-14)) against OpenSTA, OpenRCX and the
 campaign's binaries in the same runs. In the campaign, RustSTA used
 13.6 % less at 2 threads and 11.8 % more at 4, and RustROAD's extraction was 1.22× slower at 4 threads and 2.19× at 2.
 
-LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. Against the three losses of 2026-11-05, in same-load runs: repair before global routing now takes 0.73× the time of LibreLane's two pre-route resizer steps (ranges do not overlap; 1.18× on 2026-11-05), OpenRCX on RustEDA's layout is level with its time on LibreLane's (1.00×, ranges overlap; 1.36× on 2026-11-05) and the latch-up check on RustEDA's layout takes 0.76× its time on LibreLane's (1.11× with the checker of that campaign). RustEDA is still not faster or not better everywhere: RustROAD's standalone extraction took 1.22× OpenRCX's time at 4 threads in the campaign and, after two changes since, is level at 4 threads (0.91×, faster in every run but with overlapping ranges) and 1.64× slower at 2; the timing gate is level (0.98×, ranges overlap) and its layout keeps less hold margin. RustSTA's peak memory at 4 threads, 11.8 % above OpenSTA's in the campaign, is 12.6 % below it since a change after the campaign ([details](docs/benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)). [All stages, gates and losses](docs/benchmarks.md#ibex-host-campaign-2026-11-13)
+LibreLane's layout fails the shared timing gate (112 maximum-capacitance and fanout violations at TT and SS) and its equivalence check does not complete, so the receipt keeps its own ratio fields null under its publication rule; the multiples here divide the recorded times. Stages are paired by phase, not as identical tasks. Against the three losses of 2026-11-05, in same-load runs: repair before global routing now takes 0.73× the time of LibreLane's two pre-route resizer steps (ranges do not overlap; 1.18× on 2026-11-05), OpenRCX on RustEDA's layout is level with its time on LibreLane's (1.00×, ranges overlap; 1.36× on 2026-11-05) and the latch-up check on RustEDA's layout takes 0.76× its time on LibreLane's (1.11× with the checker of that campaign). RustEDA is still not faster or not better everywhere: RustROAD's standalone extraction took 1.22× OpenRCX's time at 4 threads in the campaign and, after three changes since, is narrowly faster at 4 threads (0.85×, faster in all 30 runs of two A/Bs; the ranges are apart in one and overlap by 47 ms in the other) and still 1.52× slower at 2; the timing gate is level (0.98×, ranges overlap) and its layout keeps less hold margin. RustSTA's peak memory at 4 threads, 11.8 % above OpenSTA's in the campaign, is 12.6 % below it since a change after the campaign ([details](docs/benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)). [All stages, gates and losses](docs/benchmarks.md#ibex-host-campaign-2026-11-13)
 
 ## Latest development · 2026-11-13
 
@@ -143,9 +143,9 @@ own extraction took 1.22× OpenRCX's time at 4 threads (2.19× at 2; level at
 threads was 11.8 % above OpenSTA's (13.6 % below at 2 threads). Since then, in
 same-load runs against the campaign's binaries, RustSTA `de210a6` uses 12.6 %
 less peak memory than OpenSTA at 4 threads ([details](docs/benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)),
-and RustROAD `8d29a61` extracts in 0.71× its campaign time, level with OpenRCX at
-4 threads (0.91×, faster in all 15 runs but with overlapping ranges) and still
-1.64× slower at 2 ([details](docs/benchmarks.md#rustroad-extraction-second-round-2026-11-14)). The native
+and RustROAD `e623e82` extracts in 0.66× its campaign time, narrowly faster than
+OpenRCX at 4 threads (0.85×, faster in all 30 runs of two A/Bs, ranges apart in
+one) and still 1.52× slower at 2 ([details](docs/benchmarks.md#rustroad-extraction-third-round-2026-11-14)). The native
 layout also keeps less hold margin (TT 0.108 ns against 0.172 ns, both met).
 
 The host is again a different virtual machine, and every LibreLane stage took

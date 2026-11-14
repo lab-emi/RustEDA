@@ -13,15 +13,15 @@ authors = ["RustEDA contributors"]
 repository = "https://github.com/lab-emi/RustEDA"
 
 [workspace.dependencies]
-rusteda-core = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "6b2fa7346e29971c459323594f00f213598fbf2b" }
-rusteda-workspace = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "6b2fa7346e29971c459323594f00f213598fbf2b" }
+rusteda-core = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "ef598d153168a73899c73b33c3ce84ff42d809ea" }
+rusteda-workspace = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "ef598d153168a73899c73b33c3ce84ff42d809ea" }
 # No member uses rusteda-compute; `./dev shared` requires every consumer of the foundation to pin
 # all five shared crates at the recorded revision, so Cargo reports this one entry as unused.
-rusteda-compute = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "6b2fa7346e29971c459323594f00f213598fbf2b" }
-rusteda-formats = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "6b2fa7346e29971c459323594f00f213598fbf2b" }
+rusteda-compute = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "ef598d153168a73899c73b33c3ce84ff42d809ea" }
+rusteda-formats = { git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "ef598d153168a73899c73b33c3ce84ff42d809ea" }
 rusteda-flow = { path = "crates/apps/rusteda-flow" }
 rusteda-studio = { path = "crates/apps/rusteda-studio", default-features = false }
-rusteda-cli-shared = { package = "rusteda-cli-common", git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "6b2fa7346e29971c459323594f00f213598fbf2b" }
+rusteda-cli-shared = { package = "rusteda-cli-common", git = "https://github.com/lab-emi/RustEDA-Common.git", rev = "ef598d153168a73899c73b33c3ce84ff42d809ea" }
 clap = { version = "=4.6.7", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "color", "suggestions"] }
 clap_complete = { version = "=4.6.11", default-features = false }
 serde = { version = "=1.0.228", features = ["derive"] }

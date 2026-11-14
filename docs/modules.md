@@ -43,9 +43,9 @@ shorter end-to-end time (3.5× with every check serial). Two module head-to-head
 were losses in the campaign: RustROAD's extraction took 1.22× OpenRCX's time at
 4 threads, and RustSTA's peak memory at 4 threads was 11.8 % above OpenSTA's.
 Since then RustSTA's is 12.6 % below OpenSTA's, and RustROAD's extraction is
-level with OpenRCX at 4 threads (0.91×, ranges overlap) but still 1.64× slower at 2
+narrowly faster than OpenRCX at 4 threads (0.85×; ranges apart in one of two A/Bs) but still 1.52× slower at 2
 ([after the campaign](benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13),
-[second round](benchmarks.md#rustroad-extraction-second-round-2026-11-14)). The earlier
+[second round](benchmarks.md#rustroad-extraction-second-round-2026-11-14), [third round](benchmarks.md#rustroad-extraction-third-round-2026-11-14)). The earlier
 2026-11-05 and 2026-11-02 host campaigns are kept on the same page; the
 2026-11-05 receipt's commit IDs predate the rewrite of the branch's commit
 metadata, and [commit-map.json](benchmarks/commit-map.json) maps them to the
