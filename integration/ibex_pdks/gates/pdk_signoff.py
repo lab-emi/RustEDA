@@ -138,6 +138,8 @@ def main(args) -> int:
             plan["macros"] = {}
             for name, entry in macros.items():
                 base = baseline_dir(host, gate, engine, name)
+                if not (base / "summary.json").is_file():
+                    raise SystemExit(f"macro baseline missing for {gate}/{name}: run macro_baseline.py first ({base})")
                 plan["macros"][name] = dict(gds=profile.file(entry["gds"]), instances=len(entry["instances"]),
                                             baseline=dict(report=common.identity(base / "drc.lyrdb"),
                                                           summary=common.identity(base / "summary.json")))

@@ -17,7 +17,8 @@ macro master in the layout must equal that of the macro's own GDS on every layer
 run fails.
 
 Marker sources are KLayout report databases (hierarchical: an item belongs to the cell it was
-reported in and counts once per flat occurrence of that cell) or box lists in top-cell coordinates.
+reported in and counts once per flat occurrence of that cell; an item of a cell variant is placed
+by the report's own references) or box lists in top-cell coordinates.
 Zero-area geometry (edges, edge pairs) is widened by one database unit on both sides, the same
 way in the baseline and in the layout. Memory: the layout is read once; flat occurrences are
 capped by `limits.occurrences`.
@@ -107,20 +108,50 @@ class Markers:
         for polygon in polygons:
             cell.shapes(layer).insert(polygon)
 
+    def variant_placements(self, database, cell, depth=0):
+        """Flat placements of a report cell that is one variant of a layout cell, from the report's own references."""
+        if depth > 32:
+            fail("REPORT_REFERENCE_DEPTH")
+        references = list(cell.each_reference())
+        if not references:
+            return [pya.ICplxTrans()] if cell.name() == self.top.name and not cell.variant() else []
+        to_dbu = pya.CplxTrans(self.layout.dbu)
+        result = []
+        for reference in references:
+            local = to_dbu.inverted() * reference.trans() * to_dbu
+            parent = database.cell_by_id(reference.parent_cell_id())
+            result += [above * local for above in self.variant_placements(database, parent, depth + 1)]
+            if len(result) > self.limit:
+                fail("ATTRIBUTION_OCCURRENCE_BUDGET")
+        return result
+
     def load(self, source):
         if source["kind"] == "lyrdb":
             database = pya.ReportDatabase("markers")
             database.load(source["path"])
             dbu = self.layout.dbu
+            self.variant_items = 0
             for item in database.each_item():
                 rule = database.category_by_id(item.category_id()).path().replace("'", "")
-                name = database.cell_by_id(item.cell_id()).name()
-                cell = self.layout.cell(name)
+                report_cell = database.cell_by_id(item.cell_id())
                 polygons = []
                 for value in item.each_value():
                     converted = to_polygons(value, dbu)
                     if converted:
                         polygons += converted
+                if report_cell.variant() and polygons:
+                    # The deck gave this marker to some instances of a cell only: place it where
+                    # the report says, in top-cell coordinates.
+                    self.variant_items += 1
+                    placements = self.variant_placements(database, report_cell)
+                    flat = [polygon.transformed(trans) for trans in placements for polygon in polygons]
+                    self.layer(rule)
+                    if flat:
+                        self.add(rule, self.top, flat)
+                    else:
+                        self.add(rule, None, polygons)
+                    continue
+                cell = self.layout.cell(report_cell.layout_name() or report_cell.name())
                 self.add(rule, cell, polygons or None)
             self.declared = sorted(c.path().replace("'", "") for c in database.each_category() if c.num_items() == 0)
         elif source["kind"] == "boxes":
@@ -258,6 +289,7 @@ def main():
     result = dict(schema="rusteda.pdk-gate.marker-attribution.v1", status="completed", top=config["top"],
                   dbu_um=layout.dbu, rule=__doc__.split("Rule. ", 1)[1].split("\n\n", 1)[0].replace("\n", " "),
                   macros=baseline_facts, macro_geometry="identical to the macro GDS on every layer",
+                  instance_specific_items=getattr(full, "variant_items", 0),
                   rules=rules, totals=totals, rules_without_markers=len(full.declared),
                   gating_rules={k: v["gating"] for k, v in rules.items() if v["gating"]},
                   macro_interior_rules={k: v["macro_interior"] for k, v in rules.items() if v["macro_interior"]})
