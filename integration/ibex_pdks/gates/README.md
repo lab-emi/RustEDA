@@ -116,8 +116,10 @@ instances) and `macro_baseline_reproduced`; two layouts with the same macros mus
 
 ### `drc` and `antenna` (Magic, SKY130): `magic_drc.py`, `magic_antenna.py`
 
-Magic reads the macro LEF first, so the SRAM is its abstract view (pins and obstructions) and
-the GDS definition of that cell is not loaded. Magic checks all top-level and standard-cell
+Magic reads the macro LEF first, so the SRAM is its abstract view (pins and obstructions). Its
+input is a copy of the final GDS in which the SRAM master is an empty cell (`prune_macros.py`:
+name and placements kept, shapes and private subcells dropped, nothing else changed; the copy's
+hash and the number of cells removed are in the report). Magic checks all top-level and standard-cell
 geometry, including its spacing to the SRAM's pins and obstructions, and nothing inside the SRAM;
 the SRAM interior and its interaction with the routing are covered by the KLayout deck above.
 
@@ -159,7 +161,8 @@ Black-box-macro LVS.
 - The SRAM master is the only black box. In the layout it is the LEF abstract view, whose ports
   are the LEF pins; in the reference it is a subcircuit declaration with the same LEF pins.
   Netgen (`-blackbox`, pins matched by name) therefore checks every pin of every SRAM instance
-  against the net the powered netlist gives it, supplies included.
+  against the net the powered netlist gives it, supplies included. The report requires Netgen's
+  pin table of the SRAM to list exactly the LEF pins on both sides and the same instance count.
 - Fill, decap, tap and end-cap cells are not black boxes. Which device-less cells Netgen ignores
   is decided by the PDK setup file (SKY130: fill and tap cells when the layout comes from GDS).
   Tie cells are ordinary cells (`conb_1` on SKY130, `tieh`/`tiel` on GF180MCU).
@@ -187,8 +190,8 @@ both hashes).
 The IHP method with the macro interface read from `rtl/sram_bb.v`: the SRAM instances are cut out
 of the RTL text, Yosys exposes the same pins of the netlist, RustSys' RTL interpreter exports the
 obligations of both sides, and external ABC `&cec` must prove them equivalent, once for the
-synthesis netlist and once for the final netlist. `unverified` means no proof was reached; it is
-not a counterexample.
+synthesis netlist and once for the final netlist. `failed` means ABC found a difference;
+`unverified` means no proof was reached, which is not a counterexample.
 
 ### `density`: `density.py`
 

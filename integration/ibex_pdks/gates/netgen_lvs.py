@@ -10,7 +10,7 @@ Input schema `rusteda.pdk-gate.netgen-lvs.v1`:
   cell_spice                  pinned device-level SPICE libraries of the standard cells
   macros                      {master: instance count}
   netgen_env                  environment switches the PDK setup file reads (profile data)
-  tools                       {magic, netgen, gnu_time}; timeout_seconds
+  tools                       {magic, netgen, klayout, gnu_time}; timeout_seconds
 
 Scope. Standard cells are compared at device level: Magic extracts their transistors from the
 final GDS and Netgen matches them against the PDK cell SPICE. Macro masters are black boxes on
@@ -192,7 +192,9 @@ def main() -> int:
         scratch = output / "ext"
         scratch.mkdir()
         layout = output / "layout.spice"
-        env.update(GATE_GDS=str(gds), GATE_TOP=top, GATE_DIR=str(scratch), GATE_OUT=str(layout))
+        magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
+        summary["magic_input"] = pruned
+        env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_DIR=str(scratch), GATE_OUT=str(layout))
         seconds = int(config["timeout_seconds"])
         run = common.run_tool([tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_extract.tcl"],
                               output / "magic.log", output / "magic.time", tools["gnu_time"], seconds, env=env, cwd=output)

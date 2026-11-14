@@ -9,7 +9,7 @@ Input schema `rusteda.pdk-gate.magic-drc.v1`:
   pdk_root        exported as PDK_ROOT, which the start-up file reads
   style           DRC style, echoed back by Magic and compared
   abstract_lefs   pinned macro LEFs; abstract_cells: the macro masters they define
-  tools           {magic, gnu_time}; timeout_seconds
+  tools           {magic, klayout, gnu_time}; timeout_seconds
 
 Magic decides every rule. Macro masters are abstract views read from their LEF (pins and
 obstructions): Magic checks all top-level and standard-cell geometry, including its spacing to
@@ -73,7 +73,8 @@ def main() -> int:
     tools = {name: common.verify(record, name) for name, record in config["tools"].items()}
     magicrc, env = common.magic_setup(config, tools)
     listing = output / "errors.txt"
-    env.update(GATE_GDS=str(gds), GATE_TOP=top, GATE_STYLE=config["style"], GATE_OUT=str(listing))
+    magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
+    env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_STYLE=config["style"], GATE_OUT=str(listing))
     command = [tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_drc.tcl"]
     common.save_json(output / "command.json", [str(c) for c in command])
     run = common.run_tool(command, output / "magic.log", output / "magic.time", tools["gnu_time"],
@@ -81,7 +82,7 @@ def main() -> int:
     summary = dict(schema="rusteda.pdk-gate.magic-drc-result.v1", status="failed", complete=False, top=top,
                    gds=config["gds"], magicrc=config["magicrc"], tech_files=config["tech_files"], style=config["style"],
                    abstract_cells=config["abstract_cells"], abstract_lefs=config["abstract_lefs"], tools=config["tools"],
-                   script=common.identity(HERE / "magic_drc.tcl"),
+                   script=common.identity(HERE / "magic_drc.tcl"), magic_input=pruned,
                    scope="all top-level and standard-cell geometry; macro masters are LEF abstract views",
                    engine=dict(exit_code=run["exit_code"], killed=run["killed"], wall_seconds=run["wall_seconds"],
                                peak_rss_kib=run["peak_rss_kib"]))

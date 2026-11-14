@@ -24,7 +24,8 @@ independent RTL interpreter exports the proof obligations of both sides (every o
 clock, enable, asynchronous control and next state of every state element, for arbitrary
 states and inputs, X and Z read as zero), the state relation is verified, and external ABC
 `&cec` must prove the two networks equivalent. The macro interior is opaque. No saved cut,
-relation or verdict is an input.
+relation or verdict is an input. Status: `passed` (both proofs), `failed` (ABC found a
+difference) or `unverified` (no proof was reached, which is not a counterexample).
 """
 from __future__ import annotations
 
@@ -65,6 +66,11 @@ def quoted(path) -> str:
 def masked_comments(text) -> str:
     pattern = r'//[^\n]*|/\*[\s\S]*?\*/|"(?:[^"\\]|\\.)*"'
     return re.sub(pattern, lambda match: "".join("\n" if c == "\n" else " " for c in match[0]), text)
+
+
+def span(width) -> str:
+    """Range of a port declaration; a one-bit port is a scalar, as Yosys writes it."""
+    return f"[{width - 1}:0] " if width > 1 else ""
 
 
 def close_paren(text, start, limit=65536) -> int:
@@ -137,7 +143,7 @@ class Job:
         common.require(any(d == "output" for d, _ in ports.values()), "MACRO_WITHOUT_OUTPUT")
         black = self.root / "macro-functional-bb.v"
         black.write_text("(* blackbox *)\nmodule " + self.macro + " (" + ", ".join(ports) + ");\n" + "".join(
-            f"  {direction} [{width - 1}:0] {name};\n" for name, (direction, width) in ports.items()) + "endmodule\n")
+            f"  {direction} {span(width)}{name};\n" for name, (direction, width) in ports.items()) + "endmodule\n")
         return ports, supplies, black
 
     def cut_original(self, ports, target, exposed_unused):
@@ -186,15 +192,15 @@ class Job:
                 if direction == "input":
                     common.require(bool(expression), f"RTL_MACRO_INPUT_UNCONNECTED: {match[1]}.{name}")
                     headers.append(external)
-                    declarations.append(f"  output wire [{width - 1}:0] {external};")
+                    declarations.append(f"  output wire {span(width)}{external};")
                     assignments.append(f"  assign {external} = {expression};")
                 elif expression:
                     headers.append(external)
-                    declarations.append(f"  input wire [{width - 1}:0] {external};")
+                    declarations.append(f"  input wire {span(width)}{external};")
                     assignments.append(f"  assign {expression} = {external};")
                 elif (match[1], name) in exposed_unused:
                     headers.append(external)
-                    declarations.append(f"  input wire [{width - 1}:0] {external};")
+                    declarations.append(f"  input wire {span(width)}{external};")
             left, right = body_start + match.start(), last + 1 + suffix.end()
             edits.append(dict(instance=match[1], start=left, end=right, original=source[left:right],
                               replacement="\n".join(assignments)))
@@ -363,7 +369,9 @@ def main() -> int:
             failures["state"] = "RTL state bit counts differ between the two proofs"
         for record in records:
             common.verify(record, "input after run")
-        summary.update(status="passed" if not failures else "unverified", complete=not failures, failures=failures,
+        disproven = any(text.startswith("NOT_EQUIVALENT") for text in failures.values())
+        summary.update(status="passed" if not failures else "failed" if disproven else "unverified",
+                       complete=not failures, failures=failures,
                        top=config["top"], macro=config["macro"], macro_instances=config["macro_instances"],
                        macro_functional_ports={k: list(v) for k, v in ports.items()}, macro_supply_ports=supplies,
                        rtl_sha256=config["rtl"]["sha256"], synthesis_netlist_sha256=config["synthesis_netlist"]["sha256"],

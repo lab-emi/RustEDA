@@ -18,8 +18,8 @@ Input schema `rusteda.pdk-gate.simulation.v1`:
 
 As in the IHP recipe's `reference_simulation.py`: Yosys reads the netlist to a structural JSON
 (it must be flat and within the instance and pin budgets), cells that the LEF declares with
-supply pins only and that have no Liberty model get empty declarations (the pinned policy of
-`signoff_timing.py`), and Icarus compiles the test bench, the netlist and the original models.
+supply pins only and that have no Liberty model (the pinned policy of `signoff_timing.py`) get
+empty declarations unless the vendor models define them, and Icarus compiles the test bench, the netlist and the original models.
 The gate passes when the simulation ends with the pass line. It is a bounded functional test,
 not an equivalence proof.
 """
@@ -29,6 +29,7 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import re
 import sys
 from types import SimpleNamespace
 
@@ -105,12 +106,18 @@ def main() -> int:
             target = output / ("edited-" + vendor[index].name)
             edits.append(edited_model(vendor[index], edit, target))
             vendor[index] = target
+        # Declarations only for supply-only cells the vendor models do not define themselves.
+        declared = set()
+        for path in vendor:
+            declared.update(re.findall(r"^\s*(?:module|macromodule)\s+([A-Za-z_][A-Za-z0-9_$]*)", Path(path).read_text(errors="replace"), re.M))
+        stubs = sorted(physical - declared)
+        (output / "physical-only-sim.v").write_text("".join("module " + name + "(); endmodule\n" for name in stubs))
         command = [tool["iverilog"], "-g2012", "-s", "tb"]
         for define in config.get("defines", []):
             command.append("-D" + define)
         for directory in config.get("include_dirs", []):
             command += ["-I", directory]
-        command += ["-o", output / "sim", paths["tb"], paths["netlist"], output / "physical-only.v", *vendor]
+        command += ["-o", output / "sim", paths["tb"], paths["netlist"], output / "physical-only-sim.v", *vendor]
         common.save_json(output / "compile-command.json", [str(c) for c in command])
         stage("compile", command, 600)
         stage("simulate", [tool["vvp"], output / "sim"], 1800)
@@ -120,7 +127,8 @@ def main() -> int:
             common.verify(record, "input after run")
         result.update(status="passed", complete=True, top=top, netlist_sha256=files["netlist"]["sha256"],
                       original_rtl_sha256=files["rtl"]["sha256"], testbench=files["tb"], instances=len(cells),
-                      macros=macros, physical_only_models=context.result["physical_only_models"], model_edits=edits,
+                      macros=macros, physical_only_models=context.result["physical_only_models"],
+                      empty_declarations=stubs, model_edits=edits,
                       defines=config.get("defines", []), vendor=config["vendor"], tools=tools,
                       log=common.identity(output / "simulate.log"),
                       scope="vendor cell and macro models, both memory banks at their boundary addresses, byte masks and "

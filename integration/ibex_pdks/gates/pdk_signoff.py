@@ -144,7 +144,7 @@ def main(args) -> int:
             return "klayout_drc.py", plan
         common.require(engine == "magic", f"ENGINE: {engine}")
         plan = dict(top=top, gds=final["gds"], timeout_seconds=int(spec.get("timeout_seconds", 14400)),
-                    tools={k: tools[k] for k in ("magic", "gnu_time")}, **magic_fields(profile, host))
+                    tools={k: tools[k] for k in ("magic", "klayout", "gnu_time")}, **magic_fields(profile, host))
         if gate == "drc":
             plan.update(schema="rusteda.pdk-gate.magic-drc.v1", style=spec["style"])
             return "magic_drc.py", plan
@@ -224,7 +224,7 @@ def main(args) -> int:
                     cell_spice=[profile.file(p) for p in spec["cell_spice"]],
                     macros={name: len(entry["instances"]) for name, entry in macros.items()},
                     netgen_env=spec.get("netgen_env", {}), timeout_seconds=int(spec.get("timeout_seconds", 7200)),
-                    tools={k: tools[k] for k in ("magic", "netgen", "gnu_time")}, **magic_fields(profile, host))
+                    tools={k: tools[k] for k in ("magic", "netgen", "klayout", "gnu_time")}, **magic_fields(profile, host))
         code, report = helper("lvs", "netgen_lvs.py", plan, 2 * int(spec.get("timeout_seconds", 7200)) + 300)
         summary["gates"]["lvs"] = dict(exit_code=code, report=report)
         save()

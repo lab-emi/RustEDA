@@ -303,6 +303,21 @@ def magic_setup(config, tools):
     return magicrc, env
 
 
+def pruned_gds(config, tools, output, gds):
+    """The Magic input: the GDS with the abstract macro masters emptied (`prune_macros.py`)."""
+    if not config["abstract_cells"]:
+        return gds, None
+    target, record = output / "macros-abstracted.gds", output / "macros-abstracted.json"
+    run = run_tool([tools["klayout"], "-b", "-r", Path(__file__).resolve().parent / "prune_macros.py",
+                    "-rd", f"gds_path={gds}", "-rd", f"top_name={config['top']}",
+                    "-rd", "masters=" + ",".join(config["abstract_cells"]), "-rd", f"out_path={target}",
+                    "-rd", f"record_path={record}"], output / "prune.log", output / "prune.time", tools["gnu_time"], 1800)
+    require(run["exit_code"] == 0 and target.is_file() and record.is_file(), "MACRO_PRUNE_FAILED")
+    facts = read_json(record)
+    facts.update(derived=identity(target), wall_seconds=run["wall_seconds"], peak_rss_kib=run["peak_rss_kib"])
+    return target, facts
+
+
 def magic_facts(log, abstract_cells) -> dict:
     """Facts Magic printed about its own run; refuses a missing top or a macro that is not abstract."""
     require(not re.search(r"^GATE_TOP_MISSING", log, re.M), "TOP_CELL_MISSING")

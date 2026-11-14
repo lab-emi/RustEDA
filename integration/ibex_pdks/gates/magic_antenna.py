@@ -44,7 +44,8 @@ def main() -> int:
     magicrc, env = common.magic_setup(config, tools)
     scratch = output / "ext"
     scratch.mkdir()
-    env.update(GATE_GDS=str(gds), GATE_TOP=top, GATE_DIR=str(scratch))
+    magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
+    env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_DIR=str(scratch))
     command = [tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_antenna.tcl"]
     common.save_json(output / "command.json", [str(c) for c in command])
     run = common.run_tool(command, output / "magic.log", output / "magic.time", tools["gnu_time"],
@@ -52,7 +53,7 @@ def main() -> int:
     summary = dict(schema="rusteda.pdk-gate.magic-antenna-result.v1", status="failed", complete=False, top=top,
                    gds=config["gds"], magicrc=config["magicrc"], tech_files=config["tech_files"],
                    abstract_cells=config["abstract_cells"], abstract_lefs=config["abstract_lefs"], tools=config["tools"],
-                   script=common.identity(HERE / "magic_antenna.tcl"),
+                   script=common.identity(HERE / "magic_antenna.tcl"), magic_input=pruned,
                    scope="every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
                    engine=dict(exit_code=run["exit_code"], killed=run["killed"], wall_seconds=run["wall_seconds"],
                                peak_rss_kib=run["peak_rss_kib"]))

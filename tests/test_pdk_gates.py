@@ -260,6 +260,7 @@ class LogicCut(Fixture):
     def test_every_functional_pin_becomes_a_port(self):
         text, audit = self.cut("\tRAM u_m(\n\t\t.CLK(clk),\n\t\t.D(d & 8'hf0),\n\t\t.Q(q),\n\t\t.Q2()\n\t);\n")
         self.assertIn("output wire [7:0] \\u_m.D ;", text)
+        self.assertIn("output wire \\u_m.CLK ;", text)   # one-bit ports are scalars
         self.assertIn("assign \\u_m.D  = d & 8'hf0;", text)
         self.assertIn("assign q = \\u_m.Q ;", text)
         self.assertNotIn("u_m.Q2", text)          # unconnected output, not exposed by the netlist either
