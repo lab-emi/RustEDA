@@ -1,0 +1,1281 @@
+{
+ "schema": "rusteda.host-followup.v1",
+ "date": "2026-11-14",
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+  "logical_cpus": 4,
+  "note": "the 4-vCPU VM of the follow-up of 2026-11-13"
+ },
+ "engines": {
+  "RustROAD": {
+   "campaign": "f90f2dd (binary of the campaign)",
+   "previous": "fe4b28610fa1d2ce728fa5456e0b1fa891d821f7",
+   "candidate": "8d29a61 (same sources as 7f076f5, rebased onto the docs commit db55258)"
+  },
+  "RustSTA": {
+   "candidate": "de210a66e5cef12e9e0cb11eec8a2e11ee77f0ba (unchanged since the follow-up)"
+  }
+ },
+ "binaries_sha256": {
+  "rustroad": "637cb51bef451a3a896ae5d144328960c2cd4452503c7854bde791d3b1a323c6",
+  "previous_rustroad": "0c86ccdd1b9611c4ccc3af9b70796a4af9a309e87220e48fa4c97ec482dea067",
+  "campaign_rustroad": "fde7f04c182bf9b1f980afda22dbc4e473143b4668ae3517b9b96d137f9bcefd",
+  "ruststa": "b4a48fe196868376e539a1c507088321e9a69772541d9f78fe6f58e238d79169",
+  "rusteda": "c902a152126ccc5c3f1eb19c80b3343628d75e1ff03befef3f15127a01ddee6f",
+  "rusteda_flow": "a48ec94d5575fe3671b950bdb3dfab0496a561581cee2cfdbb2eac070ecb6701"
+ },
+ "full_run": {
+  "steps_completed": 114,
+  "steps_total": 114,
+  "wall_seconds": 567.608805658,
+  "executor": "rusteda flow exec (campaign binary)",
+  "inputs": "the 2026-11-13 campaign prepared inputs, recipe and host copy",
+  "outputs_identical_to_campaign": {
+   "backend/ibex_sram_bench.gds": {
+    "campaign": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+    "followup": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107"
+   },
+   "logs/be_def.stdout": {
+    "campaign": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+    "followup": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0"
+   },
+   "backend/native.nom.spef": {
+    "campaign": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932",
+    "followup": "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+   },
+   "logs/be_netlist.stdout": {
+    "campaign": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+    "followup": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7"
+   },
+   "logs/be_powered.stdout": {
+    "campaign": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+    "followup": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076"
+   },
+   "frontend/mapped.v": {
+    "campaign": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+    "followup": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40"
+   }
+  },
+  "shared_gates": {
+   "drc": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "antenna": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "latchup": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "extraction": {
+    "exit_code": 0,
+    "status": "extracted_not_qualified",
+    "campaign_status": "extracted_not_qualified"
+   },
+   "timing": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "lvs": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "simulation": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   },
+   "logic": {
+    "exit_code": 0,
+    "status": {
+     "synthesis_equivalence": "proven",
+     "final_equivalence": "proven",
+     "summary": {
+      "schema": "rusteda.logic-signoff-result.v1",
+      "status": "passed",
+      "complete": true,
+      "scope": {
+       "reference": "original RTL independent interpreter and external ABC",
+       "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+       "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+       "reset_assumptions": [],
+       "case_assumptions": [],
+       "input_assumptions": [],
+       "macro_scope": "all functional SRAM interface bits, opaque across the memory boundary",
+       "wire_model": "none",
+       "corner": "logic",
+       "four_state_refinement": "unverified"
+      },
+      "top": "ibex_sram_bench",
+      "original_rtl_sha256": "da905268162cfbbbfdbd17f24016c9128c455207dad23b062b5f9529d0c47497",
+      "synthesis_netlist_sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+      "final_netlist_sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+      "sources": {
+       "manifest": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/plans/logic.json",
+        "sha256": "1af0c567f3af70d684c2912cc535d79909fa9eb94025705848f0a25eb10947d8",
+        "bytes": 2912
+       },
+       "rtl": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/prep/rtl/design.v",
+        "sha256": "da905268162cfbbbfdbd17f24016c9128c455207dad23b062b5f9529d0c47497",
+        "bytes": 440170
+       },
+       "synthesis_netlist": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/native-1/output/frontend/mapped.v",
+        "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+        "bytes": 1546032
+       },
+       "final_netlist": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/native-1/output/logs/be_netlist.stdout",
+        "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+        "bytes": 2049571
+       },
+       "library": {
+        "path": "/opt/eda/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+        "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+        "bytes": 9292203
+       },
+       "macro_bb": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/prep/rtl/sram_bb.v",
+        "sha256": "9bf99a1b9362568ece4d16ce650bbc26c731d5020c828ab3a6e20e95bb922e76",
+        "bytes": 743
+       },
+       "tb": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/prep/tb.sv",
+        "sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+        "bytes": 2550
+       },
+       "relation_checker": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/large_lec.py",
+        "sha256": "a1db89b99659aab991dffb604af17a13ae0c908b9baa4f6c2347967abea55b89",
+        "bytes": 19217
+       },
+       "vendor_0": {
+        "path": "/opt/eda/ez130_8t_v1p1/verilog/ez130_8t.v",
+        "sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12",
+        "bytes": 207305
+       },
+       "vendor_1": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v",
+        "sha256": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669",
+        "bytes": 6925
+       },
+       "vendor_2": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+        "sha256": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787",
+        "bytes": 3932
+       },
+       "tool_yosys": {
+        "path": "/nix/store/cfry5mn7l5qk6cy730gspaa51fahc108-yosys-0.70/bin/yosys",
+        "sha256": "f6ddbbc9579497d60f2799df28e11cacf93d93f1cdb399f049d30cb85e537838",
+        "bytes": 51180160
+       },
+       "tool_abc": {
+        "path": "/nix/store/cfry5mn7l5qk6cy730gspaa51fahc108-yosys-0.70/bin/yosys-abc",
+        "sha256": "652c020dcf6750093a6f9e9e3b99ac876865d6d70b3ec0206f93c0f934c2945c",
+        "bytes": 30765664
+       },
+       "tool_checker": {
+        "path": "/home/user/RustEDA/.work/bins/final-20261113/check_config",
+        "sha256": "172458ab09670c51f544317d0dfb796a68407caa51ebd31730cc3de86dab87c1",
+        "bytes": 29043056
+       },
+       "tool_iverilog": {
+        "path": "/nix/store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/iverilog",
+        "sha256": "6184eb3ff556d1bb0c86aaf096c15d124ed33037fcb8a4cf442d42ce09e0db82",
+        "bytes": 69520
+       },
+       "tool_vvp": {
+        "path": "/nix/store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/vvp",
+        "sha256": "3da18ee84c96bb9fe9c7a4bf4878b58a9ae6af2e3d72fde9138e10dd8b4f4b10",
+        "bytes": 1882688
+       },
+       "tool_time": {
+        "path": "/nix/store/b140qkky12n2fskhviv352sh9hphx0m9-time-1.10/bin/time",
+        "sha256": "5bf804cb413a3390c9555dd9cb181f0c378d49c673c65ed78445bce822efc399",
+        "bytes": 31040
+       },
+       "physical_lef": {
+        "path": "/opt/eda/ez130_8t_v1p1/lef/ez130_8t.lef",
+        "sha256": "841070a0650462ac9d14ec042347d0c518f5c78bc55ccbb06c2d5b3f518f55d4",
+        "bytes": 482241
+       },
+       "physical_std_tt": {
+        "path": "/opt/eda/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+        "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+        "bytes": 9292203
+       },
+       "physical_ram_tt": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C.lib",
+        "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+        "bytes": 49322
+       },
+       "physical_std_ss": {
+        "path": "/opt/eda/ez130_8t_v1p1/lib/ez130_8t_ss_1p08v_125c.lib",
+        "sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+        "bytes": 9331080
+       },
+       "physical_ram_ss": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_slow_1p08V_125C.lib",
+        "sha256": "34497364ed23734a929454b451ee9d209b16923e03b80cba258379069af1908c",
+        "bytes": 49335
+       },
+       "source_signoff_logic.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/signoff_logic.py",
+        "sha256": "19c56d0aad10c5c059cf7e371c1e54483898f150877dcfea08e40d9b0455ed27",
+        "bytes": 38740
+       },
+       "snapshot_signoff_logic.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/signoff_logic.py",
+        "sha256": "19c56d0aad10c5c059cf7e371c1e54483898f150877dcfea08e40d9b0455ed27",
+        "bytes": 38740
+       },
+       "source_signoff_lvs.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/signoff_lvs.py",
+        "sha256": "e2affc449f419f7c512b0f50b5a693d1cece8d7d5d0d9c93c7037b4ff58036f7",
+        "bytes": 33244
+       },
+       "snapshot_signoff_lvs.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/signoff_lvs.py",
+        "sha256": "e2affc449f419f7c512b0f50b5a693d1cece8d7d5d0d9c93c7037b4ff58036f7",
+        "bytes": 33244
+       },
+       "source_macro_contract.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/macro_contract.py",
+        "sha256": "2eadf6ea390aa0839f916d319e9d30bf932c148c23bef84d955b24c37cb08453",
+        "bytes": 4661
+       },
+       "snapshot_macro_contract.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/macro_contract.py",
+        "sha256": "2eadf6ea390aa0839f916d319e9d30bf932c148c23bef84d955b24c37cb08453",
+        "bytes": 4661
+       },
+       "source_signoff_timing.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/signoff_timing.py",
+        "sha256": "551298f6ededb81ee9d97bfdcde64383d4245da374b6e90b60462aa66e76bec3",
+        "bytes": 30214
+       },
+       "snapshot_signoff_timing.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/signoff_timing.py",
+        "sha256": "551298f6ededb81ee9d97bfdcde64383d4245da374b6e90b60462aa66e76bec3",
+        "bytes": 30214
+       },
+       "relation_large_lec.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/large_lec.py",
+        "sha256": "a1db89b99659aab991dffb604af17a13ae0c908b9baa4f6c2347967abea55b89",
+        "bytes": 19217
+       },
+       "relation_snapshot_large_lec.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/large_lec.py",
+        "sha256": "a1db89b99659aab991dffb604af17a13ae0c908b9baa4f6c2347967abea55b89",
+        "bytes": 19217
+       },
+       "relation_run.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/run.py",
+        "sha256": "7e731fe6580083f6dc4491d0fb7a6dff50b3288e1f8c39be136f364e31dee6a9",
+        "bytes": 30189
+       },
+       "relation_snapshot_run.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/run.py",
+        "sha256": "7e731fe6580083f6dc4491d0fb7a6dff50b3288e1f8c39be136f364e31dee6a9",
+        "bytes": 30189
+       },
+       "relation_transition.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/transition.py",
+        "sha256": "f195078c128fe9422e9553466a7882ded0362e5e4499b7b4621676505fd61504",
+        "bytes": 76412
+       },
+       "relation_snapshot_transition.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/transition.py",
+        "sha256": "f195078c128fe9422e9553466a7882ded0362e5e4499b7b4621676505fd61504",
+        "bytes": 76412
+       },
+       "relation_lec.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/lec.py",
+        "sha256": "5227a5590cb16cf67ad33fc33413c718cac26750837972205c87f6e7c3b0be75",
+        "bytes": 59282
+       },
+       "relation_snapshot_lec.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/lec.py",
+        "sha256": "5227a5590cb16cf67ad33fc33413c718cac26750837972205c87f6e7c3b0be75",
+        "bytes": 59282
+       },
+       "relation_equiv.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/equiv.py",
+        "sha256": "66130e79a9b37ca050fc99f219d5415392d9f87e4dc86a5f1426044bc48cf26f",
+        "bytes": 12958
+       },
+       "relation_snapshot_equiv.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/equiv.py",
+        "sha256": "66130e79a9b37ca050fc99f219d5415392d9f87e4dc86a5f1426044bc48cf26f",
+        "bytes": 12958
+       },
+       "relation_rtl_semantics.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/rtl_semantics.py",
+        "sha256": "1a2004162c3cdebc27a48b266927e16fe750e8a89d26db6ca4efd6ac5f0938be",
+        "bytes": 7601
+       },
+       "relation_snapshot_rtl_semantics.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/rtl_semantics.py",
+        "sha256": "1a2004162c3cdebc27a48b266927e16fe750e8a89d26db6ca4efd6ac5f0938be",
+        "bytes": 7601
+       },
+       "relation_library_models.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/library_models.py",
+        "sha256": "cadd7dd1dd69e2e2d3dd871f1fb63f5db5eec4ac5595b896d395e8407ab1a4c4",
+        "bytes": 12245
+       },
+       "relation_snapshot_library_models.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/library_models.py",
+        "sha256": "cadd7dd1dd69e2e2d3dd871f1fb63f5db5eec4ac5595b896d395e8407ab1a4c4",
+        "bytes": 12245
+       },
+       "relation_lec_canonical.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/lec_canonical.py",
+        "sha256": "1bab7a7d6a42f93c9429fe9a75c98544ffb66a80af3ccddede4a7651b83c6b71",
+        "bytes": 4755
+       },
+       "relation_snapshot_lec_canonical.py": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/lec_canonical.py",
+        "sha256": "1bab7a7d6a42f93c9429fe9a75c98544ffb66a80af3ccddede4a7651b83c6b71",
+        "bytes": 4755
+       },
+       "relation_designs.json": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/designs.json",
+        "sha256": "9bb28d00e45e9e0025f6c0725f38237f6a2517ad79ea724e8d03495062766697",
+        "bytes": 1773
+       },
+       "relation_snapshot_designs.json": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/relation-sources/designs.json",
+        "sha256": "9bb28d00e45e9e0025f6c0725f38237f6a2517ad79ea724e8d03495062766697",
+        "bytes": 1773
+       },
+       "relation_module_manifest": {
+        "path": "/home/user/RustEDA/modules/RustSys/Cargo.toml",
+        "sha256": "5f978ba8cd87c4875548fc2f30b943c3ce2936b18b63fba0da9001eee8d1e793",
+        "bytes": 2633
+       },
+       "python": {
+        "path": "/usr/local/bin/python3.13",
+        "sha256": "3fff8e682225671f0ab9659e9a0f540f7c81491352004fc1397b16f57bed56ca",
+        "bytes": 31150928
+       },
+       "worker_ownership": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native.ownership/native.json",
+        "sha256": "1f885f942e353819e7660eb83979afe8fbb42f55b79785cc6ed6b50f1b2cd251",
+        "bytes": 301
+       },
+       "producer_manifest": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/compose/be/prefix-manifest.json",
+        "sha256": "2d8bfe57a43e39ebbe8a3304525b8cf71e0f7cdce8571ca70feb7c8e328d08ad",
+        "bytes": 105498
+       }
+      },
+      "resources": {
+       "resource_mode": "inherited_owned_worker",
+       "scope": "rusteda-worker-8859f6e8022e22f096e336eb.scope",
+       "cgroup": "/memory/process_api/01a1d72c-561c-77f2-afa3-2937ca545a11/claude-code-bash/rusteda-worker-8859f6e8022e22f096e336eb",
+       "request_id": "8859f6e8022e22f096e336eb3e05c00072f027f2a16f97e699c298d6010f330b",
+       "effective_memory_max_bytes": 8589934592,
+       "effective_swap_max_bytes": 2147483648,
+       "command": [
+        "/usr/local/bin/python3.13",
+        "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/inputs/signoff_logic.py",
+        "--_worker",
+        "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/job.json"
+       ],
+       "deadline_reached": false,
+       "interrupted": false,
+       "detached_launcher": false,
+       "launcher_exit": 0,
+       "residual_new_pids": [],
+       "cleanup_verified": true,
+       "wall_seconds": 16.008940063999944,
+       "cgroup_memory_peak_bytes": 2276405248,
+       "peak_scope": "inherited whole producer cgroup cumulative memory.peak, including preceding steps",
+       "failure_cleanup": "outer worker_control must KILL and verify its exact owned scope on failure"
+      },
+      "estimated_peak_bytes": 2163880216,
+      "host_mem_available_bytes": 15641985024,
+      "input_hashes_unchanged": true,
+      "changed_inputs": [],
+      "worker": {
+       "status": "passed",
+       "complete": true,
+       "error": null,
+       "stages": [
+        {
+         "name": "gold-interface",
+         "exit_code": 0,
+         "wall_seconds": 0.818478332000268,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/gold-interface.log",
+          "sha256": "0c33ec581db9667bcfac8822fd2dc7a86efdafe10a0213492d79cacedd4f9a24",
+          "bytes": 357680
+         }
+        },
+        {
+         "name": "structural",
+         "exit_code": 0,
+         "wall_seconds": 0.7180004220008414,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/synthesis/structural.log",
+          "sha256": "ae0e5f260a1cf29f97d14dbb6d2827aa2d05098eefa060991d7c41b4fe9946e8",
+          "bytes": 695
+         }
+        },
+        {
+         "name": "cut",
+         "exit_code": 0,
+         "wall_seconds": 0.8183924999993906,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/synthesis/cut.log",
+          "sha256": "99c5c65b7347efdde5854033dbcd9e6f8332382548ec1641b5f69f521754b0ea",
+          "bytes": 14110
+         }
+        },
+        {
+         "name": "macros",
+         "exit_code": 0,
+         "wall_seconds": 0.1666556190002666,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/synthesis/macros.log",
+          "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+          "bytes": 262
+         }
+        },
+        {
+         "name": "export",
+         "exit_code": 0,
+         "wall_seconds": 0.6177354950004883,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/synthesis/export.log",
+          "sha256": "0158ccdcd7d62394c963dc01f5d32f522d753b42d6517857f4433ef311f3882e",
+          "bytes": 185
+         }
+        },
+        {
+         "name": "abc",
+         "exit_code": 0,
+         "wall_seconds": 2.7255680890002623,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/synthesis/abc.log",
+          "sha256": "60c124b27ef3dca5106a32857b84e0a7221f666c680c12bfb8b2836b684623a2",
+          "bytes": 284
+         }
+        },
+        {
+         "name": "structural",
+         "exit_code": 0,
+         "wall_seconds": 0.8702876049992483,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/final/structural.log",
+          "sha256": "98d8352d1078fd0e00ef7ac55157e19dcdc8c0eb915d150fa60808fe374e65c5",
+          "bytes": 701
+         }
+        },
+        {
+         "name": "cut",
+         "exit_code": 0,
+         "wall_seconds": 1.1198745799993048,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/final/cut.log",
+          "sha256": "02371e8f61d16ba53b571f3b230ea77cc99a79ab923ce90501208c8866082752",
+          "bytes": 14251
+         }
+        },
+        {
+         "name": "macros",
+         "exit_code": 0,
+         "wall_seconds": 0.16676246499991976,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/final/macros.log",
+          "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+          "bytes": 262
+         }
+        },
+        {
+         "name": "export",
+         "exit_code": 0,
+         "wall_seconds": 0.6684082119991217,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/final/export.log",
+          "sha256": "6d84bc27020ef83194c6da5b59d5bcfd11d297a04e9049bc940873d7f701b322",
+          "bytes": 185
+         }
+        },
+        {
+         "name": "abc",
+         "exit_code": 0,
+         "wall_seconds": 2.876222437999786,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/final/abc.log",
+          "sha256": "5645f167940fda40a94f7c9de741829fdb25150d3d484a51dbbfca4835a6ba6a",
+          "bytes": 276
+         }
+        },
+        {
+         "name": "compile",
+         "exit_code": 0,
+         "wall_seconds": 0.9189623680003933,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/vendor-simulation/compile.log",
+          "sha256": "752c3041783707a2d1406449910ce372c6584d2f9d4d9c7839467845f52ffe80",
+          "bytes": 7236
+         }
+        },
+        {
+         "name": "simulate",
+         "exit_code": 0,
+         "wall_seconds": 1.0192901190002885,
+         "log": {
+          "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/vendor-simulation/simulate.log",
+          "sha256": "49fbb8bb365de207a7b0cf0d5215c3fce041641d40e94004449f17257c519522",
+          "bytes": 175
+         }
+        }
+       ],
+       "failures": {},
+       "wall_seconds": 15.015219825999338,
+       "cgroup": "/memory/process_api/01a1d72c-561c-77f2-afa3-2937ca545a11/claude-code-bash/rusteda-worker-8859f6e8022e22f096e336eb",
+       "cgroup_memory": {
+        "memory.peak": 2276405248,
+        "memory.current": 473968640,
+        "memory.swap.current": 0
+       }
+      },
+      "artifacts": {
+       "synthesis_equivalence.json": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/synthesis_equivalence.json",
+        "sha256": "81d448287c4316a9eb54945d40fd614e21454a1d0dcd6c24673ac0278ccdfc53",
+        "bytes": 5804
+       },
+       "final_equivalence.json": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/final_equivalence.json",
+        "sha256": "feec930acc6f478821b3f38321f95dcbdbb78ed14c4b533a713a4cee65837ce0",
+        "bytes": 5776
+       },
+       "simulation.json": {
+        "path": "/home/user/RustEDA/.work/kit-runs/int3/signoff-native/logic/simulation.json",
+        "sha256": "c02555eeb3a967381a6b5c4d4046f0ad22ccc57e1f8a9b8cb18f1c9243b45932",
+        "bytes": 1288
+       }
+      }
+     }
+    },
+    "campaign_status": {
+     "synthesis_equivalence": "proven",
+     "final_equivalence": "proven",
+     "summary": {
+      "schema": "rusteda.logic-signoff-result.v1",
+      "status": "passed",
+      "complete": true,
+      "scope": {
+       "reference": "original RTL independent interpreter and external ABC",
+       "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+       "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+       "reset_assumptions": [],
+       "case_assumptions": [],
+       "input_assumptions": [],
+       "macro_scope": "all functional SRAM interface bits, opaque across the memory boundary",
+       "wire_model": "none",
+       "corner": "logic",
+       "four_state_refinement": "unverified"
+      },
+      "top": "ibex_sram_bench",
+      "original_rtl_sha256": "da905268162cfbbbfdbd17f24016c9128c455207dad23b062b5f9529d0c47497",
+      "synthesis_netlist_sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+      "final_netlist_sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+      "sources": {
+       "manifest": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/plans/logic.json",
+        "sha256": "336a49afa5a67896ade91c6312609c6ac341ca6e3ecd10b2442f210139272885",
+        "bytes": 2940
+       },
+       "rtl": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/prep/rtl/design.v",
+        "sha256": "da905268162cfbbbfdbd17f24016c9128c455207dad23b062b5f9529d0c47497",
+        "bytes": 440170
+       },
+       "synthesis_netlist": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/frontend/mapped.v",
+        "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+        "bytes": 1546032
+       },
+       "final_netlist": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/native-final/output/logs/be_netlist.stdout",
+        "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+        "bytes": 2049571
+       },
+       "library": {
+        "path": "/opt/eda/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+        "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+        "bytes": 9292203
+       },
+       "macro_bb": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/prep/rtl/sram_bb.v",
+        "sha256": "9bf99a1b9362568ece4d16ce650bbc26c731d5020c828ab3a6e20e95bb922e76",
+        "bytes": 743
+       },
+       "tb": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/prep/tb.sv",
+        "sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+        "bytes": 2550
+       },
+       "relation_checker": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/large_lec.py",
+        "sha256": "a1db89b99659aab991dffb604af17a13ae0c908b9baa4f6c2347967abea55b89",
+        "bytes": 19217
+       },
+       "vendor_0": {
+        "path": "/opt/eda/ez130_8t_v1p1/verilog/ez130_8t.v",
+        "sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12",
+        "bytes": 207305
+       },
+       "vendor_1": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v",
+        "sha256": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669",
+        "bytes": 6925
+       },
+       "vendor_2": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+        "sha256": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787",
+        "bytes": 3932
+       },
+       "tool_yosys": {
+        "path": "/nix/store/cfry5mn7l5qk6cy730gspaa51fahc108-yosys-0.70/bin/yosys",
+        "sha256": "f6ddbbc9579497d60f2799df28e11cacf93d93f1cdb399f049d30cb85e537838",
+        "bytes": 51180160
+       },
+       "tool_abc": {
+        "path": "/nix/store/cfry5mn7l5qk6cy730gspaa51fahc108-yosys-0.70/bin/yosys-abc",
+        "sha256": "652c020dcf6750093a6f9e9e3b99ac876865d6d70b3ec0206f93c0f934c2945c",
+        "bytes": 30765664
+       },
+       "tool_checker": {
+        "path": "/home/user/RustEDA/.work/target/RustSys/release/examples/check_config",
+        "sha256": "172458ab09670c51f544317d0dfb796a68407caa51ebd31730cc3de86dab87c1",
+        "bytes": 29043056
+       },
+       "tool_iverilog": {
+        "path": "/nix/store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/iverilog",
+        "sha256": "6184eb3ff556d1bb0c86aaf096c15d124ed33037fcb8a4cf442d42ce09e0db82",
+        "bytes": 69520
+       },
+       "tool_vvp": {
+        "path": "/nix/store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/vvp",
+        "sha256": "3da18ee84c96bb9fe9c7a4bf4878b58a9ae6af2e3d72fde9138e10dd8b4f4b10",
+        "bytes": 1882688
+       },
+       "tool_time": {
+        "path": "/nix/store/b140qkky12n2fskhviv352sh9hphx0m9-time-1.10/bin/time",
+        "sha256": "5bf804cb413a3390c9555dd9cb181f0c378d49c673c65ed78445bce822efc399",
+        "bytes": 31040
+       },
+       "physical_lef": {
+        "path": "/opt/eda/ez130_8t_v1p1/lef/ez130_8t.lef",
+        "sha256": "841070a0650462ac9d14ec042347d0c518f5c78bc55ccbb06c2d5b3f518f55d4",
+        "bytes": 482241
+       },
+       "physical_std_tt": {
+        "path": "/opt/eda/ez130_8t_v1p1/lib/ez130_8t_tt_1p20v_25c.lib",
+        "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+        "bytes": 9292203
+       },
+       "physical_ram_tt": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C.lib",
+        "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+        "bytes": 49322
+       },
+       "physical_std_ss": {
+        "path": "/opt/eda/ez130_8t_v1p1/lib/ez130_8t_ss_1p08v_125c.lib",
+        "sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+        "bytes": 9331080
+       },
+       "physical_ram_ss": {
+        "path": "/opt/eda/src/IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_slow_1p08V_125C.lib",
+        "sha256": "34497364ed23734a929454b451ee9d209b16923e03b80cba258379069af1908c",
+        "bytes": 49335
+       },
+       "source_signoff_logic.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/signoff_logic.py",
+        "sha256": "19c56d0aad10c5c059cf7e371c1e54483898f150877dcfea08e40d9b0455ed27",
+        "bytes": 38740
+       },
+       "snapshot_signoff_logic.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/signoff_logic.py",
+        "sha256": "19c56d0aad10c5c059cf7e371c1e54483898f150877dcfea08e40d9b0455ed27",
+        "bytes": 38740
+       },
+       "source_signoff_lvs.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/signoff_lvs.py",
+        "sha256": "e2affc449f419f7c512b0f50b5a693d1cece8d7d5d0d9c93c7037b4ff58036f7",
+        "bytes": 33244
+       },
+       "snapshot_signoff_lvs.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/signoff_lvs.py",
+        "sha256": "e2affc449f419f7c512b0f50b5a693d1cece8d7d5d0d9c93c7037b4ff58036f7",
+        "bytes": 33244
+       },
+       "source_macro_contract.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/macro_contract.py",
+        "sha256": "2eadf6ea390aa0839f916d319e9d30bf932c148c23bef84d955b24c37cb08453",
+        "bytes": 4661
+       },
+       "snapshot_macro_contract.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/macro_contract.py",
+        "sha256": "2eadf6ea390aa0839f916d319e9d30bf932c148c23bef84d955b24c37cb08453",
+        "bytes": 4661
+       },
+       "source_signoff_timing.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/hostcopy/integration/ibex_sg13g2_ez130/signoff_timing.py",
+        "sha256": "551298f6ededb81ee9d97bfdcde64383d4245da374b6e90b60462aa66e76bec3",
+        "bytes": 30214
+       },
+       "snapshot_signoff_timing.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/signoff_timing.py",
+        "sha256": "551298f6ededb81ee9d97bfdcde64383d4245da374b6e90b60462aa66e76bec3",
+        "bytes": 30214
+       },
+       "relation_large_lec.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/large_lec.py",
+        "sha256": "a1db89b99659aab991dffb604af17a13ae0c908b9baa4f6c2347967abea55b89",
+        "bytes": 19217
+       },
+       "relation_snapshot_large_lec.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/large_lec.py",
+        "sha256": "a1db89b99659aab991dffb604af17a13ae0c908b9baa4f6c2347967abea55b89",
+        "bytes": 19217
+       },
+       "relation_run.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/run.py",
+        "sha256": "7e731fe6580083f6dc4491d0fb7a6dff50b3288e1f8c39be136f364e31dee6a9",
+        "bytes": 30189
+       },
+       "relation_snapshot_run.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/run.py",
+        "sha256": "7e731fe6580083f6dc4491d0fb7a6dff50b3288e1f8c39be136f364e31dee6a9",
+        "bytes": 30189
+       },
+       "relation_transition.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/transition.py",
+        "sha256": "f195078c128fe9422e9553466a7882ded0362e5e4499b7b4621676505fd61504",
+        "bytes": 76412
+       },
+       "relation_snapshot_transition.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/transition.py",
+        "sha256": "f195078c128fe9422e9553466a7882ded0362e5e4499b7b4621676505fd61504",
+        "bytes": 76412
+       },
+       "relation_lec.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/lec.py",
+        "sha256": "5227a5590cb16cf67ad33fc33413c718cac26750837972205c87f6e7c3b0be75",
+        "bytes": 59282
+       },
+       "relation_snapshot_lec.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/lec.py",
+        "sha256": "5227a5590cb16cf67ad33fc33413c718cac26750837972205c87f6e7c3b0be75",
+        "bytes": 59282
+       },
+       "relation_equiv.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/equiv.py",
+        "sha256": "66130e79a9b37ca050fc99f219d5415392d9f87e4dc86a5f1426044bc48cf26f",
+        "bytes": 12958
+       },
+       "relation_snapshot_equiv.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/equiv.py",
+        "sha256": "66130e79a9b37ca050fc99f219d5415392d9f87e4dc86a5f1426044bc48cf26f",
+        "bytes": 12958
+       },
+       "relation_rtl_semantics.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/rtl_semantics.py",
+        "sha256": "1a2004162c3cdebc27a48b266927e16fe750e8a89d26db6ca4efd6ac5f0938be",
+        "bytes": 7601
+       },
+       "relation_snapshot_rtl_semantics.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/rtl_semantics.py",
+        "sha256": "1a2004162c3cdebc27a48b266927e16fe750e8a89d26db6ca4efd6ac5f0938be",
+        "bytes": 7601
+       },
+       "relation_library_models.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/library_models.py",
+        "sha256": "cadd7dd1dd69e2e2d3dd871f1fb63f5db5eec4ac5595b896d395e8407ab1a4c4",
+        "bytes": 12245
+       },
+       "relation_snapshot_library_models.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/library_models.py",
+        "sha256": "cadd7dd1dd69e2e2d3dd871f1fb63f5db5eec4ac5595b896d395e8407ab1a4c4",
+        "bytes": 12245
+       },
+       "relation_lec_canonical.py": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/lec_canonical.py",
+        "sha256": "1bab7a7d6a42f93c9429fe9a75c98544ffb66a80af3ccddede4a7651b83c6b71",
+        "bytes": 4755
+       },
+       "relation_snapshot_lec_canonical.py": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/lec_canonical.py",
+        "sha256": "1bab7a7d6a42f93c9429fe9a75c98544ffb66a80af3ccddede4a7651b83c6b71",
+        "bytes": 4755
+       },
+       "relation_designs.json": {
+        "path": "/home/user/RustEDA/modules/RustSys/verification/benchmarks/open-hardware/designs.json",
+        "sha256": "9bb28d00e45e9e0025f6c0725f38237f6a2517ad79ea724e8d03495062766697",
+        "bytes": 1773
+       },
+       "relation_snapshot_designs.json": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/relation-sources/designs.json",
+        "sha256": "9bb28d00e45e9e0025f6c0725f38237f6a2517ad79ea724e8d03495062766697",
+        "bytes": 1773
+       },
+       "relation_module_manifest": {
+        "path": "/home/user/RustEDA/modules/RustSys/Cargo.toml",
+        "sha256": "91c84549f24d99aa371b4a0bf62913381f9e1ee6917c8d17f3fb4490eba2e1f2",
+        "bytes": 2633
+       },
+       "python": {
+        "path": "/usr/local/bin/python3.13",
+        "sha256": "3fff8e682225671f0ab9659e9a0f540f7c81491352004fc1397b16f57bed56ca",
+        "bytes": 31150928
+       },
+       "worker_ownership": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native.ownership/native.json",
+        "sha256": "d8110b359d410fa1e8a22857bffedfcfef79d7137488c51b074154d68dda6c0a",
+        "bytes": 305
+       },
+       "producer_manifest": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/compose/be/prefix-manifest.json",
+        "sha256": "84a99a6b0ecc867370597ecd6898729eb7f3ebb49bef0845360addca8f0efbed",
+        "bytes": 105511
+       }
+      },
+      "resources": {
+       "resource_mode": "inherited_owned_worker",
+       "scope": "rusteda-worker-54654bca3ec492adbc4b2a34.scope",
+       "cgroup": "/memory/process_api/01a1d25c-e402-70c9-b1fc-a6df8a8b6c0e/claude-code-bash/rusteda-worker-54654bca3ec492adbc4b2a34",
+       "request_id": "54654bca3ec492adbc4b2a34ee336598ea258bd808166033dd6eed5bd1709d3b",
+       "effective_memory_max_bytes": 8589934592,
+       "effective_swap_max_bytes": 2147483648,
+       "command": [
+        "/usr/local/bin/python3.13",
+        "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/inputs/signoff_logic.py",
+        "--_worker",
+        "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/job.json"
+       ],
+       "deadline_reached": false,
+       "interrupted": false,
+       "detached_launcher": false,
+       "launcher_exit": 0,
+       "residual_new_pids": [],
+       "cleanup_verified": true,
+       "wall_seconds": 19.014408772000024,
+       "cgroup_memory_peak_bytes": 2243493888,
+       "peak_scope": "inherited whole producer cgroup cumulative memory.peak, including preceding steps",
+       "failure_cleanup": "outer worker_control must KILL and verify its exact owned scope on failure"
+      },
+      "estimated_peak_bytes": 2163880216,
+      "host_mem_available_bytes": 15255519232,
+      "input_hashes_unchanged": true,
+      "changed_inputs": [],
+      "worker": {
+       "status": "passed",
+       "complete": true,
+       "error": null,
+       "stages": [
+        {
+         "name": "gold-interface",
+         "exit_code": 0,
+         "wall_seconds": 1.2222772099994472,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/gold-interface.log",
+          "sha256": "9db95ad1181cc36301a59037cd04c8779bbad5284fe4ca9a9f230c7b75cf8e86",
+          "bytes": 362568
+         }
+        },
+        {
+         "name": "structural",
+         "exit_code": 0,
+         "wall_seconds": 0.871406158003083,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/synthesis/structural.log",
+          "sha256": "7e8f1f5c7c24a16df8c0b380c7375a2e91094c9216e47a35c43210e9d7415194",
+          "bytes": 715
+         }
+        },
+        {
+         "name": "cut",
+         "exit_code": 0,
+         "wall_seconds": 1.0730689339980017,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/synthesis/cut.log",
+          "sha256": "8099a1273c3a589ec3b136ac8c66283514a14051d216658d8e2df2bcae19a113",
+          "bytes": 14138
+         }
+        },
+        {
+         "name": "macros",
+         "exit_code": 0,
+         "wall_seconds": 0.16811622000022908,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/synthesis/macros.log",
+          "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+          "bytes": 262
+         }
+        },
+        {
+         "name": "export",
+         "exit_code": 0,
+         "wall_seconds": 0.7716658459976315,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/synthesis/export.log",
+          "sha256": "027dc141485d994d1b19da9585abb68fb3538057ba1c8824f6ae2c50269f515a",
+          "bytes": 185
+         }
+        },
+        {
+         "name": "abc",
+         "exit_code": 0,
+         "wall_seconds": 3.533782644000894,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/synthesis/abc.log",
+          "sha256": "2deee6e6ce9a8a650469235a3fbe716c54e22e635b0e413fd83e80653de7d88b",
+          "bytes": 292
+         }
+        },
+        {
+         "name": "structural",
+         "exit_code": 0,
+         "wall_seconds": 1.0223595360002946,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/final/structural.log",
+          "sha256": "49995a86ad63550eac0d0a0f0612977cb5e66a490dfa2bf2ba28db231c8ee0c7",
+          "bytes": 721
+         }
+        },
+        {
+         "name": "cut",
+         "exit_code": 0,
+         "wall_seconds": 1.1722660919986083,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/final/cut.log",
+          "sha256": "5c5cf19b2a782a7556f43b3b18e2d435a799763f920de9e836560d126c438206",
+          "bytes": 14279
+         }
+        },
+        {
+         "name": "macros",
+         "exit_code": 0,
+         "wall_seconds": 0.2186006890005956,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/final/macros.log",
+          "sha256": "646b3400c89f52e706df7dfca4d4c57ae61384d0d6f7077e3ca8db23a953c161",
+          "bytes": 262
+         }
+        },
+        {
+         "name": "export",
+         "exit_code": 0,
+         "wall_seconds": 0.8217196370023885,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/final/export.log",
+          "sha256": "8f5844c7e8486faa14dc79db078a35e820306ff465fd7be5687b5a3954339732",
+          "bytes": 185
+         }
+        },
+        {
+         "name": "abc",
+         "exit_code": 0,
+         "wall_seconds": 3.5865354089983157,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/final/abc.log",
+          "sha256": "42b55216b478b755d22a8f61af0e05607591bbba75be0d0478ec3cbe4e9141d5",
+          "bytes": 284
+         }
+        },
+        {
+         "name": "compile",
+         "exit_code": 0,
+         "wall_seconds": 1.1740396249988407,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/vendor-simulation/compile.log",
+          "sha256": "752c3041783707a2d1406449910ce372c6584d2f9d4d9c7839467845f52ffe80",
+          "bytes": 7236
+         }
+        },
+        {
+         "name": "simulate",
+         "exit_code": 0,
+         "wall_seconds": 1.2231449360006081,
+         "log": {
+          "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/vendor-simulation/simulate.log",
+          "sha256": "49fbb8bb365de207a7b0cf0d5215c3fce041641d40e94004449f17257c519522",
+          "bytes": 175
+         }
+        }
+       ],
+       "failures": {},
+       "wall_seconds": 18.13805088600202,
+       "cgroup": "/memory/process_api/01a1d25c-e402-70c9-b1fc-a6df8a8b6c0e/claude-code-bash/rusteda-worker-54654bca3ec492adbc4b2a34",
+       "cgroup_memory": {
+        "memory.peak": 2243493888,
+        "memory.current": 437821440,
+        "memory.swap.current": 0
+       }
+      },
+      "artifacts": {
+       "synthesis_equivalence.json": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/synthesis_equivalence.json",
+        "sha256": "0cf4aa41f0577317f57196b265ad72d31d2a9bedb0f38972c2e8ce978f187b86",
+        "bytes": 5835
+       },
+       "final_equivalence.json": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/final_equivalence.json",
+        "sha256": "dcbf4ba9d638bef1c21d852811e6200b38ccc401dbebb9acfd110be63afa3672",
+        "bytes": 5808
+       },
+       "simulation.json": {
+        "path": "/home/user/RustEDA/.work/campaign-20261113/signoff-native/logic/simulation.json",
+        "sha256": "b3c5b761645b5e7087f1571f8fce56c9ac4bc746d48efb12395e7e4b73aec3e6",
+        "bytes": 1292
+       }
+      }
+     }
+    }
+   },
+   "density": {
+    "exit_code": 0,
+    "status": "passed",
+    "campaign_status": "passed"
+   }
+  }
+ },
+ "ab": {
+  "protocol": "ab2.py: per repetition and thread count, the campaign binary, fe4b286, 8d29a61 and OpenRCX's black-box replay, in an order shifted by one each repetition; repetition 0 is a warm-up and is excluded; heavy and build locks held; GNU time",
+  "summary": {
+   "per_contender": {
+    "extraction/t2/8d29a61": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 4.991,
+      "min": 4.786,
+      "max": 5.415
+     },
+     "cpu_seconds": {
+      "median": 9.5,
+      "min": 9.14,
+      "max": 10.29
+     },
+     "peak_rss_kib": {
+      "median": 251464,
+      "min": 250592,
+      "max": 252804
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/campaign": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 6.659,
+      "min": 6.297,
+      "max": 7.18
+     },
+     "cpu_seconds": {
+      "median": 12.01,
+      "min": 11.37,
+      "max": 13.0
+     },
+     "peak_rss_kib": {
+      "median": 312836,
+      "min": 287540,
+      "max": 314364
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/fe4b286": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 5.553,
+      "min": 5.337,
+      "max": 5.862
+     },
+     "cpu_seconds": {
+      "median": 10.23,
+      "min": 9.78,
+      "max": 10.78
+     },
+     "peak_rss_kib": {
+      "median": 288312,
+      "min": 286504,
+      "max": 290560
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t2/openrcx": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.049,
+      "min": 2.902,
+      "max": 3.37
+     },
+     "cpu_seconds": {
+      "median": 3.03,
+      "min": 2.89,
+      "max": 3.35
+     },
+     "peak_rss_kib": {
+      "median": 201400,
+      "min": 201052,
+      "max": 202024
+     }
+    },
+    "extraction/t4/8d29a61": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 2.776,
+      "min": 2.665,
+      "max": 3.086
+     },
+     "cpu_seconds": {
+      "median": 9.76,
+      "min": 9.28,
+      "max": 10.65
+     },
+     "peak_rss_kib": {
+      "median": 265084,
+      "min": 262936,
+      "max": 270052
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/campaign": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.894,
+      "min": 3.639,
+      "max": 4.313
+     },
+     "cpu_seconds": {
+      "median": 11.84,
+      "min": 11.08,
+      "max": 13.31
+     },
+     "peak_rss_kib": {
+      "median": 322356,
+      "min": 294380,
+      "max": 325824
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/fe4b286": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.267,
+      "min": 3.089,
+      "max": 3.699
+     },
+     "cpu_seconds": {
+      "median": 10.32,
+      "min": 9.68,
+      "max": 11.2
+     },
+     "peak_rss_kib": {
+      "median": 325740,
+      "min": 298844,
+      "max": 331192
+     },
+     "spef_sha256": [
+      "468051be9b8106541bdf3eee2e203a428cb65ab1e568a2f43f98a36c2b753932"
+     ]
+    },
+    "extraction/t4/openrcx": {
+     "n": 15,
+     "failed": 0,
+     "wall_seconds": {
+      "median": 3.047,
+      "min": 2.861,
+      "max": 3.741
+     },
+     "cpu_seconds": {
+      "median": 3.03,
+      "min": 2.84,
+      "max": 3.71
+     },
+     "peak_rss_kib": {
+      "median": 201736,
+      "min": 201560,
+      "max": 202204
+     }
+    },
+    "identity": {}
+   },
+   "paired_wall_ratio": {
+    "t2/8d29a61_over_campaign": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.741,
+     "min": 0.709,
+     "max": 0.802
+    },
+    "t2/8d29a61_over_fe4b286": {
+     "rotations": 15,
+     "faster_in": 14,
+     "median": 0.887,
+     "min": 0.835,
+     "max": 1.001
+    },
+    "t2/8d29a61_over_openrcx": {
+     "rotations": 15,
+     "faster_in": 0,
+     "median": 1.62,
+     "min": 1.486,
+     "max": 1.836
+    },
+    "t4/8d29a61_over_campaign": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.701,
+     "min": 0.673,
+     "max": 0.774
+    },
+    "t4/8d29a61_over_fe4b286": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.839,
+     "min": 0.808,
+     "max": 0.872
+    },
+    "t4/8d29a61_over_openrcx": {
+     "rotations": 15,
+     "faster_in": 15,
+     "median": 0.907,
+     "min": 0.789,
+     "max": 0.985
+    }
+   }
+  }
+ }
+}

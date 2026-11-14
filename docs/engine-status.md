@@ -234,7 +234,9 @@ slower than OpenRCX**: 4.664 s at 4 threads against 3.829 s (1.22×, ranges not
 overlapping) and 7.951 s at 2 threads against 3.625 s, with about 3.7 times
 OpenRCX's CPU time (after the campaign, RustROAD `fe4b286` took 0.83× that time at 4 threads, level
 with OpenRCX there and 1.85× slower at 2, with the same SPEF:
-[after the campaign](benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13)); GDS export took 0.498 s against 1.375 s for KLayout. In
+[after the campaign](benchmarks.md#ruststa-peak-memory-and-rustroad-extraction-2026-11-13); RustROAD `8d29a61` took
+0.71×, level at 4 threads (0.91×, ranges overlap) and 1.64× slower at 2:
+[second round](benchmarks.md#rustroad-extraction-second-round-2026-11-14)); GDS export took 0.498 s against 1.375 s for KLayout. In
 same-load reruns of the shared gates the native layout took 0.73× LibreLane's
 time in foundry DRC, 0.75× in antenna DRC, 0.69× in LVS and 0.76× in the
 latch-up gate.
