@@ -30,6 +30,7 @@ import common  # noqa: E402
 
 MIB = common.MIB
 ORDER = ("drc", "antenna", "extraction", "timing", "lvs", "simulation", "logic", "density")
+LAYOUT_KEYS = ("gds", "def", "netlist", "powered_netlist", "synthesis_netlist")
 IHP_RECIPE = ROOT / "integration/ibex_sg13g2_ez130"
 RELATION_CHECKER = "modules/RustSys/verification/benchmarks/open-hardware/large_lec.py"
 
@@ -93,7 +94,11 @@ def main(args) -> int:
     macros = profile["macros"]
     collateral = profile["collateral"]
     python = tools["python"]["path"]
-    final = {k: common.identity(v) for k, v in layout.items()}
+    missing = [key for key in LAYOUT_KEYS if not isinstance(layout.get(key), str)]
+    if missing:
+        raise SystemExit(f"layout record lacks {missing}")
+    final = {key: common.identity(layout[key]) for key in LAYOUT_KEYS}
+    notes = {key: value for key, value in layout.items() if key not in LAYOUT_KEYS}
     files = dict(sdc=common.identity(prepared / "constraints.sdc"), rtl=common.identity(prepared / "rtl/design.v"),
                  macro_bb=common.identity(prepared / "rtl/sram_bb.v"), tb=common.identity(profile.dir / "tb.sv"))
     common.require(len(macros) == 1, "ONE_MACRO_MASTER_PER_PROFILE")  # the corner file keys hold one macro library
@@ -105,7 +110,7 @@ def main(args) -> int:
     cells_lef = work / "cells.lef"
     cells_lef.write_text("\n".join(Path(record["path"]).read_text() for record in cell_lefs))
     policy = common.identity(IHP_RECIPE / "signoff_timing.py")
-    summary = dict(schema="rusteda.host-shared-signoff.v1", layout=final, gates={}, resources={},
+    summary = dict(schema="rusteda.host-shared-signoff.v1", layout=final, layout_notes=notes, gates={}, resources={},
                    profile=dict(name=profile["name"], pdk=profile["pdk"], scl=profile["scl"],
                                 file=common.identity(profile.path), pinned_files=len(pins),
                                 decisions=profile["decisions"], prepared=str(prepared)))
