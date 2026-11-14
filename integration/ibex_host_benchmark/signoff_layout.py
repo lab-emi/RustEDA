@@ -17,6 +17,11 @@ writes `summary.json` with every gate verdict, wall time and peak RSS.
 
 Run inside a producer-owned memory cgroup (see `run_signoff.sh`): the LVS and
 logic helpers require the RustEDA worker-ownership protocol.
+
+With `--profile integration/ibex_pdks/<profile>/gates.json` the same command judges a layout
+on another PDK (SKY130, GF180MCU): the gate set, decks and collateral are the profile's, the
+PDK root, prepared inputs and tools the host map's (`integration/ibex_pdks/gates/README.md`).
+`summary.json` keeps this schema. Without `--profile` nothing changes for IHP.
 """
 from __future__ import annotations
 
@@ -67,8 +72,18 @@ def main() -> int:
     parser.add_argument("--layout", type=Path, required=True,
                         help="JSON: {gds, def, netlist, powered_netlist, synthesis_netlist}")
     parser.add_argument("--workspace", type=Path, required=True)
-    parser.add_argument("--gates", default="drc,antenna,latchup,extraction,timing,lvs,simulation,logic,density")
+    parser.add_argument("--gates", default=None,
+                        help="comma-separated gate names; default: every gate of the IHP set or of the profile")
+    parser.add_argument("--profile", type=Path, default=None,
+                        help="gate profile (integration/ibex_pdks/<profile>/gates.json); without it the IHP gates run")
     args = parser.parse_args()
+    if args.profile is not None:
+        # Any other PDK: the gates, decks and collateral come from the profile and the host map.
+        sys.path.insert(0, str(ROOT / "integration/ibex_pdks/gates"))
+        import pdk_signoff  # noqa: E402
+        return pdk_signoff.main(args)
+    if args.gates is None:
+        args.gates = "drc,antenna,latchup,extraction,timing,lvs,simulation,logic,density"
     host = read(args.host)
     layout = read(args.layout)
     recipe = Path(host["recipe_dir"]).resolve()
@@ -90,7 +105,7 @@ def main() -> int:
         ram_tt=identity(sram / f"lib/{MACRO}_typ_1p20V_25C.lib"), ram_ss=identity(sram / f"lib/{MACRO}_slow_1p08V_125C.lib"),
         std_lef=identity(ez / "lef/ez130_8t.lef"), tech_lef=identity(ez / "lef/ez130_sg13g2_tech.lef"),
         ram_lef=identity(sram / f"lef/{MACRO}.lef"),
-        rules_nom=identity(ihp / "libs.tech/librelane/openrcx/IHP_rcx_patterns.rules"),
+        rules_nom=identity(host.get("rc_rules") or ihp / "libs.tech/librelane/openrcx/IHP_rcx_patterns.rules"),
         vendor_0=identity(ez / "verilog/ez130_8t.v"), vendor_1=identity(sram / f"verilog/{MACRO}.v"),
         vendor_2=identity(sram / "verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v"),
         physical_policy=identity(recipe / "signoff_timing.py"),
