@@ -87,6 +87,25 @@ def prepare_sdc(profile, w):
         shutil.copyfile(IHP / f, w / f)
 
 
+def prepare_macro_liberty(profile, pdk, w):
+    """A copy of the macro's Liberty without the lines the profile names; returns the provenance record."""
+    spec = profile["macro"].get("liberty")
+    if not spec:
+        return None
+    source = pdk / spec["source"]
+    pattern = re.compile(spec["drop_lines"])
+    lines = source.read_text().splitlines(keepends=True)
+    kept = [line for line in lines if not pattern.match(line)]
+    dropped = len(lines) - len(kept)
+    if dropped != spec["expected_dropped"]:
+        raise SystemExit(f"macro Liberty: dropped {dropped} lines, expected {spec['expected_dropped']}")
+    derived = w / spec["derived"]
+    derived.parent.mkdir(parents=True, exist_ok=True)
+    derived.write_text("".join(kept))
+    return {"source": str(source), "source_sha256": sha(source), "derived": str(derived),
+            "derived_sha256": sha(derived), "dropped_lines": dropped, "pattern": spec["drop_lines"]}
+
+
 def prepare_config(profile, pdk, w):
     text = (HERE / profile["dir"] / "config.json.in").read_text()
     text = text.replace("@WORKSPACE@", str(w)).replace("@PDK@", str(pdk))
@@ -133,12 +152,13 @@ def main():
         raise SystemExit("required sv2v or GNU time executable is unavailable")
     sources = prepare_rtl(profile, pdk, a.ibex_source.resolve(), w, sv2v, a.gnu_time)
     prepare_sdc(profile, w)
+    macro_liberty = prepare_macro_liberty(profile, pdk, w)
     prepare_config(profile, pdk, w)
     record = {
         "schema": "rusteda.ibex-pdk-preparation.v1", "profile": a.profile, "pdk": profile["pdk"],
         "pdk_root": str(a.pdk_root.resolve()), "pdk_sources": (pdk / "SOURCES").read_text().strip()
         if (pdk / "SOURCES").exists() else None,
-        "ibex_revision": IBEX_REV,
+        "ibex_revision": IBEX_REV, "macro_liberty": macro_liberty,
         "sv2v": {"path": sv2v, "version": subprocess.check_output([sv2v, "--version"], text=True).strip(),
                  "sha256": sha(Path(sv2v).resolve())},
         "inputs": [{"path": str(p), "sha256": sha(p)} for p in sources],

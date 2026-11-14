@@ -54,3 +54,12 @@ LibreLane's defaults and are stated here because they affect the competitor:
   EZ130 library, which has one delay cell (`DLY1X2`), the resizer of the same OpenROAD build buffered with
   `BUFX1` in the reference run.
 - **STA corners** are the nominal-RC typical and slow corners, as in the IHP reference, not the PDK's nine.
+- **The OpenRAM macro's Liberty is used as a derived copy** (`sky130hd` only). The published file limits the
+  transition at the macro's address, data-in and write-mask inputs to 0.04 ns, the last index of its
+  characterisation table. No `sky130_fd_sc_hd` cell can drive that (OpenROAD: best achievable 0.069 ns at
+  0.01 pF), and LibreLane's post-global-routing design repair stops with `RSZ-0090`. `prepare.py` writes a copy
+  without these three attributes (`macro/…_TT_1p8V_25C.lib`, source and derived SHA-256 in `preparation.json`);
+  the library's `default_max_transition` of 0.5 ns then applies to those pins. Both flows and the shared timing
+  gate read the copy. The macro publishes a typical-corner Liberty only, so it is used at both corners.
+- **Detailed placement may move a cell across a macro** (`PL_MAX_DISPLACEMENT_X/Y`), as in the IHP reference:
+  with the default, a clock buffer that lands on a macro cannot be legalized (`DPL-0036`).

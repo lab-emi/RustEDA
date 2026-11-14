@@ -6,8 +6,23 @@
     "name": "sky130_sram_2kbyte_1rw1r_32x512_8",
     "verilog": "libs.ref/sky130_sram_macros/verilog/sky130_sram_2kbyte_1rw1r_32x512_8.v",
     "blackbox_end": "  reg  csb0_reg;",
-    "instances": ["u_imem", "u_dmem"]
+    "instances": [
+      "u_imem",
+      "u_dmem"
+    ],
+    "liberty": {
+      "source": "libs.ref/sky130_sram_macros/lib/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib",
+      "derived": "macro/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib",
+      "drop_lines": "^\\s*max_transition\\s*:\\s*0\\.04\\s*;\\s*$",
+      "expected_dropped": 3,
+      "reason": "The macro's Liberty limits the transition at its address, data-in and write-mask inputs to 0.04 ns, the last index of its characterisation table. No sky130_fd_sc_hd cell can drive that (OpenROAD: best achievable 0.069 ns at 0.01 pF), and LibreLane's post-global-routing design repair stops with RSZ-0090. Both flows and the timing gate read a copy without these three attributes; the library's default_max_transition of 0.5 ns then applies to those pins."
+    }
   },
-  "driving_cell": {"cell": "sky130_fd_sc_hd__buf_4", "pin": "X"},
-  "absent_ports": ["prog_addr_i[9]"]
+  "driving_cell": {
+    "cell": "sky130_fd_sc_hd__buf_4",
+    "pin": "X"
+  },
+  "absent_ports": [
+    "prog_addr_i[9]"
+  ]
 }
