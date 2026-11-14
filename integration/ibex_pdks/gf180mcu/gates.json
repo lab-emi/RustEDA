@@ -1,0 +1,260 @@
+{
+  "schema": "rusteda.ibex-gate-profile.v1",
+  "name": "gf180mcu",
+  "pdk": "gf180mcuD",
+  "scl": "gf180mcu_fd_sc_mcu7t5v0",
+  "top": "ibex_sram_bench",
+  "corners": {
+    "tt": "tt_025C_5v00",
+    "ss": "ss_125C_4v50"
+  },
+  "decisions": [
+    "GF180 corners are the 5 V family (tt_025C_5v00, ss_125C_4v50) for cells and SRAM, as the SRAM uses 5 V devices.",
+    "Macro-pin limit rows: slew, capacitance and fanout rows at macro pins are reported separately and gate only beyond a design-wide SDC limit; setup and hold at macro pins gate.",
+    "LVS scope: black-box-macro LVS; standard cells are compared at device level, every macro instance pin is checked.",
+    "Latch-up has no separate gate: the tap-distance rules are part of the foundry DRC run by the drc gate.",
+    "Macro interiors: KLayout decks see the complete GDS; a marker is attributed to the SRAM only when the same deck with the same options reports it, under the same rule, on the SRAM GDS alone. Magic (LVS extraction) reads the SRAM as its LEF abstract view."
+  ],
+  "macros": {
+    "gf180mcu_fd_ip_sram__sram512x8m8wm1": {
+      "instances": [
+        "u_imem0",
+        "u_imem1",
+        "u_imem2",
+        "u_imem3",
+        "u_dmem0",
+        "u_dmem1",
+        "u_dmem2",
+        "u_dmem3"
+      ],
+      "gds": "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram512x8m8wm1.gds",
+      "lef": "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram512x8m8wm1.lef",
+      "liberty": {
+        "tt": "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib",
+        "ss": "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib"
+      }
+    }
+  },
+  "collateral": {
+    "liberty": {
+      "tt": "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+      "ss": "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib"
+    },
+    "tech_lef": "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/techlef/gf180mcu_fd_sc_mcu7t5v0__nom.tlef",
+    "cell_lefs": [
+      "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lef/gf180mcu_fd_sc_mcu7t5v0.lef"
+    ]
+  },
+  "magic": {
+    "magicrc": "gf180mcuD/libs.tech/magic/gf180mcuD.magicrc",
+    "tech_files": [
+      "gf180mcuD/libs.tech/magic/gf180mcuD.tech",
+      "gf180mcuD/libs.tech/magic/gf180mcuD.tcl"
+    ]
+  },
+  "gates": {
+    "drc": {
+      "engines": [
+        {
+          "engine": "klayout",
+          "deck": "gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc",
+          "includes": [
+            "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/*.drc"
+          ],
+          "top_switch": "topcell",
+          "threads_switch": "thr",
+          "switches": [
+            [
+              "feol",
+              "true"
+            ],
+            [
+              "beol",
+              "true"
+            ],
+            [
+              "dummy",
+              "true"
+            ],
+            [
+              "dummy_no_sub_prev",
+              "true"
+            ],
+            [
+              "offgrid",
+              "true"
+            ],
+            [
+              "conn_drc",
+              "true"
+            ],
+            [
+              "wedge",
+              "true"
+            ],
+            [
+              "run_mode",
+              "deep"
+            ]
+          ],
+          "options_source": "KLAYOUT_DRC_OPTIONS of libs.tech/librelane/config.tcl",
+          "timeout_seconds": 21600
+        }
+      ],
+      "latchup_rules": [
+        "DF.13_LV",
+        "DF.13_MV",
+        "DF.14_LV",
+        "DF.14_MV"
+      ]
+    },
+    "antenna": {
+      "engines": [
+        {
+          "engine": "klayout",
+          "deck": "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/antenna.drc",
+          "includes": [],
+          "top_switch": "topcell",
+          "threads_switch": "thr",
+          "switches": [
+            [
+              "run_mode",
+              "deep"
+            ]
+          ],
+          "options_source": "KLAYOUT_ANTENNA_OPTIONS of libs.tech/librelane/config.tcl",
+          "timeout_seconds": 14400
+        }
+      ]
+    },
+    "extraction": {
+      "rules": "gf180mcuD/libs.tech/librelane/rules.openrcx.gf180mcuD.nom"
+    },
+    "timing": {},
+    "lvs": {
+      "engine": "magic_netgen",
+      "netgen_setup": "gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl",
+      "cell_spice": [
+        "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+      ],
+      "netgen_env": {},
+      "timeout_seconds": 7200
+    },
+    "simulation": {
+      "vendor": [
+        "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v",
+        "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v",
+        "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v"
+      ],
+      "defines": [
+        "FUNCTIONAL"
+      ],
+      "pass_line": "PASS: real SRAM banks, byte masks, boundary addresses, Ibex program stores 42 and 43"
+    },
+    "logic": {
+      "tie_cells": [
+        "gf180mcu_fd_sc_mcu7t5v0__tieh",
+        "gf180mcu_fd_sc_mcu7t5v0__tiel"
+      ],
+      "limits": {
+        "stage_seconds": 600,
+        "cec_seconds": 300,
+        "max_conflicts": 2000000,
+        "discovery_work": 16000000000,
+        "discovery_rounds": 32,
+        "memory_mib": 4096
+      }
+    },
+    "density": {
+      "max_percent": 70
+    }
+  },
+  "files": {
+    "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram512x8m8wm1.gds": "40d76d3ccfc8779c9db9f1db7a0bbccbbaf12c4627a3fa5b59049f23eef7d915",
+    "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram512x8m8wm1.lef": "f30453be8a3919de697ad6f9828cc0e31602ed5ad7cc462dd85b7d54e47872af",
+    "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib": "bf411ffa77f14d92e0c1e9023521d3b30551547ddc8e09b9a8458dcc17f19e36",
+    "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446",
+    "gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v": "a20e297b8385da03f623e6e53cf6da932155104ae9853d3f2db369eeaa49b87f",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lef/gf180mcu_fd_sc_mcu7t5v0.lef": "47dadf84c21b20f558d043c36271632f07b1c2c2a595b118e2e1050ebb74349b",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib": "4c2657ae12581bc18ed408f3fda0accd10b855118b9993070dbb360dfa3aa874",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice": "97661211e03f73028277be1f436694b995167d658e35bdb307af5054623cf205",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/techlef/gf180mcu_fd_sc_mcu7t5v0__nom.tlef": "842b186318d53844561af4ec530b4e30d8ba519bcc58d512a363ef255acc7abd",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v": "9a21c5f98200acfe77d8ba52067164e0802284dc1c1e117f0e64fb6ac42eb64b",
+    "gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v": "ccc0f447f71ce35c635e08d49eb0ed77aa2ec91cf31d8e3e45a246114d3cae92",
+    "gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc": "c613376efb0eb6a250073247225cc5d5d6935b73d10f85a8d1a8d221b6090568",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/antenna.drc": "46f80247f2bfa9243e716b1087467afdfe03e5dc205fbc584c7e02612e6b6c96",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/comp.drc": "35d644d2e5ebcac6029455fa36feffbb485cf68739a37b0fb5501f8fee0e8d72",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/contact.drc": "7853bfbc6fe71805e08e9511eebf262909e34b4f89c05313d9159cbe425aa681",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/contact_split.drc": "657493723531ac0b199cf55d644d2653462818bae3d0361eec6b8453e11c878f",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/cup.drc": "cbff3e8f8a827d0171afb806e37bcf277c11b8a323ef38eed2e902e8eebb567b",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/density.drc": "49434fa40252abfabe5ab2511ac93e4e06497814923395a4e515fd3e79964bb5",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dnwell.drc": "37109fbf3cbf75be6fcefc9aa5f4b41adac0797258a0e5fa2ee71f44a962de26",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dnwell_split.drc": "9d121a5c1ca3d8e8902dea2194f9e7342d2eeedf786dfc628315f16b4184243c",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/drc_bjt.drc": "05a21501e5926a03d11f016ac1b9f4c7ec63a8ac6dcb91f957e41f4cc7626341",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dualgate.drc": "7092ff753930ad3bfee368da2121ed39afdf1c2fbc7542fe9243d2a3c242244b",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_comp.drc": "ea9167a21534223a2de9b6c3edb99bd0d686e7e432fd7970f030fb7163d742d9",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_exclude.drc": "ad00ad700937919147f177dd6f8ab0631dfe75b112e60157c4912dd985e9235e",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_metal1.drc": "c7183d6d197519a543914b6aebad668ebb70ee2cc5bed7a28e7ed8d9bfd133c1",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_metal2.drc": "c21b1c75ebd0817884490964ad79362f6039388241ff51dd5cba1814aefc9071",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_metal3.drc": "6054ecb4fcb8e05df453cf7d9a0ece4e18c185a532553546b1c60c74ecdff0b3",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_metal4.drc": "fab1e783e3babc22fd9fae3ec0d81b68b8eb489be073352d5788b131250aeec6",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_metal5.drc": "9ffa5875cfcba645b41e9cdf5dc4e3b23b34fd0c55dd4a9a83c198484d540c65",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/dummy_poly2.drc": "6c7ddfbe3780895510b000bf5c6d70222e4c9bf4768ca2fb977e7418dea27831",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/efuse.drc": "9f69dd418715b5ca4d544068a60173aea9201621af6def9c4b2f5565466e1511",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/esd.drc": "d09dddaa93ad12641d5c11393baf078f1a263f10e65f4110e178aeddd8112532",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/geom.drc": "adcf3f1a4441218206f0cd314a6b18e07e6a4ad4a09c70399a0b63d2a6f4e86b",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/guard_ring.drc": "1a7042bc47be5b105be557ce929d5548b7b1e931bfa2a9d589b3ab30d09d4412",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/hres.drc": "d35617957e98d51ea3674102cf1514ee1ac78142f068357ea737ae9d06846ddb",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/layers_def.drc": "5122a9179ad810c29c3c3afb2500990cbbd3dcae27aebca55b13aaeef181155e",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/ldnmos.drc": "b1909bd0d72493cd0544b870269714ff6f8c75aa1a68c9386903f648cd7826a6",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/ldnmos_split.drc": "517a8fc77d7d3c6cb3d919baa670aa92388465d03ce1f553395912990933ad09",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/ldpmos.drc": "248b0b9c857ae7efb0e32be87b8bd6229f91a0de9873225935bcb8be2a78d529",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/ldpmos_split.drc": "8c689669ed125d9b888770acec451d1b93d906d17b25c321e89e0df2d4b04230",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/lres.drc": "2457b7a67cc479d3638db1a7e049fa29355e4c4ec65ff446daab4788cc433293",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/lvpwell.drc": "67983d69ac0f6d892461905ba77301d11938b0b1c0d791696fa04f1a092e17f7",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/lvpwell_split.drc": "a42e941df801ebfe88391d4ed5bd48832e270fa8fdbb7f2878161e276dbcbc2c",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/lvs_bjt.drc": "28ba7d88cae51cb08f983e6036578ce35b6a461105351bcb79c56d331895cdea",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/main.drc": "4cc1d6d68434e9693a6149e3fa796966a5641a2f596596c780e44629b9165b52",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/mcell.drc": "4f943ef955e35a8ccfa2941562cb71a3fb3bd0c7b5c0348a32435c12ef313a00",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metal1.drc": "1a0d46c5f2a716ecc3aa1f658a71c906489a9854ab468d586adeb2da69013d96",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metal1_split.drc": "8b14873637d2a66c2440979f6554b493f9a9b54a2176a1c46e54e03ea6a2c689",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metal2.drc": "b1f7c24d66576a862ebe956743db86ff1a4098c2b3da743b1e3603be667830bd",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metal3.drc": "1b3a46f2ffce1a627fd1637fd1d37491e5b432956f7665ca0696badef70e026a",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metal4.drc": "c1e29494c536dad12316080fd53d6b835a0607701ff17315303ca91d09f6ec22",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metal5.drc": "10d3dbedc55d0b00df2c5120a1edd210f15593eceef52915c9278bf4be5ac412",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metaltop.drc": "403e534e3e97a36fa11268d86abe6bf50c80ca9933326c548c9a59462e0493e8",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/metaltop_30k.drc": "24f36b61142402cdc5a80316d7aa6d4a352ba5f73353b963dee950b534e595e2",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/mim_a.drc": "8cecb8c908918ab943d8aafc886be8c2a7bde5521a70741c462528acedce91b2",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/mim_b.drc": "c3fc3be3e0f90d3124f9662faf70c37ca3efa69cead89f6b4871a2a5dd71b577",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/mslot.drc": "5e7d635b415a40410fb8e9d92eec9f664859a2d3f4f42e79e1edb014e3f8dddd",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/nat.drc": "77955ebaad2aafb3b641cf5d38588b953872b04d5166111c246c23e663f9bf89",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/nat_split.drc": "31793de6ded096892eb7a249d89418f2c0acc61047d607d01ac0723dbe1a0191",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/nplus.drc": "ed0829f79b4e2892539e3258a5d700c51bc11940719a1efc5b5ddb991584c141",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/nwell.drc": "208ff20b7b524696869e94a3d97e8908633534d847c2b85e898979d1da0965df",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/nwell_split.drc": "7604d73055598adf6cfdc2a3872522b2d2b34215b84f244c233205fe16402bcf",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/otp_mk.drc": "dacff2673c5d0412803a72a861b7503eff69412834ba80f6aec5aeabd80b5514",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/poly2.drc": "44b82676e8a3c421ea0b50c0a21d6c07d4946f369bd37b3a9c60704aa730f310",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/pplus.drc": "2b25429c7121a12751633166a53653c6bfc4e4bb4691fd01f2f19f4563d51a99",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/pres.drc": "2a08a3618e372ed797a07322879edc433dfb5b6467e832742fcac0ab80589266",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/sab.drc": "d96b59f3accf0b79793d3875960d18050dd8cffffea748d1f56917fa3d8f9f25",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/sram_3p3.drc": "dd0b7c36d53ce47b1b663d335926ea9511c5bf8ea3dce2d4402df13f96242af1",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/sram_5p0.drc": "a55d46948410fab086daeff25e314197277ac324c5048a48b6a02f20b576cf24",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/tail.drc": "99cd2ad722447aa6220113bfa59943192b92a9af04f7fd05d9b443a0a3112315",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via1.drc": "ab499497bcb3b856a68a0a7569f39d38799cf95d801ed1b09aced30266648b02",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via1_split.drc": "580e0a4dca0ef67a0c0182e1abcf17578753f9e36a5d2b85d5902d91fe127231",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via2.drc": "363ac1eddb2f46e69227320c8fc44076bc1cbb8da473411317da0124197a7764",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via2_split.drc": "377c30381b8d64bc80cfd08212329b242f5fad1c70ed6f6800b69535402dcdd6",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via3.drc": "bdda67bccf5a988956f51e63a732608a6fc0412c212533fb1a0c04869db8d2d6",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via3_split.drc": "e4ab81f0106420038a1e0d2c262d8701dc54ac62d660c4493bbf3bc023f35ca0",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via4.drc": "1f0bc0b7201de6237fd6e689121b1cae0fe485b4757561f9901fd9b29e0bffcd",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via4_split.drc": "b3a44ae49b0d0717f710c6a0871b0d6c0b0b2da752618bccc96f740f707e4f11",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/via5.drc": "41f8283d9ab35d3499b853f884b18678552325f90e784b8c41a33b3721613308",
+    "gf180mcuD/libs.tech/klayout/tech/drc/rule_decks/ymtp_mk.drc": "3b5a588070dd41c1365fd87f2341582f754417ee7fa5d0fe04ac438fb4dc9ac3",
+    "gf180mcuD/libs.tech/librelane/rules.openrcx.gf180mcuD.nom": "d83a04ea28af9b74a097fb479bbab9ed52859a1e3428b33d3151cb5afae62ddf",
+    "gf180mcuD/libs.tech/magic/gf180mcuD.magicrc": "c4dd931ff8ff4bae4633ea78ae780f7cbbbe44c1289d6a1c3ecb592080bbf251",
+    "gf180mcuD/libs.tech/magic/gf180mcuD.tcl": "2494ae57857c48538de660621a3ef28b0b1a0e5c0fe5982e3005dc351613a12b",
+    "gf180mcuD/libs.tech/magic/gf180mcuD.tech": "0704dd4afef187b5b9bb04d378b67b2fc642a4c20e1a71195ce5eab64719c261",
+    "gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl": "f28b0b37c0a75e7a477d28e2d05d14ae90e17602a991f4339460540c968d9419"
+  }
+}

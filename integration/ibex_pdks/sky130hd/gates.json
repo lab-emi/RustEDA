@@ -1,0 +1,187 @@
+{
+  "schema": "rusteda.ibex-gate-profile.v1",
+  "name": "sky130hd",
+  "pdk": "sky130A",
+  "scl": "sky130_fd_sc_hd",
+  "top": "ibex_sram_bench",
+  "corners": {
+    "tt": "tt_025C_1v80",
+    "ss": "ss_100C_1v60"
+  },
+  "decisions": [
+    "SKY130 SRAM corner: the OpenRAM macro publishes a TT Liberty only; it is used at both the TT and the SS corner, in the reference flow, the native flow and the timing gate.",
+    "SKY130 SRAM Liberty: every consumer reads the derived copy written by prepare.py, without the three pin-level max_transition 0.04 ns attributes of the macro's inputs (the library's default_max_transition of 0.5 ns then applies); the vendor file is not edited.",
+    "Macro-pin limit rows: slew, capacitance and fanout rows at macro pins are reported separately and gate only beyond a design-wide SDC limit; setup and hold at macro pins gate.",
+    "LVS scope: black-box-macro LVS; standard cells are compared at device level, every macro instance pin is checked.",
+    "Latch-up has no separate gate: the tap-distance rules are part of the foundry DRC run by the drc gate.",
+    "Macro interiors: the KLayout deck sees the complete GDS; a marker is attributed to the SRAM only when the same deck with the same options reports it, under the same rule, on the SRAM GDS alone. Magic (DRC, antenna, LVS extraction) reads the SRAM as its LEF abstract view: it checks all top-level and standard-cell geometry, including its spacing to the SRAM's pins and obstructions, and nothing inside the SRAM.",
+    "KLayout DRC options are the PDK flow configuration's (beol, feol, offgrid, seal on; floating metal off)."
+  ],
+  "macros": {
+    "sky130_sram_2kbyte_1rw1r_32x512_8": {
+      "instances": [
+        "u_imem",
+        "u_dmem"
+      ],
+      "gds": "sky130A/libs.ref/sky130_sram_macros/gds/sky130_sram_2kbyte_1rw1r_32x512_8.gds",
+      "lef": "sky130A/libs.ref/sky130_sram_macros/lef/sky130_sram_2kbyte_1rw1r_32x512_8.lef",
+      "liberty": {
+        "tt": "prepared:macro/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib",
+        "ss": "prepared:macro/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib"
+      }
+    }
+  },
+  "collateral": {
+    "liberty": {
+      "tt": "sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+      "ss": "sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__ss_100C_1v60.lib"
+    },
+    "tech_lef": "sky130A/libs.ref/sky130_fd_sc_hd/techlef/sky130_fd_sc_hd__nom.tlef",
+    "cell_lefs": [
+      "sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef",
+      "sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_ef_sc_hd.lef"
+    ]
+  },
+  "magic": {
+    "magicrc": "sky130A/libs.tech/magic/sky130A.magicrc",
+    "tech_files": [
+      "sky130A/libs.tech/magic/sky130A.tech",
+      "sky130A/libs.tech/magic/sky130A.tcl"
+    ]
+  },
+  "gates": {
+    "drc": {
+      "engines": [
+        {
+          "engine": "magic",
+          "style": "drc(full)",
+          "timeout_seconds": 21600
+        },
+        {
+          "engine": "klayout",
+          "deck": "sky130A/libs.tech/klayout/drc/sky130A_mr.drc",
+          "includes": [],
+          "top_switch": "top_cell",
+          "threads_switch": "thr",
+          "switches": [
+            [
+              "feol",
+              "true"
+            ],
+            [
+              "beol",
+              "true"
+            ],
+            [
+              "offgrid",
+              "true"
+            ],
+            [
+              "seal",
+              "true"
+            ],
+            [
+              "floating_met",
+              "false"
+            ]
+          ],
+          "options_source": "KLAYOUT_DRC_OPTIONS of libs.tech/openlane/config.tcl",
+          "timeout_seconds": 21600
+        }
+      ],
+      "latchup_rules": [
+        "LU.2",
+        "LU.2.1",
+        "LU.3",
+        "nwell.4",
+        "licon.16"
+      ]
+    },
+    "antenna": {
+      "engines": [
+        {
+          "engine": "magic",
+          "timeout_seconds": 14400
+        }
+      ]
+    },
+    "extraction": {
+      "rules": "sky130A/libs.tech/openlane/rules.openrcx.sky130A.nom.calibre"
+    },
+    "timing": {},
+    "lvs": {
+      "engine": "magic_netgen",
+      "netgen_setup": "sky130A/libs.tech/netgen/sky130A_setup.tcl",
+      "cell_spice": [
+        "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice",
+        "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__decap_12.spice",
+        "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__fill_4.spice",
+        "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__fill_8.spice",
+        "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__fill_12.spice"
+      ],
+      "netgen_env": {
+        "MAGIC_EXT_USE_GDS": "1"
+      },
+      "timeout_seconds": 7200
+    },
+    "simulation": {
+      "vendor": [
+        "sky130A/libs.ref/sky130_fd_sc_hd/verilog/primitives.v",
+        "sky130A/libs.ref/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v",
+        "sky130A/libs.ref/sky130_sram_macros/verilog/sky130_sram_2kbyte_1rw1r_32x512_8.v"
+      ],
+      "model_edits": [
+        {
+          "file": 2,
+          "hoist_line": "reg [DATA_WIDTH-1:0]    mem [0:RAM_DEPTH-1];",
+          "before": "  // All inputs are registers"
+        }
+      ],
+      "defines": [
+        "FUNCTIONAL",
+        "UNIT_DELAY=#1"
+      ],
+      "pass_line": "PASS: real SRAM banks, byte masks, boundary addresses, Ibex program stores 42 and 43"
+    },
+    "logic": {
+      "tie_cells": [
+        "sky130_fd_sc_hd__conb_1"
+      ],
+      "limits": {
+        "stage_seconds": 600,
+        "cec_seconds": 300,
+        "max_conflicts": 2000000,
+        "discovery_work": 16000000000,
+        "discovery_rounds": 32,
+        "memory_mib": 4096
+      }
+    },
+    "density": {
+      "max_percent": 70
+    }
+  },
+  "files": {
+    "prepared:macro/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db",
+    "sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_ef_sc_hd.lef": "99e7fec7196b063ef5fdd485802bf4c819561bf71eb94598720eb2635e63c992",
+    "sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef": "3a3ea4e9d0973402702764d897659e52fe3d413eb48c306cd811de40a75264fa",
+    "sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__ss_100C_1v60.lib": "9b24f0db3967ac67b4cae1f74bb480fd47922d18d0ed577e3c121739b412c361",
+    "sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+    "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__decap_12.spice": "49eea8a3c34b711f5478a02a78e3fd320b49a26c0b112aa37f7602dec243bb45",
+    "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__fill_12.spice": "b8c25d67b7efbfe0de3ae87e6363e47bf062d1e3268f989c4be1696454670c22",
+    "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__fill_4.spice": "12e0296ced1ff4e95760c9ade64a0c9f76ff917ec3d4328a46df5f1fd3bf1398",
+    "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__fill_8.spice": "5e3ec66c5c8cdcba35f718a978167cdea8c35ab4e58d56e4b93e0cf3e87b82f6",
+    "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice": "397cd4d422caeba9a06b1c77457d0a90b41478b05a4d2a2b233c82ab84a8fde5",
+    "sky130A/libs.ref/sky130_fd_sc_hd/techlef/sky130_fd_sc_hd__nom.tlef": "5de46c6f7c2cf82599b93d30a6459465f770f63c85b36182c672782219938519",
+    "sky130A/libs.ref/sky130_fd_sc_hd/verilog/primitives.v": "7d4b1441d06b0f2b9662befa675a0484d77149e04eb42a5f1fa2d4cfded7b2ce",
+    "sky130A/libs.ref/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v": "fbf3b406a2ee7b47e4d28ab3f2ebf80e2a755a316fe8fb1f4b1873f71b563f3b",
+    "sky130A/libs.ref/sky130_sram_macros/gds/sky130_sram_2kbyte_1rw1r_32x512_8.gds": "d32efcfe8079379f94070bcbcedad7f1239e27f8996eb184141840e31c9302b2",
+    "sky130A/libs.ref/sky130_sram_macros/lef/sky130_sram_2kbyte_1rw1r_32x512_8.lef": "e35072ac14a991285619477f13c80fd3837e76ef7ed354ae6ab80d9232ce7a2e",
+    "sky130A/libs.ref/sky130_sram_macros/verilog/sky130_sram_2kbyte_1rw1r_32x512_8.v": "2712357fbc3d1ee3343c4bcb7d630de92ca87d869fb5d50d1d3cea967f288208",
+    "sky130A/libs.tech/klayout/drc/sky130A_mr.drc": "ff4c0281ff485ae1c85f44d6d2695d43dd71422363edea8bc6c1b3dde6ef9470",
+    "sky130A/libs.tech/magic/sky130A.magicrc": "c0ce4fa71f4bded0a3a34d6d50dc3f74bab43e825ac9611b482f08bf344772f2",
+    "sky130A/libs.tech/magic/sky130A.tcl": "c3e06070a440d9f7680af89fa7b61de0e193392f4b99a7a7f8002a035ad7a947",
+    "sky130A/libs.tech/magic/sky130A.tech": "df9596bcf40114ff5af9f22fd4040e8cdd840c00841fa00c6cf6e9da853b7c3f",
+    "sky130A/libs.tech/netgen/sky130A_setup.tcl": "8e2c2ad2be542fad833f031b5635799bdd183a10aed40539fafecdab244d23af",
+    "sky130A/libs.tech/openlane/rules.openrcx.sky130A.nom.calibre": "0b0678968a3d8665ee1ac882df2b0eb31e3896ac05130b9de6bd67ef2027c757"
+  }
+}
