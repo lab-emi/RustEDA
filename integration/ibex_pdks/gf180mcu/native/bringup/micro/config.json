@@ -1,0 +1,12 @@
+{
+  "DESIGN_NAME": "micro_sram",
+  "DIE_AREA": [0, 0, 532.0, 1230.88],
+  "MACROS": {
+    "gf180mcu_fd_ip_sram__sram512x8m8wm1": {
+      "instances": {
+        "u_mem0": {"location": [50.4, 705.6], "orientation": "N"},
+        "u_mem1": {"location": [50.4, 39.2], "orientation": "FS"}
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "rusteda.native-pdk-profile.v1",
+  "name": "gf180mcu",
+  "pdk": "gf180mcuD",
+  "library": "gf180mcu_fd_sc_mcu7t5v0",
+  "top": "ibex_sram_bench",
+  "corners": [
+    {
+      "name": "tt",
+      "rc": "nom",
+      "liberty": {
+        "std": {
+          "path": "pdk:libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+          "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+        },
+        "ram": {
+          "path": "pdk:libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib",
+          "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446"
+        }
+      }
+    },
+    {
+      "name": "ss",
+      "rc": "nom",
+      "liberty": {
+        "std": {
+          "path": "pdk:libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib",
+          "sha256": "4c2657ae12581bc18ed408f3fda0accd10b855118b9993070dbb360dfa3aa874"
+        },
+        "ram": {
+          "path": "pdk:libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib",
+          "sha256": "bf411ffa77f14d92e0c1e9023521d3b30551547ddc8e09b9a8458dcc17f19e36"
+        }
+      }
+    }
+  ],
+  "lef": {
+    "technology": {
+      "path": "pdk:libs.ref/gf180mcu_fd_sc_mcu7t5v0/techlef/gf180mcu_fd_sc_mcu7t5v0__nom.tlef",
+      "sha256": "842b186318d53844561af4ec530b4e30d8ba519bcc58d512a363ef255acc7abd"
+    },
+    "cells": [
+      {
+        "path": "pdk:libs.ref/gf180mcu_fd_sc_mcu7t5v0/lef/gf180mcu_fd_sc_mcu7t5v0.lef",
+        "sha256": "47dadf84c21b20f558d043c36271632f07b1c2c2a595b118e2e1050ebb74349b"
+      }
+    ],
+    "combined": null
+  },
+  "gds": {
+    "cells": [
+      {
+        "path": "pdk:libs.ref/gf180mcu_fd_sc_mcu7t5v0/gds/gf180mcu_fd_sc_mcu7t5v0.gds",
+        "sha256": "3db5da226c0437918a54b1dc4d3098ad48f52904231d7ce3f576ff13c613912e"
+      }
+    ]
+  },
+  "macros": [
+    {
+      "id": "ram",
+      "master": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+      "instances": [
+        "u_dmem0",
+        "u_dmem1",
+        "u_dmem2",
+        "u_dmem3",
+        "u_imem0",
+        "u_imem1",
+        "u_imem2",
+        "u_imem3"
+      ],
+      "lef": {
+        "path": "pdk:libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram512x8m8wm1.lef",
+        "sha256": "f30453be8a3919de697ad6f9828cc0e31602ed5ad7cc462dd85b7d54e47872af"
+      },
+      "gds": {
+        "path": "pdk:libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram512x8m8wm1.gds",
+        "sha256": "40d76d3ccfc8779c9db9f1db7a0bbccbbaf12c4627a3fa5b59049f23eef7d915"
+      }
+    }
+  ],
+  "gds_layer_map": {
+    "tracked": "profile:gds-map.json"
+  },
+  "rc": {
+    "profile": "profile:rc-nom.json"
+  },
+  "synthesis": {
+    "dont_use": [
+      "gf180mcu_fd_sc_mcu7t5v0__dly*",
+      "gf180mcu_fd_sc_mcu7t5v0__sdff*",
+      "gf180mcu_fd_sc_mcu7t5v0__mux2_1",
+      "gf180mcu_fd_sc_mcu7t5v0__oai33_2",
+      "gf180mcu_fd_sc_mcu7t5v0__invz_*",
+      "gf180mcu_fd_sc_mcu7t5v0__bufz_*",
+      "gf180mcu_fd_sc_mcu7t5v0__buf_20",
+      "gf180mcu_fd_sc_mcu7t5v0__clkbuf_20",
+      "gf180mcu_fd_sc_mcu7t5v0__oai33_4",
+      "gf180mcu_fd_sc_mcu7t5v0__oai222_4"
+    ]
+  },
+  "policies": {},
+  "allocations": [
+    2,
+    4,
+    16
+  ],
+  "referee_steps": []
+}

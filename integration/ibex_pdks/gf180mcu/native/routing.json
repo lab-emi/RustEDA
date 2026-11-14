@@ -1,0 +1,120 @@
+{
+  "grid_step": 1120,
+  "access_layer": "Metal2",
+  "layers": [
+    {"name": "Metal1", "spacing": 460},
+    {"name": "Metal2", "spacing": 560},
+    {"name": "Metal3", "spacing": 560},
+    {"name": "Metal4", "spacing": 560},
+    {"name": "Metal5", "spacing": 920}
+  ],
+  "vias": [
+    {"name": "Via1_HV", "cut_spacing": 520},
+    {"name": "Via2_HV", "cut_spacing": 520},
+    {"name": "Via3_HV", "cut_spacing": 520},
+    {"name": "Via4_HV", "cut_spacing": 520}
+  ],
+  "lef_rules": true,
+  "max_skew_ns": 1.0,
+  "limits": {
+    "max_axis": 1048576,
+    "max_grid_nodes": 128000000,
+    "max_obstacles": 8000000,
+    "max_bin_entries": 48000000,
+    "max_segments": 8000000,
+    "max_expansions": 100000000000,
+    "max_search_expansions": 80000000,
+    "max_comparisons": 20000000000000,
+    "max_heap": 2000000,
+    "max_hard_search_expansions": 200000,
+    "max_active_nodes": 400000,
+    "max_target_segments": 262144,
+    "max_batch_retries": 16,
+    "max_batch_displaced_nets": 1024,
+    "max_batch_repair_terminals": 1000000,
+    "max_rule_violations": 100000,
+    "max_rule_grid_cells": 1000000,
+    "scouts": {
+      "wide_hard_expansions": 1000000,
+      "soft_expansions": 5000000,
+      "reuse_expansions": 200000,
+      "fast_expansions": 2000000,
+      "owner_first_expansions": 100000,
+      "owner_progress_expansions": 500000
+    },
+    "eager_repair_expansions": 1000000,
+    "eager_repair_max_victims": 16,
+    "repair_detour": {
+      "percent": 130,
+      "slack": 80000,
+      "max_rejections_per_net": 4,
+      "max_rejections": 20000
+    }
+  },
+  "track_router": {
+    "gcell": 31360,
+    "via_cost": 6720,
+    "memory_mib": 6144,
+    "min_routing_layer": "Metal2",
+    "max_routing_layer": "Metal5",
+    "heuristic_weight": 2,
+    "tracks": [
+      {"layer": "Metal2", "offset": 560},
+      {"layer": "Metal4", "offset": 560}
+    ],
+    "global_iterations": 20,
+    "capacity_percent": 80,
+    "guide_margin": 1,
+    "expand_margin": 4,
+    "max_ripups_per_net": 256,
+    "max_repair_rounds": 2000000,
+    "wrong_way_factor": 6,
+    "max_history_entries": 4000000,
+    "repair_heuristic_weight": 2,
+    "single_owner_repair": {
+      "max_candidates": 4,
+      "max_frontier_nodes": 4096,
+      "first_search_expansions": 100000,
+      "max_progress_candidates": 2,
+      "progress_search_expansions": 500000,
+      "max_total_expansions": 4000000,
+      "post_soft_refinement": "single_owner",
+      "heuristic_weight": 3
+    },
+    "own_pin_index": "layer_ranges",
+    "instance_index": "template_layers",
+    "area_stacks": true,
+    "qor": {
+      "prim_order": true,
+      "drop_portals": true,
+      "net_aware_access": false,
+      "small_net_terminals": 10,
+      "small_net_weight": 1,
+      "notch_bridge": true,
+      "strict_wide_cycles": true,
+      "via_reduction": {
+        "passes": 2,
+        "via_milli": 3000,
+        "max_terminals": 20,
+        "length_per_via": 4480,
+        "net_expansions": 20000,
+        "max_connection_length": 80000
+      },
+      "dedupe_vias": true,
+      "straighten": {
+        "passes": 2,
+        "turn_at_ends": true,
+        "escape_jogs": true,
+        "neighbors": {
+          "max_victims": 2,
+          "max_terminals": 10,
+          "net_expansions": 10000,
+          "length_per_piece": 1120
+        }
+      },
+      "bend_cost": 100,
+      "def_tracks": true
+    }
+  },
+  "batch_terminals": 100000
+}

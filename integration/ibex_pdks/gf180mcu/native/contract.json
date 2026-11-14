@@ -1,0 +1,19 @@
+{
+  "schema": "rusteda.native-pdk-contract.v1",
+  "physical": {
+    "filler_cells": 7,
+    "tap": {
+      "body_view": "lef",
+      "lattices": [
+        {
+          "max_gap": 56000,
+          "pattern": null
+        }
+      ]
+    }
+  },
+  "routing": {
+    "min_routing_layer": "Metal2",
+    "max_routing_layer": "Metal5"
+  }
+}
