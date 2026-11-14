@@ -53,5 +53,6 @@ case ",$checks," in *,lvs,*)
     OUT="$out/lvs/comp.out" timed lvs_netgen netgen -batch source "$here/netgen_lvs_blackbox.tcl" \
     > "$out/lvs/netgen.log" 2>&1 < /dev/null || true
   tail -4 "$out/lvs/comp.out" | tee "$out/lvs/verdict.txt"
+  rm -f "$out/lvs/"*.ext   # Magic's per-cell extraction files: about 0.5 GB on the benchmark
   cat "$out/lvs_extract.time" "$out/lvs_netgen.time" ;;
 esac

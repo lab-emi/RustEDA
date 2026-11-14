@@ -54,10 +54,11 @@ vias = collections.Counter()
 cut = collections.Counter()
 if nets:
     token = re.compile(r"\(\s*(\S+)\s+(\S+)(?:\s+\S+)?\s*\)|(\S+)")
-    for net in re.split(r"^- ", nets.group(1), flags=re.M)[1:]:
+    for net in re.split(r"^\s*- ", nets.group(1), flags=re.M)[1:]:
         if "+ ROUTED" not in net:
             continue
         wiring = net.split("+ ROUTED", 1)[1].split(";")[0]
+        wiring = re.sub(r"RECT\s*\([^)]*\)", " ", wiring)
         wiring = re.split(r"\+ (?:FIXED|COVER|SOURCE|USE|WEIGHT|PROPERTY)", wiring)[0]
         for seg in re.split(r"\bNEW\b", wiring):
             parts = seg.split(None, 1)
