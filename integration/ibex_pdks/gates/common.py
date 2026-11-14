@@ -248,8 +248,9 @@ def placed_box(component, size_um, units) -> list:
     return [component["x"], component["y"], component["x"] + width, component["y"] + height]
 
 
-def run_tool(argv, log_path, time_path, gnu_time, seconds, env=None, cwd=None, log_cap=256 * MIB) -> dict:
-    """Run one external tool under GNU time; kill its process group at the deadline or log cap."""
+def run_tool(argv, log_path, time_path, gnu_time, seconds, env=None, cwd=None, log_cap=256 * MIB, watch=()) -> dict:
+    """Run one external tool under GNU time; kill its process group at the deadline, the log cap or
+    when a watched output file grows beyond its cap (`watch`: [(path, bytes)])."""
     command = [str(gnu_time), "-v", "-o", str(time_path), *map(str, argv)]
     tick = time.monotonic()
     with Path(log_path).open("xb") as log:
@@ -262,6 +263,10 @@ def run_tool(argv, log_path, time_path, gnu_time, seconds, env=None, cwd=None, l
                     reason = "deadline"
                 elif Path(log_path).stat().st_size > log_cap:
                     reason = "log byte budget"
+                else:
+                    for path, cap in watch:
+                        if Path(path).is_file() and Path(path).stat().st_size > cap:
+                            reason = f"output byte budget: {Path(path).name} above {cap} bytes"
                 if reason:
                     os.killpg(process.pid, signal.SIGKILL)
                     process.wait(timeout=30)

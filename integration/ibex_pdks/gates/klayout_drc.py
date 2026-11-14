@@ -44,7 +44,7 @@ def deck_key(config) -> str:
 
 
 def count_items(path):
-    common.require(path.is_file() and path.stat().st_size <= 2048 * common.MIB, "DRC_REPORT_MISSING_OR_OVERSIZED")
+    common.require(path.is_file() and path.stat().st_size <= 1024 * common.MIB, "DRC_REPORT_MISSING_OR_OVERSIZED")
     categories, cells, total, root, declared = {}, {}, 0, None, 0
     for event, node in ET.iterparse(path, events=("start", "end")):
         if root is None:
@@ -90,8 +90,9 @@ def main() -> int:
         common.require(name not in ("input", "report", config["top_switch"], config["threads_switch"]), "SWITCH_NAME")
         command += ["-rd", f"{name}={value}"]
     common.save_json(output / "command.json", [str(c) for c in command])
+    # A report database above 1 GiB means millions of markers: stop the deck and report it.
     run = common.run_tool(command, output / "deck.log", output / "deck.time", tools["gnu_time"],
-                          int(config["timeout_seconds"]))
+                          int(config["timeout_seconds"]), watch=[(report, int(config.get("max_report_bytes", 1 << 30)))])
     summary = dict(schema="rusteda.pdk-gate.klayout-drc-result.v1", status="failed", complete=False, mode=config["mode"],
                    top=top, gds=config["gds"], deck=config["deck"], deck_files=len(config["deck_files"]),
                    deck_key=key, switches=config["switches"], threads=threads, tools=config["tools"],
