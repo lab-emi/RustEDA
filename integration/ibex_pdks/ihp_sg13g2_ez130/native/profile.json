@@ -1,0 +1,123 @@
+{
+  "schema": "rusteda.native-pdk-profile.v1",
+  "name": "ihp_sg13g2_ez130",
+  "flow_schema": "rusteda.ihp-flow.v1",
+  "pdk": "ihp-sg13g2",
+  "library": "ez130_8t",
+  "top": "ibex_sram_bench",
+  "corners": [
+    {
+      "name": "tt",
+      "rc": "nom",
+      "liberty": {
+        "std": "ez130_root:lib/ez130_8t_tt_1p20v_25c.lib",
+        "ram": "ihp_root:libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_typ_1p20V_25C.lib"
+      }
+    },
+    {
+      "name": "ss",
+      "rc": "nom",
+      "liberty": {
+        "std": "ez130_root:lib/ez130_8t_ss_1p08v_125c.lib",
+        "ram": "ihp_root:libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_1024x32_c2_bm_bist_slow_1p08V_125C.lib"
+      }
+    }
+  ],
+  "lef": {
+    "technology": "ez130_root:lef/ez130_sg13g2_tech.lef",
+    "cells": [
+      "ez130_root:lef/ez130_8t.lef"
+    ],
+    "combined": "combined_cell_lef:"
+  },
+  "gds": {
+    "cells": [
+      "ez130_root:gds/ez130_8t.gds"
+    ]
+  },
+  "macros": [
+    {
+      "id": "ram",
+      "master": "RM_IHPSG13_1P_1024x32_c2_bm_bist",
+      "instances": [
+        "u_imem",
+        "u_dmem"
+      ],
+      "lef": "ihp_root:libs.ref/sg13g2_sram/lef/RM_IHPSG13_1P_1024x32_c2_bm_bist.lef",
+      "gds": "ihp_root:libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_1024x32_c2_bm_bist.gds"
+    }
+  ],
+  "gds_layer_map": {
+    "klayout": "ihp_root:libs.tech/klayout/tech/sg13g2.map",
+    "layers": [
+      "Metal1",
+      "Via1",
+      "Metal2",
+      "Via2",
+      "Metal3",
+      "Via3",
+      "Metal4",
+      "Via4",
+      "Metal5",
+      "TopVia1",
+      "TopMetal1",
+      "TopVia2",
+      "TopMetal2"
+    ]
+  },
+  "rc": {
+    "builder": "ihp",
+    "resistance_model": "openrcx-pdk",
+    "calibration": "ihp/libs.tech/librelane/openrcx/IHP_rcx_patterns.rules",
+    "rules": {
+      "path": "ihp_root:libs.tech/librelane/openrcx/IHP_rcx_patterns.rules",
+      "sha256": "ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905"
+    },
+    "magic_tech": "ihp_root:libs.tech/magic/ihp-sg13g2.tech",
+    "magic_extract": "ihp_root:libs.tech/magic/ihp-sg13g2-extract.tech"
+  },
+  "synthesis": {
+    "dont_use": []
+  },
+  "policies": {
+    "floorplan": "recipe:native-floorplan.json",
+    "physical": "recipe:native-physical.json",
+    "routing": "recipe:native-routing.json",
+    "interfaces": "recipe:lvs_interfaces.json",
+    "rc_estimate": "recipe:rc-estimate-policy.json",
+    "selection": "profile:selection.json",
+    "contract": "profile:contract.json",
+    "antenna_group": "antenna_frozen:antenna-group-policy.json",
+    "antenna_session": "antenna_frozen:antenna-session-policy.json"
+  },
+  "allocations": [
+    2,
+    4,
+    16
+  ],
+  "referee_steps": [
+    "openrcx",
+    "timing",
+    "main",
+    "antenna",
+    "lvs",
+    "macro_contract"
+  ],
+  "referee_files": {
+    "reference_extract": "recipe:reference_extract.py",
+    "timing_runner": "recipe:signoff_timing.py",
+    "lvs_runner": "recipe:signoff_lvs.py",
+    "drc_runner": "recipe:signoff_drc.py",
+    "macro_contract": "recipe:macro_contract.py",
+    "drc_profile": "signoff_deck:provenance.json",
+    "drc_deck": "signoff_deck:klayout/tech/drc/ihp-sg13g2.drc",
+    "antenna_deck": "signoff_deck:klayout/tech/drc/rule_decks/antenna.drc",
+    "lvs_deck": "sram_lvs:sg13g2.lvs",
+    "std_cdl": "ez130_root:cdl/ez130_8t.cdl",
+    "ram_cdl": "sram_lvs:sram.cdl",
+    "filler_cdl": "ez_lvs:spacers.cdl",
+    "sram_qualification": "sram_qualification:",
+    "lvs_interfaces": "recipe:lvs_interfaces.json",
+    "contract": "prep:contract.json"
+  }
+}

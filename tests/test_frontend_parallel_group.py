@@ -37,7 +37,7 @@ SHARED = {'frontend/lib-cache', 'frontend/sha256-cache.json'}
 
 
 def config():
-    return dict(files={k: dict(path='/x/' + k, sha256='0' * 64, bytes=1) for k in fe.FILE_KEYS},
+    return dict(files={k: dict(path='/x/' + k, sha256='0' * 64, bytes=1) for k in fe.load_profile().frontend_file_keys()},
                 tools={k: dict(path='/x/' + k, sha256='0' * 64, bytes=1) for k in fe.TOOL_KEYS},
                 scope=dict(threads=4, cpu_affinity=[0, 1, 2, 3], memory_mib=8192, max_log_bytes=64 << 20,
                            max_stdout_artifact_bytes=1536 << 20),

@@ -1,0 +1,121 @@
+{
+  "top": "ibex_sram_bench",
+  "primary_clock": "clk_i",
+  "clock_sink_pin": "CK",
+  "gating_cells": [
+    "AND2X3"
+  ],
+  "buffers": [
+    {
+      "cell": "BUFX1",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX2",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX3",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX4",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX6",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX8",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX12",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX16",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX24",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX32",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX44",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX48",
+      "input": "A",
+      "output": "Y"
+    },
+    {
+      "cell": "BUFX64",
+      "input": "A",
+      "output": "Y"
+    }
+  ],
+  "primary_buffer": "BUFX24",
+  "reset": {
+    "pin": "RB",
+    "leaf": "BUFX8",
+    "trunk": "BUFX16"
+  },
+  "delay_cells": [
+    "DLY1X2"
+  ],
+  "target_fanout": 9,
+  "cap_fraction": 0.8,
+  "hold_margin_ns": 0.075,
+  "setup_margin_ns": 0.05,
+  "port_diode": {
+    "cell": "ANTENNA2",
+    "pin": "A"
+  },
+  "electrical": {
+    "driver_cells": [
+      "BUFX3",
+      "BUFX4",
+      "BUFX6",
+      "BUFX8",
+      "BUFX12",
+      "BUFX16"
+    ],
+    "sram_buffer": "BUFX4",
+    "sram_clock_buffer": "BUFX8",
+    "sram_masters": [
+      "RM_IHPSG13_1P_1024x32_c2_bm_bist"
+    ],
+    "load_fraction": 0.6,
+    "max_wire_um": 1200,
+    "antenna_cells": [
+      "ANTENNA2"
+    ],
+    "drv_margin": 0.15,
+    "hold_drv_margin": 0.1,
+    "clock_balance": {
+      "cell": "DLY1X2",
+      "max_stages": 32,
+      "margin_ns": 0.1,
+      "wire_pf": 0.002
+    }
+  },
+  "launch_chain_max": 32
+}
