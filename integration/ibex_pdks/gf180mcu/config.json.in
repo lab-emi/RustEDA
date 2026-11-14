@@ -121,5 +121,7 @@
   "FP_MACRO_VERTICAL_HALO": 10,
   "EXTRA_EXCLUDED_CELLS": [
     "gf180mcu_fd_sc_mcu7t5v0__dly*"
-  ]
+  ],
+  "PL_MAX_DISPLACEMENT_X": 1876,
+  "PL_MAX_DISPLACEMENT_Y": 600
 }

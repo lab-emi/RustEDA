@@ -50,6 +50,7 @@ LibreLane's defaults and are stated here because they affect the competitor:
   the resizer takes a delay cell as its buffer (`gf180mcu_fd_sc_mcu7t5v0__dlyb_1`,
   `sky130_fd_sc_hd__clkdlybuf4s25_1`): LibreLane's own smoke test then inserts 29,453 buffers into 37 nets on
   gf180mcuD (4,353 on sky130A) and cannot legalize. Neither PDK's exclusion list names its delay cells. Hold
-  repair therefore uses ordinary buffers in the reference flow. The EZ130 library of the IHP benchmark has no
-  delay cells, so that benchmark is not affected.
+  repair therefore uses ordinary buffers in the reference flow. The IHP benchmark is not affected: with the
+  EZ130 library, which has one delay cell (`DLY1X2`), the resizer of the same OpenROAD build buffered with
+  `BUFX1` in the reference run.
 - **STA corners** are the nominal-RC typical and slow corners, as in the IHP reference, not the PDK's nine.
