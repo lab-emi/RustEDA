@@ -1,0 +1,83 @@
+{
+  "schema": "rusteda.pulpissimo-yosys-reference.v1",
+  "status": "completed",
+  "exit_code": 0,
+  "top": "ibex_core",
+  "command": [
+    "/home/cgao/tools/yosys/fb535e0ed0e872720d4fc832d1d1dab4ccd2a4d644be5020bca1db7772fb2db6/root/bin/yosys",
+    "-Q",
+    "-T",
+    "-s",
+    "/tmp/pulpissimo-bench/yo-fixed-p3-receipt.ys"
+  ],
+  "script": "read_liberty -lib /home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib\nread_verilog -sv /tmp/pulpissimo-bench/yo-fixed-p3-receipt.pruned.v\nchparam -set MHPMCounterNum 10 ibex_core\nchparam -set RegFile 2 ibex_core\nchparam -set DbgTriggerEn 1 ibex_core\nhierarchy -check -top ibex_core\nproc\nflatten\nopt\ntechmap\nopt\ndfflibmap -liberty /home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib\nabc -liberty /home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib -script \"+strash;&get,-n;&nf,-C,4,-F,1;&put\"\nopt -fast\ntee -o /tmp/pulpissimo-bench/yo-fixed-p3-stat.json stat -json -liberty /home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib\nwrite_verilog -noattr /tmp/pulpissimo-bench/yo-fixed-p3.v\n",
+  "resources": {
+    "memory_limit_gib": 8,
+    "timeout_seconds": 600,
+    "wall_seconds": 2.675,
+    "peak_rss_kib": 141724,
+    "user_cpu_seconds": 3.28,
+    "system_cpu_seconds": 0.24
+  },
+  "tools": {
+    "yosys": {
+      "path": "/home/cgao/tools/yosys/fb535e0ed0e872720d4fc832d1d1dab4ccd2a4d644be5020bca1db7772fb2db6/root/bin/yosys",
+      "sha256": "de10c3ee405ea4bc4b887041b215ee16a517a87dddc420cc6574b20b113d6327",
+      "version": "Yosys 0.70 (git sha1 28ba3cb92, Release, GNU /usr/bin/g++ 16.2.1)"
+    },
+    "gnu_time": {
+      "path": "/home/cgao/.local/share/containers/storage/overlay/d1a194c6048338802bb33b89e26ffcad28186a9fdf7082312592e14711add98e/diff/usr/bin/time",
+      "sha256": "3b11dec50514a8473e9f6efa7a34d584d0657538c09988f61b72d38ad4991a10"
+    }
+  },
+  "input": {
+    "path": "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+    "sha256": "bbc8aac0b0c36fe6a178a86fd690911a431e364a07bd02992300889b0a3b0d51",
+    "pruned": "/tmp/pulpissimo-bench/yo-fixed-p3-receipt.pruned.v",
+    "pruned_sha256": "29194cffc58f71f2621337788b9a08c914e2d876b126d83563bb01c55d5fe6af",
+    "modules": [
+      "counter",
+      "delta_counter",
+      "ibex_alu",
+      "ibex_compressed_decoder",
+      "ibex_controller",
+      "ibex_core",
+      "ibex_counter",
+      "ibex_cs_registers",
+      "ibex_csr",
+      "ibex_decoder",
+      "ibex_ex_block",
+      "ibex_fetch_fifo",
+      "ibex_id_stage",
+      "ibex_if_stage",
+      "ibex_load_store_unit",
+      "ibex_multdiv_fast",
+      "ibex_multdiv_slow",
+      "ibex_pmp",
+      "ibex_prefetch_buffer",
+      "ibex_register_file_ff",
+      "ibex_register_file_fpga",
+      "ibex_register_file_latch",
+      "ibex_wb_stage",
+      "sync",
+      "tc_clk_gating"
+    ]
+  },
+  "library": {
+    "path": "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+  },
+  "artifacts": {
+    "netlist": "/tmp/pulpissimo-bench/yo-fixed-p3.v",
+    "stat": "/tmp/pulpissimo-bench/yo-fixed-p3-stat.json",
+    "log": "/tmp/pulpissimo-bench/yo-fixed-p3-receipt.log",
+    "script": "/tmp/pulpissimo-bench/yo-fixed-p3-receipt.ys"
+  },
+  "metrics": {
+    "cells": 22235,
+    "internal_cells": 83,
+    "area_um2": 161157.0624,
+    "num_wires": 20543,
+    "num_wire_bits": 37250
+  }
+}

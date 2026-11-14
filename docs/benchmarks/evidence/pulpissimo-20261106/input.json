@@ -1,0 +1,68 @@
+{
+  "schema": "rusteda.pulpissimo-synthesis-input.v1",
+  "source": {
+    "name": "pulp-platform/pulpissimo",
+    "commit": "bfc3d9a1ef72443464509a22d948f0a6f5b65b4c",
+    "bender_lock_sha256": "8b236f7fa49dbc7910da8fc431419383e759ea431d231733f7477c80d5315da7",
+    "bender_targets": [
+      "asic",
+      "tech_cells_generic_include_tc_clk",
+      "tech_cells_generic_include_tc_sram"
+    ]
+  },
+  "tools": {
+    "bender_version": "0.32.1",
+    "sv2v_path": "/home/cgao/tools/sv2v/b56c5ff2beee99dcf3d6ac810eefdc66e4e1f4101b6a29befe7a8657375691bc/root/sv2v-Linux/sv2v",
+    "sv2v_sha256": "b80a8ac6212aa72a196d9d6129cda35f16dbfa799ec61848c46321f845b6b635"
+  },
+  "configuration": {
+    "top": "pulpissimo_soc_wrapper",
+    "core": "ibex",
+    "CORE_TYPE": 1,
+    "USE_XPULP": 0,
+    "USE_FPU": 0,
+    "USE_ZFINX": 0,
+    "USE_HWPE": 0,
+    "SIM_STDOUT": 0,
+    "excluded": "pads, pad multiplexing, clock generation and FLL",
+    "defines": [
+      "SYNTHESIS",
+      "TARGET_SYNTHESIS"
+    ]
+  },
+  "preparation": {
+    "copied_source_files": 1453,
+    "selected_source_files": 594,
+    "include_dirs": 108,
+    "identity_cast_substitutions_or_functions": 1499,
+    "removed_fatal_initial_blocks": 3,
+    "default_index_repairs": 2,
+    "apb_interface_repairs": 19,
+    "removed_unreachable_modules": [
+      "fpnew_cast_multi_2E827_67072",
+      "fpnew_classifier",
+      "fpnew_divsqrt_th_32_3DF01_FC8AC",
+      "fpnew_divsqrt_multi_E225A_B8CF6",
+      "fpnew_fma_11784",
+      "fpnew_fma_multi_B5D6B_2D261",
+      "fpnew_sdotp_multi_27B8F_E464C",
+      "fpnew_sdotp_multi_wrapper_8E56B_9079E",
+      "fpnew_noncomp_12FEC",
+      "fpnew_opgroup_block_37AAD",
+      "fpnew_opgroup_fmt_slice_07650",
+      "fpnew_opgroup_multifmt_slice_23084",
+      "fpnew_rounding",
+      "fpnew_top_8A78A",
+      "cv32e40p_fp_wrapper"
+    ],
+    "non_synthesizable_translate_off_blocks_stripped": true,
+    "scm_binding_adaptation": "register_file_1w_64b_1r_32b.sv"
+  },
+  "output": {
+    "path": "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+    "bytes": 4899187,
+    "sha256": "bbc8aac0b0c36fe6a178a86fd690911a431e364a07bd02992300889b0a3b0d51"
+  },
+  "flist_sha256": "8e3b9fe1dc27cc34ed24d148eef299fa5061012882f364034f6f47c669ab836b",
+  "wrapper_sha256": "6995f522308451a82ba0928d0f1c69eb7dea31c8caa0ca371dfd45958184eb4e"
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "rusteda.pulpissimo-synthesis-receipt.v1",
+  "label": "PULPissimo Ibex SoC, SKY130 HD TT",
+  "status": "completed",
+  "exit_code": 0,
+  "command": [
+    "/tmp/rustsys-target-pulp/release/rustsys",
+    "--threads",
+    "16",
+    "synth",
+    "--top",
+    "pulpissimo_soc_wrapper",
+    "--lib",
+    "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "-D",
+    "SYNTHESIS",
+    "--progress",
+    "log",
+    "-v",
+    "/tmp/pulpissimo-bench/harness-smallmem/pulpissimo_soc.v",
+    "--out",
+    "/tmp/pulpissimo-bench/smallmem2.v",
+    "--report",
+    "/tmp/pulpissimo-bench/smallmem2.json"
+  ],
+  "resources": {
+    "threads": 16,
+    "memory_limit_gib": 32,
+    "timeout_seconds": 600,
+    "wall_seconds": 487.763,
+    "recorded_wall_seconds": "8:07.72",
+    "peak_rss_kib": 1384020,
+    "user_cpu_seconds": 544.17,
+    "system_cpu_seconds": 1.7
+  },
+  "tools": {
+    "rustsys": {
+      "path": "/tmp/rustsys-target-pulp/release/rustsys",
+      "sha256": "fd2ecbd50c12caf0c1ee6299098eef1c1d1598ac1c00166ee9ca75168b596010",
+      "version": "rustsys 0.1.0 (runtimes: cpu)"
+    },
+    "gnu_time": {
+      "path": "/home/cgao/.local/share/containers/storage/overlay/d1a194c6048338802bb33b89e26ffcad28186a9fdf7082312592e14711add98e/diff/usr/bin/time",
+      "sha256": "3b11dec50514a8473e9f6efa7a34d584d0657538c09988f61b72d38ad4991a10"
+    }
+  },
+  "input": {
+    "path": "/tmp/pulpissimo-bench/harness-smallmem/pulpissimo_soc.v",
+    "bytes": 4899216,
+    "sha256": "3f3d9c82511d71089a1fe55f6ef95c69c495ce225d9ff8d91ad18db0892e763d"
+  },
+  "library": {
+    "path": "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "bytes": 12841637,
+    "sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+  },
+  "artifacts": {
+    "netlist": "/tmp/pulpissimo-bench/smallmem2.v",
+    "report": "/tmp/pulpissimo-bench/smallmem2.json",
+    "log": "/tmp/pulpissimo-bench/smallmem2-receipt.log",
+    "time": "/tmp/pulpissimo-bench/smallmem2-receipt.time"
+  },
+  "metrics": {
+    "cells": 180669,
+    "combinational_cells": 150207,
+    "sequential_cells": 30460,
+    "inverters": 11884,
+    "area_um2": 1697673.2032013952,
+    "logic_depth": 98,
+    "estimated_delay_ns": 52.76179,
+    "aig_nodes_before": 605650,
+    "aig_nodes_after": 325803,
+    "state_bits_rtl": 36831,
+    "state_bits_retained": 30460,
+    "runtime_s": 487.528957541
+  }
+}

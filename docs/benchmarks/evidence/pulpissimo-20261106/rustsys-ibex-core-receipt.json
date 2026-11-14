@@ -1,0 +1,83 @@
+{
+  "schema": "rusteda.pulpissimo-synthesis-receipt.v1",
+  "label": "PULPissimo Ibex SoC, SKY130 HD TT",
+  "status": "completed",
+  "exit_code": 0,
+  "command": [
+    "/tmp/rustsys-target-pulp/release/rustsys",
+    "--threads",
+    "1",
+    "synth",
+    "--top",
+    "ibex_core",
+    "--lib",
+    "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "-D",
+    "SYNTHESIS",
+    "--progress",
+    "log",
+    "-v",
+    "-P",
+    "MHPMCounterNum=10",
+    "-P",
+    "RegFile=2",
+    "-P",
+    "DbgTriggerEn=1",
+    "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+    "--out",
+    "/tmp/pulpissimo-bench/rs-fd-p1.v",
+    "--report",
+    "/tmp/pulpissimo-bench/rs-fd-p1.json"
+  ],
+  "resources": {
+    "threads": 1,
+    "memory_limit_gib": 4,
+    "timeout_seconds": 600,
+    "wall_seconds": 2.874,
+    "recorded_wall_seconds": "0:02.87",
+    "peak_rss_kib": 233860,
+    "user_cpu_seconds": 2.78,
+    "system_cpu_seconds": 0.07
+  },
+  "tools": {
+    "rustsys": {
+      "path": "/tmp/rustsys-target-pulp/release/rustsys",
+      "sha256": "fd2ecbd50c12caf0c1ee6299098eef1c1d1598ac1c00166ee9ca75168b596010",
+      "version": "rustsys 0.1.0 (runtimes: cpu)"
+    },
+    "gnu_time": {
+      "path": "/home/cgao/.local/share/containers/storage/overlay/d1a194c6048338802bb33b89e26ffcad28186a9fdf7082312592e14711add98e/diff/usr/bin/time",
+      "sha256": "3b11dec50514a8473e9f6efa7a34d584d0657538c09988f61b72d38ad4991a10"
+    }
+  },
+  "input": {
+    "path": "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+    "bytes": 4899187,
+    "sha256": "bbc8aac0b0c36fe6a178a86fd690911a431e364a07bd02992300889b0a3b0d51"
+  },
+  "library": {
+    "path": "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "bytes": 12841637,
+    "sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+  },
+  "artifacts": {
+    "netlist": "/tmp/pulpissimo-bench/rs-fd-p1.v",
+    "report": "/tmp/pulpissimo-bench/rs-fd-p1.json",
+    "log": "/tmp/pulpissimo-bench/rs-fd-p1-receipt.log",
+    "time": "/tmp/pulpissimo-bench/rs-fd-p1-receipt.time"
+  },
+  "metrics": {
+    "cells": 15041,
+    "combinational_cells": 12483,
+    "sequential_cells": 2557,
+    "inverters": 602,
+    "area_um2": 146711.95839999252,
+    "logic_depth": 45,
+    "estimated_delay_ns": 23.31148,
+    "aig_nodes_before": 33249,
+    "aig_nodes_after": 26703,
+    "state_bits_rtl": 2579,
+    "state_bits_retained": 2557,
+    "runtime_s": 2.764817483
+  }
+}

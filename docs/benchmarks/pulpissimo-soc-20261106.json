@@ -1,0 +1,214 @@
+{
+  "schema": "rusteda.pulpissimo-synthesis-benchmark.v1",
+  "date": "2026-11-06",
+  "status": "completed_core_head_to_head",
+  "summary": "PULPissimo Ibex-core synthesis on SKY130 HD, RustSys against a bounded Yosys 0.70/ABC reference on the same prepared Verilog. The Ibex core uses the PULPissimo instance parameters (MHPMCounterNum=10, RegFile=2, DbgTriggerEn=1). Three single-thread samples per producer; medians reported. The full SoC now passes the former generate-scope rejection but exceeds a 2 h synthesis budget; it remains unverified.",
+  "scope": {
+    "kind": "synthesis_only",
+    "design": "PULPissimo Ibex core (sub-block of the PULPissimo SoC)",
+    "not_measured": [
+      "placement",
+      "clock-tree synthesis",
+      "routing",
+      "extraction",
+      "signoff",
+      "full SoC synthesis"
+    ],
+    "full_soc_status": "unverified_timeout",
+    "note": "This is not an RTL-to-GDS result and cannot be compared with the Ibex SG13G2/EZ130 flow time."
+  },
+  "design": {
+    "family": "PULPissimo",
+    "repository": "https://github.com/pulp-platform/pulpissimo",
+    "commit": "bfc3d9a1ef72443464509a22d948f0a6f5b65b4c",
+    "bender_lock_sha256": "8b236f7fa49dbc7910da8fc431419383e759ea431d231733f7477c80d5315da7",
+    "configuration": {
+      "top": "pulpissimo_soc_wrapper",
+      "core": "ibex",
+      "CORE_TYPE": 1,
+      "USE_XPULP": 0,
+      "USE_FPU": 0,
+      "USE_ZFINX": 0,
+      "USE_HWPE": 0,
+      "SIM_STDOUT": 0,
+      "excluded": "pads, pad multiplexing, clock generation and FLL",
+      "defines": [
+        "SYNTHESIS",
+        "TARGET_SYNTHESIS"
+      ],
+      "instance_parameter_overrides": {
+        "MHPMCounterNum": 10,
+        "RegFile": 2,
+        "DbgTriggerEn": 1
+      }
+    },
+    "top": "ibex_core",
+    "input": "canonical sv2v conversion of the PULPissimo ASIC source list; reachable module set used for both producers",
+    "input_sha256": "bbc8aac0b0c36fe6a178a86fd690911a431e364a07bd02992300889b0a3b0d51",
+    "input_bytes": 4899187,
+    "input_manifest": "integration/pulpissimo_soc/prepare.py"
+  },
+  "technology": {
+    "process": "SkyWater SKY130A",
+    "standard_cell_library": "sky130_fd_sc_hd",
+    "corner": "TT 25 C / 1.80 V",
+    "liberty_path": "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "liberty_sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+  },
+  "producers": {
+    "rustsys": {
+      "path": "/tmp/rustsys-target-pulp/release/rustsys",
+      "sha256": "fd2ecbd50c12caf0c1ee6299098eef1c1d1598ac1c00166ee9ca75168b596010",
+      "version": "rustsys 0.1.0 (runtimes: cpu)",
+      "threads": 1,
+      "memory_limit_gib": 4,
+      "command": [
+        "/tmp/rustsys-target-pulp/release/rustsys",
+        "--threads",
+        "1",
+        "synth",
+        "--top",
+        "ibex_core",
+        "--lib",
+        "/home/cgao/pdks/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+        "-D",
+        "SYNTHESIS",
+        "--progress",
+        "log",
+        "-v",
+        "-P",
+        "MHPMCounterNum=10",
+        "-P",
+        "RegFile=2",
+        "-P",
+        "DbgTriggerEn=1",
+        "/tmp/pulpissimo-bench/harness-fixed2/pulpissimo_soc.v",
+        "--out",
+        "/tmp/pulpissimo-bench/rs-fixed-p1.v",
+        "--report",
+        "/tmp/pulpissimo-bench/rs-fixed-p1.json"
+      ],
+      "hierarchy_fix": "named and indexed generate scopes; sv2v 0.0.13 inline shape"
+    },
+    "yosys": {
+      "path": "/home/cgao/tools/yosys/fb535e0ed0e872720d4fc832d1d1dab4ccd2a4d644be5020bca1db7772fb2db6/root/bin/yosys",
+      "sha256": "de10c3ee405ea4bc4b887041b215ee16a517a87dddc420cc6574b20b113d6327",
+      "version": "Yosys 0.70 (git sha1 28ba3cb92, Release, GNU /usr/bin/g++ 16.2.1)",
+      "threads": 1,
+      "memory_limit_gib": 8,
+      "command": [
+        "/home/cgao/tools/yosys/fb535e0ed0e872720d4fc832d1d1dab4ccd2a4d644be5020bca1db7772fb2db6/root/bin/yosys",
+        "-Q",
+        "-T",
+        "-s",
+        "/tmp/pulpissimo-bench/yo-fixed-p1-receipt.ys"
+      ],
+      "mapping_profile": "bounded ABC: +strash;&get,-n;&nf,-C,4,-F,1;&put",
+      "default_flow_note": "Yosys's default ABC script did not finish within the 600 s budget on this core; the bounded profile is the labelled reference."
+    }
+  },
+  "measurements": {
+    "rustsys": {
+      "status": "completed",
+      "wall_seconds": 2.874,
+      "peak_rss_kib": 234264,
+      "cells": 15041,
+      "combinational_cells": 12483,
+      "sequential_cells": 2557,
+      "inverters": 602,
+      "area_um2": 146711.95839999252,
+      "logic_depth": 45,
+      "estimated_delay_ns": 23.31148,
+      "aig_nodes_before": 33249,
+      "aig_nodes_after": 26703,
+      "state_bits_rtl": 2579,
+      "state_bits_retained": 2557,
+      "netlist_sha256": "7a5bee39e7b35cc1f589979b9328cb48137d960394abd209d628e029a8bdcd80"
+    },
+    "yosys": {
+      "status": "completed",
+      "wall_seconds": 2.675,
+      "peak_rss_kib": 148372,
+      "cells": 22235,
+      "internal_cells": 83,
+      "area_um2": 161157.0624,
+      "num_wires": 20543,
+      "num_wire_bits": 37250,
+      "netlist_sha256": "6677beaab53fea8cac1012a6d0650399562bcbb21fbd9aad56ea146b1530220a"
+    }
+  },
+  "samples": {
+    "protocol": "three consecutive single-thread samples per producer; median reported; the RustSys and Yosys netlists are byte-identical across the three runs",
+    "rustsys": [
+      {
+        "wall_seconds": 2.874,
+        "peak_rss_kib": 233860
+      },
+      {
+        "wall_seconds": 2.873,
+        "peak_rss_kib": 234800
+      },
+      {
+        "wall_seconds": 2.874,
+        "peak_rss_kib": 234264
+      }
+    ],
+    "yosys": [
+      {
+        "wall_seconds": 2.624,
+        "peak_rss_kib": 148372
+      },
+      {
+        "wall_seconds": 2.676,
+        "peak_rss_kib": 149980
+      },
+      {
+        "wall_seconds": 2.675,
+        "peak_rss_kib": 141724
+      }
+    ]
+  },
+  "ratios": {
+    "speedup_yosys_over_rustsys": 0.931,
+    "rustsys_peak_rss_over_yosys": 1.579,
+    "area_reduction_percent": 8.96,
+    "cell_reduction_percent": 32.35
+  },
+  "full_soc_attempt": {
+    "top": "pulpissimo_soc_wrapper",
+    "status": "timeout_after_hierarchy_fix",
+    "wall_seconds": 7200.003,
+    "observed_peak_rss_kib": 3964732,
+    "exit_code": 124,
+    "pre_fix_failure": {
+      "status": "failed_input_elaboration",
+      "wall_seconds": 2241.09,
+      "diagnostic": "S0105: i_soc_domain is not declared"
+    },
+    "diagnostic": "After the generate-scope fix and the sv2v APB-interface repair, the full SoC no longer stops at S0105. A bounded 2 h run reached its deadline before writing a netlist or report.",
+    "metrics": null,
+    "ratio": null
+  },
+  "host": {
+    "cpu": "13th Gen Intel Core i9-13900HX",
+    "logical_cpus": 32,
+    "memory_gib": 94,
+    "kernel": "Linux 7.2.11-1-cachyos"
+  },
+  "provenance": {
+    "prepared_input": "integration/pulpissimo_soc/prepare.py",
+    "synthesis_runner": "integration/pulpissimo_soc/run_synthesis.py",
+    "reference_runner": "integration/pulpissimo_soc/run_reference.py",
+    "rustsys_receipts": [
+      "docs/benchmarks/evidence/pulpissimo-20261106/rustsys-ibex-core-receipt.json",
+      "docs/benchmarks/evidence/pulpissimo-20261106/rustsys-ibex-core-receipt-2.json",
+      "docs/benchmarks/evidence/pulpissimo-20261106/rustsys-ibex-core-receipt-3.json"
+    ],
+    "yosys_receipts": [
+      "docs/benchmarks/evidence/pulpissimo-20261106/yosys-ibex-core-receipt.json",
+      "docs/benchmarks/evidence/pulpissimo-20261106/yosys-ibex-core-receipt-2.json",
+      "docs/benchmarks/evidence/pulpissimo-20261106/yosys-ibex-core-receipt-3.json"
+    ],
+    "full_soc_receipt": "docs/benchmarks/evidence/pulpissimo-20261106/full-soc-attempt.json"
+  }
+}

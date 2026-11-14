@@ -1,0 +1,40 @@
+{
+  "schema": "rusteda.pulpissimo-ihp-adapter-simulation.v1",
+  "result": "pass",
+  "wrapper": {
+    "path": "/home/cgao/.codex/worktrees/publish-development-20261101/RustEDA/integration/pulpissimo_soc/ihp/tc_sram_ihp.v",
+    "sha256": "e7fe8707f630874fa899f6748b961447270c945a4b52630a5c17a9636c3179f5"
+  },
+  "macro_verilog": {
+    "path": "/home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v",
+    "sha256": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669"
+  },
+  "core_verilog": {
+    "path": "/home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+    "sha256": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787"
+  },
+  "command": [
+    "verilator",
+    "--binary",
+    "--timing",
+    "-j",
+    "2",
+    "-Wno-fatal",
+    "--top",
+    "tb",
+    "--Mdir",
+    "/tmp/pulpissimo-bench/ihp/sim/final16/obj_dir",
+    "/tmp/pulpissimo-bench/ihp/sim/final16/tb.v",
+    "/tmp/pulpissimo-bench/ihp/sim/final16/tc_sram_sim.v",
+    "/home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v",
+    "/home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+    "-DFUNCTIONAL"
+  ],
+  "coverage": [
+    "16384-word bank (16 macros)",
+    "write/read slice 0 (address 5)",
+    "write/read slice 1 (address 1029)",
+    "write/read slice 11 (address 11269)",
+    "byte-masked write (address 7)"
+  ]
+}

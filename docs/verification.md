@@ -25,14 +25,22 @@ No endpoint-parity tolerance is silently relaxed.
 
 The [flow integration receipt](../integration/evidence/phase3.json) records fresh
 counter/SKY130, counter/GF180 and fifo/SKY130 runs, cache verification and worker
-recovery. They qualify the application protocol; they are not benchmarks. The only
-published benchmark is the [Ibex SG13G2/EZ130 campaign](benchmarks.md).
+recovery. They qualify the application protocol; they are not benchmarks. Public
+performance results are the [Ibex SG13G2/EZ130 campaign](benchmarks.md) and the
+[PULPissimo Ibex-core synthesis benchmark](benchmarks/pulpissimo.md). The
+PULPissimo result is synthesis-only. Its SKY130 full-SoC synthesis passes
+hierarchy elaboration but exceeds a 2 h budget with behavioral L2 memory; an
+IHP SG13G2 / EZ130 synthesis-only test with official SRAM macros completes, but
+neither run is verified for physical signoff.
 
 ## Known limits
 
 - The Ibex SG13G2/EZ130 results cover one design: R20/R21 are two runs on one
   host, and the 2026-11-02, 2026-11-05 and 2026-11-13 host campaigns are one
-  timed sample per flow each. They do
+  timed sample per flow each. The PULPissimo result covers the Ibex core only and
+  reports three samples per producer; the SKY130 full SoC still exceeds a 2 h
+  budget with behavioral L2 memory, while the IHP full-SoC test is
+  synthesis-only and unverified for physical signoff. They do
   not qualify other designs, SRAM configurations or the IHP `sg13g2_stdcell`
   library.
 - The host campaigns are `unqualified` because their native recipe was composed

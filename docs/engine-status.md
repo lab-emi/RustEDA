@@ -120,6 +120,21 @@ worst peak RSS. The flow's synthesis netlist is byte-identical to 2026-11-05's,
 so its QoR is unchanged (145,226.592 µm² against 147,866.947 µm², logic depth 36
 against 40), and the flow's synthesis equivalence is `proven`.
 
+A second, **synthesis-only** design benchmark uses the PULPissimo Ibex core on
+SKY130 HD. On three single-thread samples per producer (median), RustSys took
+2.874 s and 234,264 KiB peak RSS against 2.675 s and 148,372 KiB for a bounded
+Yosys 0.70/ABC reference, and produced 15,041 cells and 146,711.96 µm² against
+22,235 cells and 161,157.06 µm². RustSys is 1.07× slower on this sample, with
+8.96% smaller area and 32.35% fewer cells, at 1.58× the peak memory. No
+equivalence proof was run for these samples. The full PULPissimo SoC passes
+hierarchy elaboration; on SKY130 with behavioral L2 memory it exceeds a 2 h
+synthesis budget, while an IHP SG13G2 / EZ130 test with 80 official SRAM macros
+completes in 426 s. Both full-SoC runs are synthesis-only and unverified for
+physical signoff.
+[PULPissimo benchmark](benchmarks/pulpissimo.md) ·
+[Receipt](benchmarks/pulpissimo-soc-20261106.json) ·
+[IHP full-SoC test](benchmarks/pulpissimo-ihp.md)
+
 **2026-11-05 host campaign.** On the same synthesis task (three measured runs
 each), RustSys `86e59d8` took a median 3.81 s in the two-thread workspace
 sequence and 3.04 s in direct mode, against 135.04 s for Yosys 0.70 + ABC with
