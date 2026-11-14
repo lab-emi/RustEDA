@@ -304,16 +304,25 @@ def magic_setup(config, tools):
 
 
 def pruned_gds(config, tools, output, gds):
-    """The Magic input: the GDS with the abstract macro masters emptied (`prune_macros.py`)."""
+    """The Magic input: every macro master checked against the macro's own GDS, then emptied.
+
+    `prune_macros.py` refuses a layout whose macro cell is missing, empty, unplaced or differs from
+    the macro GDS on any layer; the gate then fails with MACRO_DIFFERS_FROM_ITS_GDS (or the other
+    code) before Magic runs."""
     if not config["abstract_cells"]:
         return gds, None
+    references = [verify(record, "macro GDS") for record in config["abstract_gds"]]
+    require(len(references) == len(config["abstract_cells"]) and all("," not in str(p) and "=" not in str(p)
+                                                                        for p in references), "ABSTRACT_GDS_LIST")
     target, record = output / "macros-abstracted.gds", output / "macros-abstracted.json"
+    pairs = ",".join(f"{cell}={path}" for cell, path in zip(config["abstract_cells"], references))
     run = run_tool([tools["klayout"], "-b", "-r", Path(__file__).resolve().parent / "prune_macros.py",
-                    "-rd", f"gds_path={gds}", "-rd", f"top_name={config['top']}",
-                    "-rd", "masters=" + ",".join(config["abstract_cells"]), "-rd", f"out_path={target}",
-                    "-rd", f"record_path={record}"], output / "prune.log", output / "prune.time", tools["gnu_time"], 1800)
-    require(run["exit_code"] == 0 and target.is_file() and record.is_file(), "MACRO_PRUNE_FAILED")
+                    "-rd", f"gds_path={gds}", "-rd", f"top_name={config['top']}", "-rd", f"references={pairs}",
+                    "-rd", f"out_path={target}", "-rd", f"record_path={record}"],
+                   output / "prune.log", output / "prune.time", tools["gnu_time"], 1800)
+    require(run["exit_code"] == 0 and record.is_file(), "MACRO_IDENTITY_CHECK_FAILED_TO_RUN")
     facts = read_json(record)
+    require(facts["status"] == "identical_then_emptied" and target.is_file(), "; ".join(facts["errors"]) or "MACRO_PRUNE_FAILED")
     facts.update(derived=identity(target), wall_seconds=run["wall_seconds"], peak_rss_kib=run["peak_rss_kib"])
     return target, facts
 

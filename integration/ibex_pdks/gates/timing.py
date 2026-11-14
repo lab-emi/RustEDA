@@ -21,6 +21,10 @@ macro instance is reported under `macro_pin_rows` and does not gate unless it al
 limit the SDC sets for the design. Rows at standard-cell pins and ports, setup and hold
 (including checks at macro pins) and every completeness requirement gate as before. The RustSTA
 to OpenSTA slack difference is reported against the 1 ps tolerance, as in the IHP gate.
+
+When the two-engine check cannot complete a corner (RustSTA rejects the inputs, or OpenSTA's
+report fails the policy's own coverage checks), the corner is `unverified`, the gate fails, and
+`opensta_only` keeps what OpenSTA reported for it as a diagnostic.
 """
 from __future__ import annotations
 
@@ -76,6 +80,27 @@ def split_rows(rows, macro_instances, sdc_limits):
     return result
 
 
+def opensta_view(output, corner, observed, macro_instances, sdc_limits) -> dict:
+    """What OpenSTA alone reported for a corner the two-engine check could not complete (diagnostic).
+
+    The worst slacks come from the OpenSTA log of the reference run; the limit rows, when its own
+    validation got that far, are split as in the gate."""
+    log = output / "reference" / "observation" / "logs" / f"openrcx-{corner}-opensta.stdout"
+    view = dict(status="diagnostic_only", validation_error=observed.get("helper_validation_error") or observed.get("error"))
+    if log.is_file():
+        text = log.read_text(errors="replace")
+        for key, label in (("setup_ws_ns", "max"), ("hold_ws_ns", "min")):
+            match = re.search(r"^worst slack " + label + r" (\S+)$", text, re.M)
+            view[key] = float(match[1]) if match else None
+    if "drv_rows" in observed:
+        rows = split_rows(observed["drv_rows"], macro_instances, sdc_limits)
+        view.update({kind + "_gating_rows": rows[kind]["gating"] for kind in KINDS},
+                    **{kind + "_macro_pin_rows": rows[kind]["macro_pin"] - rows[kind]["macro_pin_gating"] for kind in KINDS})
+        view.update({k: observed.get(k) for k in ("setup_violations", "hold_violations")})
+        view["annotation"] = {k: v for k, v in observed.get("annotation", {}).items() if k != "rows"}
+    return view
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inputs", type=Path, required=True)
@@ -109,7 +134,8 @@ def main() -> int:
         for corner in CORNERS:
             row, observed = base["corners"].get(corner), base["observations"].get(corner, {})
             if row is None or "drv_rows" not in observed:
-                corners[corner] = dict(status="unverified")
+                corners[corner] = dict(status="unverified", label=config["corners"][corner],
+                                       opensta_only=opensta_view(output, corner, observed, macro_instances, sdc_limits))
                 all_passed = False
                 continue
             engines = dict(ruststa=split_rows(row["native_drv_rows"], macro_instances, sdc_limits),
@@ -136,6 +162,7 @@ def main() -> int:
                 opensta={k: row["opensta"][k] for k in ("setup_ws_ns", "hold_ws_ns", "setup_violations", "hold_violations",
                                                          "slew_violations", "cap_violations", "fanout_violations")},
                 engines=engines, base_status=row["status"])
+        native = base.get("native_analysis") or {}
         compare = base["native_compare"]
         status = "passed" if all_passed and not other_failures and base["coverage_complete"] and base["inputs_unchanged"] else "failed"
         result.update(status=status, complete=True, top=config["top"], corners=corners,
@@ -146,6 +173,8 @@ def main() -> int:
                       parity=dict(tolerance_ns=compare.get("tolerance_ns"), max_abs_difference_ns=compare.get("max_abs_difference_ns"),
                                   within_tolerance=compare.get("within_tolerance"), status=compare.get("status"),
                                   differences=compare.get("differences")),
+                      ruststa=dict(status=native.get("status"), error=native.get("error"),
+                                   diagnostics=[d for d in native.get("diagnostics", []) if d.get("severity") == "error"][:8]),
                       sdc_design_limits=sdc_limits, macro_instances=sorted(macro_instances),
                       macro_pin_policy="slew, capacitance and fanout rows at macro pins are listed separately and gate only "
                                        "beyond a design-wide SDC limit; setup and hold at macro pins gate",

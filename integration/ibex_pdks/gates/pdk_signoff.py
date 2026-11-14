@@ -54,9 +54,10 @@ def klayout_plan(profile, tools, spec, host, mode, top, gds):
 def magic_fields(profile, host):
     magic = profile["magic"]
     macros = profile["macros"]
+    names = sorted(macros)
     return dict(magicrc=profile.file(magic["magicrc"]), tech_files=[profile.file(p) for p in magic["tech_files"]],
-                pdk_root=str(profile.root), abstract_lefs=[profile.file(spec["lef"]) for spec in macros.values()],
-                abstract_cells=sorted(macros))
+                pdk_root=str(profile.root), abstract_lefs=[profile.file(macros[n]["lef"]) for n in names],
+                abstract_gds=[profile.file(macros[n]["gds"]) for n in names], abstract_cells=names)
 
 
 def baseline_dir(host, gate, engine, master) -> Path:

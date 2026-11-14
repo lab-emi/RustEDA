@@ -44,20 +44,22 @@ def main() -> int:
     magicrc, env = common.magic_setup(config, tools)
     scratch = output / "ext"
     scratch.mkdir()
-    magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
-    env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_DIR=str(scratch))
-    command = [tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_antenna.tcl"]
-    common.save_json(output / "command.json", [str(c) for c in command])
-    run = common.run_tool(command, output / "magic.log", output / "magic.time", tools["gnu_time"],
-                          int(config["timeout_seconds"]), env=env, cwd=output)
     summary = dict(schema="rusteda.pdk-gate.magic-antenna-result.v1", status="failed", complete=False, top=top,
                    gds=config["gds"], magicrc=config["magicrc"], tech_files=config["tech_files"],
                    abstract_cells=config["abstract_cells"], abstract_lefs=config["abstract_lefs"], tools=config["tools"],
-                   script=common.identity(HERE / "magic_antenna.tcl"), magic_input=pruned,
+                   script=common.identity(HERE / "magic_antenna.tcl"),
                    scope="every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
-                   engine=dict(exit_code=run["exit_code"], killed=run["killed"], wall_seconds=run["wall_seconds"],
-                               peak_rss_kib=run["peak_rss_kib"]))
+                   engine=None, magic_input=None)
     try:
+        magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
+        summary["magic_input"] = pruned
+        env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_DIR=str(scratch))
+        command = [tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_antenna.tcl"]
+        common.save_json(output / "command.json", [str(c) for c in command])
+        run = common.run_tool(command, output / "magic.log", output / "magic.time", tools["gnu_time"],
+                              int(config["timeout_seconds"]), env=env, cwd=output)
+        summary["engine"] = dict(exit_code=run["exit_code"], killed=run["killed"], wall_seconds=run["wall_seconds"],
+                                 peak_rss_kib=run["peak_rss_kib"])
         common.require(run["exit_code"] == 0 and not run["killed"], f"MAGIC_RUN_FAILED: exit {run['exit_code']} {run['killed'] or ''}")
         log = (output / "magic.log").read_text(errors="replace")
         facts = common.magic_facts(log, config["abstract_cells"])

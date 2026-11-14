@@ -8,10 +8,13 @@ Input schema `rusteda.pdk-gate.magic-drc.v1`:
   magicrc         pinned PDK start-up file; tech_files: the pinned files it loads
   pdk_root        exported as PDK_ROOT, which the start-up file reads
   style           DRC style, echoed back by Magic and compared
-  abstract_lefs   pinned macro LEFs; abstract_cells: the macro masters they define
+  abstract_lefs   pinned macro LEFs; abstract_cells: the macro masters they define;
+                  abstract_gds: the pinned GDS of each macro, in the same order
   tools           {magic, klayout, gnu_time}; timeout_seconds
 
-Magic decides every rule. Macro masters are abstract views read from their LEF (pins and
+Before Magic runs, `prune_macros.py` checks every macro master of the GDS against the macro's own
+GDS (flat geometry per layer) and refuses a missing, empty or changed macro cell. Magic decides
+every rule. Macro masters are abstract views read from their LEF (pins and
 obstructions): Magic checks all top-level and standard-cell geometry, including its spacing to
 the macro's pins and obstructions, and nothing inside the macro. The verdict is the error count
 of the hierarchical check of the top cell (`drc list count total`), which holds every error of
@@ -73,20 +76,22 @@ def main() -> int:
     tools = {name: common.verify(record, name) for name, record in config["tools"].items()}
     magicrc, env = common.magic_setup(config, tools)
     listing = output / "errors.txt"
-    magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
-    env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_STYLE=config["style"], GATE_OUT=str(listing))
-    command = [tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_drc.tcl"]
-    common.save_json(output / "command.json", [str(c) for c in command])
-    run = common.run_tool(command, output / "magic.log", output / "magic.time", tools["gnu_time"],
-                          int(config["timeout_seconds"]), env=env, cwd=output)
     summary = dict(schema="rusteda.pdk-gate.magic-drc-result.v1", status="failed", complete=False, top=top,
                    gds=config["gds"], magicrc=config["magicrc"], tech_files=config["tech_files"], style=config["style"],
                    abstract_cells=config["abstract_cells"], abstract_lefs=config["abstract_lefs"], tools=config["tools"],
-                   script=common.identity(HERE / "magic_drc.tcl"), magic_input=pruned,
+                   script=common.identity(HERE / "magic_drc.tcl"),
                    scope="all top-level and standard-cell geometry; macro masters are LEF abstract views",
-                   engine=dict(exit_code=run["exit_code"], killed=run["killed"], wall_seconds=run["wall_seconds"],
-                               peak_rss_kib=run["peak_rss_kib"]))
+                   engine=None, magic_input=None)
     try:
+        magic_gds, pruned = common.pruned_gds(config, tools, output, gds)
+        summary["magic_input"] = pruned
+        env.update(GATE_GDS=str(magic_gds), GATE_TOP=top, GATE_STYLE=config["style"], GATE_OUT=str(listing))
+        command = [tools["magic"], "-dnull", "-noconsole", "-rcfile", magicrc, HERE / "magic_drc.tcl"]
+        common.save_json(output / "command.json", [str(c) for c in command])
+        run = common.run_tool(command, output / "magic.log", output / "magic.time", tools["gnu_time"],
+                              int(config["timeout_seconds"]), env=env, cwd=output)
+        summary["engine"] = dict(exit_code=run["exit_code"], killed=run["killed"], wall_seconds=run["wall_seconds"],
+                                 peak_rss_kib=run["peak_rss_kib"])
         common.require(run["exit_code"] == 0 and not run["killed"], f"MAGIC_RUN_FAILED: exit {run['exit_code']} {run['killed'] or ''}")
         facts = common.magic_facts((output / "magic.log").read_text(errors="replace"), config["abstract_cells"])
         common.require(all(name in facts for name in ("unit", "style", "count", "boxes")), "MAGIC_RUN_INCOMPLETE")

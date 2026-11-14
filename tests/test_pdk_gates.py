@@ -208,6 +208,13 @@ class LvsFacts(Fixture):
         self.assertEqual(netgen_lvs.black_box_pins(good, "RAM"), (["A[0]", "VDD"], ["A[0]", "VDD"], True))
         self.assertFalse(netgen_lvs.black_box_pins(good.replace("lists are equivalent", "lists altered to match"), "RAM")[2])
         self.assertIsNone(netgen_lvs.black_box_pins(good, "OTHER"))
+        # Netgen cuts long names in the header to the column width
+        long = "gf180mcu_fd_ip_sram__sram512x8m8wm1"
+        cut = good.replace("Circuit 1: RAM                             |Circuit 2: RAM                             ",
+                           "Circuit 1: gf180mcu_fd_ip_sram__sram512x8m |Circuit 2: gf180mcu_fd_ip_sram__sram512x8m ")
+        cut = cut.replace("Device classes RAM and RAM are equivalent.", f"Device classes {long} and {long} are equivalent.")
+        self.assertEqual(netgen_lvs.black_box_pins(cut, long), (["A[0]", "VDD"], ["A[0]", "VDD"], True))
+        self.assertIsNone(netgen_lvs.black_box_pins(cut, "gf180mcu_fd_ip_sram__sram512x8m8wm9"))
         self.assertTrue(netgen_lvs.netgen_facts(clean, good + "Cell top (0) disconnected node: a\n", "top")["problems"])
         for text in (good + "Property errors were found.\n", good.replace("uniquely.", "uniquely with port errors."),
                      good + "a |(no matching pin)\n", "Final result: Netlists do not match.\n"):
@@ -407,6 +414,29 @@ json.dump(facts, open(out_path, "w"))
 """
 
 
+MACRO_ONLY = """
+import pya
+ly = pya.Layout(); ly.read(gds_path)
+keep = ly.cell("RAM")
+for cell in [c for c in ly.each_cell() if c.cell_index() not in keep.called_cells() and c.cell_index() != keep.cell_index()]:
+    cell.delete()
+if variant == "other":
+    keep.name = "OTHER"
+ly.write(out_path)
+"""
+CHANGE_MACRO = """
+import pya
+ly = pya.Layout(); ly.read(gds_path)
+ram = ly.cell("RAM")
+if variant == "empty":
+    ram.prune_subcells()
+    ram.clear()
+else:
+    ram.transform(pya.Trans(pya.Vector(5, 0)))
+ly.write(out_path)
+"""
+
+
 @unittest.skipUnless(KLAYOUT, "needs KLayout (RUSTEDA_TEST_KLAYOUT)")
 class LayoutEditors(Fixture):
     """The two GDS editing scripts on a generated layout."""
@@ -430,15 +460,45 @@ class LayoutEditors(Fixture):
         self.gds = self.root / "top.gds"
         self.klayout(build, out_path=self.gds)
 
-    def test_prune_empties_the_macro_and_nothing_else(self):
+    def macro_gds(self, variant=""):
+        """The macro's own GDS: the RAM cell of the generated layout, optionally changed."""
+        script, out = self.root / "macro.py", self.root / f"ram{variant}.gds"
+        script.write_text(MACRO_ONLY)
+        self.klayout(script, gds_path=self.gds, variant=variant or "same", out_path=out)
+        return out
+
+    def prune(self, gds, reference):
         out, record = self.root / "pruned.gds", self.root / "pruned.json"
-        self.klayout(GATES / "prune_macros.py", gds_path=self.gds, top_name="top", masters="RAM", out_path=out, record_path=record)
+        out.unlink(missing_ok=True)
+        self.klayout(GATES / "prune_macros.py", gds_path=gds, top_name="top", references=f"RAM={reference}",
+                     out_path=out, record_path=record)
+        return out, json.loads(record.read_text())
+
+    def test_prune_empties_the_macro_and_nothing_else(self):
+        out, record = self.prune(self.gds, self.macro_gds())
         before, after = self.facts(self.gds), self.facts(out)
-        self.assertEqual(json.loads(record.read_text())["masters"]["RAM"],
-                         dict(placements=1, private_cells_removed=1, bbox_um=[0.0, 0.0, 50.0, 50.0]))
+        self.assertEqual(record["status"], "identical_then_emptied")
+        entry = record["masters"]["RAM"]
+        self.assertEqual((entry["placements"], entry["private_cells_removed"], entry["differing_layer_count"], entry["empty"]),
+                         (1, 1, 0, False))
         self.assertEqual(after["cells"], ["DIODE", "RAM", "top"])
         self.assertTrue(after["ram_empty"])
         self.assertEqual((after["m2"], after["v2"], after["instances"]), (before["m2"], before["v2"], before["instances"]))
+
+    def test_an_empty_or_changed_macro_cell_is_refused(self):
+        reference = self.macro_gds()
+        for variant in ("empty", "shifted"):
+            changed = self.root / f"top-{variant}.gds"
+            script = self.root / "change.py"
+            script.write_text(CHANGE_MACRO)
+            self.klayout(script, gds_path=self.gds, variant=variant, out_path=changed)
+            out, record = self.prune(changed, reference)
+            self.assertEqual(record["status"], "failed", variant)
+            self.assertFalse(out.exists(), variant)
+            self.assertTrue(record["errors"][0].startswith("MACRO_DIFFERS_FROM_ITS_GDS: RAM"), record["errors"])
+            self.assertEqual(record["masters"]["RAM"]["empty"], variant == "empty")
+        _, record = self.prune(self.gds, self.macro_gds("other"))
+        self.assertEqual(record["errors"], ["MACRO_REFERENCE_WITHOUT_MASTER: RAM"])
 
     def test_controls_change_exactly_what_they_record(self):
         out, record = self.root / "bad.gds", self.root / "bad.json"

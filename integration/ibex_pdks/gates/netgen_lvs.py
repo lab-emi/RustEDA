@@ -5,7 +5,7 @@
 
 Input schema `rusteda.pdk-gate.netgen-lvs.v1`:
   top, gds, powered_netlist   pinned records
-  magicrc, tech_files, pdk_root, abstract_lefs, abstract_cells   as for `magic_drc.py`
+  magicrc, tech_files, pdk_root, abstract_lefs, abstract_cells, abstract_gds   as for `magic_drc.py`
   netgen_setup                pinned PDK Netgen setup file
   cell_spice                  pinned device-level SPICE libraries of the standard cells
   macros                      {master: instance count}
@@ -142,19 +142,26 @@ def netgen_facts(comp_json, comp_out, top) -> dict:
 
 
 def black_box_pins(comp_out, master):
-    """Netgen's pin table of a black-box cell: (layout pins, reference pins, tables equivalent)."""
-    block = re.search(r"^Subcircuit pins:\s*\nCircuit 1: " + re.escape(master) + r"\s*\|Circuit 2: " + re.escape(master)
-                      + r"\s*\n-+\|-+\n(.*?)\n-{20,}\n([^\n]*)\n([^\n]*)", comp_out, re.M | re.S)
-    if block is None:
-        return None
-    left, right = [], []
-    for row in block[1].splitlines():
-        a, _, b = row.partition("|")
-        left.append(a.strip())
-        right.append(b.strip())
-    equivalent = (block[2].strip() == "Cell pin lists are equivalent."
-                  and block[3].strip() == f"Device classes {master} and {master} are equivalent.")
-    return left, right, equivalent
+    """Netgen's pin table of a black-box cell: (layout pins, reference pins, tables equivalent).
+
+    Netgen cuts the cell names of the table header to its column width; the header must be a prefix
+    of the master and the line after the table must name the master in full."""
+    pattern = (r"^Subcircuit pins:\s*\nCircuit 1: (\S+)\s*\|Circuit 2: (\S+)\s*\n-+\|-+\n(.*?)\n-{20,}\n"
+               r"([^\n]*)\n([^\n]*)")
+    for block in re.finditer(pattern, comp_out, re.M | re.S):
+        if not (master.startswith(block[1]) and master.startswith(block[2])):
+            continue
+        named = re.fullmatch(r"Device classes (\S+) and (\S+) are equivalent\.", block[5].strip())
+        if named and (named[1], named[2]) != (master, master):
+            continue  # another cell whose name starts the same way
+        left, right = [], []
+        for row in block[3].splitlines():
+            a, _, b = row.partition("|")
+            left.append(a.strip())
+            right.append(b.strip())
+        equivalent = block[4].strip() == "Cell pin lists are equivalent." and named is not None
+        return left, right, equivalent
+    return None
 
 
 def main() -> int:

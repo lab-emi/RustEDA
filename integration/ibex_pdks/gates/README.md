@@ -95,6 +95,18 @@ runs each KLayout deck of the profile once on every macro GDS alone and stores t
 on one macro, and belongs to neither flow's time. A layout gate refuses a baseline that was made
 with other deck bytes, switches, KLayout binary or macro GDS.
 
+## Macro identity
+
+Every gate that reads the GDS checks that each SRAM master in it is the macro: the cell exists
+under the macro's name, is placed, and its flat geometry equals that of the macro's own GDS on
+every layer either file uses (per-layer XOR empty). A layout whose macro cell is empty, missing,
+renamed or changed in any shape fails the gate with `MACRO_DIFFERS_FROM_ITS_GDS` (or
+`MACRO_CELL_MISSING`, `MACRO_NOT_PLACED`), before any rule is evaluated: the KLayout decks
+through the marker attribution, the Magic checks and the LVS extraction through
+`prune_macros.py`. On SKY130 this is the `drc` (both engines), `antenna` and `lvs` gate; on
+GF180MCU `drc`, `antenna` and `lvs`. A stream-out that drops the macro's mask layers is therefore
+not a passing layout, whatever its other gates say.
+
 ## Gates
 
 | Gate | `sky130hd` | `gf180mcu` |
@@ -137,9 +149,10 @@ instances) and `macro_baseline_reproduced`; two layouts with the same macros mus
 ### `drc` and `antenna` (Magic, SKY130): `magic_drc.py`, `magic_antenna.py`
 
 Magic reads the macro LEF first, so the SRAM is its abstract view (pins and obstructions). Its
-input is a copy of the final GDS in which the SRAM master is an empty cell (`prune_macros.py`:
-name and placements kept, shapes and private subcells dropped, nothing else changed; the copy's
-hash and the number of cells removed are in the report). Magic checks all top-level and standard-cell
+input is a copy of the final GDS in which the SRAM master, once found identical to the macro's
+own GDS, is an empty cell (`prune_macros.py`: name and placements kept, shapes and private
+subcells dropped, nothing else changed; the copy's hash and the number of cells removed are in
+the report). Magic checks all top-level and standard-cell
 geometry, including its spacing to the SRAM's pins and obstructions, and nothing inside the SRAM;
 the SRAM interior and its interaction with the routing are covered by the KLayout deck above.
 
