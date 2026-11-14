@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2026 RustEDA contributors
 
-//! Native executor of a `rusteda.ihp-flow.v1` step graph (`rusteda flow exec`).
+//! Native executor of a step-graph manifest (`rusteda flow exec`): the published
+//! `rusteda.ihp-flow.v1` recipe and the profile-bound `rusteda.native-flow.v1` of any PDK.
 //!
 //! The executor is a worker program: it validates a hash-pinned manifest, runs its
 //! render and command steps (serial steps and parallel groups with CPU lanes and
@@ -42,6 +43,9 @@ pub struct Options {
     pub output: PathBuf,
     /// Must be `empty`: a run never continues another one.
     pub base_rev: String,
+    /// When given, must name the manifest's PDK: a family (`ihp`, `sky130`, `gf180`) or the
+    /// manifest's own `pdk` name.
+    pub pdk: Option<String>,
     /// When given, must be the pinned `rustroad` tool.
     pub rustroad: Option<PathBuf>,
     /// When given, must be the pinned `gnu_time` tool; commands are recorded with this spelling.

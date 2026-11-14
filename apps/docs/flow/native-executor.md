@@ -60,7 +60,8 @@ Every invocation prints one JSON document: `ok`, `status`, and on failure
 | --- | --- |
 | `WORKER_IDENTITY_REQUIRED` | no 64-digit worker identity or no ownership directory |
 | `REVISION_CONFLICT`, `WORKSPACE_BUSY` | occupied output directory; another executor holds its lock |
-| `MANIFEST_BUDGET`, `MANIFEST_IDENTITY`, `MANIFEST_FIELDS`, `INVALID_JSON` | the manifest is missing, too large, of another kind, or malformed |
+| `MANIFEST_BUDGET`, `MANIFEST_IDENTITY`, `MANIFEST_FIELDS`, `INVALID_JSON` | the manifest is missing, too large, of another kind, malformed, or its PDK identity differs from its pinned profile |
+| `PDK_MISMATCH` | `--pdk` does not name the manifest's PDK |
 | `STEP_INVALID`, `SCOPE_INVALID`, `CPU_ALLOCATION_INVALID`, `PARALLEL_GROUP_INVALID`, `STDOUT_ARTIFACT_POLICY` | a step, the scope, the CPU allocation, a group or the stdout-artifact registry is invalid |
 | `UNKNOWN_STEP` | `--stop-after` names no step |
 | `INPUT_IDENTITY_CHANGED`, `INPUT_UNAVAILABLE`, `TOOL_ARGUMENT_MISMATCH` | a pinned file or tool differs, is missing, or is not the one named on the command line |
@@ -93,6 +94,13 @@ Every invocation prints one JSON document: `ok`, `status`, and on failure
  "gates": {"drc": "backend/main/summary.json"},
  "artifacts": {"gds": "backend/top.gds"}}
 ```
+
+The example is the IHP SG13G2/EZ130 recipe, whose identity is fixed. A manifest for another
+PDK has the schema `rusteda.native-flow.v1`, its own `pdk`, `library` and `corners`, and pins
+the PDK profile it was composed from as `files.profile`; the executor refuses it when the
+three differ from that profile (`integration/ibex_pdks/NATIVE.md` in the superproject
+describes profiles and how manifests are composed from them). `--pdk ihp|sky130|gf180` (or
+the manifest's exact PDK name) is an optional check.
 
 Steps run in list order. A parallel group is a contiguous region of the list whose steps
 start as soon as their dependencies have succeeded, their CPU slots are free and the

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2026 RustEDA contributors
 
-//! The `rusteda.ihp-flow.v1` step-graph manifest: model and validation before launch.
+//! The step-graph manifest: model and validation before launch.
+//!
+//! Two schemas are accepted. `rusteda.ihp-flow.v1` is the published IHP SG13G2/EZ130 recipe: its
+//! identity is fixed (`ihp-sg13g2`, `ez130_8t`, corners `tt` and `ss`). `rusteda.native-flow.v1`
+//! is the same step graph for any PDK: it pins the PDK profile it was composed from as
+//! `files:profile` (`rusteda.native-pdk-profile.v1`), and its `pdk`, `library` and `corners`
+//! must be that profile's (checked once the pinned inputs are verified).
 //!
 //! Budgets are those of the reference producer: at most 129 steps, 256 files, 32 tools,
 //! 128 artifacts, 8 parallel groups of at most 128 steps, a 2 MiB document. Validation
@@ -12,6 +18,11 @@ use crate::error::{Error, Result};
 use std::collections::{BTreeMap, BTreeSet};
 
 pub const SCHEMA: &str = "rusteda.ihp-flow.v1";
+/// The profile-bound manifest of any PDK.
+pub const SCHEMA_NATIVE: &str = "rusteda.native-flow.v1";
+/// The pinned PDK profile of a `rusteda.native-flow.v1` manifest (`files:profile`).
+pub const PROFILE_SCHEMA: &str = "rusteda.native-pdk-profile.v1";
+pub const MAX_PROFILE_BYTES: u64 = 2 * 1024 * 1024;
 pub const MAX_MANIFEST_BYTES: u64 = 2 * 1024 * 1024;
 pub const MAX_STEPS: usize = 129;
 /// Upper bound of the declared sum of stdout-artifact sizes (1536 MiB).
@@ -41,6 +52,105 @@ pub fn handle(text: &str) -> bool {
         && text
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+}
+
+/// A PDK or library name: `[A-Za-z0-9_.-]{1,64}`.
+pub fn pdk_name(text: &str) -> bool {
+    (1..=64).contains(&text.len())
+        && text
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'.' | b'-'))
+}
+
+/// A corner name or a Liberty group (`std`, a macro identifier): `[a-z][a-z0-9]{0,7}`.
+pub fn short_name(text: &str) -> bool {
+    let bytes = text.as_bytes();
+    (1..=8).contains(&bytes.len())
+        && bytes[0].is_ascii_lowercase()
+        && bytes
+            .iter()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit())
+}
+
+/// The identity of a flow: which PDK, cell library and timing corners its steps are for.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FlowIdentity {
+    pub pdk: String,
+    pub library: String,
+    pub corners: Vec<String>,
+    /// A `rusteda.native-flow.v1` manifest: the identity is that of the pinned `files:profile`.
+    pub profile_bound: bool,
+}
+
+impl FlowIdentity {
+    /// The fixed identity of the `rusteda.ihp-flow.v1` recipe.
+    pub fn ihp() -> Self {
+        Self {
+            pdk: "ihp-sg13g2".into(),
+            library: "ez130_8t".into(),
+            corners: vec!["tt".into(), "ss".into()],
+            profile_bound: false,
+        }
+    }
+
+    /// Whether `{files:<key>}` names a Liberty file of this flow: `<group>_<corner>` with one of
+    /// the flow's corners. The IHP recipe has the groups `std` and `ram` only.
+    fn liberty_key(&self, key: &str) -> bool {
+        self.corners.iter().any(|corner| {
+            key.strip_suffix(corner.as_str())
+                .and_then(|head| head.strip_suffix('_'))
+                .is_some_and(|group| {
+                    if self.profile_bound {
+                        short_name(group)
+                    } else {
+                        matches!(group, "std" | "ram")
+                    }
+                })
+        })
+    }
+
+    /// Compare with the pinned PDK profile document (`files:profile`).
+    pub fn check_profile(&self, bytes: &[u8]) -> Result<()> {
+        let differs = |what: &str| {
+            bad(
+                "MANIFEST_IDENTITY",
+                format!("manifest identity differs from its pinned PDK profile: {what}"),
+            )
+        };
+        if bytes.len() as u64 > MAX_PROFILE_BYTES {
+            return Err(differs("profile byte budget exceeded"));
+        }
+        let profile = Json::parse(bytes).map_err(|_| differs("the profile is not JSON"))?;
+        let text = |key: &str| profile.get(key).and_then(Json::as_str);
+        if text("schema") != Some(PROFILE_SCHEMA) {
+            return Err(differs("profile schema"));
+        }
+        if text("pdk") != Some(self.pdk.as_str()) {
+            return Err(differs("pdk"));
+        }
+        if text("library") != Some(self.library.as_str()) {
+            return Err(differs("library"));
+        }
+        let corners: Option<Vec<&str>> =
+            profile.get("corners").and_then(Json::items).map(|items| {
+                items
+                    .iter()
+                    .filter_map(|item| item.get("name").and_then(Json::as_str))
+                    .collect()
+            });
+        let declared = profile
+            .get("corners")
+            .and_then(Json::items)
+            .map_or(0, <[Json]>::len);
+        if corners.as_ref().is_none_or(|names| {
+            names.len() != declared
+                || names.len() != self.corners.len()
+                || names.iter().zip(&self.corners).any(|(a, b)| a != b)
+        }) {
+            return Err(differs("corners"));
+        }
+        Ok(())
+    }
 }
 
 /// Per-file byte cap of a stdout-artifact format.
@@ -138,6 +248,7 @@ pub struct Pin {
 pub struct Manifest {
     pub raw: Json,
     pub name: Option<String>,
+    pub identity: FlowIdentity,
     pub pins: Vec<Pin>,
     pub scope: Scope,
     pub steps: Vec<Step>,
@@ -164,6 +275,11 @@ impl Manifest {
 
     pub fn has_tool(&self, name: &str) -> bool {
         let key = format!("tools:{name}");
+        self.pins.iter().any(|pin| pin.key == key)
+    }
+
+    pub fn has_file(&self, name: &str) -> bool {
+        let key = format!("files:{name}");
         self.pins.iter().any(|pin| pin.key == key)
     }
 }
@@ -194,7 +310,7 @@ fn path_map(value: &Json, what: &str) -> Result<Vec<(String, String)>> {
 /// exports the recipe consumes. The match is over the unexpanded arguments: naming a tool or
 /// an export-looking suffix does not exempt a command (inspect, route, run and script
 /// commands are diagnostics).
-pub fn stdout_artifact_format(command: &Command) -> Option<&'static str> {
+pub fn stdout_artifact_format(command: &Command, identity: &FlowIdentity) -> Option<&'static str> {
     fn fresh_workspace(value: &str) -> bool {
         value.strip_prefix("{output}/").is_some_and(|suffix| {
             !suffix.is_empty()
@@ -210,13 +326,10 @@ pub fn stdout_artifact_format(command: &Command) -> Option<&'static str> {
     match command.tool.as_str() {
         "pin_caps"
             if args.len() == 1
-                && [
-                    "{files:std_tt}",
-                    "{files:std_ss}",
-                    "{files:ram_tt}",
-                    "{files:ram_ss}",
-                ]
-                .contains(&args[0]) =>
+                && args[0]
+                    .strip_prefix("{files:")
+                    .and_then(|rest| rest.strip_suffix('}'))
+                    .is_some_and(|key| identity.liberty_key(key)) =>
         {
             Some("pin_capacitance")
         }
@@ -232,9 +345,9 @@ pub fn stdout_artifact_format(command: &Command) -> Option<&'static str> {
             if args.len() >= 3 && args[..2] == ["report", "-w"] && fresh_workspace(args[2]) =>
         {
             let tail = &args[3..];
-            for corner in ["tt", "ss"] {
+            for corner in &identity.corners {
                 if let ["--corner", c, "--threads", "2", "--section", rest @ ..] = tail {
-                    if *c != corner {
+                    if *c != corner.as_str() {
                         continue;
                     }
                     match rest {
@@ -380,6 +493,7 @@ fn stdout_artifacts(
     steps: &[Step],
     registry: Option<&Json>,
     scope: &Json,
+    identity: &FlowIdentity,
 ) -> Result<(Option<BTreeMap<String, ArtifactSpec>>, CapturePolicy)> {
     let policy = |message: &str| bad("STDOUT_ARTIFACT_POLICY", message);
     let declared_handle = |step: &Step| match &step.kind {
@@ -428,7 +542,7 @@ fn stdout_artifacts(
         let Kind::Command(command) = &step.kind else {
             continue;
         };
-        let format = stdout_artifact_format(command)
+        let format = stdout_artifact_format(command, identity)
             .ok_or_else(|| policy("non-export command cannot declare a stdout artifact"))?;
         let spec = registry.get(&name);
         let exact = spec.is_some_and(|spec| {
@@ -638,13 +752,57 @@ pub fn parse(bytes: &[u8]) -> Result<Manifest> {
     let raw = Json::parse(bytes)?;
     let text = |key: &str| raw.get(key).and_then(Json::as_str);
     let corners = strings(raw.get("corners"));
-    if text("schema") != Some(SCHEMA)
-        || text("pdk") != Some("ihp-sg13g2")
-        || text("library") != Some("ez130_8t")
-        || corners.as_deref() != Some(&["tt".to_owned(), "ss".to_owned()])
-    {
-        return Err(bad("MANIFEST_IDENTITY", "IHP producer identity mismatch"));
-    }
+    let identity = match text("schema") {
+        // The published IHP recipe: a fixed identity, no profile.
+        Some(SCHEMA) => {
+            let ihp = FlowIdentity::ihp();
+            if text("pdk") != Some(ihp.pdk.as_str())
+                || text("library") != Some(ihp.library.as_str())
+                || corners.as_deref() != Some(ihp.corners.as_slice())
+            {
+                return Err(bad("MANIFEST_IDENTITY", "IHP producer identity mismatch"));
+            }
+            ihp
+        }
+        // Any PDK: the identity is well-formed here and compared with the pinned profile
+        // (`files:profile`) when the pinned inputs are verified.
+        Some(SCHEMA_NATIVE) => {
+            let identity = match (text("pdk"), text("library"), corners) {
+                (Some(pdk), Some(library), Some(corners))
+                    if pdk_name(pdk)
+                        && pdk_name(library)
+                        && (1..=4).contains(&corners.len())
+                        && corners.iter().all(|corner| short_name(corner))
+                        && corners.iter().collect::<BTreeSet<_>>().len() == corners.len() =>
+                {
+                    FlowIdentity {
+                        pdk: pdk.to_owned(),
+                        library: library.to_owned(),
+                        corners,
+                        profile_bound: true,
+                    }
+                }
+                _ => {
+                    return Err(bad(
+                        "MANIFEST_IDENTITY",
+                        "invalid PDK, library or corner identity",
+                    ));
+                }
+            };
+            if raw
+                .get("files")
+                .and_then(|files| files.get("profile"))
+                .is_none()
+            {
+                return Err(bad(
+                    "MANIFEST_IDENTITY",
+                    "a rusteda.native-flow.v1 manifest must pin its PDK profile (files:profile)",
+                ));
+            }
+            identity
+        }
+        _ => return Err(bad("MANIFEST_IDENTITY", "IHP producer identity mismatch")),
+    };
     let keys = raw.keys();
     if REQUIRED.iter().any(|name| !keys.contains(name))
         || keys
@@ -709,7 +867,7 @@ pub fn parse(bytes: &[u8]) -> Result<Manifest> {
         .map(|value| step(value, &mut seen))
         .collect::<Result<Vec<_>>>()?;
     let (stdout_artifacts, capture) =
-        stdout_artifacts(&steps, raw.get("stdout_artifacts"), &scope_raw)?;
+        stdout_artifacts(&steps, raw.get("stdout_artifacts"), &scope_raw, &identity)?;
     let groups = parallel_groups(&steps, raw_steps, raw.get("parallel_groups"), &scope_raw)?;
     let threads = scope_raw
         .get("threads")
@@ -745,6 +903,7 @@ pub fn parse(bytes: &[u8]) -> Result<Manifest> {
     }
     let manifest = Manifest {
         name: text("name").map(str::to_owned),
+        identity,
         pins,
         scope: Scope {
             raw: scope_raw,
