@@ -22,6 +22,23 @@ python3 integration/ibex_host_benchmark/signoff_layout.py \
 
 Run each call alone (the decks use two threads and several GiB).
 
+## What a layout record must provide
+
+The gates read a layout the way the referee tools do, so a flow has to deliver:
+
+- `gds`: top cell `ibex_sram_bench`. Every SRAM master is the cell of the macro's own GDS, under
+  its name and unchanged (the DRC attribution compares it layer by layer and refuses a
+  difference). Top-level pins carry text labels on the PDK's pin layers, as the LEF/DEF to GDS
+  conversion of the PDK writes them, because Magic takes the ports of the top circuit from them
+  and Netgen compares those ports with the powered netlist.
+- `def`: the die of the reference configuration and every SRAM instance at that configuration's
+  location and orientation.
+- `netlist`: one flat module, no supply pins; cells without logic pins (fill, decap, tap) may be
+  listed with empty connection lists.
+- `powered_netlist`: the same netlist, one module, with the supply pins of every cell and of
+  every SRAM instance connected by name.
+- `synthesis_netlist`: the mapped netlist before physical design, flat, no supply pins.
+
 ## Host map
 
 Everything host-specific is in the host map; the profile and the scripts name no host path.
