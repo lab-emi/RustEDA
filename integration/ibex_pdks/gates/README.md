@@ -178,7 +178,11 @@ added and applied to every layout: a slew, capacitance or fanout row at a pin of
 instance is listed under `macro_pin_rows` and gates only if it exceeds a limit the SDC sets for
 the whole design (`set_max_fanout 10`). Rows at standard-cell pins and ports gate, and so do
 setup and hold checks at macro pins. The RustSTA to OpenSTA slack differences are reported
-against 1 ps (`parity`), as in the IHP gate.
+against 1 ps (`parity`), as in the IHP gate. If RustSTA refuses the inputs themselves (D0103:
+the libraries of one corner use different units, as the GF180MCU cell and SRAM libraries do), the
+gate's status is `blocked` (`blocked_by` names the refusal) and OpenSTA's numbers are kept as a
+diagnostic; a blocked gate judges neither layout. The RustSTA binaries are the host map's
+`rusteda` and `ruststa`.
 
 Decisions recorded in every report (`profile.decisions`): on SKY130 the OpenRAM macro has a TT
 Liberty only, used at both corners; all consumers read the derived copy written by `prepare.py`

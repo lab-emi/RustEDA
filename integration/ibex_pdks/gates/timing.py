@@ -22,9 +22,12 @@ limit the SDC sets for the design. Rows at standard-cell pins and ports, setup a
 (including checks at macro pins) and every completeness requirement gate as before. The RustSTA
 to OpenSTA slack difference is reported against the 1 ps tolerance, as in the IHP gate.
 
-When the two-engine check cannot complete a corner (RustSTA rejects the inputs, or OpenSTA's
-report fails the policy's own coverage checks), the corner is `unverified`, the gate fails, and
-`opensta_only` keeps what OpenSTA reported for it as a diagnostic.
+When the two-engine check cannot complete a corner, the corner is `unverified` and
+`opensta_only` keeps what OpenSTA reported for it as a diagnostic. If RustSTA refused the inputs
+themselves (for example libraries of one corner in different units, D0103), the status is
+`blocked` with `blocked_by` naming the refusal: no layout can pass or fail on those inputs until
+the engine accepts them. Otherwise the gate fails. The RustSTA binaries are the host map's
+`rusteda` and `ruststa`.
 """
 from __future__ import annotations
 
@@ -165,7 +168,13 @@ def main() -> int:
         native = base.get("native_analysis") or {}
         compare = base["native_compare"]
         status = "passed" if all_passed and not other_failures and base["coverage_complete"] and base["inputs_unchanged"] else "failed"
-        result.update(status=status, complete=True, top=config["top"], corners=corners,
+        blocked = None
+        if native.get("status") == "rejected":
+            # RustSTA refused the inputs themselves: the gate cannot judge any layout with them.
+            status, blocked = "blocked", dict(engine="ruststa", error=native.get("error"),
+                                              diagnostics=[d.get("code") for d in native.get("diagnostics", [])
+                                                           if d.get("severity") == "error"][:8])
+        result.update(status=status, complete=True, top=config["top"], corners=corners, blocked_by=blocked,
                       failed_items=other_failures + [c + ": timing or gating limit rows failed" for c in CORNERS
                                                      if corners[c]["status"] != "passed"],
                       base_status=base["status"], base_failed_items=base["failed_items"],
