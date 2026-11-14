@@ -1,0 +1,125 @@
+{
+  "DESIGN_NAME": "ibex_sram_bench",
+  "VERILOG_FILES": [
+    "@WORKSPACE@/rtl/design.v"
+  ],
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100.0,
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [
+    0,
+    0,
+    1876.0,
+    1568.0
+  ],
+  "PL_TARGET_DENSITY_PCT": 45,
+  "STA_CORNERS": [
+    "nom_tt_025C_5v00",
+    "nom_ss_125C_4v50"
+  ],
+  "DEFAULT_CORNER": "nom_tt_025C_5v00",
+  "MACROS": {
+    "gf180mcu_fd_ip_sram__sram512x8m8wm1": {
+      "gds": [
+        "@PDK@/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram512x8m8wm1.gds"
+      ],
+      "lef": [
+        "@PDK@/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram512x8m8wm1.lef"
+      ],
+      "lib": {
+        "*_tt_025C_5v00": [
+          "@PDK@/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib"
+        ],
+        "*_ss_125C_4v50": [
+          "@PDK@/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib"
+        ]
+      },
+      "spice": [
+        "@PDK@/libs.ref/gf180mcu_fd_ip_sram/spice/gf180mcu_fd_ip_sram__sram512x8m8wm1.spice"
+      ],
+      "instances": {
+        "u_imem0": {
+          "location": [
+            44.8,
+            1042.72
+          ],
+          "orientation": "N"
+        },
+        "u_dmem0": {
+          "location": [
+            44.8,
+            39.2
+          ],
+          "orientation": "FS"
+        },
+        "u_imem1": {
+          "location": [
+            496.16,
+            1042.72
+          ],
+          "orientation": "N"
+        },
+        "u_dmem1": {
+          "location": [
+            496.16,
+            39.2
+          ],
+          "orientation": "FS"
+        },
+        "u_imem2": {
+          "location": [
+            947.52,
+            1042.72
+          ],
+          "orientation": "N"
+        },
+        "u_dmem2": {
+          "location": [
+            947.52,
+            39.2
+          ],
+          "orientation": "FS"
+        },
+        "u_imem3": {
+          "location": [
+            1398.88,
+            1042.72
+          ],
+          "orientation": "N"
+        },
+        "u_dmem3": {
+          "location": [
+            1398.88,
+            39.2
+          ],
+          "orientation": "FS"
+        }
+      }
+    }
+  },
+  "PDN_MACRO_CONNECTIONS": [
+    "u_[id]mem[0-3] VDD VSS VDD VSS"
+  ],
+  "PDN_CFG": "@WORKSPACE@/pdn.tcl",
+  "RUN_LINTER": true,
+  "LINTER_ERROR_ON_LATCH": false,
+  "PNR_SDC_FILE": "@WORKSPACE@/pnr.sdc",
+  "SIGNOFF_SDC_FILE": "@WORKSPACE@/constraints.sdc",
+  "STA_EXTRA_CORNER_TCL_FILE": "@WORKSPACE@/cppr_off.tcl",
+  "DRT_THREADS": 4,
+  "RUN_POST_GRT_RESIZER_TIMING": true,
+  "RUN_POST_GRT_DESIGN_REPAIR": true,
+  "MAX_SLEW_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "MAX_CAP_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "KLAYOUT_DRC_THREADS": 2,
+  "KLAYOUT_XOR_THREADS": 2,
+  "FP_MACRO_HORIZONTAL_HALO": 10,
+  "FP_MACRO_VERTICAL_HALO": 10,
+  "EXTRA_EXCLUDED_CELLS": [
+    "gf180mcu_fd_sc_mcu7t5v0__dly*"
+  ]
+}

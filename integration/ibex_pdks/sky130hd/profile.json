@@ -1,0 +1,13 @@
+{
+  "schema": "rusteda.ibex-pdk-profile.v1",
+  "pdk": "sky130A",
+  "scl": "sky130_fd_sc_hd",
+  "macro": {
+    "name": "sky130_sram_2kbyte_1rw1r_32x512_8",
+    "verilog": "libs.ref/sky130_sram_macros/verilog/sky130_sram_2kbyte_1rw1r_32x512_8.v",
+    "blackbox_end": "  reg  csb0_reg;",
+    "instances": ["u_imem", "u_dmem"]
+  },
+  "driving_cell": {"cell": "sky130_fd_sc_hd__buf_4", "pin": "X"},
+  "absent_ports": ["prog_addr_i[9]"]
+}

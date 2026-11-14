@@ -1,0 +1,13 @@
+{
+  "schema": "rusteda.ibex-pdk-profile.v1",
+  "pdk": "gf180mcuD",
+  "scl": "gf180mcu_fd_sc_mcu7t5v0",
+  "macro": {
+    "name": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+    "verilog": "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1__blackbox.v",
+    "blackbox_end": "endmodule",
+    "instances": ["u_imem0", "u_imem1", "u_imem2", "u_imem3", "u_dmem0", "u_dmem1", "u_dmem2", "u_dmem3"]
+  },
+  "driving_cell": {"cell": "gf180mcu_fd_sc_mcu7t5v0__buf_4", "pin": "Z"},
+  "absent_ports": ["prog_addr_i[9]"]
+}

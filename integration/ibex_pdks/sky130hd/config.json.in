@@ -1,0 +1,88 @@
+{
+  "DESIGN_NAME": "ibex_sram_bench",
+  "VERILOG_FILES": [
+    "@WORKSPACE@/rtl/design.v"
+  ],
+  "CLOCK_PORT": "clk_i",
+  "CLOCK_PERIOD": 100.0,
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [
+    0,
+    0,
+    1505.12,
+    816.0
+  ],
+  "PL_TARGET_DENSITY_PCT": 45,
+  "STA_CORNERS": [
+    "nom_tt_025C_1v80",
+    "nom_ss_100C_1v60"
+  ],
+  "DEFAULT_CORNER": "nom_tt_025C_1v80",
+  "MACROS": {
+    "sky130_sram_2kbyte_1rw1r_32x512_8": {
+      "gds": [
+        "@PDK@/libs.ref/sky130_sram_macros/gds/sky130_sram_2kbyte_1rw1r_32x512_8.gds"
+      ],
+      "lef": [
+        "@PDK@/libs.ref/sky130_sram_macros/lef/sky130_sram_2kbyte_1rw1r_32x512_8.lef"
+      ],
+      "lib": {
+        "*": [
+          "@PDK@/libs.ref/sky130_sram_macros/lib/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib"
+        ]
+      },
+      "spice": [
+        "@PDK@/libs.ref/sky130_sram_macros/spice/sky130_sram_2kbyte_1rw1r_32x512_8.spice"
+      ],
+      "instances": {
+        "u_imem": {
+          "location": [
+            39.56,
+            356.32
+          ],
+          "orientation": "N"
+        },
+        "u_dmem": {
+          "location": [
+            782.46,
+            356.32
+          ],
+          "orientation": "N"
+        }
+      }
+    }
+  },
+  "PDN_MACRO_CONNECTIONS": [
+    "u_[id]mem VPWR VGND vccd1 vssd1"
+  ],
+  "FILL_CELL": [
+    "sky130_fd_sc_hd__fill_2",
+    "sky130_fd_sc_hd__fill_1"
+  ],
+  "DECAP_CELL": [
+    "sky130_fd_sc_hd__decap_3"
+  ],
+  "EXTRA_EXCLUDED_CELLS": [
+    "sky130_fd_sc_hd__clkdlybuf4s*",
+    "sky130_fd_sc_hd__dlygate4sd*",
+    "sky130_fd_sc_hd__dlymetal6s*"
+  ],
+  "RUN_LINTER": true,
+  "LINTER_ERROR_ON_LATCH": false,
+  "PNR_SDC_FILE": "@WORKSPACE@/pnr.sdc",
+  "SIGNOFF_SDC_FILE": "@WORKSPACE@/constraints.sdc",
+  "STA_EXTRA_CORNER_TCL_FILE": "@WORKSPACE@/cppr_off.tcl",
+  "DRT_THREADS": 4,
+  "RUN_POST_GRT_RESIZER_TIMING": true,
+  "RUN_POST_GRT_DESIGN_REPAIR": true,
+  "MAX_SLEW_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "MAX_CAP_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "KLAYOUT_DRC_THREADS": 2,
+  "KLAYOUT_XOR_THREADS": 2,
+  "FP_MACRO_HORIZONTAL_HALO": 10,
+  "FP_MACRO_VERTICAL_HALO": 10
+}
