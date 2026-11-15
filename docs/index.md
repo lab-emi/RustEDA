@@ -28,7 +28,10 @@ guides the next iteration.
 
 **IHP SG13G2 · SKY130 · GF180MCU.** The benchmark pairs RustEDA and
 LibreLane on Ibex with hard SRAM within each process. The comparison includes
-annotated final GDS pairs for all three processes.
+annotated GDS pairs, standard-cell area, SS setup Fmax and power estimated
+from the same 10 MHz workload. The latest RustEDA layouts estimate **20.0%**,
+**3.4%** and **3.3%** lower workload power on IHP, SKY130 and GF180,
+respectively.
 [Three-PDK benchmark](benchmarks/ibex-three-pdk.md)
 
 ### IHP SG13G2 results

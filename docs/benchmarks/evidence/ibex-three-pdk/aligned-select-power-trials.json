@@ -1139,6 +1139,208 @@
         },
         "magic_violations": 0,
         "klayout_violations": 0
+      },
+      "independent_magic_antenna": {
+        "status": "failed",
+        "complete": true,
+        "violations": 30,
+        "categories": {
+          "metal2": 4,
+          "metal3": 11,
+          "metal4 contact": 15
+        },
+        "gds": {
+          "sha256": "97803bdcf30f4c5ea7e94bdd9b7b34dd839654029b64189c1e2e82a7f0c68c5c",
+          "bytes": 70756900
+        },
+        "receipt": {
+          "sha256": "02459a4f95fda1b23c7e88bf9c24b93c172b78ddebf1ac6414005b870cd7e324",
+          "bytes": 8775
+        }
+      },
+      "calibrated_profile_producer": {
+        "scope": "RTL to GDS using previously selected Magic repair targets. The offline target discovery is timed separately.",
+        "rusteda_seconds": 1760.78,
+        "librelane_seconds": 1771.63,
+        "cpus": [
+          30,
+          31
+        ],
+        "memory_limit_mib": 4096,
+        "peak_swap_bytes": 0,
+        "offline_magic_discovery_seconds": 1234.39,
+        "byte_identical_final_artifacts": 6,
+        "receipt": {
+          "sha256": "9e6dde7982cb04b5ee297369624b6b2ce957e9e93522c01ddbe8f0dda4e8a3f3",
+          "bytes": 9232
+        }
+      }
+    },
+    "sky130_round_two_antenna_and_load_repair": {
+      "scope": "Exact incremental layout after 28 receiver-anchored diodes and three full-branch load buffers. Nominal OpenRCX, identical TT 10 MHz workload and setup-only SS period sweep. The final Magic gate retains nonzero findings.",
+      "artifacts": {
+        "gds": {
+          "sha256": "e250965b375c92a89c6b6352e957faab1dfcdb00839744f72c53ca41a490f455",
+          "bytes": 70814870
+        },
+        "def": {
+          "sha256": "d64260433bcf4c35b8b62428c037e3dbe9f92d9c298737e26eec9146dfd86db8",
+          "bytes": 21753785
+        },
+        "netlist_final": {
+          "sha256": "d2739eeb71b04e4d60317ee40aacbb1d1ec7ba28f5d92f78ef01691b544290a9",
+          "bytes": 2424218
+        },
+        "netlist_powered_final": {
+          "sha256": "e227a920f5b843f5eaf5e1a831bd888de832d406827573550d80a4e603e17b39",
+          "bytes": 9540800
+        },
+        "netlist_synth": {
+          "sha256": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1",
+          "bytes": 1845754
+        },
+        "spef_native_nom": {
+          "sha256": "911f8d7e7c742c360f865ea30106a93c619f3ccbf2c7018817932f530ad20f0c",
+          "bytes": 39365662
+        }
+      },
+      "source_gds": {
+        "sha256": "97803bdcf30f4c5ea7e94bdd9b7b34dd839654029b64189c1e2e82a7f0c68c5c",
+        "bytes": 70756900
+      },
+      "layout_producer_receipt": {
+        "sha256": "7bd9c8ee404708eb2d55f08f83c517b40feeef6ba7a103bd112e0d610375bb4b",
+        "bytes": 4157
+      },
+      "standard_cell_area_um2": {
+        "rusteda": 173629.024,
+        "librelane": 176426.7072
+      },
+      "vectorless_tt_10mhz_mw": {
+        "rusteda": 6.566626951098,
+        "librelane": 9.501222521067
+      },
+      "vectorless_power_receipt": {
+        "sha256": "f33b604b51c0b41bac1cf0bbaaa4d68b7f769bdddf2666392492f4c9c904ca02",
+        "bytes": 4064
+      },
+      "matched_10mhz_tt_workload": {
+        "rusteda_mw": 2.7401098050179997,
+        "librelane_mw": 2.836818806827,
+        "trace": {
+          "start_ps": 4400000,
+          "end_ps": 6100000,
+          "cycles": 17,
+          "clock_period_ns": 100,
+          "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+          "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+        },
+        "activity_annotation": {
+          "vcd": 56718,
+          "unannotated": 0
+        },
+        "receipt": {
+          "sha256": "a83712364672905343424576e5f74e4e268d4d8766bbde0c53ef50b975e5f8b3",
+          "bytes": 11275
+        }
+      },
+      "ss_setup_frequency_bracket_mhz": [
+        24.01753279894323,
+        24.01933556512993
+      ],
+      "librelane_ss_setup_fmax_mhz": 17.214666896195556,
+      "ss_setup_sweep": {
+        "sha256": "0482a869314a125d7b225e3c19eb6272b0b304b0f337c82d11c60fa7e7a1c57a",
+        "bytes": 15985
+      },
+      "tt_ss_at_10mhz": {
+        "tt": {
+          "status": "passed",
+          "setup_ws_ns": 42.534286499023,
+          "hold_ws_ns": 0.052440054715,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "status": "passed",
+          "setup_ws_ns": 40.910083770752,
+          "hold_ws_ns": 0.352739185095,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 0
+        }
+      },
+      "timing_receipt": {
+        "sha256": "6a83c61c4ad0b8ee4b3f7b336a6cde8205e236ab3d8ff51d473d5b009e1f88b2",
+        "bytes": 12650
+      },
+      "analysis": {
+        "gate_exit_codes": {
+          "extraction": 0,
+          "timing": 0,
+          "lvs": 0,
+          "simulation": 0,
+          "logic": 0,
+          "density": 0
+        },
+        "receipt": {
+          "sha256": "560c51989be88126f4085f7a03b2e3337754184364691f396f832c6d43d6a275",
+          "bytes": 71614
+        }
+      },
+      "drc": {
+        "violations": 0,
+        "gate_status": "passed",
+        "receipt": {
+          "sha256": "e7837650b07311e5ce4fe15e12281bae3215f3bccf12a699d7c8496e9dc59f6a",
+          "bytes": 14152
+        }
+      },
+      "independent_magic_antenna": {
+        "rusteda": {
+          "status": "failed",
+          "complete": true,
+          "violations": 12,
+          "categories": {
+            "metal2": 1,
+            "metal3": 7,
+            "metal4 contact": 4
+          },
+          "gds": {
+            "sha256": "e250965b375c92a89c6b6352e957faab1dfcdb00839744f72c53ca41a490f455",
+            "bytes": 70814870
+          },
+          "receipt": {
+            "sha256": "4b44025296f21fbf3ff6f23e4857a3cc3c4b233e297a2dc5d2e2dc01c75788c4",
+            "bytes": 7001
+          }
+        },
+        "librelane": {
+          "violations": 13,
+          "receipt": {
+            "sha256": "63aa906edc62ed9a884414233699a35de05970cdf7080ac2ade9cbe08f0ce1ea",
+            "bytes": 5839
+          }
+        }
+      },
+      "layout_pair": {
+        "figure": "figures/ibex-sky130-antenna-load-repair.png",
+        "figure_identity": {
+          "sha256": "8be0794de8526bf72839b7001c5585a308766b127eb70ce4962ced191a6bdda1",
+          "bytes": 1781617
+        },
+        "macro_geometry_and_placement": {
+          "sha256": "6f98a9c7db5175f4e922b6461d5d4fe1f5e3b4209274f43dd3a4614d05fe0f23",
+          "bytes": 3592
+        }
+      },
+      "matched_producer_runtime": {
+        "status": "pending"
       }
     }
   },

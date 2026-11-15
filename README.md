@@ -47,33 +47,32 @@ Ibex with hard instruction and data SRAM. Within each PDK both use the same
 RTL, constraints, macro views and floorplan. The panels show the exported
 GDS side by side, with **RustEDA on the left** and **LibreLane on the right**.
 
-![SKY130A final GDS side by side. RustEDA and LibreLane share the same die and two OpenRAM banks. Labels show SRAM placement and the two-core benchmark results.](docs/benchmarks/figures/ibex-sky130-clearance-20261115.png)
+![SKY130A final GDS side by side after antenna and load repair. Labels show the two OpenRAM banks, same-frequency power, layout area, slow-corner timing and physical checks.](docs/benchmarks/figures/ibex-sky130-antenna-load-repair.png)
 
-![GF180MCU D final GDS side by side. Four foundry SRAM byte lanes form each of the instruction and data banks. Labels show area, timing and GDS export time.](docs/benchmarks/figures/ibex-gf180-20261115.png)
+![GF180MCU D final GDS side by side with floating fill in the RustEDA layout. Four foundry SRAM byte lanes form each bank. Labels show the matched placements and foundry density results.](docs/benchmarks/figures/ibex-gf180-density-fill.png)
 
-![IHP SG13G2 final GDS side by side for the 10 November pair. Both 4 KiB SRAM banks are highlighted on each layout.](docs/benchmarks/figures/ibex-ihp-20261110.png)
+![IHP SG13G2 matched final GDS side by side. Labels show both 4 KiB SRAM banks, same-frequency workload power, area, slow-corner timing and producer times.](docs/benchmarks/figures/ibex-ihp-aligned-matched.png)
 
-Each measurement lists **RustEDA / LibreLane**. Both flows use the same
-**10 MHz clock (100 ns)** for the power estimate. Percentages show RustEDA's
-change relative to LibreLane.
+Each measurement lists **RustEDA / LibreLane**. Power is estimated from the
+same 17-cycle gate-level workload at **10 MHz** within each PDK. Percentages
+show RustEDA's change relative to LibreLane.
 
-| Open PDK | Modeled power at 10 MHz for both (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | SS setup slack at 10 MHz (ns) | Time to GDS (s) |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| [IHP SG13G2](docs/benchmarks/ibex-three-pdk.md#ihp-sg13g2-layout-pair) | 8.63 / 5.57<br>+54.9% | 187,585 / 204,848<br>**−8.4%** | 42.02 / 24.86<br>**+69.0%** | +49.44 / +47.94 | 1,348.3 / 2,073.4<br>**1.54× faster** |
-| [SKY130A, two cores](docs/benchmarks/ibex-three-pdk.md#sky130a-layout-pair) | 28.99 / 9.50<br>+205.2% | 176,089 / 176,427<br>**−0.19%** | 23.75 / 17.21<br>**+37.9%** | +40.59 / +35.64 | 1,241.0 / 1,771.6<br>**1.43× faster** |
-| [GF180MCU D, two cores](docs/benchmarks/ibex-three-pdk.md#gf180mcu-d-layout-pair) | 155.89 / 139.09<br>+12.1% | 478,020 / 490,812<br>**−2.6%** | 12.01 / 10.75<br>**+11.7%** | +16.72 / +6.96 | 474.4 / 851.5<br>**1.79× faster** |
+| Open PDK | TT workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | Matched RTL-to-GDS time (s) |
+| --- | ---: | ---: | ---: | ---: |
+| IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.7%** | 248.07 / 1,917.16<br>**7.73×** |
+| SKY130A, two cores | 2.740 / 2.837<br>**−3.4%** | 173,629 / 176,427<br>**−1.6%** | 24.02 / 17.21<br>**+39.5%** | Pending / 1,771.63 |
+| GF180MCU D, two cores | 91.24 / 94.33<br>**−3.3%** | 475,913 / 490,812<br>**−3.0%** | 10.91 / 10.75<br>**+1.5%** | 637.13 / 851.48<br>**1.34×** |
 
-Power uses post-route OpenSTA at TT with identical vectorless input activity.
-The Fmax column reports the setup ceiling from SS period sweeps on the fixed
-routed layouts. Area measures the standard-cell footprint within the same
-die. [QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
+OpenSTA uses the matched workload activity and nominal OpenRCX parasitics.
+Fmax is the lower bound from each routed layout's SS setup sweep. Area is
+the standard-cell footprint within the common die.
+[QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
 
-The IHP figure and table use the 10 November pair measured under competing
-host load. The SKY130A and GF180MCU D pairs used matched cores within each
-process. SKY130A was effectively tied on four cores at **1,173.71 / 1,173.80 s**.
-Both SKY130A layouts passed DRC and had antenna findings. Both GF180MCU D layouts
-had four whole-die metal-density findings. The benchmark records the timing,
-equivalence and signoff verdicts for each layout. [Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md)
+Both SKY130A layouts passed DRC and recorded **12 / 13** Magic antenna
+findings. GF180MCU D recorded **1 / 4** foundry density findings. Its producer
+time includes floating fill. Power and timing use the unfilled routed
+snapshot and have a separate extraction control.
+[Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md#aligned-select-power-trials)
 
 ### IHP SG13G2 results
 

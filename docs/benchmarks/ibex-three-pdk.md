@@ -301,9 +301,34 @@ clock sites preserved. Its exact GDS passed extraction, LVS, vendor simulation,
 ABC equivalence, placement density and both independent DRC decks. The 17-cycle 10 MHz workload estimates
 **2.741 / 2.837 mW**, and TT and SS setup and hold are nonnegative at 41.643125 ns.
 At 10 MHz it has 18 SS transition violations and two SS capacitance violations.
-Final Magic antenna and the calibrated-profile producer replay are pending. The
-initial Magic discovery ran in 1,234.39 s and is recorded separately.
+Its complete Magic check reported **30** antenna findings. A calibrated replay
+of this revision reproduced all six final artifacts byte for byte. It took
+**1,760.78 s** against **1,771.63 s** on CPUs 30 and 31 with 4 GiB and no swap.
+The replay reused repair targets from the earlier 1,234.39 s Magic discovery.
 [Routed trial measurements](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+### SKY130A antenna and load repair
+
+The second repair added 28 receiver-anchored diodes and three load buffers.
+It preserves the die and both SRAM instances, including their placement,
+orientation and layer geometry. TT and SS pass the common extracted setup,
+hold, transition, capacitance and fanout checks.
+
+![Matched SKY130A GDS layouts after the second repair. The figure labels both SRAM banks, standard-cell area, power at 10 MHz, SS setup Fmax, DRC and antenna findings.](figures/ibex-sky130-antenna-load-repair.png)
+
+| Metric | RustEDA | LibreLane |
+|---|---:|---:|
+| TT workload power at 10 MHz (mW) | **2.740** | 2.837 |
+| TT vectorless power at 10 MHz (mW) | **6.567** | 9.501 |
+| Standard-cell area (µm²) | **173,629** | 176,427 |
+| SS setup Fmax lower bound (MHz) | **24.02** | 17.21 |
+| Independent DRC violations | 0 | 0 |
+| Independent Magic antenna findings | **12** | 13 |
+| Matched RTL-to-GDS time (s) | Pending | 1,771.63 |
+
+The power comparison uses the same 17-cycle gate-level workload and nominal
+OpenRCX extraction. Both layouts retain Magic antenna findings.
+[Exact layout, workload and gate results](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 ## Frontend validation
 
