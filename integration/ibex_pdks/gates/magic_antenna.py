@@ -23,9 +23,24 @@ import common  # noqa: E402
 
 SCHEMA = "rusteda.pdk-gate.magic-antenna.v1"
 HERE = Path(__file__).resolve().parent
-VIOLATION = re.compile(r"(?:Cell: (\S+)\s*\n)?\s*Antenna violation detected at plane (\S+)\s*\n"
+VIOLATION = re.compile(r"(?:Cell: (\S+)\s*\n)?\s*Antenna violation detected at plane (\S[^\r\n]*?)[ \t]*\r?\n"
                        r"\s*Effective antenna ratio ([0-9.eE+-]+) > limit ([0-9.eE+-]+)\s*\n"
                        r"\s*Gate rect \((-?\d+) (-?\d+)\) to \((-?\d+) (-?\d+)\)")
+
+
+def observations(log, abstract_cells):
+    facts = common.magic_facts(log, abstract_cells)
+    common.require("Running antenna checks." in log and "antennacheck finished." in log
+                   and re.search(r"^GATE_EXTRACTED\s*$", log, re.M) is not None, "ANTENNA_CHECK_INCOMPLETE")
+    unit_um = round(float(facts["unit"]), 9)
+    rows = [dict(cell=m[1], plane=m[2], ratio=float(m[3]), limit=float(m[4]),
+                 gate_um=[round(int(m[i]) * unit_um, 4) for i in (5, 6, 7, 8)]) for m in VIOLATION.finditer(log)]
+    common.require(log.count("Antenna violation detected") == len(rows), "ANTENNA_VIOLATION_FORMAT")
+    planes = {}
+    for row in rows:
+        planes[row["plane"]] = planes.get(row["plane"], 0) + 1
+    return dict(technology=facts["tech"], unit_um=unit_um, violations=len(rows), categories=dict(sorted(planes.items())),
+                samples=rows[:20], status="passed" if not rows else "failed", complete=True)
 
 
 def main() -> int:
@@ -62,19 +77,7 @@ def main() -> int:
                                  peak_rss_kib=run["peak_rss_kib"])
         common.require(run["exit_code"] == 0 and not run["killed"], f"MAGIC_RUN_FAILED: exit {run['exit_code']} {run['killed'] or ''}")
         log = (output / "magic.log").read_text(errors="replace")
-        facts = common.magic_facts(log, config["abstract_cells"])
-        common.require("Running antenna checks." in log and "antennacheck finished." in log
-                       and re.search(r"^GATE_EXTRACTED\s*$", log, re.M) is not None, "ANTENNA_CHECK_INCOMPLETE")
-        unit_um = round(float(facts["unit"]), 9)
-        rows = [dict(cell=m[1], plane=m[2], ratio=float(m[3]), limit=float(m[4]),
-                     gate_um=[round(int(m[i]) * unit_um, 4) for i in (5, 6, 7, 8)]) for m in VIOLATION.finditer(log)]
-        loose = len(re.findall(r"Antenna violation detected", log))
-        common.require(loose == len(rows), "ANTENNA_VIOLATION_FORMAT")
-        planes = {}
-        for row in rows:
-            planes[row["plane"]] = planes.get(row["plane"], 0) + 1
-        summary.update(technology=facts["tech"], unit_um=unit_um, violations=len(rows), categories=dict(sorted(planes.items())),
-                       samples=rows[:20], status="passed" if not rows else "failed", complete=True)
+        summary.update(observations(log, config["abstract_cells"]))
         for record in (config["gds"], config["magicrc"], *config["tech_files"], *config["abstract_lefs"]):
             common.verify(record, "input after run")
     except (common.GateError, OSError, KeyError, ValueError) as error:

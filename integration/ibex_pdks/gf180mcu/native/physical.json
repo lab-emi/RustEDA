@@ -42,6 +42,7 @@
  "io_spacing": 1680,
  "strap_width": 3200,
  "strap_spacing": 3400,
+ "supply_left_inset": 5600,
  "max_added_cells": 250000,
  "max_tie_fanout": 1,
  "cell_spacing_sites": 0,

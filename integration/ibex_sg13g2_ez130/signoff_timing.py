@@ -316,9 +316,14 @@ class Run:
                    'report_checks -path_delay min_max -group_path_count 4 -endpoint_path_count 1 '
                    '-fields {slew capacitance input_pin net} -format full_clock_expanded -digits 12 > '
                    +tcl_word(path('paths.rpt'))]
-        for kinds, label in [('max_delay -recovery -clock_gating_setup', 'setup'),
-                             ('min_delay -removal -clock_gating_hold', 'hold'),
-                             ('max_slew', 'slew'), ('max_capacitance', 'cap'), ('max_fanout', 'fanout')]:
+        # report_check_types prints only the worst path of each setup/hold group, even in
+        # endpoint format. Count the individual negative endpoints, including macro checks,
+        # from report_checks instead. The extra row lets the reader detect a truncated report.
+        for delay, label in [('max', 'setup'), ('min', 'hold')]:
+            script += [f'report_checks -path_delay {delay} -slack_max 0 -group_path_count {n} '
+                       '-endpoint_path_count 1 -format end -no_line_splits -digits 12 > '
+                       +tcl_word(path(label+'.rpt'))]
+        for kinds, label in [('max_slew', 'slew'), ('max_capacitance', 'cap'), ('max_fanout', 'fanout')]:
             # OpenSTA's -violators selection can omit a small negative raw slack. Keep the
             # bounded complete table, and count its explicit strict VIOLATED annotations.
             script += ['report_check_types -'+kinds+' -no_line_splits -digits 12 -max_count '

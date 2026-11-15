@@ -128,7 +128,8 @@ class Resolver:
         return path
 
 
-def combined_lef(sources: list[Path], target: Path) -> Path:
+def combined_lef(sources: list[Path], target: Path,
+                 obstruction_spacing: dict[str, dict[str, str]] | None = None) -> Path:
     """One LEF with every cell and macro MACRO: the first file without its final END LIBRARY,
     then the MACRO blocks of the others, then END LIBRARY (what `rustroad import-pdk --cell-lef`
     and the planning helpers read)."""
@@ -140,6 +141,34 @@ def combined_lef(sources: list[Path], target: Path) -> Path:
             fail(f"combined LEF: {path} does not end with END LIBRARY")
         return "\n".join(lines[:-1]) + "\n"
 
+    def place_spacing(block: list[str], spacing: dict[str, str], master: str) -> None:
+        if not isinstance(spacing, dict) or len(spacing) > 32 or not all(
+            isinstance(layer, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", layer)
+            and isinstance(value, str) and re.fullmatch(r"[0-9]{1,4}(?:\.[0-9]{1,6})?", value)
+            for layer, value in spacing.items()
+        ):
+            fail(f"combined LEF: invalid obstruction spacing for {master}")
+        pending = set(spacing)
+        in_obs = False
+        for index, line in enumerate(block):
+            tokens = line.replace(";", " ;").split()
+            if tokens == ["OBS"]:
+                in_obs = True
+            elif in_obs and tokens == ["END"]:
+                in_obs = False
+            elif in_obs and len(tokens) >= 2 and tokens[0] == "LAYER" and tokens[1] in spacing:
+                layer = tokens[1]
+                if tokens != ["LAYER", layer, ";"] or layer not in pending:
+                    fail(f"combined LEF: expected one bare OBS LAYER {layer} in {master}")
+                prefix, suffix = line.split(";", 1)
+                if not prefix[-1].isspace():
+                    prefix += " "
+                block[index] = f"{prefix}SPACING {spacing[layer]} ;{suffix}"
+                pending.remove(layer)
+        if pending:
+            fail(f"combined LEF: missing OBS layer in {master}: {', '.join(sorted(pending))}")
+
+    pending_masters = dict(obstruction_spacing or {})
     out = [body(sources[0].read_text(), sources[0])]
     for path in sources[1:]:
         lines, name, block = path.read_text().splitlines(), None, []
@@ -151,10 +180,14 @@ def combined_lef(sources: list[Path], target: Path) -> Path:
             if name is not None:
                 block.append(line)
                 if tokens == ["END", name]:
+                    if name in pending_masters:
+                        place_spacing(block, pending_masters.pop(name), name)
                     out.append("\n".join(block) + "\n")
                     name, found = None, found + 1
         if name is not None or not found:
             fail(f"combined LEF: no complete MACRO block in {path}")
+    if pending_masters:
+        fail(f"combined LEF: missing macro for OBS spacing: {', '.join(sorted(pending_masters))}")
     out.append("END LIBRARY\n")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(out))
@@ -204,10 +237,16 @@ def main() -> int:
     corner = {c["name"]: c for c in data["corners"]}
     macro_lefs = {m["id"] + "_lef": refs.path(m["lef"], f"macros.{m['id']}.lef") for m in profile.macros}
     cell_lefs = [refs.path(ref, "lef.cells") for ref in data["lef"]["cells"]]
+    obstruction_spacing = {m["master"]: m["obstruction_spacing_um"] for m in profile.macros
+                           if m.get("obstruction_spacing_um", {}) != {}}
     if data["lef"].get("combined") is not None:
+        if obstruction_spacing:
+            fail("lef.combined: macro obstruction spacing needs a derived combined LEF")
         cell_lef = refs.path(data["lef"]["combined"], "lef.combined")
     else:
-        cell_lef = combined_lef([*cell_lefs, *macro_lefs.values()], work / "collateral/combined-cells.lef")
+        cell_lef = combined_lef(
+            [*cell_lefs, *macro_lefs.values()], work / "collateral/combined-cells.lef", obstruction_spacing,
+        )
     fe_files = {"rtl": prep / "rtl/design.v", "sdc": prep / "constraints.sdc"}
     for group in profile.groups:
         for name in profile.corners:
@@ -234,7 +273,8 @@ def main() -> int:
     threads = int(host["threads"])
     scope = {"threads": threads, "cpu_affinity": list(host["cpu_affinity"]), "max_log_bytes": 64 << 20,
              "memory_mib": 8192, "max_memory_bytes": 8 << 30, "max_stdout_artifact_bytes": 1536 << 20,
-             "wire_model": "ideal_diagnostic", "cppr": "off"}
+             "wire_model": "wireload_diagnostic" if profile.early_wire_model == "wireload_lumped" else "ideal_diagnostic",
+             "cppr": "off"}
     selection = json.loads(policy("selection").read_text())
     fe = {"schema": "rusteda.native-frontend-inputs.v1",
           "files": {k: identity(v) for k, v in fe_files.items()},

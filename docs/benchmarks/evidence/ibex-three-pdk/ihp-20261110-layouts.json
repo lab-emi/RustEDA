@@ -1,0 +1,184 @@
+{
+  "schema": "rusteda.ibex-matched-layout-figure.v1",
+  "date": "2026-11-10",
+  "pdk": "IHP SG13G2 / EZ130",
+  "design": "ibex_sram_bench",
+  "die_um": [
+    1100,
+    1000
+  ],
+  "hard_sram_instances": 2,
+  "sram_bank_kib": 4,
+  "figure": {
+    "path": "../../figures/ibex-ihp-20261110.png",
+    "sha256": "44aee77dd3a3b20399b36cac2cb802fd977d095bfb62b5dfbced8d8fcb778030",
+    "bytes": 2804633
+  },
+  "sample": "Retained matched layout pair on a loaded host. Producer wall time only. One sample per flow.",
+  "inputs": {
+    "sdc": {
+      "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+      "bytes": 35191
+    },
+    "rtl": {
+      "sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4",
+      "bytes": 440170
+    }
+  },
+  "flows": {
+    "RustEDA": {
+      "artifacts": {
+        "gds": {
+          "sha256": "e6438e8473913661cb29b3d303edc79b8f36584d376f4098300d726aa67bdb42",
+          "bytes": 26690616
+        },
+        "def": {
+          "sha256": "981ec4dfff62f62c17a45da312dc98f55df424d00df77c6f8f9a438b16280583",
+          "bytes": 13172249
+        },
+        "netlist": {
+          "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+          "bytes": 2049571
+        },
+        "powered_netlist": {
+          "sha256": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+          "bytes": 4369272
+        },
+        "synthesis_netlist": {
+          "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+          "bytes": 1546032
+        }
+      },
+      "layout_inputs_verified": true,
+      "producer_wall_seconds": 1348.31,
+      "mean_other_busy_cpus_on_allowed_set": 10.359,
+      "standard_cell_area_um2": 187585.1712,
+      "timing": {
+        "status": "passed",
+        "scope": {
+          "rc_corner": "nom",
+          "cppr": "off",
+          "precision": "f64",
+          "backend": "cpu",
+          "clock_model": "propagated",
+          "wire_model": "spef_rc",
+          "mode": "single_reference_openrcx",
+          "corners": [
+            "tt",
+            "ss"
+          ],
+          "spef_sources": [
+            "openrcx"
+          ],
+          "netlist_sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+          "sdc_sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+          "spef_sha256": "83523921c83928cc8fe418d3353b1f66b837e3694e7fda5d682081863b3a1698"
+        },
+        "corners": {
+          "tt": {
+            "setup_ws_ns": 49.63627243042,
+            "hold_ws_ns": 0.11142154038,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 0,
+            "cap_violations": 0,
+            "fanout_violations": 0
+          },
+          "ss": {
+            "setup_ws_ns": 49.44189866519584,
+            "hold_ws_ns": 0.21097946167,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 0,
+            "cap_violations": 0,
+            "fanout_violations": 0
+          }
+        }
+      },
+      "drc": {
+        "status": "passed",
+        "violations": 0
+      },
+      "antenna_status": "passed",
+      "lvs_status": "passed",
+      "logic_gate_exit_code": 0
+    },
+    "LibreLane": {
+      "artifacts": {
+        "gds": {
+          "sha256": "44974b6cd6ecad6d4b36c8ee4ef27a5cb82d66eb12f3de3a0847fb76274ec060",
+          "bytes": 18109678
+        },
+        "def": {
+          "sha256": "7c26910976a5239b9f32cfd00b52c1f7a4e5a030446e5ab5487282633120539a",
+          "bytes": 21705643
+        },
+        "netlist": {
+          "sha256": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf",
+          "bytes": 3537951
+        },
+        "powered_netlist": {
+          "sha256": "4e633309c6342ca27cd2c4a87d826b3280db8f851c7d8e98a9f950377defdf2b",
+          "bytes": 5401987
+        },
+        "synthesis_netlist": {
+          "sha256": "74b11eb49197134a2178ec2d1e1c7ed9e4098e89806cf025dd7d9e07f1d28e12",
+          "bytes": 1993315
+        }
+      },
+      "layout_inputs_verified": true,
+      "producer_wall_seconds": 2073.36,
+      "mean_other_busy_cpus_on_allowed_set": 5.803,
+      "standard_cell_area_um2": 204848.3808,
+      "timing": {
+        "status": "failed",
+        "scope": {
+          "rc_corner": "nom",
+          "cppr": "off",
+          "precision": "f64",
+          "backend": "cpu",
+          "clock_model": "propagated",
+          "wire_model": "spef_rc",
+          "mode": "single_reference_openrcx",
+          "corners": [
+            "tt",
+            "ss"
+          ],
+          "spef_sources": [
+            "openrcx"
+          ],
+          "netlist_sha256": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf",
+          "sdc_sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+          "spef_sha256": "a2692fbff9e36962255806d60adfd6b5a330d8a05212a56cf8db9356374908f0"
+        },
+        "corners": {
+          "tt": {
+            "setup_ws_ns": 48.661327362061,
+            "hold_ws_ns": 0.170020222664,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 1,
+            "cap_violations": 29,
+            "fanout_violations": 33
+          },
+          "ss": {
+            "setup_ws_ns": 47.93627166748,
+            "hold_ws_ns": 0.31223580268320283,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 3,
+            "cap_violations": 24,
+            "fanout_violations": 33
+          }
+        }
+      },
+      "drc": {
+        "status": "passed",
+        "violations": 0
+      },
+      "antenna_status": "passed",
+      "lvs_status": "passed",
+      "logic_gate_exit_code": 1
+    }
+  }
+}

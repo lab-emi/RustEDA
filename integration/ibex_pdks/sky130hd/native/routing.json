@@ -78,7 +78,7 @@
   "max_bin_entries": 48000000,
   "max_segments": 8000000,
   "max_expansions": 100000000000,
-  "max_search_expansions": 80000000,
+  "max_search_expansions": 20000000,
   "max_comparisons": 20000000000000,
   "max_heap": 2000000,
   "max_hard_search_expansions": 200000,
@@ -109,7 +109,7 @@
  "track_router": {
   "gcell": 10880,
   "via_cost": 1360,
-  "memory_mib": 6144,
+  "memory_mib": 4096,
   "min_routing_layer": "met1",
   "max_routing_layer": "met5",
   "heuristic_weight": 2,
@@ -134,7 +134,7 @@
    "heuristic_weight": 3
   },
   "own_pin_index": "layer_ranges",
-  "instance_index": "template_layers",
+  "instance_index": "fine_template_layers",
   "area_stacks": true,
   "qor": {
    "prim_order": true,
@@ -169,10 +169,10 @@
    "path_aware_access": true,
    "layer_cost_milli": {
     "met1": 2500,
-    "met5": 4000
+    "met5": 1500
    },
    "via_cost_milli": {
-    "met5": 4000
+    "met5": 1500
    }
   }
  },

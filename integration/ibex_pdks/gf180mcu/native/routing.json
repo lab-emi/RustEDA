@@ -23,7 +23,7 @@
     "max_bin_entries": 48000000,
     "max_segments": 8000000,
     "max_expansions": 100000000000,
-    "max_search_expansions": 80000000,
+    "max_search_expansions": 20000000,
     "max_comparisons": 20000000000000,
     "max_heap": 2000000,
     "max_hard_search_expansions": 200000,
@@ -54,7 +54,7 @@
   "track_router": {
     "gcell": 31360,
     "via_cost": 6720,
-    "memory_mib": 6144,
+    "memory_mib": 4096,
     "min_routing_layer": "Metal2",
     "max_routing_layer": "Metal5",
     "heuristic_weight": 2,
@@ -87,7 +87,8 @@
     "qor": {
       "prim_order": true,
       "drop_portals": true,
-      "net_aware_access": false,
+      "net_aware_access": true,
+      "path_aware_access": true,
       "small_net_terminals": 10,
       "small_net_weight": 1,
       "notch_bridge": true,

@@ -1,0 +1,154 @@
+{
+  "schema": "rusteda.ibex-three-pdk-frontend-equivalence.v1",
+  "scope": "Prepared RTL to mapped synthesis and post-placement clock-tree netlists. Each memory is opaque at its functional pins.",
+  "cases": {
+    "sky130": {
+      "layout_run": "native-04",
+      "rtl_sha256": "e529ea8fe7d16c8538dc5e2f19c13434fbff2cf47268060966c6c8c8f9b18b69",
+      "macro": "sky130_sram_2kbyte_1rw1r_32x512_8",
+      "macro_instances": [
+        "u_imem",
+        "u_dmem"
+      ],
+      "checker_sha256": "b8db8943a2a702d0146260a670f36278a7d2487a34fb2bc40ed1d4bec55e8f47",
+      "abc_sha256": "652c020dcf6750093a6f9e9e3b99ac876865d6d70b3ec0206f93c0f934c2945c",
+      "semantics": {
+        "reference": "original RTL independent interpreter and external ABC",
+        "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+        "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+        "reset_assumptions": [],
+        "case_assumptions": [],
+        "input_assumptions": [],
+        "macro_scope": "all functional macro interface bits, opaque across the memory boundary",
+        "wire_model": "none",
+        "corner": "logic",
+        "four_state_refinement": "unverified"
+      },
+      "proofs": {
+        "synthesis": {
+          "netlist_sha256": "98606f79ab37fa8b1067c7320f6c9128366f3bb9440079071afb9194618e72e1",
+          "output_bits": 186,
+          "rtl_state_bits": 2023,
+          "mapped_state_elements": 1998,
+          "obligations": 8178,
+          "abc_verdict": "Networks are equivalent.",
+          "obligations_sha256": {
+            "gold.aig": "536ea7a075b6e8ad32a8e0f27afbe28d2609c412bae55dc03072fb8f7a351b67",
+            "gate.aig": "3dfa337005a49aac8afffc1412c555a391e34b3ad8622ad86794c081594d9b21"
+          }
+        },
+        "placement_cts": {
+          "netlist_sha256": "c40d666493fc397ff0f0c97d1097158e533319e770459760891763f346043c8b",
+          "output_bits": 186,
+          "rtl_state_bits": 2023,
+          "mapped_state_elements": 1998,
+          "obligations": 8178,
+          "abc_verdict": "Networks are equivalent.",
+          "obligations_sha256": {
+            "gold.aig": "536ea7a075b6e8ad32a8e0f27afbe28d2609c412bae55dc03072fb8f7a351b67",
+            "gate.aig": "3dfa337005a49aac8afffc1412c555a391e34b3ad8622ad86794c081594d9b21"
+          }
+        }
+      },
+      "control": {
+        "macro_instance": "u_imem",
+        "bus": "addr0",
+        "change": "invert the most-significant bit with a standard cell",
+        "mutated_netlist_sha256": "e030dcd5005336d119b659396774d9547f20f38d38f6e645670ef8573298a663",
+        "abc_verdict": "NOT EQUIVALENT",
+        "abc_log_sha256": "41fda0ff92c69bebc313ea598515d483404099b1da3dd6a7bae005e001e6de45"
+      },
+      "area_goal": {
+        "manifest_sha256": "7621de9d5efcda5c90309991f6494f4fda30ef9e26396ab3a710afe7f317abd4",
+        "synthesis_netlist_sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+        "placement_cts_netlist_sha256": "54517dc5f1fffbab23ccc264ebc77c7ac0efa745b06f3568a62653dbb76cfad1",
+        "abc_verdict_synthesis": "Networks are equivalent.",
+        "abc_verdict_placement_cts": "Networks are equivalent.",
+        "placement_cts_def_sha256": "73018d4106a3eb9e9bc2f13d2663bda106a47e0c39f42ed8407a1b78e0d002ad",
+        "placement_cts_area_um2": 179636.0352,
+        "delay_goal_placement_cts_area_um2": 196138.112,
+        "placement_cts_area_change_percent": -8.413498341413616,
+        "timing_scope": "post-CTS placement estimate, slow corner, SPEF",
+        "slow_setup_slack_ns": 41.065484138343166,
+        "slow_hold_slack_ns": 0.5155444995053048
+      }
+    },
+    "gf180": {
+      "layout_run": "frontend-08",
+      "rtl_sha256": "e5910a6a310b5c0036e57e67e2bbd66986897e4569cf5738f4e296e3b69f5108",
+      "macro": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+      "macro_instances": [
+        "u_imem0",
+        "u_imem1",
+        "u_imem2",
+        "u_imem3",
+        "u_dmem0",
+        "u_dmem1",
+        "u_dmem2",
+        "u_dmem3"
+      ],
+      "checker_sha256": "b8db8943a2a702d0146260a670f36278a7d2487a34fb2bc40ed1d4bec55e8f47",
+      "abc_sha256": "652c020dcf6750093a6f9e9e3b99ac876865d6d70b3ec0206f93c0f934c2945c",
+      "semantics": {
+        "reference": "original RTL independent interpreter and external ABC",
+        "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+        "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+        "reset_assumptions": [],
+        "case_assumptions": [],
+        "input_assumptions": [],
+        "macro_scope": "all functional macro interface bits, opaque across the memory boundary",
+        "wire_model": "none",
+        "corner": "logic",
+        "four_state_refinement": "unverified"
+      },
+      "proofs": {
+        "synthesis": {
+          "netlist_sha256": "656d52934b13faf284067d547d1f59d889969c5049142749a1326a19bc15dde9",
+          "output_bits": 292,
+          "rtl_state_bits": 2023,
+          "mapped_state_elements": 1998,
+          "obligations": 8284,
+          "abc_verdict": "Networks are equivalent.",
+          "obligations_sha256": {
+            "gold.aig": "1372bb8e6d1c17643188836a037df915ee63d15d44a65c991ab570a048032a31",
+            "gate.aig": "9a874afbbb6289f7f711c9f03855f0b6ea9e2f8589dc6cba2f237e8fb97b5d2d"
+          }
+        },
+        "placement_cts": {
+          "netlist_sha256": "fbf48d688db3fdd07ae539224c609901f75d1b28692eeba067ef8344e1c0c5e0",
+          "output_bits": 292,
+          "rtl_state_bits": 2023,
+          "mapped_state_elements": 1998,
+          "obligations": 8284,
+          "abc_verdict": "Networks are equivalent.",
+          "obligations_sha256": {
+            "gold.aig": "1372bb8e6d1c17643188836a037df915ee63d15d44a65c991ab570a048032a31",
+            "gate.aig": "9a874afbbb6289f7f711c9f03855f0b6ea9e2f8589dc6cba2f237e8fb97b5d2d"
+          }
+        }
+      },
+      "control": {
+        "macro_instance": "u_imem0",
+        "bus": "A",
+        "change": "invert the most-significant bit with a standard cell",
+        "mutated_netlist_sha256": "2a5457bf45eba51967447cb40bf64cad6fd29dd6d1032f1bea7492a1b8ec9d68",
+        "abc_verdict": "NOT EQUIVALENT",
+        "abc_log_sha256": "aa9ac2d86f1ee53fdfc6d011df37ae500ea624c14ec0acab00ba0872b505ba7a"
+      },
+      "area_goal": {
+        "manifest_sha256": "549ad39aa2494330684150b1a44ec0f9a1e4862c6a3588291f5898fd532c09f0",
+        "synthesis_netlist_sha256": "46ca8252de58c11ca4cc9824ebeffed60cfca4d042d60142fe158b9d0caf4f65",
+        "placement_cts_netlist_sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+        "abc_verdict_synthesis": "Networks are equivalent.",
+        "abc_verdict_placement_cts": "Networks are equivalent.",
+        "placement_cts_def_sha256": "d427e8f54bf1210262c54199e284cc387e3e1c65836cc87be488f88d9bc341f1",
+        "placement_cts_area_um2": 478020.1664,
+        "delay_goal_placement_cts_area_um2": 578184.9472,
+        "placement_cts_area_change_percent": -17.324003553719646,
+        "timing_scope": "post-CTS placement estimate, slow corner, SPEF",
+        "slow_setup_slack_ns": 12.57590959361697,
+        "slow_hold_slack_ns": 0.953346973206024
+      }
+    }
+  }
+}

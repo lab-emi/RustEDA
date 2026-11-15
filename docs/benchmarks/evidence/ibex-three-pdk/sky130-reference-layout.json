@@ -1,0 +1,185 @@
+{
+  "schema": "rusteda.ibex-layout-observation.v1",
+  "pdk": "sky130A",
+  "flow": "LibreLane 3.0.17 / OpenROAD 26Q3",
+  "scope": "Final reference GDS, shared checks and a same-four-core measurement through Magic stream-out.",
+  "gds_boundary": "Magic.StreamOut",
+  "producer_exit": 241,
+  "producer_wall_seconds_for_comparison": null,
+  "layout": {
+    "gds": {
+      "bytes": 52867560,
+      "sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6"
+    },
+    "def": {
+      "bytes": 26159186,
+      "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187"
+    },
+    "netlist": {
+      "bytes": 7753419,
+      "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc"
+    },
+    "powered_netlist": {
+      "bytes": 15687593,
+      "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6"
+    },
+    "synthesis_netlist": {
+      "bytes": 2186826,
+      "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28"
+    }
+  },
+  "macro": {
+    "master": "sky130_sram_2kbyte_1rw1r_32x512_8",
+    "placements": 2,
+    "geometry_differing_layers": 0
+  },
+  "standard_cell_area_um2": 176426.7072,
+  "common_checks": {
+    "simulation": "passed",
+    "density": "passed",
+    "timing": "failed",
+    "drc": "passed",
+    "antenna": "failed",
+    "lvs": "passed",
+    "logic": "unverified"
+  },
+  "timing_scope": {
+    "rc_corner": "nom",
+    "cppr": "off",
+    "precision": "f64",
+    "backend": "cpu",
+    "clock_model": "propagated",
+    "wire_model": "spef_rc",
+    "mode": "single_reference_openrcx",
+    "corners": [
+      "tt",
+      "ss"
+    ],
+    "spef_sources": [
+      "openrcx"
+    ],
+    "netlist_sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+    "sdc_sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+    "spef_sha256": "e4e234fc82715e0b64f65aea9093a8418db1ace8aa9fcb647698c307aee97967"
+  },
+  "timing_failures": [
+    "bindings: ECO_NATIVE_EXTRA_BUDGET",
+    "tt: timing or gating limit rows failed",
+    "ss: timing or gating limit rows failed"
+  ],
+  "timing_corners": {
+    "tt": {
+      "setup_ws_ns": 40.249354908840324,
+      "hold_ws_ns": 0.249952286482,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 203,
+      "cap_violations": 27,
+      "fanout_violations": 64,
+      "unconstrained_endpoints": 22,
+      "active_unconstrained_endpoints": 0,
+      "active_unannotated_drivers": 0
+    },
+    "ss": {
+      "setup_ws_ns": 35.63648759103096,
+      "hold_ws_ns": 0.6948248487497866,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 3026,
+      "cap_violations": 357,
+      "fanout_violations": 64,
+      "unconstrained_endpoints": 22,
+      "active_unconstrained_endpoints": 0,
+      "active_unannotated_drivers": 0
+    }
+  },
+  "timing_parity_max_difference_ns": 0.0013259770840363672,
+  "lvs": {
+    "scope": "device-level LVS of standard cells; macros are black boxes with every instance pin checked",
+    "top_compared": true,
+    "circuits_compared": 100,
+    "result": "Circuits match uniquely.",
+    "shorted_port_count": 0,
+    "macro_interface": {
+      "lef_pins": 125,
+      "expected_instances": 2,
+      "layout_instances": 2,
+      "layout_ports": 125,
+      "layout_cards": 0,
+      "layout_only_ports": [],
+      "lef_only_pins": [],
+      "netgen_pin_table": {
+        "pins": 125,
+        "equivalent": true
+      }
+    },
+    "report_sha256": "a21974d7450bc0c4ae8187057c148fb981467533ff49c23f4f1189166261b2ba",
+    "control": {
+      "scope": "exchange the two most-significant address connections",
+      "instance": "u_imem",
+      "bus": "addr0",
+      "mutated_powered_netlist_sha256": "4e55b4181b3800beea4ce8e48ea498c686ea4aa2951037b295763023278ffbc1",
+      "netgen_result": "Netlists do not match.",
+      "problems": [
+        "ibex_sram_bench: 1 badnets",
+        "final result 'Netlists do not match.'"
+      ],
+      "report_sha256": "64f88e06707294fb9e9531250a3eb370007724910117b33ef1decead46e382c5"
+    }
+  },
+  "logic_proof": {
+    "status": "unverified",
+    "reason": "Incomplete implementation-to-RTL state correspondence; the export did not reach external ABC.",
+    "proofs": {
+      "synthesis": {
+        "implementation_states_without_rtl_match": 431,
+        "checker_result_sha256": "cf2647f6cd6c381cac97a6267fcaf456d0887777aafdad19b19673b5835c19c3"
+      },
+      "final": {
+        "implementation_states_without_rtl_match": 431,
+        "checker_result_sha256": "2d684cbcae145713b3af51cf5237c77f197b0b05dfaaa655c789814018fbf743"
+      }
+    }
+  },
+  "antenna": {
+    "violations": 13,
+    "categories": {
+      "metal1": 2,
+      "metal3": 3,
+      "metal4 contact": 8
+    },
+    "scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+    "raw_magic_log_sha256": "582aa736722acf8ea2c58bf42f6d86d1276cc54c1363fe0ad8a65c00d5f8e6db",
+    "report_sha256": "bab0feac451f8fc0247dbc3aebec4d84df2885321761980034120ff2090b21d5"
+  },
+  "drc": {
+    "violations": 0,
+    "macro_interior": 0,
+    "latchup": {
+      "rules": [
+        "LU.2",
+        "LU.2.1",
+        "LU.3",
+        "nwell.4",
+        "licon.16"
+      ],
+      "violations": {},
+      "note": "tap-distance rules are part of the foundry DRC; no separate latch-up gate"
+    },
+    "engines": {
+      "magic": {
+        "violations": 0,
+        "scope": "all top-level and standard-cell geometry; macro masters are LEF abstract views"
+      },
+      "klayout": {
+        "violations": 0,
+        "scope": "pinned deck on shared GDS"
+      }
+    },
+    "report_sha256": "155ffc895a6270c5733914fcdd6b41569d30efef12a977612fa825986241014d"
+  },
+  "producer_samples": {
+    "receipt": "sky130-gds-producer-samples.json",
+    "wall_seconds": 1173.8
+  }
+}

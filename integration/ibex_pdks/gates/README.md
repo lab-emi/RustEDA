@@ -18,6 +18,8 @@ python3 integration/ibex_host_benchmark/signoff_layout.py \
   `rusteda.host-shared-signoff.v1`, the IHP driver's: `gates.<name>.{exit_code, report}`,
   `resources.<name>.{exit_code, wall_seconds, peak_rss_kib}`, `total_wall_seconds`), one directory
   per gate with the raw tool output, `plans/` with the exact inputs of every gate and `logs/`.
+  DRC and antenna totals require a completed report from every selected deck. An incomplete gate
+  records `unverified` and null totals, with available results in the individual engine reports.
 - Without `--profile` the command runs the IHP gates exactly as before.
 
 Run each call alone (the decks use two threads and several GiB).

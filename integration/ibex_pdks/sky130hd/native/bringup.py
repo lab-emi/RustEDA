@@ -287,8 +287,16 @@ def main(argv=None) -> int:
     def_out, gds_out = out / f"{top}.def", out / f"{top}.gds"
 
     if "prepare" in stages:
-        combined_lef(ref(profile["lef"]["cells"][0]),
-                     [ref(x) for x in profile["lef"]["cells"][1:]] + [ref(m["lef"]) for m in macros], lef)
+        cell_lefs = [ref(x) for x in profile["lef"]["cells"]] + [ref(m["lef"]) for m in macros]
+        spacing = {m["master"]: m["obstruction_spacing_um"] for m in macros
+                   if m.get("obstruction_spacing_um", {}) != {}}
+        if spacing:
+            sys.path.insert(0, str(HERE.parents[2] / "ibex_host_benchmark"))
+            from compose_native import combined_lef as compose_lef
+
+            compose_lef(cell_lefs, lef, spacing)
+        else:
+            combined_lef(cell_lefs[0], cell_lefs[1:], lef)
         info = bundle_gds([ref(x) for x in profile["gds"]["cells"]] + [ref(m["gds"]) for m in macros], cells_gds)
         buses.write_text(json.dumps(json.loads((a.profile / "interfaces.json").read_text())["cell_buses"], indent=1))
         (out / "prepare.json").write_text(json.dumps(dict(

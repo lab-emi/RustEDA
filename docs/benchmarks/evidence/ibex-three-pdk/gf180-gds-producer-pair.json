@@ -1,0 +1,308 @@
+{
+  "schema": "rusteda.ibex-gds-producer-pair.v1",
+  "pdk": "gf180mcuD",
+  "library": "gf180mcu_fd_sc_mcu7t5v0",
+  "scope": "One fresh RTL through GDS sample per flow; sequential on the same host and CPU set; shared checks measured separately.",
+  "order": [
+    "LibreLane",
+    "RustEDA"
+  ],
+  "allowed_cpus": [
+    22,
+    23
+  ],
+  "logical_workers": 2,
+  "cgroup_memory_limit_bytes": 4294967296,
+  "cgroup_swap_limit_bytes": 0,
+  "reference_config": {
+    "sha256": "41644e3ebe7a30dea50d38fa11c728062dac05abe3cb5c72720abdb74cd54a4d",
+    "bytes": 4144
+  },
+  "native_manifest": {
+    "sha256": "0319b4be9a42b4cdb43380c156b328b098ec6d855fc127c6e69d3b16ff8b5beb",
+    "bytes": 75721
+  },
+  "flows": {
+    "RustEDA": {
+      "gds_boundary": "be_gds",
+      "exit_code": 0,
+      "started": "2026-11-15T03:08:31+01:00",
+      "wall_seconds": 474.42,
+      "cpu_seconds": 486.71,
+      "peak_memory_bytes": 2237145088,
+      "other_load": {
+        "host_busy_cpu_seconds": 3653.72,
+        "allowed_set_busy_cpu_seconds": 490.99,
+        "own_cpu_seconds": 486.71,
+        "other_cpu_seconds_host": 3167.01,
+        "other_cpu_seconds_on_allowed_set": 4.28,
+        "mean_other_busy_cpus_host": 6.674,
+        "mean_other_busy_cpus_on_allowed_set": 0.009,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "resources": {
+        "sha256": "b0f29c2bdbe3efddf8744816d86f315ef5a73fb2304ee1c8379641a2c8a35fab",
+        "bytes": 1959
+      }
+    },
+    "LibreLane": {
+      "gds_boundary": "Magic.StreamOut",
+      "exit_code": 0,
+      "started": "2026-11-15T02:54:19+01:00",
+      "wall_seconds": 851.48,
+      "cpu_seconds": 1285.87,
+      "peak_memory_bytes": 2332647424,
+      "other_load": {
+        "host_busy_cpu_seconds": 4622.16,
+        "allowed_set_busy_cpu_seconds": 1290.72,
+        "own_cpu_seconds": 1285.87,
+        "other_cpu_seconds_host": 3336.29,
+        "other_cpu_seconds_on_allowed_set": 4.85,
+        "mean_other_busy_cpus_host": 3.918,
+        "mean_other_busy_cpus_on_allowed_set": 0.006,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "resources": {
+        "sha256": "4d4b9215b32689e2d47350b56432371a255ff8f25c9632b9a6f3836ef473978b",
+        "bytes": 2090
+      }
+    }
+  },
+  "replay": {
+    "native_artifact_byte_equality": [
+      {
+        "key": "gds",
+        "byte_equal": true
+      },
+      {
+        "key": "def",
+        "byte_equal": true
+      },
+      {
+        "key": "netlist_synth",
+        "byte_equal": true
+      },
+      {
+        "key": "netlist_final",
+        "byte_equal": true
+      },
+      {
+        "key": "netlist_powered_final",
+        "byte_equal": true
+      },
+      {
+        "key": "spef_native_nom",
+        "byte_equal": true
+      }
+    ],
+    "reference_artifacts": {
+      "gds": {
+        "original": {
+          "sha256": "a7a1ae8c6ba1a2056854c1172d5e5b53f6d6835d28f39ba5514b4789a4b4fb21",
+          "bytes": 32658112
+        },
+        "timed": {
+          "sha256": "a2657fc5002275c95b696e8e165e0c5cc0d46d02fbe048a7d49ce0fa87da904c",
+          "bytes": 32658112
+        },
+        "byte_equal": false,
+        "record_stream_equal_ignoring_gds_creation_timestamps": true,
+        "original_normalized": {
+          "sha256": "8d840bf96d75a1171df8f2a7e0243484c8bc06ef3fb7620df5c25c2981ab2fd8",
+          "records": 2493671,
+          "timestamp_records": 684
+        },
+        "timed_normalized": {
+          "sha256": "8d840bf96d75a1171df8f2a7e0243484c8bc06ef3fb7620df5c25c2981ab2fd8",
+          "records": 2493671,
+          "timestamp_records": 684
+        }
+      },
+      "def": {
+        "original": {
+          "sha256": "38fc6c54f036135044a8c8f2c23a81788a054c35d13598f089b9e456bbb2c3f2",
+          "bytes": 22908513
+        },
+        "timed": {
+          "sha256": "38fc6c54f036135044a8c8f2c23a81788a054c35d13598f089b9e456bbb2c3f2",
+          "bytes": 22908513
+        },
+        "byte_equal": true
+      },
+      "netlist": {
+        "original": {
+          "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+          "bytes": 5132574
+        },
+        "timed": {
+          "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+          "bytes": 5132574
+        },
+        "byte_equal": true
+      },
+      "powered_netlist": {
+        "original": {
+          "sha256": "85a06f529df76ee167b140cdc1e32695198de8a920b3b9be7013bea86b89502c",
+          "bytes": 8354010
+        },
+        "timed": {
+          "sha256": "85a06f529df76ee167b140cdc1e32695198de8a920b3b9be7013bea86b89502c",
+          "bytes": 8354010
+        },
+        "byte_equal": true
+      },
+      "synthesis_netlist": {
+        "original": {
+          "sha256": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75",
+          "bytes": 2554459
+        },
+        "timed": {
+          "sha256": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75",
+          "bytes": 2554459
+        },
+        "byte_equal": true
+      }
+    }
+  },
+  "shared_checks": {
+    "RustEDA": {
+      "simulation": "passed",
+      "density": "passed",
+      "timing": "failed",
+      "drc": "failed",
+      "antenna": "passed",
+      "lvs": "passed",
+      "logic": "passed"
+    },
+    "LibreLane": {
+      "simulation": "passed",
+      "density": "passed",
+      "timing": "failed",
+      "drc": "failed",
+      "antenna": "passed",
+      "lvs": "passed",
+      "logic": "unverified"
+    }
+  },
+  "optimized_native_replay": {
+    "scope": "Fresh GF180MCU D producer replay through GDS on the same two CPUs as the sequential pair",
+    "wall_seconds": 395.37,
+    "allowed_cpus": [
+      22,
+      23
+    ],
+    "peak_memory_bytes": 2299744256,
+    "observed_swap_bytes": 0,
+    "measurement": {
+      "sha256": "679ff12dbfd2fd6e1bff15614f618681cfad89ac0df0352272ffc8c87f9fd34b",
+      "bytes": 1971
+    },
+    "other_load": {
+      "host_busy_cpu_seconds": 1521.56,
+      "allowed_set_busy_cpu_seconds": 407.69,
+      "own_cpu_seconds": 406.24,
+      "other_cpu_seconds_host": 1115.32,
+      "other_cpu_seconds_on_allowed_set": 1.45,
+      "mean_other_busy_cpus_host": 2.82,
+      "mean_other_busy_cpus_on_allowed_set": 0.004,
+      "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+    },
+    "detailed_route_wall_seconds": 344.407984776,
+    "artifacts": [
+      {
+        "artifact": "gds",
+        "original": {
+          "sha256": "8c854b5d39f4c5159f96dd3cc69666296c531face07faa6199f56c59729fd94b",
+          "bytes": 32018564
+        },
+        "replay": {
+          "sha256": "8c854b5d39f4c5159f96dd3cc69666296c531face07faa6199f56c59729fd94b",
+          "bytes": 32018564
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "def",
+        "original": {
+          "sha256": "e46eef0f50d7b26a6d81c68cbbe7c2d57e3ad4a276474ab2d48e71ae0b08f58c",
+          "bytes": 16733166
+        },
+        "replay": {
+          "sha256": "e46eef0f50d7b26a6d81c68cbbe7c2d57e3ad4a276474ab2d48e71ae0b08f58c",
+          "bytes": 16733166
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "netlist_synth",
+        "original": {
+          "sha256": "46ca8252de58c11ca4cc9824ebeffed60cfca4d042d60142fe158b9d0caf4f65",
+          "bytes": 2201983
+        },
+        "replay": {
+          "sha256": "46ca8252de58c11ca4cc9824ebeffed60cfca4d042d60142fe158b9d0caf4f65",
+          "bytes": 2201983
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "netlist_final",
+        "original": {
+          "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+          "bytes": 2891676
+        },
+        "replay": {
+          "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+          "bytes": 2891676
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "netlist_powered_final",
+        "original": {
+          "sha256": "ee3a6018363bd4d44cf298dc293f0ee7be6c100a23cb070c51351af9aebeae4c",
+          "bytes": 7214671
+        },
+        "replay": {
+          "sha256": "ee3a6018363bd4d44cf298dc293f0ee7be6c100a23cb070c51351af9aebeae4c",
+          "bytes": 7214671
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "spef_native_nom",
+        "original": {
+          "sha256": "88cbccb209f54e5cf0f741abca32233424e28f24c596c89a19d21d3b3486d4f4",
+          "bytes": 39343948
+        },
+        "replay": {
+          "sha256": "88cbccb209f54e5cf0f741abca32233424e28f24c596c89a19d21d3b3486d4f4",
+          "bytes": 39343948
+        },
+        "byte_equal": true
+      }
+    ],
+    "route_table": {
+      "sha256": "a6a1afdcd0699a97696f6a52811ef18d870c76610e5a39a7a74698a291e5bde4",
+      "bytes": 25428544
+    },
+    "routing_expansions": 149017553,
+    "routing_segments": 313554,
+    "rustroad_binary": {
+      "sha256": "cc199f60c6e06ff57bd800208b5bb5d924634f3697130d55c79007eeed7d00fd",
+      "bytes": 86267040
+    },
+    "rustroad_source": {
+      "commit": "43812c85ec8b2fee356d6e0244702ad2db89f7af",
+      "base_commit": "bd9d6ec1b75484a42cceb89cadc9926f59850331",
+      "patch": {
+        "sha256": "842962b620d5acd04aba4127716d99ce2adab116a76b4bd13ae14224db009688",
+        "bytes": 18728
+      }
+    },
+    "manifest": {
+      "sha256": "d12b858e446b9aa3db6408ee952535643cf8eec5156e476fdacc818e9f2aee51",
+      "bytes": 75723
+    }
+  }
+}

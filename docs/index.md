@@ -24,7 +24,14 @@ guides the next iteration.
   <img src="assets/rusteda-banner.gif" alt="The chip-design feedback loop from RTL through implementation and measurement" width="1200">
 </picture>
 
-## RustEDA vs LibreLane at a glance
+## Ibex RTL-to-GDS across three open PDKs
+
+**IHP SG13G2 · SKY130 · GF180MCU.** The benchmark pairs RustEDA and
+LibreLane on Ibex with hard SRAM within each process. The comparison includes
+annotated final GDS pairs for all three processes.
+[Three-PDK benchmark](benchmarks/ibex-three-pdk.md)
+
+### IHP SG13G2 results
 
 Ibex RTL-to-GDS on IHP SG13G2 with EZ130 cells and two SRAM macros, 2026-11-13: RustEDA and LibreLane 3.0.17 (OpenROAD, Yosys, KLayout, Magic, Netgen) ran one after the other on the same 4-vCPU host from the same prepared inputs, and the same signoff scripts checked both layouts. Every RustEDA engine was built with Rust 1.100.0, and RustEDA's step graph ran under its Rust executor, `rusteda flow exec`.
 

@@ -82,7 +82,7 @@ What the steps do with the profile:
 | `fe_context` | renders the pinned files, the tools and `selection.json` for the helpers |
 | `fe_profiles` (`rusteda frontend-profiles`) | the cell Liberty of every corner (`std_<corner>`), the first cell LEF, the SDC, `floorplan.json` (database unit, pin buses), `interfaces.json`; the profile's `pdk`, `library` and corners label the delay and sizing profiles |
 | `fe_caps_<corner>_<group>` | one pin-capacitance table per Liberty file |
-| `fe_synth*` | the first corner's Liberty files, `synthesis.dont_use` |
+| `fe_synth*` | the first corner's Liberty files, `synthesis.goal`, `synthesis.dont_use` |
 | `fe_*_import`, `fe_*_run`, reports | every corner's Liberty files, the SDC |
 | `fe_eco_*` (`rusteda eco-round`) | the tables and reports of both corners, `selection.json` |
 | `fe_physical_config` (`rusteda frontend-physical`) | `physical.json`, `routing.json`, checked against `contract.json` |
@@ -94,6 +94,12 @@ What the steps do with the profile:
 | `be_def`, `be_netlist`, `be_powered`, `be_gds` | the final exports |
 
 ## Profile reference
+
+A native profile can declare `early_wire_model: wireload_lumped` for a library
+with a default wire-load model, such as SKY130 HD. Before placement the
+executor requires that model in both timing reports. After placement the ECO
+rounds require estimated SPEF, and shared signoff uses extracted SPEF. Profiles
+without `early_wire_model` use the original ideal pre-placement diagnostics.
 
 ### Directory layout
 
@@ -195,9 +201,11 @@ map for SKY130 has `"roots": {"pdk": "/path/to/sky130A"}` and for GF180
 | `lef.combined` | ref or null | one LEF with every cell and every macro `MACRO` (what `rustroad import-pdk --cell-lef`, `rusteda estimate-spef --lef` and the pin planner read). `null`: the composer derives it into the compose workspace: the first `lef.cells` file without its final `END LIBRARY`, then the `MACRO <name> ... END <name>` blocks of the remaining `lef.cells` files and of every macro LEF in profile order, then `END LIBRARY`. Give a ref when that rule does not produce a LEF the reader accepts, and say why in your report. |
 | `gds.cells` | list of refs, at least one | cell GDS files (32 MiB each at most) |
 | `macros` | list, 0 to 8 masters | hard-macro masters. `id`: `[a-z][a-z0-9]{0,7}`, unique, not `std` or `std<digits>` (it names the manifest file keys `<id>_<corner>`, `<id>_lef`, `<id>_gds`; use `ram` for a single SRAM master). `master`: the LEF `MACRO` name. `instances`: the instance names in the netlist, in the order of `floorplan.json` `macro_placements`. `lef`, `gds`: refs. The pin buses of each master are in `floorplan.json` `pin_buses` and `interfaces.json` `cell_buses` (below). |
+| `macros[].obstruction_spacing_um` | object mapping layer names to decimal strings | Optional routing clearance in micrometres. With `lef.combined: null`, the composer adds `SPACING` to the named bare `OBS LAYER` declarations of this master in the derived cell LEF. The macro geometry, pins and shared signoff inputs come from the original pinned files. |
 | `gds_layer_map` | object | either `{"klayout": ref, "layers": [...]}`: the PDK's KLayout LEF/DEF layer map, projected in the flow by `rustroad physical-inputs` onto the listed LEF layers (routing and cut layers, bottom to top; a layer is a cut layer when the technology LEF declares it `TYPE CUT`); or `{"tracked": ref}`: a `rustroad.gds-layer-map.v1` file used as it is (for example a copy of `modules/RustROAD/fixtures/pdk/<pdk>-gds-map.json`). |
 | `rc` | object | source of the nominal extraction profile (`rustroad.rc-profile.v1`), built in the flow by `rustroad physical-inputs`: `builder` is the table entry of `rustroad rc-profile` (`ihp`, `sky130`, `gf180`); `resistance_model` is `magic` (sheet and contact resistance from the Magic `extract` section; the only model qualified outside IHP) or `openrcx-pdk`; `rules` is the nominal OpenRCX calibration table **with its SHA-256** (the pinned RC calibration: the backend composer refuses another file); `magic_tech` is the Magic technology file with the `extract` section, `magic_extract` a second file when the PDK splits it (IHP), else `null` (the key must be present); `calibration` is IHP only (the name its recipe contract gives the rules). Alternative: `{"profile": ref}`, a tracked `rustroad.rc-profile.v1` used as it is; its `technology_lef_sha256` must equal the digest of `lef.technology`. |
 | `synthesis.dont_use` | list of globs | passed as `rustsys synth --dont-use <glob>` (cells the placer cannot place, such as double-height masters; cells excluded in the reference flow too). Optional, default empty. |
+| `synthesis.goal` | `area` or `delay` | Passed to `rustsys synth --goal`. Omission uses the mapper's default. |
 | `policies` | object | overrides of the default file names of section 1: any of `floorplan`, `physical`, `routing`, `selection`, `interfaces`, `rc_estimate`, `contract`, `antenna_group`, `antenna_session`, each a ref. Optional. |
 | `allocations` | list of integers | CPU allocations (`host.json` `threads`) the flow is qualified for. `4` runs the frontend as one dependency graph with four-thread timing runs; other values run it serially with two workers. Optional, default `[2, 4, 16]`. |
 | `referee_steps` | list | which referee steps the backend appends after the final exports: a prefix of `["openrcx", "timing", "main", "antenna", "lvs", "macro_contract"]`. They are the IHP wrappers; a new PDK uses `[]` (the manifest ends at `be_gds`, and the shared gates of `integration/ibex_pdks/gates/` judge the layout afterwards). Optional, default `[]`. |
@@ -235,6 +243,15 @@ adds two requirements: `physical.json` has a `clock` object (the flow fills in `
 and a `filler_cells` list; `routing.json` has `track_router.min_routing_layer` and
 `track_router.max_routing_layer`. Both files are checked against `contract.json` (below). An optional
 `limits.replay` block must be the template of the IHP file or absent.
+
+`physical.json` can reserve clearance beside west-edge signal pads with
+`supply_left_inset`. Its value is a distance in DBU on the manufacturing grid.
+The two supply spines and their rail via stacks must fit within the remaining
+west die-to-core margin.
+
+The GF180MCU D benchmark profile selects `physical-flow.json` and lets the
+normal flow place its Metal2 I/O pads. The bring-up script uses the legacy
+pin assignment in `physical.json`.
 
 #### `selection.json` (cell selection of the ECO rounds)
 

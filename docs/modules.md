@@ -30,7 +30,12 @@ Each engine README and development-status page records its supported scope.
 The G1 CPU/CUDA crossing session is published separately as experimental work;
 GPU-integrated RTL-to-GDS remains unchecked.
 
-The newest results are the 2026-11-13 host campaign: Ibex on SG13G2/EZ130 with
+The 2026-11-15 [three-PDK Ibex benchmark](benchmarks/ibex-three-pdk.md)
+includes annotated GDS pairs with hard SRAM on IHP SG13G2, SKY130A and
+GF180MCU D. The accompanying receipts bind the producer times and shared
+checks to the exported layouts.
+
+The 2026-11-13 host campaign covers Ibex on SG13G2/EZ130 with
 two real SRAMs on a 4-vCPU cloud host, against LibreLane 3.0.17 on the same
 prepared inputs, plus module head-to-heads for RustSys, RustSTA, RustROAD and
 RustSpice. Every engine was built with Rust 1.100.0, and the native step graph

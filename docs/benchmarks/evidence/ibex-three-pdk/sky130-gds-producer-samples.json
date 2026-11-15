@@ -1,0 +1,398 @@
+{
+  "schema": "rusteda.ibex-gds-producer-samples.v1",
+  "pdk": "sky130A",
+  "scope": "One successful RTL through GDS sample per flow on the same four cores, measured on separate runs.",
+  "allowed_cpus": [
+    24,
+    25,
+    26,
+    27
+  ],
+  "flows": {
+    "RustEDA": {
+      "boundary": "be_gds",
+      "started": "2026-11-15T01:55:38+01:00",
+      "wall_seconds": 1658.82,
+      "exit_code": 0,
+      "cpu_seconds": 1672.6,
+      "peak_memory": 1996898304,
+      "memory_cap": 4294967296,
+      "observed_swap": 0,
+      "swap_cap": 0,
+      "other_load": {
+        "host_busy_cpu_seconds": 5641.37,
+        "allowed_set_busy_cpu_seconds": 1720.59,
+        "own_cpu_seconds": 1672.6,
+        "other_cpu_seconds_host": 3968.77,
+        "other_cpu_seconds_on_allowed_set": 47.99,
+        "mean_other_busy_cpus_host": 2.392,
+        "mean_other_busy_cpus_on_allowed_set": 0.029,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "evidence": {
+        "sha256": "3f0c2e59565a7a025d94541da52d8afda4ca97ef8435917d6bca86ae9f876ffb",
+        "bytes": 2046
+      }
+    },
+    "LibreLane": {
+      "boundary": "Magic.StreamOut",
+      "started": "2026-11-15T03:05:56+01:00",
+      "wall_seconds": 1173.8,
+      "exit_code": 0,
+      "cpu_seconds": 3163.95,
+      "peak_memory": 2500161536,
+      "memory_cap": 8589934592,
+      "observed_swap": 0,
+      "swap_cap": 536870912,
+      "other_load": {
+        "host_busy_cpu_seconds": 8793.91,
+        "allowed_set_busy_cpu_seconds": 3182.96,
+        "own_cpu_seconds": 3163.95,
+        "other_cpu_seconds_host": 5629.96,
+        "other_cpu_seconds_on_allowed_set": 19.01,
+        "mean_other_busy_cpus_host": 4.796,
+        "mean_other_busy_cpus_on_allowed_set": 0.016,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "evidence": {
+        "sha256": "0810a7aac9ededa32f5c83b40d69b0cd67a12e35544c3de451c793221f067834",
+        "bytes": 2149
+      }
+    }
+  },
+  "reference_replay": {
+    "gds": {
+      "original": {
+        "sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6",
+        "bytes": 52867560
+      },
+      "timed": {
+        "sha256": "fb077c054b15e8ed267db9cb7b01026b144bc27a9ea408dba98f42d278090c39",
+        "bytes": 52867560
+      },
+      "byte_equal": false,
+      "record_stream_equal_ignoring_gds_creation_timestamps": false,
+      "original_normalized": {
+        "sha256": "070de1d9ec1ecb63f3442732406b41d79970d05ba2d7d670fcdb6c902526fbed",
+        "records": 3845588,
+        "timestamp_records": 261
+      },
+      "timed_normalized": {
+        "sha256": "14a478536478889027355fc10251237e9e470a6db98e59e99775356110dd600a",
+        "records": 3845588,
+        "timestamp_records": 261
+      }
+    },
+    "def": {
+      "original": {
+        "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+        "bytes": 26159186
+      },
+      "timed": {
+        "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+        "bytes": 26159186
+      },
+      "byte_equal": true
+    },
+    "netlist": {
+      "original": {
+        "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+        "bytes": 7753419
+      },
+      "timed": {
+        "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+        "bytes": 7753419
+      },
+      "byte_equal": true
+    },
+    "powered_netlist": {
+      "original": {
+        "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6",
+        "bytes": 15687593
+      },
+      "timed": {
+        "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6",
+        "bytes": 15687593
+      },
+      "byte_equal": true
+    },
+    "synthesis_netlist": {
+      "original": {
+        "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28",
+        "bytes": 2186826
+      },
+      "timed": {
+        "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28",
+        "bytes": 2186826
+      },
+      "byte_equal": true
+    }
+  },
+  "reference_gds_structure_equivalence": {
+    "status": "passed",
+    "scope": "Every record agrees after allowing GDS date payloads and a bijective relabeling of internal structures. Top and SRAM master names agree.",
+    "old_sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6",
+    "timed_sha256": "fb077c054b15e8ed267db9cb7b01026b144bc27a9ea408dba98f42d278090c39",
+    "records": 3845588,
+    "structure_count": 260,
+    "date_records": 261,
+    "renamed_declarations": 160,
+    "renamed_references": 33981
+  },
+  "reference_proof_source": {
+    "sha256": "3b90dcdf6030a44e7ffb248e71809d40fd386da00a49a7e347bc6414f757981b",
+    "bytes": 2389
+  },
+  "shared_checks": {
+    "RustEDA": {
+      "simulation": "passed",
+      "density": "passed",
+      "timing": "failed",
+      "drc": "failed",
+      "antenna": "failed",
+      "lvs": "passed",
+      "logic": "passed"
+    },
+    "LibreLane": {
+      "simulation": "passed",
+      "density": "passed",
+      "timing": "failed",
+      "drc": "passed",
+      "antenna": "failed",
+      "lvs": "passed",
+      "logic": "unverified"
+    }
+  },
+  "two_core_pair": {
+    "scope": "Fresh RTL-to-GDS producers through Magic stream-out or be_gds, before shared signoff",
+    "allowed_cpus": [
+      30,
+      31
+    ],
+    "logical_workers": 2,
+    "cgroup_memory_limit_bytes": 4294967296,
+    "cgroup_swap_limit_bytes": 0,
+    "order": [
+      "LibreLane",
+      "RustEDA"
+    ],
+    "flows": {
+      "LibreLane": {
+        "wall_seconds": 1771.63,
+        "started": "2026-11-15T04:43:45+01:00",
+        "gnu_time_max_rss_kib": 1556720,
+        "cgroup_v2_memory_peak_bytes": 2289549312,
+        "cgroup_v2_swap_peak_bytes": 0,
+        "other_load": {
+          "host_busy_cpu_seconds": 10341.08,
+          "allowed_set_busy_cpu_seconds": 3080.94,
+          "own_cpu_seconds": 3072.89,
+          "other_cpu_seconds_host": 7268.19,
+          "other_cpu_seconds_on_allowed_set": 8.05,
+          "mean_other_busy_cpus_host": 4.102,
+          "mean_other_busy_cpus_on_allowed_set": 0.005,
+          "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+        },
+        "measurement": {
+          "sha256": "67cc874bb7f25dbe8140a3638a59a094106808517be011940a714a32f7a352f6",
+          "bytes": 2193
+        },
+        "config": {
+          "sha256": "29e40109a42c1f1e31dc0a86561405cde1cd4aacf4a303d4ea803d84bcba16d4",
+          "bytes": 2731
+        }
+      },
+      "RustEDA": {
+        "wall_seconds": 1241.01,
+        "started": "2026-11-15T05:13:17+01:00",
+        "gnu_time_max_rss_kib": 666540,
+        "cgroup_v2_memory_peak_bytes": 2009239552,
+        "cgroup_v2_swap_peak_bytes": 0,
+        "other_load": {
+          "host_busy_cpu_seconds": 5480.31,
+          "allowed_set_busy_cpu_seconds": 1259.74,
+          "own_cpu_seconds": 1247.67,
+          "other_cpu_seconds_host": 4232.64,
+          "other_cpu_seconds_on_allowed_set": 12.07,
+          "mean_other_busy_cpus_host": 3.411,
+          "mean_other_busy_cpus_on_allowed_set": 0.01,
+          "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+        },
+        "measurement": {
+          "sha256": "865503c1ee58c56ac1a21e568cf71013a6cf49cdaa3dd8597a5b626e7d7f2bfb",
+          "bytes": 2086
+        },
+        "manifest": {
+          "sha256": "4080a9228e5dcfde01c4099e2567ac841a76aa21ba95d75d12f807bad9d0f4ac",
+          "bytes": 87424
+        },
+        "rustroad_binary": {
+          "sha256": "e1c2feb4c93845ddd3a81a23a5da013d8759a7796048859d4c24e2c5fb24dbec",
+          "bytes": 86226040
+        },
+        "detailed_route_wall_seconds": 1175.527110018
+      }
+    },
+    "native_replay": [
+      {
+        "artifact": "gds",
+        "original": {
+          "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+          "bytes": 72136758
+        },
+        "replay": {
+          "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+          "bytes": 72136758
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "def",
+        "original": {
+          "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+          "bytes": 21756913
+        },
+        "replay": {
+          "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+          "bytes": 21756913
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "netlist_synth",
+        "original": {
+          "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+          "bytes": 1854193
+        },
+        "replay": {
+          "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+          "bytes": 1854193
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "netlist_final",
+        "original": {
+          "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+          "bytes": 2446392
+        },
+        "replay": {
+          "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+          "bytes": 2446392
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "netlist_powered_final",
+        "original": {
+          "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+          "bytes": 9506572
+        },
+        "replay": {
+          "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+          "bytes": 9506572
+        },
+        "byte_equal": true
+      },
+      {
+        "artifact": "spef_native_nom",
+        "original": {
+          "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+          "bytes": 42205827
+        },
+        "replay": {
+          "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+          "bytes": 42205827
+        },
+        "byte_equal": true
+      }
+    ],
+    "native_route_table": {
+      "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+      "bytes": 32373184
+    },
+    "reference_replay": {
+      "gds": {
+        "original": {
+          "sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6",
+          "bytes": 52867560
+        },
+        "timed": {
+          "sha256": "ab7061e0e11aad3b935ee4a3b683ab1d6a46d9ffd5a72cd6ee806d8acad9ceef",
+          "bytes": 52867560
+        },
+        "byte_equal": false,
+        "record_stream_equal_ignoring_gds_creation_timestamps": false,
+        "original_normalized": {
+          "sha256": "070de1d9ec1ecb63f3442732406b41d79970d05ba2d7d670fcdb6c902526fbed",
+          "records": 3845588,
+          "timestamp_records": 261
+        },
+        "timed_normalized": {
+          "sha256": "b49e7a8ffe6cf1a6dcea4086086d6f861baec6efd883f9e48a706449582f53ae",
+          "records": 3845588,
+          "timestamp_records": 261
+        }
+      },
+      "def": {
+        "original": {
+          "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+          "bytes": 26159186
+        },
+        "timed": {
+          "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+          "bytes": 26159186
+        },
+        "byte_equal": true
+      },
+      "netlist": {
+        "original": {
+          "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+          "bytes": 7753419
+        },
+        "timed": {
+          "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+          "bytes": 7753419
+        },
+        "byte_equal": true
+      },
+      "powered_netlist": {
+        "original": {
+          "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6",
+          "bytes": 15687593
+        },
+        "timed": {
+          "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6",
+          "bytes": 15687593
+        },
+        "byte_equal": true
+      },
+      "synthesis_netlist": {
+        "original": {
+          "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28",
+          "bytes": 2186826
+        },
+        "timed": {
+          "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28",
+          "bytes": 2186826
+        },
+        "byte_equal": true
+      }
+    },
+    "reference_gds_structure_equivalence": {
+      "status": "passed",
+      "scope": "Every record agrees after allowing GDS date payloads and a bijective relabeling of internal structures. Top and SRAM master names agree.",
+      "old_sha256": "fb077c054b15e8ed267db9cb7b01026b144bc27a9ea408dba98f42d278090c39",
+      "timed_sha256": "ab7061e0e11aad3b935ee4a3b683ab1d6a46d9ffd5a72cd6ee806d8acad9ceef",
+      "records": 3845588,
+      "structure_count": 260,
+      "date_records": 261,
+      "renamed_declarations": 160,
+      "renamed_references": 33981
+    },
+    "shared_checks": {
+      "RustEDA": "physical-iterations.json#sky130_macro_clearance_producer",
+      "LibreLane": "sky130-reference-layout.json"
+    }
+  }
+}

@@ -67,7 +67,8 @@ PROFILE_SCHEMA = 'rusteda.native-pdk-profile.v1'
 IHP_FLOW, NATIVE_FLOW = 'rusteda.ihp-flow.v1', 'rusteda.native-flow.v1'
 DEFAULT_PROFILE = Path(__file__).resolve().parents[1] / 'ibex_pdks/ihp_sg13g2_ez130/native/profile.json'
 PROFILE_FIELDS = {'schema','name','flow_schema','pdk','library','top','corners','lef','gds','macros',
-                  'gds_layer_map','rc','synthesis','policies','allocations','referee_steps','referee_files'}
+                  'gds_layer_map','rc','synthesis','policies','allocations','referee_steps','referee_files',
+                  'early_wire_model'}
 
 
 def require(ok, text):
@@ -106,6 +107,9 @@ class Profile:
         require(self.flow_schema in (IHP_FLOW, NATIVE_FLOW), 'PDK profile flow_schema')
         # The published IHP recipe: its manifest has no profile record and keeps its own names.
         self.legacy = self.flow_schema == IHP_FLOW
+        self.early_wire_model = data.get('early_wire_model', 'ideal')
+        require(self.early_wire_model in ('ideal', 'wireload_lumped') and
+                (not self.legacy or self.early_wire_model == 'ideal'), 'PDK profile early_wire_model')
         self.pdk, self.library, self.top = data['pdk'], data['library'], data['top']
         require(all(isinstance(x, str) and name.match(x) for x in (self.pdk, self.library, self.top)),
                 'PDK profile identity: pdk, library and top names')
@@ -137,8 +141,13 @@ class Profile:
         self.allocations = data.get('allocations', [2, 4, 16])
         require(isinstance(self.allocations, list) and self.allocations
                 and all(type(n) is int and 1 <= n <= 16 for n in self.allocations), 'PDK profile allocations')
-        self.dont_use = data.get('synthesis', {}).get('dont_use', [])
-        require(not set(data.get('synthesis', {})) - {'dont_use'} and isinstance(self.dont_use, list)
+        synthesis = data.get('synthesis', {})
+        require(isinstance(synthesis, dict) and not set(synthesis) - {'dont_use', 'goal'},
+                'PDK profile synthesis fields')
+        self.synthesis_goal = synthesis.get('goal')
+        require('goal' not in synthesis or self.synthesis_goal in ('area', 'delay'), 'PDK profile synthesis.goal')
+        self.dont_use = synthesis.get('dont_use', [])
+        require(isinstance(self.dont_use, list)
                 and all(isinstance(g, str) and re.match(r'[A-Za-z0-9_*?.-]{1,128}\Z', g) for g in self.dont_use),
                 'PDK profile synthesis.dont_use globs')
 
@@ -301,8 +310,18 @@ def recipe(config, four, profile=None):
     # (rustsys synth --dont-use).
     typical=[x for kind in groups for x in ('--lib','{files:'+kind+'_'+corners[0]+'}','--corner',corners[0])]
     imp=command('synth_import','rusteda',['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache,*typical,'--rtl','{files:rtl}','--top',config['selection']['top']],after=[init])
-    excluded=[x for glob in profile.dont_use for x in ('--dont-use',glob)]
-    synth=command('synth','rustsys',['--workspace',ws,'synth','--base-rev','rev1','--threads','2',*excluded],600,after=[imp])
+    synth_prefix = ['--workspace', ws, 'synth']
+    synth_args = [*synth_prefix, '--base-rev', 'rev1', '--threads', '2']
+    goal = [f'--goal={profile.synthesis_goal}'] if profile.synthesis_goal else []
+    excluded = [arg for glob in profile.dont_use for arg in ('--dont-use', glob)]
+    # Large libraries can use one argv token per glob without changing the exclusion set.
+    if len(synth_args) + len(excluded) + len(goal) > 256:
+        excluded = [f'--dont-use={glob}' for glob in profile.dont_use]
+    if len(synth_args) + len(excluded) + len(goal) > 256:
+        synth_args = [*synth_prefix, '--base-rev=rev1', '--threads', '2']
+    arguments = [*synth_args, *excluded, *goal]
+    require(len(arguments) <= 256, 'PDK profile synthesis command exceeds the executor argument limit')
+    synth=command('synth','rustsys',arguments,600,after=[imp])
     mapped=command('synth_export','rusteda',['export','-w',ws,'--rev','rev2','--netlist',out+'mapped.v','--cell-buses',out+'profiles/cell-buses.json'],after=[synth,profiles],slots=[0])
     # The timing imports share one Liberty compile cache in this run's tree: a library compiled
     # by an earlier timing import of the run is copied into the next workspace instead of parsed
@@ -322,7 +341,7 @@ def recipe(config, four, profile=None):
             if spef:imp+=['--spef',spef,'--spef-corner',c]
         last=command(tag+'_import','rusteda',imp+['--netlist',source,'--sdc','{files:sdc}'],after=[init,*after],slots=[2,3])
         # The two corners share the run's workers (--concurrent-corners): same tables, less wall time.
-        if run: last=command(tag+'_run','ruststa',['run','-w',ws,'--base-rev','rev1','--threads',sta_threads,'--concurrent-corners','--max-state-gib','2','--max-paths','32','--max-limit-rows','100000','--require-wire-model','spef_rc' if spef else 'ideal','--format','json'],after=[last],slots=[0,1,2,3] if four else [0,1])
+        if run: last=command(tag+'_run','ruststa',['run','-w',ws,'--base-rev','rev1','--threads',sta_threads,'--concurrent-corners','--max-state-gib','2','--max-paths','32','--max-limit-rows','100000','--require-wire-model','spef_rc' if spef else profile.early_wire_model,'--format','json'],after=[last],slots=[0,1,2,3] if four else [0,1])
         # The graph and the reports only read the committed revision (shared workspace locks).
         # The hold report, the longest, keeps CPU 3 to itself; the others share CPUs 0 to 2.
         lane=iter([0,1,2]*3)

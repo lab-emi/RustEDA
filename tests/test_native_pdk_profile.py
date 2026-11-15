@@ -141,6 +141,26 @@ class ProfileComposition(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         return json.loads((work / 'be/prefix-manifest.json').read_text()), work
 
+    def test_sky130_exclusion_count_and_wire_load_fit_the_native_manifest(self):
+        sky = json.loads((ROOT / 'integration/ibex_pdks/sky130hd/native/profile.json').read_text())
+        profile = {**self.tree.profile, 'synthesis': sky['synthesis'], 'early_wire_model': sky['early_wire_model']}
+        manifest, _ = self.manifest(profile=profile)
+        steps = {step['id']: step for step in manifest['steps']}
+        args = steps['fe_synth']['arguments']
+        self.assertLessEqual(len(args), 256)
+        self.assertIn('--goal=area', args)
+        self.assertIn('--base-rev=rev1', args)
+        self.assertEqual([arg.removeprefix('--dont-use=') for arg in args if arg.startswith('--dont-use=')],
+                         sky['synthesis']['dont_use'])
+        self.assertIn('wireload_lumped', steps['fe_mapped_run']['arguments'])
+        self.assertIn('spef_rc', steps['fe_final_run']['arguments'])
+
+    def test_unknown_synthesis_goal_is_rejected(self):
+        profile = {**self.tree.profile, 'synthesis': {'goal': 'balanced'}}
+        done, _ = self.tree.compose(profile=profile)
+        self.assertNotEqual(done.returncode, 0)
+        self.assertIn('synthesis.goal', done.stderr)
+
     def test_a_profile_composes_a_native_flow_manifest_for_its_pdk(self):
         manifest, work = self.manifest()
         self.assertEqual((manifest['schema'], manifest['pdk'], manifest['library'], manifest['corners']),
@@ -222,6 +242,25 @@ class ProfileComposition(unittest.TestCase):
         other = dict(manifest, library='another')
         with self.assertRaisesRegex(ValueError, 'differs from its pinned PDK profile'):
             producer.check_profile(other, files['profile'])
+
+    def test_macro_obstruction_clearance_changes_only_the_derived_obs_layer(self):
+        path = self.tree.pdk / 'lef/sram.lef'
+        original = ('VERSION 5.7 ;\nMACRO sram512\n  CLASS BLOCK ;\n  SIZE 400 BY 300 ;\n'
+                    '  PIN A\n    PORT\n      LAYER Metal2 ;\n      RECT 0 0 1 1 ;\n'
+                    '    END\n  END A\n  OBS\n    LAYER Metal2 ;\n    RECT 2 2 10 10 ;\n'
+                    '  END\nEND sram512\nEND LIBRARY\n')
+        self.tree.write(path, original)
+        macro = dict(self.tree.profile['macros'][0], obstruction_spacing_um={'Metal2': '0.28'})
+        profile = dict(self.tree.profile, macros=[macro])
+        manifest, _ = self.manifest(profile=profile)
+        combined = Path(manifest['files']['cell_lef']['path']).read_text()
+        self.assertIn('PORT\n      LAYER Metal2 ;\n      RECT 0 0 1 1 ;', combined)
+        self.assertIn('OBS\n    LAYER Metal2 SPACING 0.28 ;\n    RECT 2 2 10 10 ;', combined)
+        self.assertEqual(path.read_text(), original)
+        macro['obstruction_spacing_um'] = {'Metal3': '0.40'}
+        rejected, _ = self.tree.compose(profile=profile)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn('missing OBS layer in sram512: Metal3', rejected.stderr)
 
     def test_tracked_layer_map_and_rc_profile_replace_the_pdk_sources(self):
         self.tree.write(self.tree.native / 'gds-map.json', '{"schema": "rustroad.gds-layer-map.v1"}\n')

@@ -63,7 +63,9 @@ def bundle(sources, output):
         end_library = False
         while offset < len(data):
             records += 1
-            require(records <= 1000000 and offset + 4 <= len(data), "GDS record budget/truncation")
+            # The pinned SKY130 HD and OpenRAM libraries need 1,599,351 records.
+            require(records <= 2_000_000, "GDS record budget exceeded")
+            require(offset + 4 <= len(data), "truncated GDS record header")
             size, kind, dtype = struct.unpack_from('>HBB', data, offset)
             require(size >= 4 and size % 2 == 0 and offset + size <= len(data), "malformed GDS record")
             payload = data[offset + 4:offset + size]

@@ -189,6 +189,10 @@ def context(path):
         for name,item in c[group].items():
             require(rec(Path(item['path']))==item,'pinned input changed: '+name)
     require(sum(c['files'][k]['bytes']for k in ['std_tt','std_ss','ram_tt','ram_ss'])<=64<<20,'aggregate Liberty budget')
+    profile = read(Path(c['files']['profile']['path']), 2 << 20) if 'profile' in c['files'] else {}
+    model = profile.get('early_wire_model', 'ideal')
+    require(model in ('ideal', 'wireload_lumped'), 'PDK profile early_wire_model')
+    c['early_scope'] = 'wireload_diagnostic' if model == 'wireload_lumped' else 'ideal_diagnostic'
     c['root']=Path(c['run_root']).resolve();return c
 
 
@@ -310,7 +314,7 @@ def bundle(c,args,out):
         actual=g.drivers[g.bit(name)];require(all(actual[k]==driver[k]for k in ['instance','cell','pin']),'current root driver differs from bound first-run policy')
     write(out/'roots.json',roots);selection=c['selection'];policy={k:selection[k]for k in ['top','primary_clock','buffers','primary_buffer','delay_cells','target_fanout','cap_fraction','hold_margin_ns','setup_margin_ns']}
     if 'port_diode' in selection:policy['port_diode']=selection['port_diode']
-    policy.update(schema='rusteda.native-eco-policy.v1',clock_roots=[selection['primary_clock'],roots['clock_root']],reset={**selection['reset'],'net':roots['reset_root']},scope='estimated_rc' if estimated else 'ideal_diagnostic',prefix='native_'+args.operation.replace('-','_'))
+    policy.update(schema='rusteda.native-eco-policy.v1',clock_roots=[selection['primary_clock'],roots['clock_root']],reset={**selection['reset'],'net':roots['reset_root']},scope='estimated_rc' if estimated else c.get('early_scope','ideal_diagnostic'),prefix='native_'+args.operation.replace('-','_'))
     if estimated:policy.update(electrical=selection['electrical'],launch_chain_max=selection['launch_chain_max'])
     write(out/'policy.json',policy)
     return dict(module=ecos,inputs=parsed,graph=g,work=work,top=c['selection']['top'])
@@ -410,7 +414,7 @@ def validate(c,out):
     pin_plan=read(root/'frontend/physical-pins/receipt.json',1<<20);require(pin_plan['inputs']['placed_def']==rec(root/'logs/fe_pins_def.stdout'),'pin plan belongs to another placement')
     seed=read(dynamic(c,root/'logs/fe_temporary_seed.stdout'),64<<20);require(seed['schema']=='rustroad.placement-seed.v1' and seed['source']['revision']=='rev3' and seed['source']['imported_netlist_sha256']==rec(root/'frontend/eco-primary-clock/netlist.v')['sha256'],'seed not from this-run temporary imported netlist')
     plans={op:read(root/f'frontend/eco-{op}/receipt.json',16<<20)for op in ['reset','fanout','primary-clock','electrical','hold']}
-    require(all(p['scope']==('estimated_rc' if op in ('electrical','hold') else 'ideal_diagnostic')for op,p in plans.items()),'unexpected frontend timing scope')
+    require(all(p['scope']==('estimated_rc' if op in ('electrical','hold') else c.get('early_scope','ideal_diagnostic'))for op,p in plans.items()),'unexpected frontend timing scope')
     estimate=read(root/'frontend/estimate-final/result.json',1<<20);require(estimate['inputs']['def']['sha256']==rec(root/'logs/fe_final_def.stdout')['sha256'],'final estimate belongs to another placement')
     final={}
     for co in ['tt','ss']:

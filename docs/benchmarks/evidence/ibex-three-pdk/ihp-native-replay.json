@@ -1,0 +1,100 @@
+{
+  "gds": {
+    "expected": {
+      "sha256": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+      "bytes": 24992568
+    },
+    "actual": {
+      "sha256": "ca2e6904956ba177318408a6425a156e23af7e1c2bc5b6d9a042e6d594ed0107",
+      "bytes": 24992568
+    },
+    "byte_identical": true
+  },
+  "def_": {
+    "expected": {
+      "sha256": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+      "bytes": 12526876
+    },
+    "actual": {
+      "sha256": "8ff445d84133a15688bd769237a95d347d6317c8a79044c465a1b4cc018009f0",
+      "bytes": 12526876
+    },
+    "byte_identical": true
+  },
+  "netlist_synth": {
+    "expected": {
+      "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+      "bytes": 1546032
+    },
+    "actual": {
+      "sha256": "a6141ddda7c0d4b56c5a4f5ca69a29caf03d0e3aec9801e5296b8b62103d8a40",
+      "bytes": 1546032
+    },
+    "byte_identical": true
+  },
+  "netlist_final": {
+    "expected": {
+      "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+      "bytes": 2049571
+    },
+    "actual": {
+      "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+      "bytes": 2049571
+    },
+    "byte_identical": true
+  },
+  "netlist_powered": {
+    "expected": {
+      "sha256": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+      "bytes": 4369272
+    },
+    "actual": {
+      "sha256": "f97fe4c552b5258685b89c069e33211346c42cc1fc5f9cdcd1ffcc605fc37076",
+      "bytes": 4369272
+    },
+    "byte_identical": true
+  },
+  "be_main": {
+    "status": "passed",
+    "complete": true,
+    "violations": 0,
+    "scope": "complete_foundry_main"
+  },
+  "be_antenna": {
+    "status": "passed",
+    "complete": true,
+    "violations": 0,
+    "scope": "complete_foundry_antenna"
+  },
+  "be_lvs": {
+    "status": "passed",
+    "complete": true,
+    "scope": "full device-level LVS"
+  },
+  "be_macro_contract": {
+    "status": "passed",
+    "scope": "structural macro presence, widths, clocks, disabled BIST, byte masks; not equivalence"
+  },
+  "schema": "rusteda.ibex-native-replay.v1",
+  "recipe": "2026-11-13 IHP SG13G2 / EZ130",
+  "rustroad_revision": "7af81be9dcffa3c5b02f7a729fb4ebd861edc4ee",
+  "steps_completed": 114,
+  "exit_code": 0,
+  "measurement_scope": "correctness replay",
+  "timing_parity": {
+    "status": "passed",
+    "max_abs_difference_ns": 0.0002697248663510593,
+    "tolerance_ns": 0.001
+  },
+  "last_step": "be_macro_contract",
+  "workspace_revision": "rev1",
+  "manifest_sha256": "faca02a162b2e66b9cbfdcf52af85e4d07a1198a79c27443c7d3e6b17c3c6e35",
+  "manifest_schema": "rusteda.ihp-flow.v1",
+  "executor": "rusteda flow exec",
+  "cpu_affinity": [
+    8,
+    10,
+    12,
+    14
+  ]
+}

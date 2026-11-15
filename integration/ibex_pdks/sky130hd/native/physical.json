@@ -59,14 +59,20 @@
   "io_spacing": 800,
   "strap_width": 1600,
   "strap_spacing": 1000,
+  "supply_left_inset": 680,
   "max_added_cells": 250000,
   "max_tie_fanout": 1,
-  "cell_spacing_sites": 0,
+  "cell_spacing_sites": 1,
   "tap": {
     "cell": "sky130_fd_sc_hd__tapvpwrvgnd_1",
-    "max_gap": 20000,
+    "max_gap": 29440,
     "well_layer": "nwell",
-    "substrate_layer": "pwell"
+    "substrate_layer": "pwell",
+    "pattern": {
+      "kind": "staggered",
+      "phase": 14720,
+      "unpaired": "both"
+    }
   },
   "macro_supply": {
     "collection_layer": "met5",

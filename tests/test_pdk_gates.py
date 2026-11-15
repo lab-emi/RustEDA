@@ -25,6 +25,7 @@ import logic  # noqa: E402
 import magic_antenna  # noqa: E402
 import magic_drc  # noqa: E402
 import netgen_lvs  # noqa: E402
+import pdk_signoff  # noqa: E402
 import profile_pins  # noqa: E402
 import timing  # noqa: E402
 
@@ -176,6 +177,22 @@ class ProfilePins(Fixture):
 
 
 class TimingPolicy(Fixture):
+    def test_strict_macro_limits_gate_without_an_sdc_override(self):
+        rows = [dict(pin="u_ram/addr[0]", kind="max_transition", value=0.36, limit=0.351, slack=-0.009),
+                dict(pin="u_ram/dout[0]", kind="max_capacitance", value=0.53, limit=0.52, slack=-0.01),
+                dict(pin="u_ram/dout[1]", kind="max_fanout", value=5.0, limit=4.0, slack=-1.0)]
+        for limits in ({}, dict(slew=1.0, cap=1.0, fanout=10.0)):
+            with self.subTest(sdc_limits=limits):
+                result = timing.split_rows(rows, {"u_ram"}, limits, "library_and_sdc")
+                for kind in ("slew", "cap", "fanout"):
+                    self.assertEqual(result[kind]["gating"], 1, kind)
+                    self.assertEqual(result[kind]["macro_pin_gating"], 1, kind)
+                    self.assertTrue(result[kind]["macro_pin_rows"][0]["gating"], kind)
+
+    def test_unknown_macro_limit_policy_is_refused_even_without_rows(self):
+        with self.assertRaisesRegex(common.GateError, "MACRO_PIN_LIMIT_POLICY"):
+            timing.split_rows([], {"u_ram"}, {}, "ignore_everything")
+
     def test_design_limits_and_refused_scopes(self):
         sdc = self.root / "c.sdc"
         sdc.write_text("create_clock -name c -period 100 [get_ports c]\nset_max_fanout 10.0000 [current_design]\n")
@@ -275,12 +292,15 @@ class MagicParsers(Fixture):
         self.assertEqual(samples["met1.2"][0], [0.0, 0.0, 0.09, 1.0])
 
     def test_antenna_violation_format(self):
-        log = ("Running antenna checks.\nCell: sky130_fd_sc_hd__inv_1_0\nAntenna violation detected at plane metal2\n"
-               "Effective antenna ratio 492.425 > limit 400\nGate rect (1212 647) to (1242 777)\n"
-               "Antenna rect (1160 810) to (1218 813)\nantennacheck finished.\n")
-        rows = list(magic_antenna.VIOLATION.finditer(log))
-        self.assertEqual(len(rows), 1)
-        self.assertEqual((rows[0][2], float(rows[0][3]), float(rows[0][4])), ("metal2", 492.425, 400.0))
+        for plane in ("metal2", "metal4 contact"):
+            with self.subTest(plane=plane):
+                log = ("Running antenna checks.\nCell: sky130_fd_sc_hd__inv_1_0\n"
+                       f"Antenna violation detected at plane {plane}\n"
+                       "Effective antenna ratio 492.425 > limit 400\nGate rect (1212 647) to (1242 777)\n"
+                       "Antenna rect (1160 810) to (1218 813)\nantennacheck finished.\n")
+                rows = list(magic_antenna.VIOLATION.finditer(log))
+                self.assertEqual(len(rows), 1)
+                self.assertEqual((rows[0][2], float(rows[0][3]), float(rows[0][4])), (plane, 492.425, 400.0))
 
     def test_magic_facts_require_abstract_macros(self):
         log = "GATE_TECH sky130A 1\nGATE_ABSTRACT RAM TRUE\nGATE_COUNT 0\nGATE_DONE\n"
@@ -550,6 +570,33 @@ class LayoutEditors(Fixture):
         self.assertIn([110000, 110000, 110280, 140000], after["m2"])      # the wire over the macro is untouched
         self.assertIn([5000, 14860, 5280, 15140], after["m2"])
         self.assertNotIn([5000, 0, 5280, 30000], after["m2"])
+
+
+class DeckSummary(unittest.TestCase):
+    def test_incomplete_engine_has_no_aggregate_violation_count(self):
+        engine_reports = {
+            "magic": dict(complete=True, violations=0),
+            "klayout": dict(complete=False, error="deadline reached"),
+        }
+        code, report = pdk_signoff.summarize_decks(engine_reports, [0, -9])
+        self.assertNotEqual(code, 0)
+        self.assertEqual(report["status"], "unverified")
+        self.assertFalse(report["complete"])
+        self.assertIsNone(report["violations"])
+        self.assertIsNone(report["macro_interior"])
+        self.assertEqual(report["engines"], engine_reports)
+
+    def test_complete_zero_and_nonzero_counts_are_measured(self):
+        for violations in (0, 7):
+            with self.subTest(violations=violations):
+                engines = dict(magic=dict(complete=True, violations=0),
+                               klayout=dict(complete=True, violations=violations, macro_interior=12))
+                code, report = pdk_signoff.summarize_decks(engines, [0, bool(violations)])
+                self.assertEqual(code, bool(violations))
+                self.assertEqual(report["status"], "failed" if violations else "passed")
+                self.assertTrue(report["complete"])
+                self.assertEqual(report["violations"], violations)
+                self.assertEqual(report["macro_interior"], 12)
 
 
 class DriverDispatch(unittest.TestCase):

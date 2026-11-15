@@ -30,7 +30,7 @@ interpreter. Other constraints remain the native compiler's responsibility.
 policy.json schema rusteda.native-eco-policy.v1 contains top, clock_roots,
 primary_clock, buffers:[{cell,input,output}], primary_buffer, reset:{net,pin,
 leaf,trunk}, delay_cells, target_fanout:8, cap_fraction:0.8, hold_margin_ns:0.025,
-setup_margin_ns:0.05, and scope:ideal_diagnostic|spef_rc. Names are explicit;
+setup_margin_ns:0.05, and scope:ideal_diagnostic|wireload_diagnostic|estimated_rc|spef_rc. Names are explicit;
 no library, clock, reset or cell name is inferred. Prefix is optional. Optional
 port_diode:{cell,pin} adds one profiled antenna diode to every primary input bit
 in the ideal hold stage: a port-driven net has no driver diffusion, so the
@@ -1010,8 +1010,6 @@ def electrical(planner, reports, geo, hold_round=False):
         here = [geo.pin(d['instance'], d['pin'])]+[geo.pin(x['instance'], x.get('pin') if x['instance'] else x['port']) for x in loads]
         wire, length = geo.wire_pf(here)
         load = max(info['load'], wire+sum(x['cap'] for x in loads))
-        if tree:
-            key = (tree[1], int(tree[2])); trees[key] = max(trees.get(key, 0.0), load); continue
         moved, added = set(), []
         for x in loads:
             pin = x['instance'] and x['instance']+'/'+x['pin']
@@ -1030,6 +1028,9 @@ def electrical(planner, reports, geo, hold_round=False):
             wire, length = geo.wire_pf(pts); load = max(load, wire+sum(x['cap'] for x in rest))
             # Isolate the driver too when the remaining net (to the pin buffers) exceeds its own limit.
             other_slew = other_slew or load > (d['limit'] or math.inf)*fraction
+        # SRAM pin isolation also applies to fanout/reset tree leaves.
+        if tree:
+            key = (tree[1], int(tree[2])); trees[key] = max(trees.get(key, 0.0), load); continue
         if not rest or not (info['load'] > 0 or other_slew): continue
         groups = [rest]
         if length > max_wire and len(rest) > 1:
@@ -1467,8 +1468,12 @@ def main(argv=None, reuse=None):
         reports = [inputs.report(c, 'drv', timed, sdc) for c in corners]
         require(all(policy['primary_clock'] in x['completeness']['clock_domains'] for x in reports), 'REPORT_SCOPE', 'primary clock differs from compiled reports')
         scope = {x['scope']['wire_model'] for x in reports}
-        require(scope in ({'ideal'}, {'spef_rc'}), 'REPORT_SCOPE', 'mixed or unsupported wire models')
-        expected = 'ideal_diagnostic' if scope == {'ideal'} else 'spef_rc'
+        require(scope in ({'ideal'}, {'wireload_lumped'}, {'spef_rc'}), 'REPORT_SCOPE', 'mixed or unsupported wire models')
+        if scope == {'wireload_lumped'}:
+            require(args.operation in ('reset', 'fanout', 'primary-clock'), 'REPORT_SCOPE', 'wire load is pre-placement only')
+            expected = 'wireload_diagnostic'
+        else:
+            expected = 'ideal_diagnostic' if scope == {'ideal'} else 'spef_rc'
         if expected == 'spef_rc' and policy['scope'] == 'estimated_rc':
             require('placement' in bundle and 'rc_policy' in bundle, 'REPORT_SCOPE', 'estimated RC scope needs its placement and estimate policy')
             expected = 'estimated_rc'

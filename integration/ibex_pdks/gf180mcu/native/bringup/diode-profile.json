@@ -1,0 +1,45 @@
+{
+ "schema": "rustroad.delay-cells.v1",
+ "pdk": "gf180",
+ "library": "gf180mcu_fd_sc_mcu7t5v0",
+ "generator": "integration/ibex_pdks/gf180mcu/native bring-up: the diode entry of the library LEF only; no buffer is profiled at the 5 V corners (antenna-eco reads antenna_cells only)",
+ "sources": [],
+ "cell_policy": {
+  "path": "fixtures/flow/cell-policy.json",
+  "sha256": "8bcec6875f6bee9dad22fdaeaf4ada57639a6c6d340884ac66bd21bea7aa7e61"
+ },
+ "corners": [
+  {
+   "name": "tt",
+   "liberty": "tt_025C_5v00",
+   "rc": "nom"
+  },
+  {
+   "name": "ss",
+   "liberty": "ss_125C_4v50",
+   "rc": "nom"
+  }
+ ],
+ "representative": {
+  "input_slew_ns": 0.15,
+  "load_pf": 0.01,
+  "reason": "one gate driving one flop D pin plus a short wire; the closure loop re-times every ECO with extracted parasitics"
+ },
+ "selection": {},
+ "buffers": [],
+ "antenna_cells": [
+  {
+   "name": "gf180mcu_fd_sc_mcu7t5v0__antenna",
+   "pin": "I",
+   "area_um2": 4.3904,
+   "lef_size_um": [
+    1.12,
+    3.92
+   ],
+   "lef_diff_area_um2": 0.4104,
+   "lef_gate_area_um2": 0.0,
+   "policy_class": "physical_only"
+  }
+ ],
+ "excluded": []
+}

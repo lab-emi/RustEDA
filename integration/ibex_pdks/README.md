@@ -39,6 +39,10 @@ python3 integration/ibex_pdks/prepare.py --profile gf180mcu --workspace WORK/pre
 | `sky130A` | open_pdks 1.0.471 (`97d0844`), the `open_pdks.sky130a` package of the litex-hub conda channel, build `20240223_100318`; only `sky130_fd_sc_hd` (three Liberty corners) and `libs.tech` are installed | LibreLane 3.0.17 pins open_pdks 1.0.530 (`8afc834`). The LibreLane configuration files of the two versions (`config.tcl`, the library's `config.tcl`, exclusion lists, tracks, OpenRCX rules) are identical except `FILL_CELL` and `DECAP_CELL`; the reference configuration sets both to the pinned version's values. |
 | SRAM macros for `sky130A` | `VLSIDA/sky130_sram_macros` at `965df15` | GDS, LEF, Verilog, LVS netlist and the TT 1.8 V 25 °C Liberty (the only corner published). |
 
+The 15 November GF180MCU D runs use the Ciel generation
+`f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7`. Its 7-track standard-cell GDS
+is pinned by the [native profile](gf180mcu/native/profile.json).
+
 ## Reference configuration notes
 
 Both configurations follow the IHP reference: absolute die, manual macro placement, 10 µm macro halos, the

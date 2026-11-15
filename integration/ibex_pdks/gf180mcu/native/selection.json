@@ -49,7 +49,6 @@
     "trunk": "gf180mcu_fd_sc_mcu7t5v0__buf_16"
   },
   "delay_cells": [
-    "gf180mcu_fd_sc_mcu7t5v0__dlya_1",
     "gf180mcu_fd_sc_mcu7t5v0__dlyb_1"
   ],
   "target_fanout": 9,
@@ -63,7 +62,10 @@
   "electrical": {
     "driver_cells": [
       "gf180mcu_fd_sc_mcu7t5v0__buf_3",
-      "gf180mcu_fd_sc_mcu7t5v0__buf_4"
+      "gf180mcu_fd_sc_mcu7t5v0__buf_4",
+      "gf180mcu_fd_sc_mcu7t5v0__buf_8",
+      "gf180mcu_fd_sc_mcu7t5v0__buf_12",
+      "gf180mcu_fd_sc_mcu7t5v0__buf_16"
     ],
     "sram_buffer": "gf180mcu_fd_sc_mcu7t5v0__buf_4",
     "sram_clock_buffer": "gf180mcu_fd_sc_mcu7t5v0__buf_8",
@@ -78,7 +80,7 @@
     "drv_margin": 0.15,
     "hold_drv_margin": 0.1,
     "clock_balance": {
-      "cell": "gf180mcu_fd_sc_mcu7t5v0__dlya_1",
+      "cell": "gf180mcu_fd_sc_mcu7t5v0__dlyb_1",
       "max_stages": 32,
       "margin_ns": 0.1,
       "wire_pf": 0.002

@@ -1,0 +1,18 @@
+{
+  "schema": "rusteda.rc-estimate-policy.v1",
+  "r_ohm_per_um": 0.51,
+  "c_pf_per_um": 0.0002,
+  "detour": 1.02,
+  "max_segment_um": 50,
+  "limits": {
+    "max_nets": 200000,
+    "max_pins_per_net": 4096,
+    "max_nodes": 2000000
+  },
+  "evidence": "Native GF180 bring-up layout of the benchmark with its first 51 antenna diodes (Ibex + 8 sram512x8m8wm1, 1876 x 1568 um, routed Metal2-Metal5 by RustROAD pdk/gf180, nominal SPEF from rc-nom.json), nets with more than 200 um routed length (1593 nets; bringup/rc_estimate_evidence.py): resistance per routed um median 0.510 ohm (p25 0.367, p75 0.674), capacitance median 0.203 fF/um (p25 0.180, p75 0.230); routed length over the rectilinear MST of the pin centres median 1.003, p75 1.020 (1557 nets with at most 64 pins). Detour is the p75, as in the IHP policy. Not yet cross-checked against OpenRCX.",
+  "macro_blockage": {
+    "grid_um": 10,
+    "max_searches": 200000
+  },
+  "macro_blockage_evidence": "Copied from the IHP policy (search grid and budget, not a calibrated value). The GF180 SRAM obstructs Metal1-Metal3 in its LEF; Metal4 and Metal5 cross it."
+}

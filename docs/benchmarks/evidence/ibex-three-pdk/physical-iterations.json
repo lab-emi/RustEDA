@@ -1,0 +1,1465 @@
+{
+  "schema": "rusteda.ibex-physical-iterations.v1",
+  "scope": "Routed trial layout observations. Shared timing uses the same nominal extraction and constraints as the corresponding PDK comparison.",
+  "sky130_staggered_taps": {
+    "reference_receipt": "sky130-reference-layout.json",
+    "area_um2": 176088.8832,
+    "reference_area_um2": 176426.7072,
+    "tap_cells": 8525,
+    "steps": 105,
+    "layout": {
+      "gds": {
+        "sha256": "8020b4068c3120bd9947a76d0b516c7202f9fd25c747599354b77247b9700e27",
+        "bytes": 72183542
+      },
+      "def": {
+        "sha256": "67defd5d0333d08261f39cc4459380befc26cbe42cf8b81c86636a413e86c746",
+        "bytes": 21770396
+      },
+      "netlist": {
+        "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+        "bytes": 2446392
+      },
+      "powered_netlist": {
+        "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+        "bytes": 9506572
+      },
+      "synthesis_netlist": {
+        "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+        "bytes": 1854193
+      }
+    },
+    "producer_result": {
+      "sha256": "c947545f8d9fdc267e3f10fba8f83f7b375c924f4c232d0a158208cc02c10605",
+      "bytes": 3479
+    },
+    "producer_observation": {
+      "wall_seconds": 1081.56,
+      "allowed_cpus": [
+        8,
+        10,
+        12,
+        14
+      ],
+      "evidence": {
+        "sha256": "2c663c78f139557a34dc237326e046c6cb5ff3d44d05c1fc40f91211188d9542",
+        "bytes": 2059
+      }
+    },
+    "shared_analysis": {
+      "evidence": {
+        "sha256": "309cb7d98953024c44bfb6bac06b3f9658d40948459a4ea0cd3d4af3401c402d",
+        "bytes": 72170
+      },
+      "checks": {
+        "lvs": true,
+        "logic": true,
+        "simulation": true,
+        "density": true,
+        "timing": false
+      },
+      "timing_scope": {
+        "rc_corner": "nom",
+        "cppr": "off",
+        "precision": "f64",
+        "backend": "cpu",
+        "clock_model": "propagated",
+        "wire_model": "spef_rc",
+        "mode": "single_reference_openrcx",
+        "corners": [
+          "tt",
+          "ss"
+        ],
+        "spef_sources": [
+          "openrcx"
+        ],
+        "netlist_sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+        "sdc_sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+        "spef_sha256": "d7d554e35b13e6c5dd198158ba15659fa75708acfa7dd82aa45acc2205c1d49e"
+      },
+      "timing_corners": {
+        "tt": {
+          "setup_ws_ns": 42.350582122803,
+          "hold_ws_ns": 0.206586748362,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "setup_ws_ns": 40.550216674805,
+          "hold_ws_ns": 0.491283476353,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 21,
+          "cap_violations": 3,
+          "fanout_violations": 0
+        }
+      }
+    },
+    "tap_policy": {
+      "cell": "sky130_fd_sc_hd__tapvpwrvgnd_1",
+      "max_gap": 29440,
+      "well_layer": "nwell",
+      "substrate_layer": "pwell",
+      "pattern": {
+        "kind": "staggered",
+        "phase": 14720,
+        "unpaired": "both"
+      }
+    },
+    "parent_tap_cells": 11274,
+    "physical_checks": {
+      "magic_drc": {
+        "status": "failed",
+        "error_count": 2,
+        "listed_boxes": 5,
+        "categories": {
+          "met2.3b": 3,
+          "met4.5b": 2
+        },
+        "evidence": {
+          "sha256": "a9ef2c7cef5a21e2381487a7a1bbd3ee7a34201afefddd4a7affc98b5adfa762",
+          "bytes": 5058
+        }
+      },
+      "shared_drc": {
+        "status": "failed",
+        "violations": 5,
+        "latchup": {
+          "rules": [
+            "LU.2",
+            "LU.2.1",
+            "LU.3",
+            "nwell.4",
+            "licon.16"
+          ],
+          "violations": {},
+          "note": "tap-distance rules are part of the foundry DRC; no separate latch-up gate"
+        },
+        "klayout": {
+          "status": "passed",
+          "violations": 0
+        },
+        "evidence": {
+          "sha256": "9b69a99d8c273c889b03d9ed80e46965cb7a61b7eff1b8450d987a35d043ca0a",
+          "bytes": 15280
+        }
+      },
+      "antenna": {
+        "status": "failed",
+        "violations": 200,
+        "categories": {
+          "metal1": 1,
+          "metal2": 1,
+          "metal3": 93,
+          "metal4": 27,
+          "metal4 contact": 77,
+          "metal5": 1
+        },
+        "scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+        "evidence": {
+          "sha256": "5d7c6b3ffe91a5f9654e3f026d6faaa0a2bbd9e5aeffc9a5f13c894d0de8a827",
+          "bytes": 8950
+        }
+      }
+    },
+    "same_core_producer": {
+      "scope": "Fresh RTL through GDS, same CPU set as LibreLane on separate runs",
+      "wall_seconds": 1625.9,
+      "allowed_cpus": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "peak_memory_bytes": 1844084736,
+      "observed_swap_bytes": 0,
+      "other_load": {
+        "host_busy_cpu_seconds": 7276.42,
+        "allowed_set_busy_cpu_seconds": 1680.07,
+        "own_cpu_seconds": 1640.44,
+        "other_cpu_seconds_host": 5635.98,
+        "other_cpu_seconds_on_allowed_set": 39.63,
+        "mean_other_busy_cpus_host": 3.466,
+        "mean_other_busy_cpus_on_allowed_set": 0.024,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "evidence": {
+        "sha256": "7d51b5a37b90b1fb4cd7c1a93d06bbb568e0b490d5a7e7c9c181b700986ef92a",
+        "bytes": 2065
+      },
+      "reference_samples": "sky130-gds-producer-samples.json",
+      "reference_wall_seconds": 1173.8,
+      "artifacts": [
+        {
+          "artifact": "gds",
+          "old": {
+            "sha256": "8020b4068c3120bd9947a76d0b516c7202f9fd25c747599354b77247b9700e27",
+            "bytes": 72183542
+          },
+          "new": {
+            "sha256": "8020b4068c3120bd9947a76d0b516c7202f9fd25c747599354b77247b9700e27",
+            "bytes": 72183542
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "old": {
+            "sha256": "67defd5d0333d08261f39cc4459380befc26cbe42cf8b81c86636a413e86c746",
+            "bytes": 21770396
+          },
+          "new": {
+            "sha256": "67defd5d0333d08261f39cc4459380befc26cbe42cf8b81c86636a413e86c746",
+            "bytes": 21770396
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "old": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "new": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "old": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "new": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "old": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "new": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "old": {
+            "sha256": "26e21d5d913c330c2100c96e7ec1501ec3d8b92f1b6a87c92827835ec2720405",
+            "bytes": 42215246
+          },
+          "new": {
+            "sha256": "26e21d5d913c330c2100c96e7ec1501ec3d8b92f1b6a87c92827835ec2720405",
+            "bytes": 42215246
+          },
+          "byte_equal": true
+        }
+      ]
+    },
+    "figure": {
+      "path": "../../figures/ibex-sky130-staggered-20261115.png",
+      "sha256": "126ee9b2d3a616812dfa5dc9260272970873cc22b17288858d8c20496c35fe52",
+      "bytes": 1772471
+    },
+    "thin_lto_replay": {
+      "scope": "Fresh producer replay with only RustROAD build flags changed",
+      "rustroad_build_flags": {
+        "lto": "thin",
+        "codegen_units": 1,
+        "target_cpu": "native"
+      },
+      "allowed_cpus": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "wall_seconds": 1618.49,
+      "measurement": {
+        "sha256": "b9c988d0a0765f0d43c73f90b5a83722a29e8ff488d109d2988822fa73bf4f69",
+        "bytes": 2048
+      },
+      "artifacts": [
+        {
+          "artifact": "gds",
+          "previous": {
+            "sha256": "8020b4068c3120bd9947a76d0b516c7202f9fd25c747599354b77247b9700e27",
+            "bytes": 72183542
+          },
+          "sample": {
+            "sha256": "8020b4068c3120bd9947a76d0b516c7202f9fd25c747599354b77247b9700e27",
+            "bytes": 72183542
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "previous": {
+            "sha256": "67defd5d0333d08261f39cc4459380befc26cbe42cf8b81c86636a413e86c746",
+            "bytes": 21770396
+          },
+          "sample": {
+            "sha256": "67defd5d0333d08261f39cc4459380befc26cbe42cf8b81c86636a413e86c746",
+            "bytes": 21770396
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "previous": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "sample": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "previous": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "sample": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "previous": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "sample": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "previous": {
+            "sha256": "26e21d5d913c330c2100c96e7ec1501ec3d8b92f1b6a87c92827835ec2720405",
+            "bytes": 42215246
+          },
+          "sample": {
+            "sha256": "26e21d5d913c330c2100c96e7ec1501ec3d8b92f1b6a87c92827835ec2720405",
+            "bytes": 42215246
+          },
+          "byte_equal": true
+        }
+      ]
+    }
+  },
+  "gf180_load_feedback": {
+    "reference_receipt": "gf180-reference-layout.json",
+    "area_um2": 478393.3504,
+    "reference_area_um2": 490811.5968,
+    "tap_cells": 8064,
+    "steps": 105,
+    "layout": {
+      "gds": {
+        "sha256": "2dd3496c4168a00b5563aa0157aa0c9378abc0d15e89e6cb529dbf2f4c371cf3",
+        "bytes": 31997322
+      },
+      "def": {
+        "sha256": "99c3a22a461dcbde3000e87cdb8fc10434f5e074fdfe8f2cf8a6133fe21a0184",
+        "bytes": 16729911
+      },
+      "netlist": {
+        "sha256": "0080b1206515e6838c4172a651e2b19518aa046aee113a873810b1045d070e5e",
+        "bytes": 2893732
+      },
+      "powered_netlist": {
+        "sha256": "f7ef53c9c58d84bb1b73f93ba57cc88ac81a73573f82809c19511e4293a027fb",
+        "bytes": 7214276
+      },
+      "synthesis_netlist": {
+        "sha256": "46ca8252de58c11ca4cc9824ebeffed60cfca4d042d60142fe158b9d0caf4f65",
+        "bytes": 2201983
+      }
+    },
+    "producer_result": {
+      "sha256": "667a07a2bcd6244ad130d9432ea63aa2a9c7ea18b85ae16e031787e14a985e2c",
+      "bytes": 3297
+    },
+    "producer_observation": {
+      "wall_seconds": 468.69,
+      "allowed_cpus": [
+        20,
+        21
+      ],
+      "evidence": {
+        "sha256": "c5187c129d06229bbd66996a87b9484c1dc9f273c22e7fbd56521e40b6bdab83",
+        "bytes": 1950
+      }
+    },
+    "shared_analysis": {
+      "evidence": {
+        "sha256": "072904ce5a37694fceb1f47950ea35fa4be67fa47ecb8991810b553f345d3e5a",
+        "bytes": 62804
+      },
+      "checks": {
+        "lvs": true,
+        "logic": true,
+        "simulation": true,
+        "density": true,
+        "timing": false
+      },
+      "timing_scope": {
+        "rc_corner": "nom",
+        "cppr": "off",
+        "precision": "f64",
+        "backend": "cpu",
+        "clock_model": "propagated",
+        "wire_model": "spef_rc",
+        "mode": "single_reference_openrcx",
+        "corners": [
+          "tt",
+          "ss"
+        ],
+        "spef_sources": [
+          "openrcx"
+        ],
+        "netlist_sha256": "0080b1206515e6838c4172a651e2b19518aa046aee113a873810b1045d070e5e",
+        "sdc_sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+        "spef_sha256": "891ab4f5ecf7d699d9f13243c6be3163804fdcd21c0ac7dba1e10d537e0fa704"
+      },
+      "timing_corners": {
+        "tt": {
+          "setup_ws_ns": 48.748062133789,
+          "hold_ws_ns": 0.23062852406359946,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 19,
+          "cap_violations": 1,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "setup_ws_ns": 16.099631461274996,
+          "hold_ws_ns": 0.697806715965,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 30,
+          "cap_violations": 4,
+          "fanout_violations": 0
+        }
+      }
+    },
+    "feedback_net_count": 17,
+    "feedback_input": {
+      "sha256": "f29526aa7c37fa45edd1a3412ca4ec590faa0d2b90dd1a8b3cc28fbefe0d6a96",
+      "bytes": 8258
+    },
+    "feedback_predecessor": "gf180-native-layout.json",
+    "physical_checks": {
+      "drc": {
+        "status": "failed",
+        "violations": 4,
+        "rules": {
+          "M2.4": 1,
+          "M4.4": 1,
+          "M5.4": 1,
+          "MT.3": 1
+        }
+      },
+      "antenna": {
+        "status": "passed",
+        "violations": 0
+      },
+      "evidence": {
+        "sha256": "a8660364cfaf28319c3be8199017739fab0b32dd23d6f585db0a71cbf9b105e5",
+        "bytes": 12915
+      }
+    }
+  },
+  "sky130_macro_spacing_eco": {
+    "scope": "Incremental route on a copied placed revision with rail ties routed fresh. Magic DRC on its exported GDS.",
+    "source_gds": {
+      "sha256": "8020b4068c3120bd9947a76d0b516c7202f9fd25c747599354b77247b9700e27",
+      "bytes": 72183542
+    },
+    "result_gds": {
+      "sha256": "b6678eea46ff719302a538b0807b224ad96b36ee328416493ef59d5f8a45822a",
+      "bytes": 72178742
+    },
+    "routing_lef": {
+      "sha256": "d4abd0c0eed34cffd4962b5a18437ac8263e2fe26bada2ba523ccff77cb91a15",
+      "bytes": 1441569
+    },
+    "added_obstruction_spacing_um": {
+      "met2": 0.28,
+      "met4": 0.4
+    },
+    "kept_nets": 15362,
+    "offered_nets": 15366,
+    "routed_nets": 15388,
+    "route_wall_seconds": 30.6,
+    "allowed_cpus": [
+      16,
+      18
+    ],
+    "route_measurement": {
+      "sha256": "dd84ef0574fd90e845df58f256ecbd286371684c4c633f75f2255b85f0682e02",
+      "bytes": 2129
+    },
+    "route_report": {
+      "sha256": "108dc50fdda77531fdd37b4627159b3dc45631fca3f7b7558534153771e43ef1",
+      "bytes": 9329
+    },
+    "macro_instances": 2,
+    "macro_layers_differing": 0,
+    "drc": {
+      "before_magic_boxes": 5,
+      "status": "passed",
+      "violations": 0,
+      "evidence": {
+        "sha256": "1c7390dbf97977fafb131787922c1155f7d0e0b93e185bcfb2f9259d772fd1b4",
+        "bytes": 4502
+      }
+    },
+    "rustroad_commit": "2ef738b2843ba1a05694f35c0f68a8bfc47b2534",
+    "antenna_followup": {
+      "scope": "Three additional bounded jumper applications on the macro-obstruction ECO after routing",
+      "gds": {
+        "sha256": "1bcf3872125e89b4a90c60207041aac9d67d3e896ae1cedd979ece3387ce6fd1",
+        "bytes": 72324278
+      },
+      "drc": {
+        "status": "passed",
+        "violations": 0,
+        "receipt": {
+          "sha256": "a3b15593b5189e1fe64e5ed0c787ef155a910ed9dec48edb6f5699f28f201f6e",
+          "bytes": 4495
+        }
+      },
+      "antenna": {
+        "status": "failed",
+        "violations": 120,
+        "categories": {
+          "metal1": 1,
+          "metal3": 27,
+          "metal4": 14,
+          "metal4 contact": 77,
+          "metal5": 1
+        },
+        "scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+        "receipt": {
+          "sha256": "fee990baa648a008d83fe38e7be1e633b722762b04c154556a64b9926b84e13c",
+          "bytes": 8875
+        }
+      },
+      "rounds": [
+        {
+          "jumpers": 228,
+          "unresolved_supported_nets": 138
+        },
+        {
+          "jumpers": 61,
+          "unresolved_supported_nets": 96
+        },
+        {
+          "jumpers": 2,
+          "unresolved_supported_nets": 94
+        }
+      ]
+    }
+  },
+  "sky130_macro_clearance_producer": {
+    "scope": "Fresh 105-step RTL-to-GDS run with per-layer SRAM obstruction clearances. Producer observation on CPUs 8,10,12,14.",
+    "gds": {
+      "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+      "bytes": 72136758
+    },
+    "area_um2": 176088.8832,
+    "macro_instances": 2,
+    "macro_differing_layers": 0,
+    "combined_cell_lef": {
+      "sha256": "d4abd0c0eed34cffd4962b5a18437ac8263e2fe26bada2ba523ccff77cb91a15",
+      "bytes": 1441569
+    },
+    "producer": {
+      "wall_seconds": 1064.53,
+      "allowed_cpus": [
+        8,
+        10,
+        12,
+        14
+      ],
+      "receipt": {
+        "sha256": "9bbc0684e7ab9f50a5f146366b0b55708402b351a3be47178e45df343694c570",
+        "bytes": 2053
+      }
+    },
+    "drc": {
+      "status": "passed",
+      "violations": 0,
+      "per_engine": {
+        "magic": 0,
+        "klayout": 0
+      },
+      "receipt": {
+        "sha256": "7ec914315e76e5b1c48eb0ba7dcdda670ec18b9331a4622d3268a474cb9a6152",
+        "bytes": 14404
+      }
+    },
+    "shared_checks": {
+      "lvs": true,
+      "simulation": true,
+      "logic": true,
+      "timing": false,
+      "density": true
+    },
+    "analysis_receipt": {
+      "sha256": "0f6b96e74481daecb3a1ee19cb4004ffcf4b866ed4b0d72a8e45342ae2baccce",
+      "bytes": 72135
+    },
+    "timing_scope": {
+      "rc_corner": "nom",
+      "cppr": "off",
+      "precision": "f64",
+      "backend": "cpu",
+      "clock_model": "propagated",
+      "wire_model": "spef_rc",
+      "mode": "single_reference_openrcx",
+      "corners": [
+        "tt",
+        "ss"
+      ],
+      "spef_sources": [
+        "openrcx"
+      ],
+      "netlist_sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+      "sdc_sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+      "spef_sha256": "b801bdda437d736c0c882cd0be719edaea90bb9a23b7acdcf5fbbd16e6b75b33"
+    },
+    "slow_corner": {
+      "setup_ws_ns": 40.586162567139,
+      "hold_ws_ns": 0.489077240229,
+      "slew_violations": 21,
+      "cap_violations": 3,
+      "fanout_violations": 0
+    },
+    "antenna": {
+      "status": "failed",
+      "violations": 211,
+      "categories": {
+        "metal1": 1,
+        "metal2": 3,
+        "metal3": 97,
+        "metal4": 28,
+        "metal4 contact": 82
+      },
+      "scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+      "receipt": {
+        "sha256": "7858e3c3586b5fd3187b620481ee2b04ea03458294d8c9c44926a74ae8943ea4",
+        "bytes": 8931
+      }
+    },
+    "same_core_producer": {
+      "scope": "Fresh four-core SKY130A producer replay with visited-state reuse through GDS export",
+      "wall_seconds": 1173.71,
+      "detailed_route_wall_seconds": 1115.140109061,
+      "allowed_cpus": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "peak_memory_bytes": 2157043712,
+      "observed_swap_bytes": 0,
+      "memory_limit_bytes": 4294967296,
+      "measurement": {
+        "sha256": "d11a73b4da12f050356359e8742b17ec8f86c782d51b794567248011cd53ecae",
+        "bytes": 2055
+      },
+      "other_load": {
+        "host_busy_cpu_seconds": 1546.56,
+        "allowed_set_busy_cpu_seconds": 1194.7,
+        "own_cpu_seconds": 1189.48,
+        "other_cpu_seconds_host": 357.08,
+        "other_cpu_seconds_on_allowed_set": 5.22,
+        "mean_other_busy_cpus_host": 0.304,
+        "mean_other_busy_cpus_on_allowed_set": 0.004,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "artifacts": [
+        {
+          "artifact": "gds",
+          "original": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "replay": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "original": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "replay": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "original": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "replay": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "original": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "replay": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "original": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "replay": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "original": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "replay": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "byte_equal": true
+        }
+      ],
+      "route_table": {
+        "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+        "bytes": 32373184
+      },
+      "routing_expansions": 429145997,
+      "routing_segments": 426288,
+      "rustroad_binary": {
+        "sha256": "cc199f60c6e06ff57bd800208b5bb5d924634f3697130d55c79007eeed7d00fd",
+        "bytes": 86267040
+      },
+      "rustroad_source": {
+        "commit": "43812c85ec8b2fee356d6e0244702ad2db89f7af",
+        "base_commit": "bd9d6ec1b75484a42cceb89cadc9926f59850331",
+        "patch": {
+          "sha256": "842962b620d5acd04aba4127716d99ce2adab116a76b4bd13ae14224db009688",
+          "bytes": 18728
+        }
+      },
+      "manifest": {
+        "sha256": "442cac6c0ff8203ab50b64e79fe8dd28d0fd2e3f437b5c64ee0ff09b1efa8e83",
+        "bytes": 107329
+      },
+      "reference_samples": "sky130-gds-producer-samples.json",
+      "reference_wall_seconds": 1173.8
+    },
+    "figure": {
+      "path": "../../figures/ibex-sky130-clearance-20261115.png",
+      "sha256": "bc9b8bf33490ef6fd888fb243ce4cb7bb7b0cee47e615b9366cf92bdae78dd51",
+      "bytes": 1769039
+    },
+    "prior_same_core_producer": {
+      "scope": "Fresh clearance producer replay with fine obstacle bins and scalar target costs",
+      "wall_seconds": 1244.58,
+      "detailed_route_wall_seconds": 1186.331383543,
+      "allowed_cpus": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "peak_memory_bytes": 2113638400,
+      "observed_swap_bytes": 0,
+      "measurement": {
+        "sha256": "745ffb953ea7d117f33000b88ad91fcdf8a3999d8f632edee19bae2014c61d9a",
+        "bytes": 2079
+      },
+      "other_load": {
+        "host_busy_cpu_seconds": 6956.45,
+        "allowed_set_busy_cpu_seconds": 1312.06,
+        "own_cpu_seconds": 1260.51,
+        "other_cpu_seconds_host": 5695.94,
+        "other_cpu_seconds_on_allowed_set": 51.55,
+        "mean_other_busy_cpus_host": 4.576,
+        "mean_other_busy_cpus_on_allowed_set": 0.041,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "artifacts": [
+        {
+          "artifact": "gds",
+          "original": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "replay": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "original": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "replay": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "original": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "replay": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "original": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "replay": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "original": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "replay": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "original": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "replay": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "byte_equal": true
+        }
+      ],
+      "rustroad_commit": "bd9d6ec1b75484a42cceb89cadc9926f59850331",
+      "reference_samples": "sky130-gds-producer-samples.json",
+      "reference_wall_seconds": 1173.8
+    },
+    "isolated_route_replay": {
+      "scope": "Rerun routing from the exact native12 CTS revision",
+      "wall_seconds": 755.18,
+      "allowed_cpus": [
+        8,
+        10,
+        12,
+        14
+      ],
+      "measurement": {
+        "sha256": "3064d14f6ccb5c2aefe310705118bc17ed553bc2488eec4be1d9b6bb622aa772",
+        "bytes": 1959
+      },
+      "route_table": {
+        "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+        "bytes": 32373184
+      }
+    },
+    "same_two_core_producer": {
+      "wall_seconds": 1241.01,
+      "reference_wall_seconds": 1771.63,
+      "allowed_cpus": [
+        30,
+        31
+      ],
+      "receipt": "sky130-gds-producer-samples.json"
+    },
+    "per_layer_minima_producer": {
+      "scope": "Fresh clearance producer replay with per-layer target minima and per-probe tie lookup",
+      "wall_seconds": 1222.89,
+      "detailed_route_wall_seconds": 1163.82044376,
+      "allowed_cpus": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "peak_memory_bytes": 2086301696,
+      "observed_swap_bytes": 0,
+      "measurement": {
+        "sha256": "fa3d21e24c814b9514b0b4b6ad4c5999b7fbe5b49ec33e9eaa856bc4565f966c",
+        "bytes": 2079
+      },
+      "other_load": {
+        "host_busy_cpu_seconds": 6201.39,
+        "allowed_set_busy_cpu_seconds": 1274.1,
+        "own_cpu_seconds": 1237.95,
+        "other_cpu_seconds_host": 4963.44,
+        "other_cpu_seconds_on_allowed_set": 36.15,
+        "mean_other_busy_cpus_host": 4.059,
+        "mean_other_busy_cpus_on_allowed_set": 0.03,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "artifacts": [
+        {
+          "artifact": "gds",
+          "original": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "replay": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "original": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "replay": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "original": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "replay": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "original": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "replay": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "original": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "replay": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "original": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "replay": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "byte_equal": true
+        }
+      ],
+      "route_table": {
+        "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+        "bytes": 32373184
+      },
+      "routing_expansions": 429145997,
+      "routing_segments": 426288,
+      "rustroad_binary": {
+        "sha256": "c82df2bb1e0c2cfbc7d2cc10210106ff6db790175113a4bc16ef352f0bb19dde",
+        "bytes": 86261872
+      },
+      "rustroad_source": {
+        "base_commit": "2ef738b2843ba1a05694f35c0f68a8bfc47b2534",
+        "patch": {
+          "sha256": "7a9a88b51ee82789b4eb9a6d68d3a6518a80cbe7e62ef376024547b9183b695b",
+          "bytes": 29419
+        },
+        "commit": "a4de7dc5a79477585c172a187c9d16049a74b4b1"
+      },
+      "reference_samples": "sky130-gds-producer-samples.json",
+      "reference_wall_seconds": 1173.8
+    },
+    "heap_and_instance_producer": {
+      "scope": "Fresh four-core SKY130A producer replay after heap and instance lookup changes",
+      "wall_seconds": 1188.48,
+      "allowed_cpus": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "peak_memory_bytes": 2126110720,
+      "observed_swap_bytes": 0,
+      "measurement": {
+        "sha256": "2545befb9c242124df95715523c3413568ebf535e4d319fe431314259da44adc",
+        "bytes": 2068
+      },
+      "other_load": {
+        "host_busy_cpu_seconds": 4812.01,
+        "allowed_set_busy_cpu_seconds": 1233.46,
+        "own_cpu_seconds": 1203.25,
+        "other_cpu_seconds_host": 3608.76,
+        "other_cpu_seconds_on_allowed_set": 30.21,
+        "mean_other_busy_cpus_host": 3.036,
+        "mean_other_busy_cpus_on_allowed_set": 0.025,
+        "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+      },
+      "detailed_route_wall_seconds": 1129.019160368,
+      "artifacts": [
+        {
+          "artifact": "gds",
+          "original": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "replay": {
+            "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+            "bytes": 72136758
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "original": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "replay": {
+            "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+            "bytes": 21756913
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "original": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "replay": {
+            "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+            "bytes": 1854193
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "original": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "replay": {
+            "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+            "bytes": 2446392
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "original": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "replay": {
+            "sha256": "a014ca61d52467ad80f6c0aa8857a0085427f6f8f7e336764ba61f70f5841f53",
+            "bytes": 9506572
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "original": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "replay": {
+            "sha256": "d906ffaea94d027814dd9bf5c225b9f16298444180c26e17651533cb076edc4c",
+            "bytes": 42205827
+          },
+          "byte_equal": true
+        }
+      ],
+      "route_table": {
+        "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+        "bytes": 32373184
+      },
+      "routing_expansions": 429145997,
+      "routing_segments": 426288,
+      "rustroad_binary": {
+        "sha256": "cada1a910b33385ae3d5f5f0ee4608d1f93f9b5fbed17f137a3c18b047e4995b",
+        "bytes": 86266768
+      },
+      "rustroad_source": {
+        "commit": "ce25c26403515c4966de1d659790d3f41b31ee61",
+        "base_commit": "bd9d6ec1b75484a42cceb89cadc9926f59850331",
+        "patch": {
+          "sha256": "66519e7a47db634f68dfd64bdcc4a8aa8d59076ea392684a80fd01a6592e95ef",
+          "bytes": 12761
+        }
+      },
+      "manifest": {
+        "sha256": "6f50ff58010fb63c314001e848e994c33b1314971fbd3bb67722ce4b4e7467d2",
+        "bytes": 107334
+      },
+      "reference_samples": "sky130-gds-producer-samples.json",
+      "reference_wall_seconds": 1173.8
+    }
+  },
+  "sky130_selected_diode_eco": {
+    "scope": "Seeded placement, clock tree and physical route ECO on 108 measured antenna nets",
+    "source_gds": {
+      "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+      "bytes": 72136758
+    },
+    "observation": {
+      "violations": 211,
+      "bound": 182,
+      "nets": 158,
+      "evidence": {
+        "sha256": "88d818b650539e92ee9bbda5b6740e9e33393d07bf1d07410a30536e0f554ccb",
+        "bytes": 117761
+      }
+    },
+    "diode_plan": {
+      "diodes": 108,
+      "cell": "sky130_fd_sc_hd__diode_2",
+      "evidence": {
+        "sha256": "305125b6b2de3a29d6b3618aa4ea099e28e27c3f7ac4966c690f987b965cb0ca",
+        "bytes": 71093
+      }
+    },
+    "area_um2": 176359.1424,
+    "layout": {
+      "gds": {
+        "sha256": "1cc91edeb31cf70e15a8246a3bb3472c65b6fdc4ce7aa3e7c4ef298276a61513",
+        "bytes": 72595366
+      },
+      "netlist": {
+        "sha256": "3e89153b668858a2f155bcd60bbddc0317290409685f08125dbb2791bfcbce26",
+        "bytes": 2454316
+      },
+      "powered_netlist": {
+        "sha256": "d7d9f3e915f8f2d6d1bd93979da7e32ee24980ccbdbba7bd558789f6f3aac507",
+        "bytes": 9525600
+      },
+      "synthesis_netlist": {
+        "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+        "bytes": 1854193
+      },
+      "def": {
+        "sha256": "745926a91dfbed2458d2f601d2d8350a0fefea3fa3175fff6a40c8444ca5c6b7",
+        "bytes": 21852079
+      }
+    },
+    "local_eco_wall_seconds": 624.28,
+    "resources": {
+      "sha256": "5e03e48c85b7ce2705aacebe87370a9c9f4ea89f940bc2db2eec4d0a5b4afe0d",
+      "bytes": 1959
+    },
+    "shared_analysis": {
+      "checks": {
+        "lvs": true,
+        "logic": true,
+        "simulation": true,
+        "density": true,
+        "timing": false
+      },
+      "slow_corner": {
+        "setup_ws_ns": 40.577224731445,
+        "hold_ws_ns": 0.492217838764,
+        "slew_violations": 27,
+        "cap_violations": 5,
+        "fanout_violations": 0
+      },
+      "timing_scope": {
+        "rc_corner": "nom",
+        "cppr": "off",
+        "precision": "f64",
+        "backend": "cpu",
+        "clock_model": "propagated",
+        "wire_model": "spef_rc",
+        "mode": "single_reference_openrcx",
+        "corners": [
+          "tt",
+          "ss"
+        ],
+        "spef_sources": [
+          "openrcx"
+        ],
+        "netlist_sha256": "3e89153b668858a2f155bcd60bbddc0317290409685f08125dbb2791bfcbce26",
+        "sdc_sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+        "spef_sha256": "f453f12d84181145011fbc62b99a8db6d88a342a48f89f327d8a296ec94e233c"
+      },
+      "evidence": {
+        "sha256": "04d8ae457f77edeb669143dd56747bde28443b395eeaf8b3b6973233c744a0f8",
+        "bytes": 71981
+      }
+    },
+    "magic_drc": {
+      "status": "passed",
+      "violations": 0,
+      "scope": "all top-level and standard-cell geometry; macro masters are LEF abstract views",
+      "evidence": {
+        "sha256": "b4ae4e3105b84de191ac0c302ddf026375ed9b3b22b967ae190507ef071f996c",
+        "bytes": 4545
+      }
+    },
+    "shared_drc": {
+      "status": "passed",
+      "violations": 0,
+      "per_engine": {
+        "magic": 0,
+        "klayout": 0
+      },
+      "evidence": {
+        "sha256": "f724c3111795963baf67331596f809b74f2b1922a43ad7b94e967e60965b85e4",
+        "bytes": 14233
+      }
+    },
+    "antenna": {
+      "status": "failed",
+      "violations": 154,
+      "categories": {
+        "metal1": 1,
+        "metal3": 70,
+        "metal4": 10,
+        "metal4 contact": 73
+      },
+      "scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+      "evidence": {
+        "sha256": "5cdf22ba3e748ea636ab0d9d3dbea8056be779e0c28aa1309b150abd4106ed32",
+        "bytes": 8849
+      },
+      "resources": {
+        "wall_seconds": 2019.87,
+        "peak_rss_kib": 1075664,
+        "receipt": {
+          "sha256": "9106900515a896b0018be26e92389580e6e960e270d9dc3f21e3fff2b021b0b4",
+          "bytes": 2192
+        }
+      }
+    }
+  },
+  "sky130_layer_bounds_route_replay": {
+    "scope": "Route-only comparison with the routed shape table reproduced byte for byte on the same assigned cores",
+    "allowed_cpus": [
+      8,
+      10,
+      12,
+      14
+    ],
+    "reference_route_stage_seconds": 1023.794815286,
+    "optimized_route_wall_seconds": 755.18,
+    "route_table": {
+      "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+      "bytes": 32373184
+    },
+    "resource_receipt": {
+      "sha256": "3064d14f6ccb5c2aefe310705118bc17ed553bc2488eec4be1d9b6bb622aa772",
+      "bytes": 1959
+    },
+    "source_patch": {
+      "sha256": "7a9a88b51ee82789b4eb9a6d68d3a6518a80cbe7e62ef376024547b9183b695b",
+      "bytes": 29419
+    }
+  },
+  "router_search_state_replays": {
+    "scope": "Routing-only replays from the previously checked CTS inputs",
+    "rustroad_source": {
+      "commit": "43812c85ec8b2fee356d6e0244702ad2db89f7af",
+      "base_commit": "bd9d6ec1b75484a42cceb89cadc9926f59850331",
+      "patch": {
+        "sha256": "842962b620d5acd04aba4127716d99ce2adab116a76b4bd13ae14224db009688",
+        "bytes": 18728
+      }
+    },
+    "rustroad_binary": {
+      "sha256": "cc199f60c6e06ff57bd800208b5bb5d924634f3697130d55c79007eeed7d00fd",
+      "bytes": 86267040
+    },
+    "release_tests": {
+      "sha256": "9e0ae140618283c5e2c952fe17fd3522c81515488610b6f70a089135f00599f5",
+      "bytes": 438
+    },
+    "pdks": {
+      "SKY130A": {
+        "wall_seconds": 704.66,
+        "allowed_cpus": [
+          8,
+          10,
+          12,
+          14
+        ],
+        "peak_memory_bytes": 681885696,
+        "observed_swap_bytes": 0,
+        "measurement": {
+          "sha256": "bca340f635115a093b9f69d97276bb7f81d298de6c696ad7eebe044a54b70fa1",
+          "bytes": 1990
+        },
+        "other_load": {
+          "host_busy_cpu_seconds": 3250.68,
+          "allowed_set_busy_cpu_seconds": 733.84,
+          "own_cpu_seconds": 704.1,
+          "other_cpu_seconds_host": 2546.58,
+          "other_cpu_seconds_on_allowed_set": 29.74,
+          "mean_other_busy_cpus_host": 3.613,
+          "mean_other_busy_cpus_on_allowed_set": 0.042,
+          "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+        },
+        "route_table": {
+          "sha256": "30c77657c61abe1b24e37977d3f9b1f8930e40ecd8d6013e43ad17b8de155bdb",
+          "bytes": 32373184
+        },
+        "routing_expansions": 429145997,
+        "routing_segments": 426288,
+        "inputs": {
+          "sha256": "7181691b9cb821bef79297055b38dacab135a81ce9de887238f83c3dcc63d5e8",
+          "bytes": 818
+        }
+      },
+      "GF180MCU D": {
+        "wall_seconds": 342.28,
+        "allowed_cpus": [
+          22,
+          23
+        ],
+        "peak_memory_bytes": 617660416,
+        "observed_swap_bytes": 0,
+        "measurement": {
+          "sha256": "7ec4cb0f35481ef63324bae37743e2dba7f9bbf450b0c47d9835e560731e64e9",
+          "bytes": 1941
+        },
+        "other_load": {
+          "host_busy_cpu_seconds": 1738.19,
+          "allowed_set_busy_cpu_seconds": 344.61,
+          "own_cpu_seconds": 342.47,
+          "other_cpu_seconds_host": 1395.72,
+          "other_cpu_seconds_on_allowed_set": 2.14,
+          "mean_other_busy_cpus_host": 4.077,
+          "mean_other_busy_cpus_on_allowed_set": 0.006,
+          "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+        },
+        "route_table": {
+          "sha256": "a6a1afdcd0699a97696f6a52811ef18d870c76610e5a39a7a74698a291e5bde4",
+          "bytes": 25428544
+        },
+        "routing_expansions": 149017553,
+        "routing_segments": 313554,
+        "inputs": {
+          "sha256": "fff38ae96af299b7d1294534689fd5747cdfb225848347bfe87f120ea16580ac",
+          "bytes": 818
+        }
+      },
+      "IHP SG13G2": {
+        "wall_seconds": 199.02,
+        "allowed_cpus": [
+          20,
+          21,
+          28,
+          29
+        ],
+        "peak_memory_bytes": 648577024,
+        "observed_swap_bytes": 0,
+        "measurement": {
+          "sha256": "d3128988d51395148841f38227e44359ff478e1afce0a491c3e3443895706c20",
+          "bytes": 1984
+        },
+        "other_load": {
+          "host_busy_cpu_seconds": 1072.92,
+          "allowed_set_busy_cpu_seconds": 201.91,
+          "own_cpu_seconds": 199.76,
+          "other_cpu_seconds_host": 873.16,
+          "other_cpu_seconds_on_allowed_set": 2.15,
+          "mean_other_busy_cpus_host": 4.386,
+          "mean_other_busy_cpus_on_allowed_set": 0.011,
+          "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+        },
+        "route_table": {
+          "sha256": "ae50f8daf85a24c4c3ff4289b6431dc7d31011705fbb3aa5f6dd61a3a246e78e",
+          "bytes": 22349504
+        },
+        "routing_expansions": 86876281,
+        "routing_segments": 280280,
+        "inputs": {
+          "sha256": "18fac5cc352d1f9c61e94b21cb285fca583d377a8834ecd48cf25dde073efc0a",
+          "bytes": 818
+        }
+      }
+    }
+  }
+}

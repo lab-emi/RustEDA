@@ -41,7 +41,10 @@ from types import SimpleNamespace
 
 MIB = 1 << 20
 GIB = 1 << 30
-POLICY_SHA256 = '551298f6ededb81ee9d97bfdcde64383d4245da374b6e90b60462aa66e76bec3'
+POLICY_SHA256 = {
+    '551298f6ededb81ee9d97bfdcde64383d4245da374b6e90b60462aa66e76bec3',  # published IHP policy
+    '98545842fbc1b1f82e91cb98c1c8c2b57696d31baa7678c8938ea9ef55ffb36f',  # bounded endpoint reports
+}
 FILES = {'netlist', 'sdc', 'std_tt', 'ram_tt', 'std_ss', 'ram_ss', 'physical_lef', 'spef_openrcx'}
 TOOLS = {'rusteda', 'ruststa', 'opensta', 'gnu_time'}
 CORNERS = ('tt', 'ss')
@@ -176,7 +179,7 @@ class Run:
                 with path.open('rb') as stream:
                     require(stream.read(4) == b'\x7fELF', 'DIRECT_ELF_REQUIRED: '+label)
             self.initial[str(path)] = item['sha256']
-        require(c['policy']['sha256'] == POLICY_SHA256, 'UNSUPPORTED_BASE_POLICY')
+        require(c['policy']['sha256'] in POLICY_SHA256, 'UNSUPPORTED_BASE_POLICY')
         require(sum(v['bytes'] for v in c['files'].values()) <= 256*MIB, 'AGGREGATE_INPUT_BUDGET')
         self.root.mkdir(parents=True, exist_ok=True)
         self.lock = (self.root/'workspace.lock').open('a')
@@ -364,6 +367,14 @@ class Run:
             row['connected_loads'] = max(0, binding['net_pins']+binding['net_ports']-1)
             for load in row['unannotated_loads']:
                 require(binding['net'] and binding['net'] == mapped[load]['net'], 'PARTIAL_ANNOTATION_NET_IDENTITY')
+        # Preserve independently measured annotation coverage even when a later ECO planning
+        # budget refuses repair bindings. The timing gate still records that refusal.
+        for observed in observations.values():
+            if 'annotation' in observed:
+                for row in observed['annotation']['rows']:
+                    row.update(binding=mapped[row['pin']], connected_loads=annotation[row['pin']]['connected_loads'])
+                observed['annotation']['active_unannotated_drivers'] = sum(
+                    row['connected_loads'] > 0 for row in observed['annotation']['rows'])
         eco = dict(schema='rusteda.reference-drv-bindings.v1', netlist=self.config['files']['netlist'],
                    sdc=self.config['files']['sdc'], spef=self.config['files']['spef_openrcx'], cppr='off',
                    bindings={co: [] for co in CORNERS}, native_extra=[],
@@ -414,11 +425,6 @@ class Run:
                       partial_annotation=[r for r in annotation.values() if r['partial']],
                       reports=dict(script=record(path), stdout=record(run.root/'logs'/'driver-bindings-opensta.stdout')))
         write_json(self.root/'drv-bindings.json', output, self.b['max_output_bytes'])
-        for co, observed in observations.items():
-            if 'annotation' in observed:
-                for row in observed['annotation']['rows']:
-                    row.update(binding=mapped[row['pin']], connected_loads=annotation[row['pin']]['connected_loads'])
-                observed['annotation']['active_unannotated_drivers'] = sum(r['connected_loads'] > 0 for r in observed['annotation']['rows'])
         self.result['resources'].append(dict(branch='observation', **run.resources[-1]))
         return record(self.root/'drv-bindings.json')
 

@@ -3,6 +3,7 @@
   "name": "sky130hd",
   "pdk": "sky130A",
   "library": "sky130_fd_sc_hd",
+  "early_wire_model": "wireload_lumped",
   "top": "ibex_sram_bench",
   "corners": [
     {
@@ -63,6 +64,10 @@
         "u_imem",
         "u_dmem"
       ],
+      "obstruction_spacing_um": {
+        "met2": "0.28",
+        "met4": "0.40"
+      },
       "lef": {
         "path": "pdk:libs.ref/sky130_sram_macros/lef/sky130_sram_2kbyte_1rw1r_32x512_8.lef",
         "sha256": "e35072ac14a991285619477f13c80fd3837e76ef7ed354ae6ab80d9232ce7a2e"
@@ -90,6 +95,7 @@
     "magic_extract": null
   },
   "synthesis": {
+    "goal": "area",
     "dont_use": [
       "sky130_fd_sc_hd__clkbuf*",
       "sky130_fd_sc_hd__clkinv*",

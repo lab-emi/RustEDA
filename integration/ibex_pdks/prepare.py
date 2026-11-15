@@ -133,7 +133,7 @@ def _paths(node):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--profile", required=True, choices=["gf180mcu", "sky130hd"])
+    ap.add_argument("--profile", required=True, choices=["gf180mcu", "sky130hd", "sky130hd_sram22"])
     ap.add_argument("--workspace", type=Path, required=True)
     ap.add_argument("--ibex-source", type=Path, required=True)
     ap.add_argument("--pdk-root", type=Path, required=True, help="directory that holds the PDK variant directory")

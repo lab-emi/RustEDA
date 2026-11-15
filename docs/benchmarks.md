@@ -1,4 +1,9 @@
-# Ibex on SG13G2 / EZ130
+# Ibex RTL-to-GDS benchmarks
+
+**Three open PDKs · IHP SG13G2, SKY130 and GF180MCU.** The Ibex campaign
+pairs RustEDA and LibreLane with hard SRAM on each process. See the annotated
+layout pairs, shared-gate results and macro provenance on the
+[three-PDK benchmark page](benchmarks/ibex-three-pdk.md).
 
 **Second design benchmark.** [PULPissimo Ibex-core synthesis on SKY130 HD](benchmarks/pulpissimo.md) is a separate, synthesis-only comparison with Yosys 0.70/ABC. It is not part of the Ibex RTL-to-GDS campaigns below and does not extend its qualification. The full PULPissimo SoC now passes hierarchy elaboration. On SKY130 with behavioral L2 memory it exceeds a 2 h synthesis budget; the [elaboration analysis](benchmarks/pulpissimo-elaboration.md) traces the cost to those L2 banks. A separate [IHP SG13G2 / EZ130 synthesis-only test](benchmarks/pulpissimo-ihp.md) with 80 official SRAM macros completes in 426 s. Neither is physical signoff.
 

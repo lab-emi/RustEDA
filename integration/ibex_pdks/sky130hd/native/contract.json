@@ -5,7 +5,8 @@
     "tap": {
       "body_view": "lef",
       "lattices": [
-        {"max_gap": 20000, "pattern": null}
+        {"max_gap": 20000, "pattern": null},
+        {"max_gap": 29440, "pattern": {"kind": "staggered", "phase": 14720, "unpaired": "both"}}
       ]
     }
   },

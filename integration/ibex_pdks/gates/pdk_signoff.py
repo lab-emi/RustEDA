@@ -95,6 +95,23 @@ def floorplan(profile, prepared) -> dict:
                 source=common.identity(prepared / "config.json"))
 
 
+def summarize_decks(engines, codes):
+    """Combine the selected decks only when each completed and reported a count."""
+    measured = []
+    for report, code in zip(engines.values(), codes, strict=True):
+        if report and report.get("complete") is True:
+            count = report.get("violations")
+            if type(count) is int and count >= 0 and code == int(count > 0):
+                measured.append(count)
+    complete = bool(engines) and len(measured) == len(engines)
+    violations = sum(measured) if complete else None
+    macro_interior = sum(report.get("macro_interior", 0) for report in engines.values()) if complete else None
+    status = ("failed" if violations else "passed") if complete else "unverified"
+    code = max((abs(code) for code in codes), default=0)
+    return (code if complete else max(code, 2)), dict(
+        status=status, complete=complete, engines=engines, violations=violations, macro_interior=macro_interior)
+
+
 def main(args) -> int:
     host, profile, tools = load(args.host, args.profile)
     layout = common.read_json(args.layout, MIB)
@@ -190,9 +207,7 @@ def main(args) -> int:
             engines[spec["engine"]] = report
             codes.append(code)
             names.append(name)
-        report = dict(status="passed" if all(c == 0 for c in codes) else "failed", engines=engines,
-                      violations=sum((r or {}).get("violations") or 0 for r in engines.values()),
-                      macro_interior=sum((r or {}).get("macro_interior") or 0 for r in engines.values()))
+        code, report = summarize_decks(engines, codes)
         if gate == "drc":
             rules = profile["gates"]["drc"]["latchup_rules"]
             found = {}
@@ -202,10 +217,10 @@ def main(args) -> int:
                 for rule, count in table.items():
                     if rule in rules:
                         found[rule] = found.get(rule, 0) + count
-            report["latchup"] = dict(rules=rules, violations=found,
+            report["latchup"] = dict(rules=rules, violations=found if report["complete"] else None,
                                      note="tap-distance rules are part of the foundry DRC; no separate latch-up gate")
-        summary["gates"][gate] = dict(exit_code=max(codes), report=report)
-        summary["resources"][gate] = dict(exit_code=max(codes),
+        summary["gates"][gate] = dict(exit_code=code, report=report)
+        summary["resources"][gate] = dict(exit_code=code,
                                           wall_seconds=round(sum(summary["resources"][n]["wall_seconds"] for n in names), 3),
                                           peak_rss_kib=max((summary["resources"][n]["peak_rss_kib"] or 0) for n in names))
         save()
@@ -237,7 +252,8 @@ def main(args) -> int:
                                  max_state_gib=2, max_limit_rows=100000, max_checks=100000),
                     scope=dict(mode="single_reference_openrcx", rc_corner="nom", cppr="off", precision="f64", backend="cpu",
                                clock_model="propagated", wire_model="spef_rc", tolerance_ns=.001),
-                    macro_instances=profile.macro_instances(), corners=profile["corners"], decisions=profile["decisions"])
+                    macro_instances=profile.macro_instances(), corners=profile["corners"], decisions=profile["decisions"],
+                    macro_pin_limits=profile["gates"]["timing"].get("macro_pin_limits", "sdc_only"))
         code, report = helper("timing", "timing.py", plan, 1800)
         summary["gates"]["timing"] = dict(exit_code=code, report=report)
         save()

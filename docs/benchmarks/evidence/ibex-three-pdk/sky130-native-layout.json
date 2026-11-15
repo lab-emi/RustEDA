@@ -1,0 +1,243 @@
+{
+  "schema": "rusteda.ibex-native-layout-evidence.v1",
+  "pdk": "sky130A",
+  "flow": "RustEDA",
+  "scope": "Completed producer through GDS export and available shared checks.",
+  "producer": {
+    "entrypoint": "rusteda flow exec",
+    "steps": 105,
+    "stop_after": "be_gds",
+    "exit_code": 0,
+    "tool_commit_rustroad": "c986dd4aecd533cbabec1df5c88d46aa2faff657",
+    "manifest_sha256": "acc03b483c5696fbcf303032b8b31a23783dcddecb4c75ff5111f334b9d69094",
+    "observed_wall_seconds": 1658.82,
+    "cores": [
+      24,
+      25,
+      26,
+      27
+    ],
+    "cgroup_peak_bytes": 1996898304,
+    "mean_other_busy_cpus_on_host": 2.392,
+    "wall_seconds_for_comparison": null
+  },
+  "layout": {
+    "gds": {
+      "sha256": "3021c6fd88f72dfabf2f8a9769a5fa1069a8732e8353c03994cf0b1b5c16d935",
+      "bytes": 73253340
+    },
+    "def": {
+      "sha256": "0f2f1de46b41427dc55baf5d3dbdbd7ca86e93fcda0ec98329848b54dc207cc1",
+      "bytes": 22294841
+    },
+    "netlist": {
+      "sha256": "4746c8e24e492c708aa926211aba680aac2315f6bac77dab7f0df13665fb1e07",
+      "bytes": 2446520
+    },
+    "powered_netlist": {
+      "sha256": "d0e3ab11f0fa7eb037ee828af68e5bf6f1443ab27854ec07b536e566ea8bb128",
+      "bytes": 9776639
+    },
+    "synthesis_netlist": {
+      "sha256": "ed675e23e6b865c1f208a32ab8f23e0298fff78a7dee8ca3e4b1ca8fcd257030",
+      "bytes": 1854193
+    }
+  },
+  "macro": {
+    "master": "sky130_sram_2kbyte_1rw1r_32x512_8",
+    "placements": 2,
+    "differing_layers": [],
+    "placement_and_interface": {
+      "lef_pins": 125,
+      "expected_instances": 2,
+      "layout_instances": 2,
+      "layout_ports": 125,
+      "layout_cards": 0,
+      "layout_only_ports": [],
+      "lef_only_pins": [],
+      "netgen_pin_table": {
+        "pins": 125,
+        "equivalent": true
+      }
+    }
+  },
+  "standard_cell_area_um2": 179535.9392,
+  "timing_corners": {
+    "tt": {
+      "setup_ws_ns": 42.508001378205726,
+      "hold_ws_ns": 0.209915652871,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 0,
+      "cap_violations": 0,
+      "fanout_violations": 0
+    },
+    "ss": {
+      "setup_ws_ns": 40.84956741333,
+      "hold_ws_ns": 0.498058497906,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 31,
+      "cap_violations": 3,
+      "fanout_violations": 0
+    }
+  },
+  "timing_scope": {
+    "rc_corner": "nom",
+    "cppr": "off",
+    "precision": "f64",
+    "backend": "cpu",
+    "clock_model": "propagated",
+    "wire_model": "spef_rc",
+    "mode": "single_reference_openrcx",
+    "corners": [
+      "tt",
+      "ss"
+    ],
+    "spef_sources": [
+      "openrcx"
+    ],
+    "netlist_sha256": "4746c8e24e492c708aa926211aba680aac2315f6bac77dab7f0df13665fb1e07",
+    "sdc_sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+    "spef_sha256": "c1f4d2bf61474ca79ebe5080f4bac348c8d1883a7ed946c15a025e8105cab05d"
+  },
+  "timing_failures": [
+    "ss: timing or gating limit rows failed"
+  ],
+  "timing_parity_max_difference_ns": 0.0001368262445357593,
+  "logic_proof": {
+    "status": "passed",
+    "proofs": {
+      "synthesis": {
+        "status": "proven",
+        "error": null,
+        "abc_verdict": "Networks are equivalent.",
+        "output_bits": 186,
+        "rtl_state_bits": 2023,
+        "gate_state_elements": 1998
+      },
+      "final": {
+        "status": "proven",
+        "error": null,
+        "abc_verdict": "Networks are equivalent.",
+        "output_bits": 186,
+        "rtl_state_bits": 2023,
+        "gate_state_elements": 1998
+      }
+    },
+    "scope": {
+      "reference": "original RTL independent interpreter and external ABC",
+      "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+      "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+      "reset_assumptions": [],
+      "case_assumptions": [],
+      "input_assumptions": [],
+      "macro_scope": "all functional macro interface bits, opaque across the memory boundary",
+      "wire_model": "none",
+      "corner": "logic",
+      "four_state_refinement": "unverified"
+    }
+  },
+  "common_checks": {
+    "simulation": "passed",
+    "density": "passed",
+    "timing": "failed",
+    "drc": "failed",
+    "antenna": "failed",
+    "lvs": "passed",
+    "logic": "passed"
+  },
+  "signoff_receipt_hashes": {
+    "analysis": "f8df56c3d3643d6b734443cd67db0fa412b0b1ba6957c062fec352318169aed3",
+    "connectivity": "b523806fc6a83d1ead2a5a4cbf61dd616eba63412fb4459dc548512b473de363"
+  },
+  "figure": {
+    "path": "../../figures/ibex-sky130-20261115.png",
+    "sha256": "a62876f9f4a76813a52c5b6e507a7aa660562588936d4aaea0ad7f23daf28509",
+    "bytes": 1717781,
+    "comparison": "sky130-reference-layout.json"
+  },
+  "drc": {
+    "violations": 5,
+    "macro_interior": 0,
+    "latchup": {
+      "rules": [
+        "LU.2",
+        "LU.2.1",
+        "LU.3",
+        "nwell.4",
+        "licon.16"
+      ],
+      "violations": {},
+      "note": "tap-distance rules are part of the foundry DRC; no separate latch-up gate"
+    },
+    "magic": {
+      "error_count": 2,
+      "listed_boxes": 5,
+      "categories": {
+        "met2.3b": 3,
+        "met4.5b": 2
+      },
+      "scope": "all top-level and standard-cell geometry; macro masters are LEF abstract views",
+      "samples": {
+        "met4.5b": [
+          [
+            1381.44,
+            772.24,
+            1381.53,
+            772.64
+          ],
+          [
+            1381.44,
+            771.99,
+            1381.53,
+            772.64
+          ]
+        ],
+        "met2.3b": [
+          [
+            782.8,
+            525.44,
+            782.83,
+            525.485
+          ],
+          [
+            782.8,
+            525.16,
+            782.83,
+            525.44
+          ],
+          [
+            782.8,
+            525.115,
+            782.83,
+            525.16
+          ]
+        ]
+      }
+    },
+    "klayout": {
+      "violations": 0,
+      "status": "passed",
+      "gating_rules": {}
+    },
+    "report_sha256": "307f822c82d26105841239822f79f0fa56e00bc20dcade8dd24c714f41ea30c0"
+  },
+  "antenna": {
+    "violations": 115,
+    "categories": {
+      "metal1": 2,
+      "metal2": 3,
+      "metal3": 92,
+      "metal4": 17,
+      "metal4 contact": 1
+    },
+    "scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+    "raw_magic_log_sha256": "ddaef4dcd454b4029c34d649eeee9fed239e7e5da6e6e7f90e1cbff7732eb6ec",
+    "report_sha256": "be06c2050d52d6f1f60c76e4c7a664d150d3d6e25f37bade1422bf3ac780bf3b"
+  },
+  "producer_samples": {
+    "receipt": "sky130-gds-producer-samples.json",
+    "wall_seconds": 1658.82
+  }
+}

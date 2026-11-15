@@ -12,6 +12,8 @@ Input schema `rusteda.pdk-gate.timing.v1`:
   budgets, scope    passed through to `reference_timing.py`
   macro_instances   instance names of the hard macros
   corners           {tt: label, ss: label}; decisions: disclosed decisions of the profile
+  macro_pin_limits  "library_and_sdc" enforces every reported macro-pin limit violation;
+                    "sdc_only" preserves the historical adjudication (default)
 
 `reference_timing.py` runs both engines on the same SPEF at TT and SS with CPPR off and checks
 setup, hold, max slew, max capacitance and max fanout, annotation and constraint coverage. Its
@@ -21,6 +23,8 @@ macro instance is reported under `macro_pin_rows` and does not gate unless it al
 limit the SDC sets for the design. Rows at standard-cell pins and ports, setup and hold
 (including checks at macro pins) and every completeness requirement gate as before. The RustSTA
 to OpenSTA slack difference is reported against the 1 ps tolerance, as in the IHP gate.
+With `macro_pin_limits=library_and_sdc`, macro-pin rows still appear separately and every
+reported violation gates, including the unmodified macro Liberty's own electrical limits.
 
 When the two-engine check cannot complete a corner, the corner is `unverified` and
 `opensta_only` keeps what OpenSTA reported for it as a diagnostic. If RustSTA refused the inputs
@@ -59,8 +63,9 @@ def sdc_design_limits(path) -> dict:
     return limits
 
 
-def split_rows(rows, macro_instances, sdc_limits):
+def split_rows(rows, macro_instances, sdc_limits, macro_pin_limits="sdc_only"):
     """Partition violated limit rows: {kind: {total, gating, macro_pin, macro_pin_gating, rows}}."""
+    common.require(macro_pin_limits in ("sdc_only", "library_and_sdc"), "MACRO_PIN_LIMIT_POLICY")
     result = {kind: dict(total=0, gating=0, macro_pin=0, macro_pin_gating=0, macro_pin_rows=[]) for kind in KINDS}
     names = {v: k for k, v in KINDS.items()}
     for row in rows:
@@ -74,16 +79,17 @@ def split_rows(rows, macro_instances, sdc_limits):
             continue
         entry["macro_pin"] += 1
         beyond_sdc = kind in sdc_limits and float(row["value"]) > sdc_limits[kind]
-        if beyond_sdc:
+        gating = macro_pin_limits == "library_and_sdc" or beyond_sdc
+        if gating:
             entry["macro_pin_gating"] += 1
             entry["gating"] += 1
         if len(entry["macro_pin_rows"]) < 512:
             entry["macro_pin_rows"].append(dict(pin=row["pin"], value=row["value"], limit=row["limit"],
-                                                slack=row["slack"], gating=beyond_sdc))
+                                                slack=row["slack"], gating=gating))
     return result
 
 
-def opensta_view(output, corner, observed, macro_instances, sdc_limits) -> dict:
+def opensta_view(output, corner, observed, macro_instances, sdc_limits, macro_pin_limits="sdc_only") -> dict:
     """What OpenSTA alone reported for a corner the two-engine check could not complete (diagnostic).
 
     The worst slacks come from the OpenSTA log of the reference run; the limit rows, when its own
@@ -96,7 +102,7 @@ def opensta_view(output, corner, observed, macro_instances, sdc_limits) -> dict:
             match = re.search(r"^worst slack " + label + r" (\S+)$", text, re.M)
             view[key] = float(match[1]) if match else None
     if "drv_rows" in observed:
-        rows = split_rows(observed["drv_rows"], macro_instances, sdc_limits)
+        rows = split_rows(observed["drv_rows"], macro_instances, sdc_limits, macro_pin_limits)
         view.update({kind + "_gating_rows": rows[kind]["gating"] for kind in KINDS},
                     **{kind + "_macro_pin_rows": rows[kind]["macro_pin"] - rows[kind]["macro_pin_gating"] for kind in KINDS})
         view.update({k: observed.get(k) for k in ("setup_violations", "hold_violations")})
@@ -120,6 +126,8 @@ def main() -> int:
             for name, record in group.items():
                 common.verify(record, name)
         macro_instances = set(config["macro_instances"])
+        macro_pin_limits = config.get("macro_pin_limits", "sdc_only")
+        common.require(macro_pin_limits in ("sdc_only", "library_and_sdc"), "MACRO_PIN_LIMIT_POLICY")
         sdc_limits = sdc_design_limits(files["sdc"]["path"])
         base_inputs = dict(schema="rusteda.reference-timing-inputs.v1", top=config["top"], files=files,
                            tools={k: tools[k] for k in ("rusteda", "ruststa", "opensta", "gnu_time")},
@@ -138,11 +146,12 @@ def main() -> int:
             row, observed = base["corners"].get(corner), base["observations"].get(corner, {})
             if row is None or "drv_rows" not in observed:
                 corners[corner] = dict(status="unverified", label=config["corners"][corner],
-                                       opensta_only=opensta_view(output, corner, observed, macro_instances, sdc_limits))
+                                       opensta_only=opensta_view(output, corner, observed, macro_instances, sdc_limits,
+                                                                 macro_pin_limits))
                 all_passed = False
                 continue
-            engines = dict(ruststa=split_rows(row["native_drv_rows"], macro_instances, sdc_limits),
-                           opensta=split_rows(observed["drv_rows"], macro_instances, sdc_limits))
+            engines = dict(ruststa=split_rows(row["native_drv_rows"], macro_instances, sdc_limits, macro_pin_limits),
+                           opensta=split_rows(observed["drv_rows"], macro_instances, sdc_limits, macro_pin_limits))
             for kind in KINDS:
                 common.require(engines["ruststa"][kind]["total"] == row["ruststa"][kind + "_violations"]
                                and engines["opensta"][kind]["total"] == row["opensta"][kind + "_violations"],
@@ -185,8 +194,11 @@ def main() -> int:
                       ruststa=dict(status=native.get("status"), error=native.get("error"),
                                    diagnostics=[d for d in native.get("diagnostics", []) if d.get("severity") == "error"][:8]),
                       sdc_design_limits=sdc_limits, macro_instances=sorted(macro_instances),
-                      macro_pin_policy="slew, capacitance and fanout rows at macro pins are listed separately and gate only "
-                                       "beyond a design-wide SDC limit; setup and hold at macro pins gate",
+                      macro_pin_limits=macro_pin_limits,
+                      macro_pin_policy=("all reported macro-pin electrical limit rows gate; setup and hold gate"
+                                        if macro_pin_limits == "library_and_sdc" else
+                                        "slew, capacitance and fanout rows at macro pins are listed separately and gate only "
+                                        "beyond a design-wide SDC limit; setup and hold at macro pins gate"),
                       decisions=config.get("decisions", []), scope=base["scope"], inputs=files, tools=tools, scripts=scripts,
                       reference_report=common.identity(report_path), reference_exit_code=run["exit_code"],
                       wall_seconds=run["wall_seconds"], peak_rss_kib=run["peak_rss_kib"])

@@ -45,7 +45,27 @@ Fast inference is only part of a fast iteration. RustEDA pairs native engines
 with revisioned disk workspaces, machine-readable results and explicit verification
 so agents and engineers can act on the same design state.
 
-## RustEDA vs LibreLane at a glance
+## Ibex RTL-to-GDS across three open PDKs
+
+**IHP SG13G2 · SKY130 · GF180MCU.** RustEDA and LibreLane implement Ibex
+with hard SRAM on the same inputs within each process. The benchmark page
+includes annotated final GDS pairs across all three processes.
+[Three-PDK benchmark and layouts](docs/benchmarks/ibex-three-pdk.md)
+
+Each cell lists **RustEDA / LibreLane** for the paired layouts.
+
+| Open PDK | Standard-cell area (µm²) | Slow-corner setup slack (ns) | Through GDS export (s) |
+| --- | ---: | ---: | ---: |
+| [IHP SG13G2](docs/benchmarks/ibex-three-pdk.md#ihp-sg13g2-layout-pair) | 187,585 / 204,848 | +49.44 / +47.94 | 1,348.3 / 2,073.4 |
+| [SKY130A](docs/benchmarks/ibex-three-pdk.md#sky130a-layout-pair) | 176,089 / 176,427 | +40.59 / +35.64 | 1,241.0 / 1,771.6 (two cores) |
+| [GF180MCU D](docs/benchmarks/ibex-three-pdk.md#gf180mcu-d-layout-pair) | 478,020 / 490,812 | +16.72 / +6.96 | 474.4 / 851.5 |
+
+IHP uses the retained 10 November pair. Each SKY130A and GF180MCU pair used
+the same assigned cores. SKY130A's four-core measurements were essentially
+tied at 1,173.71 / 1,173.80 s. Residual signoff findings are listed alongside
+the corresponding layouts.
+
+### IHP SG13G2 results
 
 Ibex RTL-to-GDS on IHP SG13G2 with EZ130 cells and two SRAM macros, 2026-11-13: RustEDA and LibreLane 3.0.17 (OpenROAD, Yosys, KLayout, Magic, Netgen) ran one after the other on the same 4-vCPU host from the same prepared inputs, and the same signoff scripts checked both layouts. Every RustEDA engine was built with Rust 1.100.0, and RustEDA's step graph ran under its Rust executor, `rusteda flow exec`. ([receipt](docs/benchmarks/ibex-sg13g2-ez130-host-20261113.json))
 

@@ -1,0 +1,174 @@
+{
+  "schema": "rusteda.ibex-native-layout-evidence.v1",
+  "pdk": "gf180mcuD",
+  "flow": "RustEDA",
+  "scope": "Completed producer through GDS export and available shared checks.",
+  "producer": {
+    "entrypoint": "rusteda flow exec",
+    "steps": 105,
+    "stop_after": "be_gds",
+    "exit_code": 0,
+    "tool_commit_rustroad": "14b5adf4224e3aaa781c85aec02258d317316701",
+    "manifest_sha256": "509d46542728ef5706319d781aba0f8c8fd7a3c07db7bfb1ab021596cc25f320",
+    "observed_wall_seconds": 452.82,
+    "cores": [
+      22,
+      23
+    ],
+    "cgroup_peak_bytes": 2301534208,
+    "mean_other_busy_cpus_on_host": 2.708,
+    "wall_seconds_for_comparison": null
+  },
+  "layout": {
+    "gds": {
+      "sha256": "8c854b5d39f4c5159f96dd3cc69666296c531face07faa6199f56c59729fd94b",
+      "bytes": 32018564
+    },
+    "def": {
+      "sha256": "e46eef0f50d7b26a6d81c68cbbe7c2d57e3ad4a276474ab2d48e71ae0b08f58c",
+      "bytes": 16733166
+    },
+    "netlist": {
+      "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+      "bytes": 2891676
+    },
+    "powered_netlist": {
+      "sha256": "ee3a6018363bd4d44cf298dc293f0ee7be6c100a23cb070c51351af9aebeae4c",
+      "bytes": 7214671
+    },
+    "synthesis_netlist": {
+      "sha256": "46ca8252de58c11ca4cc9824ebeffed60cfca4d042d60142fe158b9d0caf4f65",
+      "bytes": 2201983
+    }
+  },
+  "macro": {
+    "master": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+    "placements": 8,
+    "differing_layers": [],
+    "placement_and_interface": {
+      "lef_pins": 38,
+      "expected_instances": 8,
+      "layout_instances": 8,
+      "layout_ports": 38,
+      "layout_cards": 0,
+      "layout_only_ports": [],
+      "lef_only_pins": [],
+      "netgen_pin_table": {
+        "pins": 38,
+        "equivalent": true
+      }
+    }
+  },
+  "standard_cell_area_um2": 478020.1664,
+  "timing_corners": {
+    "tt": {
+      "setup_ws_ns": 48.742523193359,
+      "hold_ws_ns": 0.320902198553,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 48,
+      "cap_violations": 9,
+      "fanout_violations": 0
+    },
+    "ss": {
+      "setup_ws_ns": 16.716239844641805,
+      "hold_ws_ns": 0.826072096825,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 66,
+      "cap_violations": 17,
+      "fanout_violations": 0
+    }
+  },
+  "timing_scope": {
+    "rc_corner": "nom",
+    "cppr": "off",
+    "precision": "f64",
+    "backend": "cpu",
+    "clock_model": "propagated",
+    "wire_model": "spef_rc",
+    "mode": "single_reference_openrcx",
+    "corners": [
+      "tt",
+      "ss"
+    ],
+    "spef_sources": [
+      "openrcx"
+    ],
+    "netlist_sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+    "sdc_sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+    "spef_sha256": "b0093e3dc7842b07f185b1a2fe3909ef5b86fef73d907d43bedbd663a51f3fd6"
+  },
+  "timing_failures": [
+    "tt: timing or gating limit rows failed",
+    "ss: timing or gating limit rows failed"
+  ],
+  "timing_parity_max_difference_ns": 0.0005856405871931258,
+  "logic_proof": {
+    "status": "passed",
+    "proofs": {
+      "synthesis": {
+        "status": "proven",
+        "error": null,
+        "abc_verdict": "Networks are equivalent.",
+        "output_bits": 292,
+        "rtl_state_bits": 2023,
+        "gate_state_elements": 1998
+      },
+      "final": {
+        "status": "proven",
+        "error": null,
+        "abc_verdict": "Networks are equivalent.",
+        "output_bits": 292,
+        "rtl_state_bits": 2023,
+        "gate_state_elements": 1998
+      }
+    },
+    "scope": {
+      "reference": "original RTL independent interpreter and external ABC",
+      "rtl_unknown_literals": "X/Z-as-zero; distinct from four-state equality",
+      "initial_states": "all original RTL states arbitrary; all gate initial states covered",
+      "reset_assumptions": [],
+      "case_assumptions": [],
+      "input_assumptions": [],
+      "macro_scope": "all functional macro interface bits, opaque across the memory boundary",
+      "wire_model": "none",
+      "corner": "logic",
+      "four_state_refinement": "unverified"
+    }
+  },
+  "common_checks": {
+    "simulation": "passed",
+    "density": "passed",
+    "timing": "failed",
+    "drc": "failed",
+    "antenna": "passed",
+    "lvs": "passed",
+    "logic": "passed"
+  },
+  "signoff_receipt_hashes": {
+    "analysis": "6ebe879d52af4ea6b06482e9f5500762b8b9626b5e8ba1dce26e666b638bc6bb",
+    "connectivity": "9141dc2e8e773e2e2e453809e87d8af5912a38603f955ade0ac17cfbc7478be1"
+  },
+  "figure": {
+    "path": "../../figures/ibex-gf180-20261115.png",
+    "sha256": "cd1f8f1eddc5068693d3ec725ac1a1bb6c27c5b46bef008e88328d9801ac2f07",
+    "bytes": 2340487,
+    "comparison": "gf180-reference-layout.json"
+  },
+  "drc": {
+    "violations": 4,
+    "gating_rules": {
+      "M2.4": 1,
+      "M4.4": 1,
+      "M5.4": 1,
+      "MT.3": 1
+    },
+    "macro_interior": 0,
+    "report_sha256": "8b4c5747cbda732442c03539767d241b92de0ad809d74e56caeb3a0b5d028dee"
+  },
+  "producer_replay": {
+    "receipt": "gf180-gds-producer-pair.json",
+    "wall_seconds": 474.42
+  }
+}

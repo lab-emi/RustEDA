@@ -1,0 +1,21 @@
+{
+  "schema": "rusteda.ibex-pdk-profile.v1",
+  "pdk": "sky130A",
+  "scl": "sky130_fd_sc_hd",
+  "macro": {
+    "name": "sram22_512x32m4w8",
+    "verilog": "libs.ref/sram22/verilog/sram22_512x32m4w8.v",
+    "blackbox_end": "  reg [DATA_WIDTH-1:0] mem",
+    "instances": [
+      "u_imem",
+      "u_dmem"
+    ]
+  },
+  "driving_cell": {
+    "cell": "sky130_fd_sc_hd__buf_4",
+    "pin": "X"
+  },
+  "absent_ports": [
+    "prog_addr_i[9]"
+  ]
+}

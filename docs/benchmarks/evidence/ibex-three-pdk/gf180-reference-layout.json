@@ -1,0 +1,178 @@
+{
+  "schema": "rusteda.ibex-layout-observation.v1",
+  "pdk": "gf180mcuD",
+  "flow": "LibreLane 3.0.17 / OpenROAD 26Q3",
+  "scope": "Completed reference producer, shared checks and a same-core GDS producer replay.",
+  "gds_boundary": "Magic.StreamOut",
+  "producer_exit": 0,
+  "producer_wall_seconds_observed": 841.9,
+  "producer_wall_seconds_for_comparison": null,
+  "producer_cpu_affinity": [
+    16,
+    18
+  ],
+  "producer_cgroup_peak_bytes": 2302779392,
+  "layout": {
+    "gds": {
+      "sha256": "a7a1ae8c6ba1a2056854c1172d5e5b53f6d6835d28f39ba5514b4789a4b4fb21",
+      "bytes": 32658112
+    },
+    "def": {
+      "sha256": "38fc6c54f036135044a8c8f2c23a81788a054c35d13598f089b9e456bbb2c3f2",
+      "bytes": 22908513
+    },
+    "netlist": {
+      "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+      "bytes": 5132574
+    },
+    "powered_netlist": {
+      "sha256": "85a06f529df76ee167b140cdc1e32695198de8a920b3b9be7013bea86b89502c",
+      "bytes": 8354010
+    },
+    "synthesis_netlist": {
+      "sha256": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75",
+      "bytes": 2554459
+    }
+  },
+  "macro": {
+    "master": "gf180mcu_fd_ip_sram__sram512x8m8wm1",
+    "placements": 8,
+    "geometry_differing_layers": 0
+  },
+  "standard_cell_area_um2": 490811.5968,
+  "common_checks": {
+    "simulation": "passed",
+    "density": "passed",
+    "timing": "failed",
+    "drc": "failed",
+    "antenna": "passed",
+    "lvs": "passed",
+    "logic": "unverified"
+  },
+  "timing_scope": {
+    "rc_corner": "nom",
+    "cppr": "off",
+    "precision": "f64",
+    "backend": "cpu",
+    "clock_model": "propagated",
+    "wire_model": "spef_rc",
+    "mode": "single_reference_openrcx",
+    "corners": [
+      "tt",
+      "ss"
+    ],
+    "spef_sources": [
+      "openrcx"
+    ],
+    "netlist_sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+    "sdc_sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+    "spef_sha256": "009d30effa96760acdc116f17a6773f76607e7d7a07aae51e68bc0d60581a243"
+  },
+  "timing_failures": [
+    "tt: timing or gating limit rows failed",
+    "ss: timing or gating limit rows failed"
+  ],
+  "timing_parity_max_difference_ns": 0.00027646016556204245,
+  "timing_corners": {
+    "tt": {
+      "setup_ws_ns": 45.06268067838567,
+      "hold_ws_ns": 0.66234087944,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "slew_violations": 31,
+      "cap_violations": 11,
+      "fanout_violations": 0,
+      "unconstrained_endpoints": 2,
+      "active_unconstrained_endpoints": 0,
+      "active_unannotated_drivers": 0
+    },
+    "ss": {
+      "setup_ws_ns": 6.962608919625438,
+      "hold_ws_ns": -0.4144461414956382,
+      "setup_violations": 0,
+      "hold_violations": 7,
+      "slew_violations": 39,
+      "cap_violations": 12,
+      "fanout_violations": 0,
+      "unconstrained_endpoints": 2,
+      "active_unconstrained_endpoints": 0,
+      "active_unannotated_drivers": 0
+    }
+  },
+  "lvs": {
+    "scope": "device-level LVS of standard cells; macros are black boxes with every instance pin checked",
+    "top_compared": true,
+    "circuits_compared": 89,
+    "result": "Circuits match uniquely.",
+    "shorted_port_count": 0,
+    "macro_interface": {
+      "lef_pins": 38,
+      "expected_instances": 8,
+      "layout_instances": 8,
+      "layout_ports": 38,
+      "layout_cards": 0,
+      "layout_only_ports": [],
+      "lef_only_pins": [],
+      "netgen_pin_table": {
+        "pins": 38,
+        "equivalent": true
+      }
+    },
+    "report_sha256": "363ea5099b60b28395ae50a017703c7a7a092f0dfedb8b1413227fc8cdd59fc4",
+    "control": {
+      "scope": "exchange the two most-significant address connections",
+      "instance": "u_imem0",
+      "bus": "A",
+      "mutated_powered_netlist_sha256": "282f1be285cc3c7ea1e6fcc4e22b87db15252dff9aeb29a5290c102e2d784fe2",
+      "netgen_result": "Netlists do not match.",
+      "problems": [
+        "ibex_sram_bench: 1 badnets",
+        "final result 'Netlists do not match.'"
+      ],
+      "report_sha256": "575745de91191a897ee9c8f3cb8a7a5f2e364f99faa09a110de955c908b20390"
+    }
+  },
+  "logic_proof": {
+    "status": "unverified",
+    "reason": "Incomplete implementation-to-RTL state correspondence; the export did not reach external ABC.",
+    "proofs": {
+      "synthesis": {
+        "implementation_states_without_rtl_match": 432,
+        "checker_result_sha256": "f570c2c6118e87f40bd353a012648025ca56217b2ed437d204ba5b37e7c0c9a8"
+      },
+      "final": {
+        "implementation_states_without_rtl_match": 432,
+        "checker_result_sha256": "c4694b689220983d3df0dfa541ae20d7512484143af9029cb6656090d9bb62f4"
+      }
+    }
+  },
+  "antenna": {
+    "violations": 0,
+    "macro_interior": 0,
+    "deck_sha256": "e7c7d2597890cfcb4cf0e5312f5652051a119fb3e1cc1772a6e5c04594bc65d8",
+    "report_sha256": "d3f825b1a7815643c129ef2c507adb963f25fcc32619122054ca48006a877a24",
+    "control": {
+      "removed_diode_instances": 45,
+      "result": "failed",
+      "violations": 51,
+      "mutated_gds_sha256": "c2bb6f10fc9df607b5a8c2054666a480c50ccf74fc776576c5f88adb89b7943e",
+      "report_sha256": "f4a65a75a93f4d14d7a8b5e1ef5584731b0bc78bcec3bec3f427a89b654911bf"
+    }
+  },
+  "drc": {
+    "status": "failed",
+    "violations": 4,
+    "gating_rules": {
+      "M2.4": 1,
+      "M4.4": 1,
+      "M5.4": 1,
+      "MT.3": 1
+    },
+    "macro_interior": 0,
+    "report_sha256": "0d90f30ce65a2013ac21c95de2d5bc8b47a51d9c6742bfc78923caa3a7631f48"
+  },
+  "producer_replay": {
+    "receipt": "gf180-gds-producer-pair.json",
+    "wall_seconds": 851.48
+  }
+}
