@@ -191,6 +191,87 @@
       "matched_vcd_power": {
         "sha256": "a525977d1c86d798b34a79fb3a918c0ac6e16a0f2f06d6b7333d7eb958d518b5",
         "bytes": 14462
+      },
+      "same_core_producer": {
+        "scope": "Cold RTL-to-GDS elapsed time including stream-out. Independent signoff outside both producer intervals.",
+        "cpu_affinity": [
+          24,
+          25,
+          26,
+          27
+        ],
+        "memory_limit_mib": 4096,
+        "swap_mib": 0,
+        "flows": {
+          "rusteda": {
+            "wall_seconds": 248.07,
+            "measurement_receipt": {
+              "sha256": "b559758759f7da3a80e2e37787f67196ac0ee92c08cff50fa9afcd635afd0c08",
+              "bytes": 1964
+            }
+          },
+          "librelane": {
+            "wall_seconds": 1917.16,
+            "measurement_receipt": {
+              "sha256": "ebcdca40890edb9619ceb35de99a336bf752a09c8bbf8c3f09690da84268a24f",
+              "bytes": 1977
+            }
+          }
+        },
+        "reference_over_candidate": 7.728302495263434,
+        "paired_receipt": {
+          "sha256": "859912e63d8bb31cf919c1c0caca2d9e1810087a81c4705564fda6f7e6bbeadc",
+          "bytes": 460
+        },
+        "native_artifacts_byte_identical": {
+          "gds": true,
+          "def": true,
+          "netlist_synth": true,
+          "netlist_final": true,
+          "netlist_powered_final": true,
+          "spef_native_nom": true
+        },
+        "librelane_def_and_netlists_match": {
+          "sha256": "7d2ee19c54ea44cd1c3994eee16b4e9aea086ee33a9c240dae99685177dc50a0",
+          "bytes": 976
+        },
+        "librelane_gds_record_equivalence": {
+          "receipt": {
+            "sha256": "3467c84bde733de36925b2fce609a8b65c8567778e16f5990ce32c166988e3bc",
+            "bytes": 417
+          },
+          "records": 2024006,
+          "date_payloads_masked": 243,
+          "renamed_records": 0,
+          "archived_gds_sha256": "44974b6cd6ecad6d4b36c8ee4ef27a5cb82d66eb12f3de3a0847fb76274ec060",
+          "measured_gds_sha256": "a679bb53fe936a1e75524641b38ff2e29dade9c2135fb77074488bcecaec05b5"
+        }
+      },
+      "figure": {
+        "path": "docs/benchmarks/figures/ibex-ihp-aligned-matched.png",
+        "sha256": "dd892963a841e814ad92863ec66fb300e8fb0981d8acea508b5a26fa309a7cbb",
+        "bytes": 2479587
+      },
+      "current_composer_replay": {
+        "opt_in_profile": {
+          "path": "integration/ibex_pdks/ihp_sg13g2_ez130/native/profile-aligned-power.json",
+          "sha256": "2b6e7d7cf5d2de3a59f0ade34a6c395b8ac7c53976e58ccb2a5fb39e78442c45",
+          "bytes": 3643
+        },
+        "qualified_routing_policy": {
+          "path": "integration/ibex_pdks/ihp_sg13g2_ez130/native/routing-aligned-power.json",
+          "sha256": "e9d622f248b99d99dde63949e31ff18397fa7f583cc9154c6929d8a767bcc24b",
+          "bytes": 3922
+        },
+        "all_six_outputs_byte_identical": true,
+        "through_gds_replay": {
+          "sha256": "d1a457872f3093a89a908b896723996bcd08756ce50ab000f9aa6ed3a70774ce",
+          "bytes": 1490
+        },
+        "tracked_profile_manifest_check": {
+          "sha256": "07a6e292ab67ba2b5031dbd137e57e97b5323185989742b32721f09d242826f4",
+          "bytes": 1718
+        }
       }
     },
     "gf180_aligned_area_hold_and_load": {

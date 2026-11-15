@@ -218,6 +218,20 @@ synthesis and final netlists, with all functional SRAM interface bits
 covered. Independent extraction, timing, simulation, density, foundry DRC,
 antenna, latch-up and device LVS checks passed. [Layout and check identities](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
+Select the qualified opt-in recipe with
+`--profile integration/ibex_pdks/ihp_sg13g2_ez130/native/profile-aligned-power.json`.
+The current composer and ported RustSys reproduced its six sealed artifacts.
+
+The IHP arbitrary-initial-state comparison uses fresh RTL-to-GDS runs on the
+same four assigned cores with 4 GiB of memory and no swap. RustEDA took
+**248.07 s** and LibreLane took **1,917.16 s**, a **7.73×** elapsed-time ratio.
+RustEDA reproduced all six archived outputs byte for byte. LibreLane reproduced
+the DEF and both netlists byte for byte, and all 2,024,006 GDS records matched
+after masking 243 date payloads. The independent gates ran outside both producer
+intervals. [Matched replay identities](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+![Matched IHP Ibex GDS pair. Both layouts have the same die and two 4 KiB SRAM macros. RustEDA leads in workload power, standard-cell area, setup frequency and producer elapsed time.](figures/ibex-ihp-aligned-matched.png)
+
 For a matching 17-cycle gate-level smoke workload at 10 MHz, the
 VCD-annotated TT estimates are **92.64 / 94.33 mW** on the repaired GF180
 delay-goal pair and **1.001 / 1.306 mW** on the after-reset IHP pair.
