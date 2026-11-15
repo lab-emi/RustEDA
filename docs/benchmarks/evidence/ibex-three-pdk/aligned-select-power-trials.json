@@ -137,6 +137,155 @@
       "sdc_sha256": "ca6883fcc43a5fff6f1851a1d768cc9dd066c25243b7c225c00c2c2f1498cad9"
     }
   },
+  "latest_routed_candidates": {
+    "ihp_aligned_path_aware": {
+      "receipt": {
+        "sha256": "6409f3cd67e7064b4fbb47044ebc8f35a0746b6b4a089208d14d86d8c659187d",
+        "bytes": 8432
+      },
+      "gds": {
+        "sha256": "9c96935e6f753369997c35f26fb3fa2e8873912f09a06794ad9b7a679b165b5a",
+        "bytes": 26474792
+      },
+      "scope": {
+        "logic": "Original prepared IHP Ibex, arbitrary initial state, aligned selects enabled.",
+        "power": "Matched 10 MHz TT power under both the original vectorless policy and the same 17-cycle vendor-model VCD workload.",
+        "timing": "SS propagated-clock setup crossing on independently extracted nominal OpenRCX SPEF. TT and SS limits are checked at the same shortest passing trial period."
+      },
+      "route_policy": [
+        "Enable path-aware access",
+        "Omit optional via-count reduction"
+      ],
+      "metrics": {
+        "standard_cell_area_um2": 186285.456,
+        "vectorless_tt_10mhz_mw": 1.211925642565,
+        "workload_tt_10mhz_mw": 1.044836128131,
+        "setup_frequency_mhz": 43.41573277616477
+      },
+      "librelane_metrics": {
+        "standard_cell_area_um2": 204848.3808,
+        "vectorless_tt_10mhz_mw": 5.572701338679,
+        "workload_tt_10mhz_mw": 1.3057673349980001,
+        "setup_frequency_mhz": 24.86132044688223
+      },
+      "ss_setup_frequency_bracket_mhz": [
+        43.41573277616477,
+        43.42162396873643
+      ],
+      "ss_setup_pass_clock_period_ns": 23.033125,
+      "independent_gate_exit_codes": {
+        "extraction": 0,
+        "timing": 0,
+        "simulation": 0,
+        "logic": 0,
+        "density": 0,
+        "drc": 0,
+        "antenna": 0,
+        "latchup": 0,
+        "lvs": 0
+      },
+      "independent_physical": {
+        "sha256": "11e9e578200799517f2b3a838b5f33cecc5b7692d15416b9d2cac227190e65d3",
+        "bytes": 63537
+      },
+      "matched_vcd_power": {
+        "sha256": "a525977d1c86d798b34a79fb3a918c0ac6e16a0f2f06d6b7333d7eb958d518b5",
+        "bytes": 14462
+      }
+    },
+    "gf180_aligned_area_hold_and_load": {
+      "receipt": {
+        "sha256": "c53436e9e1a75cd096e364b2dbfc43d0aab545cb5986ba5bb174b395e864c3d5",
+        "bytes": 13895
+      },
+      "gds": {
+        "sha256": "0a0b9d00606a0afe40b323d07c9f9705d803d0d64f5599e1a8ccd12f564c0c8a",
+        "bytes": 31266758
+      },
+      "standard_cell_area_um2": 475912.7744,
+      "vectorless_tt_10mhz_mw": 79.79699224234001,
+      "ss_setup_frequency_bracket_mhz": [
+        10.90668648048044,
+        10.907058230057125
+      ],
+      "ss_setup_pass_clock_period_ns": 91.686875,
+      "matched_10mhz_tt_workload": {
+        "scope": "Exact GF180 measured-load GDS and freshly traced 17-cycle matched Liberty/SPEF workload",
+        "source_receipt": {
+          "sha256": "db40ec92126eed4526ac5133e274f51e5c5761a580d8868b984030cfa2171491",
+          "bytes": 15674
+        },
+        "annotated": {
+          "vcd": 64192,
+          "unannotated": 0
+        },
+        "measured_total_mw": 91.23571962118001,
+        "librelane_mw": 94.32695060968
+      },
+      "independent_gate_exit_codes": {
+        "extraction": 0,
+        "timing": 1,
+        "logic": 0,
+        "antenna": 0,
+        "lvs": 0,
+        "simulation": 0,
+        "density": 0,
+        "drc": 1
+      },
+      "tt_ss_at_10mhz": {
+        "tt": {
+          "status": "failed",
+          "setup_ws_ns": 48.61528516335338,
+          "hold_ws_ns": 0.170002236962,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 20,
+          "cap_violations": 1,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "status": "failed",
+          "setup_ws_ns": 8.313975334167,
+          "hold_ws_ns": 0.6902107994064046,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 39,
+          "cap_violations": 1,
+          "fanout_violations": 0
+        }
+      },
+      "foundry_drc_rules": {
+        "M2.4": 1,
+        "M4.4": 1,
+        "M5.4": 1,
+        "MT.3": 1
+      },
+      "single_elapsed_time_to_final_gds": {
+        "scope": "Single elapsed native producer and two corrective ECO warm routes through final GDS. Includes prerequisite RCX/timing/ABC twice. Final independent signoff outside timer.",
+        "measured_cpus": [
+          22,
+          23
+        ],
+        "observed_elapsed_seconds": 539.54,
+        "cold_component_seconds": 381.2533,
+        "max_rss_kib": 633160,
+        "cgroup_peak_bytes": 3403362304,
+        "integrated_resources": {
+          "sha256": "0a8a1344aaaff2da374463519a74b480ca3eb71fb9c41f056fc844be75e3d480",
+          "bytes": 1710
+        },
+        "verified_replay": {
+          "sha256": "d62d13ffa5161f7a0a0fc779065d753995edd7d9e338bd75d2a40d0df46b97af",
+          "bytes": 756
+        },
+        "verified_emitter": {
+          "sha256": "51ab67a65305131d49b5dfe9ca0435af559713160be401436abc2e9366bec2f2",
+          "bytes": 2577
+        },
+        "librelane_observed_elapsed_seconds": 851.48
+      }
+    }
+  },
   "trials": {
     "gf180_aligned_area": {
       "receipt": {

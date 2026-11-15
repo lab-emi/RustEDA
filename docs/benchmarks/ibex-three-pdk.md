@@ -180,8 +180,10 @@ cell lists **the RustEDA trial / LibreLane**.
 | Routed trial | Modeled power at 10 MHz (mW) | SS setup Fmax (MHz) | Standard-cell area (µm²) |
 | --- | ---: | ---: | ---: |
 | GF180MCU D, aligned selects and area goal | 79.77 / 139.09 | 10.89 / 10.75 | 475,360 / 490,812 |
+| GF180MCU D, aligned selects and area goal, with hold and load repair | 79.80 / 139.09 | 10.91 / 10.75 | 475,913 / 490,812 |
 | GF180MCU D, aligned selects and delay goal, with antenna repair | 92.34 / 139.09 | 15.04 / 10.75 | 571,373 / 490,812 |
 | IHP SG13G2, aligned selects with reset specialization | 1.50 / 5.57 | 40.44 / 24.86 | 176,104 / 204,848 |
+| IHP SG13G2, aligned selects with arbitrary initial state | 1.21 / 5.57 | 43.42 / 24.86 | 186,285 / 204,848 |
 
 The GF180 delay goal and aligned selects reduce the vectorless power estimate
 by 40.8% and raise setup Fmax by 25.2% relative to the original RustEDA layout.
@@ -198,16 +200,29 @@ The trial retains electrical-limit findings and uses 16.4% more standard-cell
 area than LibreLane. The area-goal variant uses less area and has two TT hold
 violations. [Trial receipts](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
+The repaired GF180 area-goal layout closes setup and hold at TT and SS.
+TT transition/capacitance counts are 20/1 versus LibreLane's 31/11, and SS
+counts are 39/1 versus 39/12. Both layouts have the same four foundry density
+findings. From RTL to the exact final GDS, the RustEDA replay used 539.54 s,
+including both corrections and their prerequisite extractions and logic
+checks. LibreLane used 851.48 s on the same CPU pair. Final signoff ran
+outside the producer timings. [Replay and layout identities](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
 The IHP trial uses the earlier aligned-select and after-reset compiler recipe.
 Its synthesis and final netlists passed equivalence after asserted reset,
 and the shared vendor-model simulation passed. Its setup ceiling is above
 LibreLane's 24.86 MHz and below the original RustEDA layout's 42.02 MHz.
-The all-state IHP trial reached detailed routing and reported two unresolved
-minimum-area cases with both tested RustROAD builds.
+An arbitrary-initial-state replay uses path-aware pin access and omits the
+optional via reduction pass. Its routed layout passed external ABC on the
+synthesis and final netlists, with all functional SRAM interface bits
+covered. Independent extraction, timing, simulation, density, foundry DRC,
+antenna, latch-up and device LVS checks passed. [Layout and check identities](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 For a matching 17-cycle gate-level smoke workload at 10 MHz, the
 VCD-annotated TT estimates are **92.64 / 94.33 mW** on the repaired GF180
-pair and **1.001 / 1.306 mW** on the after-reset IHP pair. The original
+delay-goal pair and **1.001 / 1.306 mW** on the after-reset IHP pair.
+The repaired GF180 area-goal pair measures **91.24 / 94.33 mW** and the
+arbitrary-initial-state IHP pair measures **1.045 / 1.306 mW**. The original
 RustEDA layouts estimate 92.36 mW and 1.081 mW on those respective
 workloads. Input traces and valid-output traces match within each pair.
 [Waveform identities and activity coverage](evidence/ibex-three-pdk/aligned-select-power-trials.json)
