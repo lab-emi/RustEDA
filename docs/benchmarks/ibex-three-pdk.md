@@ -184,6 +184,7 @@ cell lists **the RustEDA trial / LibreLane**.
 | GF180MCU D, aligned selects and delay goal, with antenna repair | 92.34 / 139.09 | 15.04 / 10.75 | 571,373 / 490,812 |
 | IHP SG13G2, aligned selects with reset specialization | 1.50 / 5.57 | 40.44 / 24.86 | 176,104 / 204,848 |
 | IHP SG13G2, aligned selects with arbitrary initial state | 1.21 / 5.57 | 43.42 / 24.86 | 186,285 / 204,848 |
+| SKY130A, aligned selects and two vertical placement channels | 6.54 / 9.50 | 23.07 / 17.21 | 173,080 / 176,427 |
 
 The GF180 delay goal and aligned selects reduce the vectorless power estimate
 by 40.8% and raise setup Fmax by 25.2% relative to the original RustEDA layout.
@@ -259,10 +260,15 @@ RustEDA layouts estimate 92.36 mW and 1.081 mW on those respective
 workloads. Input traces and valid-output traces match within each pair.
 [Waveform identities and activity coverage](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
-The SKY130 aligned-select candidate passed external mapped-netlist
-equivalence. Its TT power estimate on mapped cell pin loads dropped from
-17.04 to 4.08 mW. Full routing reached the 45-minute and 50-minute deadlines
-in the two trials. Aligned SKY130 post-route power and Fmax are unverified.
+The SKY130 dual-channel trial leaves two signal-free vertical placement
+strips and keeps the original die, ports, and SRAM macro positions. Its final
+GDS passed independent extraction, device LVS, vendor simulation, ABC
+equivalence and placement density. The matched 17-cycle workload at 10 MHz
+estimates **2.739 / 2.837 mW**. Both TT and SS have nonnegative setup and hold
+slack at the shortest tested passing SS period of 43.346250 ns. At 10 MHz,
+the dual layout has 83 SS transition and 11 SS capacitance violations.
+The producer timing comparison, DRC and antenna gates have separate scopes
+and are pending for this layout. [Exact trial inputs and electrical checks](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 ## Frontend validation
 

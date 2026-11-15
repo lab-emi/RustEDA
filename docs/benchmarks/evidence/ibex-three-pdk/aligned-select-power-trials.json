@@ -589,6 +589,124 @@
           }
         }
       }
+    },
+    "sky130_aligned_two_vertical_channels": {
+      "scope": "Exact dual-channel routed GDS. Power and setup-limited Fmax use common independent OpenRCX/OpenSTA. Producer time observed on a separate CPU allocation from the reference.",
+      "gds": {
+        "sha256": "503b020f24d9ff1365d1da53396d7cb6a6c2e774aab826b69ad2a5f493997c85",
+        "bytes": 70343754
+      },
+      "route_tool": {
+        "sha256": "bd867310d5c7eeaf1e83202a88fa288dcbbf01e59a4db61feb8efe2b16759d5a",
+        "bytes": 86599128
+      },
+      "placement_blockages_dbu": [
+        {
+          "lx": 507000,
+          "ly": 245000,
+          "ux": 514000,
+          "uy": 295000
+        },
+        {
+          "lx": 526000,
+          "ly": 245000,
+          "ux": 533000,
+          "uy": 295000
+        }
+      ],
+      "standard_cell_area_um2": 173079.7472,
+      "vectorless_tt_10mhz_mw": 6.5363170579080005,
+      "vectorless_power": {
+        "sha256": "d3c0c0b49fb1e90794184a2b98d188633c3ebd72be0058ca50656345fca2183f",
+        "bytes": 4019
+      },
+      "matched_10mhz_tt_workload": {
+        "rusteda_mw": 2.738854149356,
+        "librelane_mw": 2.836818806827,
+        "trace": {
+          "start_ps": 4400000,
+          "end_ps": 6100000,
+          "cycles": 17,
+          "clock_period_ns": 100,
+          "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+          "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+        },
+        "activity_annotation": {
+          "vcd": 56522,
+          "unannotated": 0
+        },
+        "receipt": {
+          "sha256": "1015e5fec819995762885639bfcf1958a5ee6b43c7475422feb53cb1027ebb9e",
+          "bytes": 11219
+        }
+      },
+      "ss_setup_frequency_bracket_mhz": [
+        23.070046428468437,
+        23.071709757891245
+      ],
+      "setup_sweep": {
+        "sha256": "31f0cc9f8a3c498d731175cf93fa2479de4c9522f0cceb379cf3cafebc462df1",
+        "bytes": 15944
+      },
+      "tt_and_ss_at_shortest_ss_pass_period": {
+        "period_ns": 43.34625,
+        "tt_setup_slack_ns": 14.228750228882,
+        "tt_hold_slack_ns": 0.048688165843,
+        "ss_setup_slack_ns": 0.001321609481,
+        "ss_hold_slack_ns": 0.34575098753,
+        "tt_log": {
+          "sha256": "23a200d20f6760afc4fb1610157e76aba669c4796a9a9f3a6e2d869919365d50",
+          "bytes": 565
+        }
+      },
+      "tt_ss_at_10mhz": {
+        "tt": {
+          "status": "passed",
+          "setup_ws_ns": 42.555625915527,
+          "hold_ws_ns": 0.048688165843,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "status": "failed",
+          "setup_ws_ns": 40.94575881958,
+          "hold_ws_ns": 0.34575098753,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 83,
+          "cap_violations": 11,
+          "fanout_violations": 0
+        }
+      },
+      "independent_analysis_exit_codes": {
+        "extraction": 0,
+        "timing": 1,
+        "lvs": 0,
+        "simulation": 0,
+        "logic": 0,
+        "density": 0
+      },
+      "independent_analysis": {
+        "sha256": "52b42dd2c77178f3a3c1ee5f033775007c51f6f808a35fbae8fe35988e38ff0d",
+        "bytes": 71527
+      },
+      "producer_observation": {
+        "wall_seconds": 1320.46,
+        "cpu_affinity": [
+          16,
+          17,
+          18,
+          19
+        ],
+        "cgroup_peak_bytes": 1861689344,
+        "resources": {
+          "sha256": "d33ab3c7a48356cf42d8bf594b0db656dbd217f7b54c949a3e335ce9e860c013",
+          "bytes": 2063
+        }
+      }
     }
   },
   "trials": {
