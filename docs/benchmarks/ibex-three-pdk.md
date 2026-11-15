@@ -170,6 +170,45 @@ four whole-die metal-density violations. Feedback generation uses a prior
 routed layout and falls outside the paired producer measurement above.
 [Layout and checks](evidence/ibex-three-pdk/physical-iterations.json)
 
+## Aligned-select power trials
+
+RustSys can decode dynamic selections whose candidate bit windows are
+disjoint. The native profile enables this with `synthesis.aligned_selects`.
+The paired trials retain the original RTL inputs, hard SRAM and SDC. Each
+cell lists **the RustEDA trial / LibreLane**.
+
+| Routed trial | Modeled power at 10 MHz (mW) | SS setup Fmax (MHz) | Standard-cell area (µm²) |
+| --- | ---: | ---: | ---: |
+| GF180MCU D, aligned selects and area goal | 79.77 / 139.09 | 10.89 / 10.75 | 475,360 / 490,812 |
+| GF180MCU D, aligned selects and delay goal, with antenna repair | 92.34 / 139.09 | 15.04 / 10.75 | 571,373 / 490,812 |
+| IHP SG13G2, aligned selects with reset specialization | 1.50 / 5.57 | 40.44 / 24.86 | 176,104 / 204,848 |
+
+The GF180 delay goal and aligned selects reduce the vectorless power estimate
+by 40.8% and raise setup Fmax by 25.2% relative to the original RustEDA layout.
+Use `synthesis.goal = "delay"` and `synthesis.aligned_selects = true` in a
+copy of the native GF180 profile to select this mapping policy. The source
+port reproduced the trial's mapped netlist byte for byte. The warm physical
+trial added two antenna jumpers. Its final netlists passed ABC equivalence,
+and shared LVS, simulation and antenna checks passed. The foundry DRC
+reported the same four density findings as the original GF180 pair. At the
+shortest passing SS period of 66.503125 ns, setup and hold slack are
+nonnegative at TT and SS.
+The trial retains electrical-limit findings and uses 16.4% more standard-cell
+area than LibreLane. The area-goal variant uses less area and has two TT hold
+violations. [Trial receipts](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+The IHP trial uses the earlier aligned-select and after-reset compiler recipe.
+Its synthesis and final netlists passed equivalence after asserted reset,
+and the shared vendor-model simulation passed. Its setup ceiling is above
+LibreLane's 24.86 MHz and below the original RustEDA layout's 42.02 MHz.
+
+For a matching 17-cycle gate-level smoke workload at 10 MHz, the
+VCD-annotated TT estimates are **92.64 / 94.33 mW** on the repaired GF180
+pair and **1.001 / 1.306 mW** on the after-reset IHP pair. The original
+RustEDA layouts estimate 92.36 mW and 1.081 mW on those respective
+workloads. Input traces and valid-output traces match within each pair.
+[Waveform identities and activity coverage](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
 ## Frontend validation
 
 External ABC proved the RustEDA synthesis and placed clock-tree netlists for

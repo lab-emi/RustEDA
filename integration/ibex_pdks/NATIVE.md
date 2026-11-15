@@ -104,7 +104,8 @@ without `early_wire_model` use the original ideal pre-placement diagnostics.
 Set `synthesis.aligned_selects` to `true` to enable RustSys
 `--aligned-selects` when the pinned synthesis binary supports it. RustSys
 can decode dynamic part-selects whose possible bit windows are disjoint.
-The option defaults to `false`.
+The option defaults to `false`. The GF180 delay-goal trial uses this option
+with `synthesis.goal = "delay"`. [Measured power and setup results](../../docs/benchmarks/ibex-three-pdk.md#aligned-select-power-trials)
 
 ### Directory layout
 

@@ -1,0 +1,3216 @@
+{
+  "schema": "rusteda.ibex-aligned-select-power-trials.v1",
+  "scope": "Opt-in optimization trials on the retained three-PDK Ibex inputs. 10 MHz TT modeled power and SS setup-limited frequency.",
+  "baseline_receipt": "paired-qor.json",
+  "source_port": {
+    "rustsys_commit": "c09f2ce3e163785c2973c44025fbba2de9c3128b",
+    "rusteda_composer_commit": "65c95dc",
+    "archived_decoder_commit": "8b736d00013535885faead1be29c8fb9b655e414",
+    "ported_tool": {
+      "sha256": "c60ac4f610ff94d5ca536a32d1c6c8a63266ed97ed17c5bdc75bdf0148c09964",
+      "bytes": 73180520
+    },
+    "release_and_logic_checks": {
+      "sha256": "121d3b77e0642ec10c5000968dad7afaf2b46e3c3d4962fda69ff621b9ca3158",
+      "bytes": 8304
+    },
+    "gf180_delay_mapped_byte_match": {
+      "result": true,
+      "netlist": {
+        "sha256": "ff0e0a59b95c1da4e2673c47021b78e3bf80a00f7e40c3557167cdf76b1fa11c",
+        "bytes": 2270908
+      },
+      "receipt": {
+        "sha256": "eb02dac212536d1951358ebca721f432347e05717f7386cc59d8e823d6e2a798",
+        "bytes": 579
+      }
+    }
+  },
+  "tt_at_candidate_ss_passing_period": {
+    "gf180-aligned-delay": {
+      "scope": "TT, shared nominal extracted SPEF and propagated clock; same original I/O constraints",
+      "clock_period_ns": 66.503125,
+      "setup_ws_ns": 29.070960998535,
+      "hold_ws_ns": 0.033975932747,
+      "log_sha256": "454e3b80119b83f6ce6f3dc42785fadb237a653c680607e0874324f8d8307edf",
+      "sdc_sha256": "ca6883fcc43a5fff6f1851a1d768cc9dd066c25243b7c225c00c2c2f1498cad9"
+    },
+    "ihp-after-reset": {
+      "scope": "TT, shared nominal extracted SPEF and propagated clock; same original I/O constraints",
+      "clock_period_ns": 24.72625,
+      "setup_ws_ns": 7.536798000336,
+      "hold_ws_ns": 0.140316203237,
+      "log_sha256": "97502e0a5ed5e1d9d38ba572144ac7abbba9969b28ca7b70b68df5ad320aba84",
+      "sdc_sha256": "629768b952f95f906b2e902010b110f808eb64705c74e465e6f911c2371f7784"
+    },
+    "gf180-aligned-delay-warm": {
+      "scope": "TT, shared nominal extracted SPEF and propagated clock; same original I/O constraints",
+      "clock_period_ns": 66.503125,
+      "setup_ws_ns": 29.070960998535,
+      "hold_ws_ns": 0.033975932747,
+      "log_sha256": "454e3b80119b83f6ce6f3dc42785fadb237a653c680607e0874324f8d8307edf",
+      "sdc_sha256": "ca6883fcc43a5fff6f1851a1d768cc9dd066c25243b7c225c00c2c2f1498cad9"
+    }
+  },
+  "trials": {
+    "gf180_aligned_area": {
+      "receipt": {
+        "sha256": "9d433d259d83ed067594aec282cb8ef9f2c49b75565be9d57b43ea67f96e33ed",
+        "bytes": 7882
+      },
+      "scope_and_results": {
+        "scope": "Experimental RustSys aligned-select decode on exact GF180 native profile, no after-reset specialization",
+        "variant": "aligned-area-gds",
+        "manifest": {
+          "sha256": "9011913a2b0eff65942f72122b432a8e5c524551bb099d888d9330910fec502f",
+          "bytes": 75826
+        },
+        "synthesis_binary": {
+          "sha256": "b363972b19586acb5ba793d3b53045f6c18d45a8c5fe6987713152af3ebddb3f",
+          "bytes": 75112584
+        },
+        "reference_comparison": {
+          "sha256": "439fdfddb042a88d9f2bf2a487085eb052fe67de1f2785fd6d6bcbddd18f4d79",
+          "bytes": 86027
+        },
+        "power_policy": {
+          "type": "vectorless",
+          "input_activity_per_cycle": 0.1,
+          "input_duty": 0.5,
+          "reference_clock": "clk_i",
+          "clock_from_original_sdc": true,
+          "input_reset": "rst_ni",
+          "inactive_reset_level": 1,
+          "power_unit": "W"
+        },
+        "opensta_binary": {
+          "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+          "bytes": 16264
+        },
+        "inputs": {
+          "gds": {
+            "sha256": "7a3c14c1b91e384a6504e2db2608ba3271a15449b73d835cc6f92bc11edb31ad",
+            "bytes": 31258070
+          },
+          "def": {
+            "sha256": "779d4371f9d843a9fdfc5a3d7b31cb755587a7aea071e5de3b998a0321f21af9",
+            "bytes": 16557837
+          },
+          "netlist": {
+            "sha256": "1d817bf1b716bff2c963d16a4ba4b68e77ed387a45b4f6469b7a575ac4e8f8d3",
+            "bytes": 2854922
+          },
+          "sdc": {
+            "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+            "bytes": 36142
+          },
+          "std_tt": {
+            "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+            "bytes": 20122761
+          },
+          "ram_tt": {
+            "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446",
+            "bytes": 35624
+          },
+          "spef_openrcx": {
+            "sha256": "89ec64bb20965e8e73474f25a72c8d512bb6dac4b40baca3986774203e43cb15",
+            "bytes": 27657519
+          }
+        },
+        "producer": {
+          "allowed_cpus": [
+            20,
+            21
+          ],
+          "wall_seconds": 379.53,
+          "gnu_time_max_rss_kib": 632444,
+          "cgroup_v2_memory_peak_bytes": 2199322624
+        },
+        "gds_artifact": {
+          "sha256": "7a3c14c1b91e384a6504e2db2608ba3271a15449b73d835cc6f92bc11edb31ad",
+          "bytes": 31258070
+        },
+        "total_modeled_power_mw": 79.7733142972,
+        "power_w": {
+          "Sequential": {
+            "internal": 0.01267160847783,
+            "switching": 0.001564583275467,
+            "leakage": 8.712820545043e-07,
+            "total": 0.01423706300557
+          },
+          "Combinational": {
+            "internal": 0.01216460485011,
+            "switching": 0.02376654185355,
+            "leakage": 1.930242433446e-06,
+            "total": 0.03593307733536
+          },
+          "Clock": {
+            "internal": 0.005271192174405,
+            "switching": 0.005626644939184,
+            "leakage": 1.085294698555e-07,
+            "total": 0.01089794654399
+          },
+          "Macro": {
+            "internal": 0.01870036311448,
+            "switching": 0.0,
+            "leakage": 4.99360021422e-06,
+            "total": 0.01870535686612
+          },
+          "Pad": {
+            "internal": 0.0,
+            "switching": 0.0,
+            "leakage": 0.0,
+            "total": 0.0
+          },
+          "Total": {
+            "internal": 0.04880766943097,
+            "switching": 0.03095773793757,
+            "leakage": 7.903698133305e-06,
+            "total": 0.0797733142972
+          }
+        },
+        "power_delta_percent_to_librelane": -42.64797683335646,
+        "power_delta_percent_to_prior_rusteda": -48.82739282397361,
+        "fmax_mhz_bracket_ss": [
+          10.885390445348538,
+          10.885760744586035
+        ],
+        "fmax_delta_percent_to_librelane": 1.277672703522792,
+        "fmax_delta_percent_to_prior_rusteda": -9.339665002109033,
+        "area_std_cells_um2": 475359.584,
+        "area_delta_percent_to_librelane": -3.148257478173755,
+        "ss_clock_period_ns_pass": 91.86625,
+        "ss_clock_period_ns_fail": 91.863125,
+        "timing": {
+          "tt": {
+            "status": "failed",
+            "setup_ws_ns": 48.617597370491374,
+            "hold_ws_ns": -0.12136400504929723,
+            "setup_violations": 0,
+            "hold_violations": 2,
+            "slew_violations": 74,
+            "cap_violations": 16,
+            "fanout_violations": 0
+          },
+          "ss": {
+            "status": "failed",
+            "setup_ws_ns": 8.136730194092,
+            "hold_ws_ns": 0.08678839989790088,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 96,
+            "cap_violations": 23,
+            "fanout_violations": 0
+          }
+        },
+        "sum_nominal_spef_d_net_capacitance_pf": 307.630033131,
+        "sram_models": {
+          "cell_leakage_power_attributes": 1,
+          "state_leakage_power_groups": 0,
+          "internal_power_groups": 3,
+          "is_macro_cell_attributes": 0,
+          "leakage_power_unit": "\"1mW\"",
+          "nominal_v": "5.0",
+          "nominal_temperature_c": "25"
+        },
+        "sram_instances": [
+          "u_imem0",
+          "u_imem1",
+          "u_imem2",
+          "u_imem3",
+          "u_dmem0",
+          "u_dmem1",
+          "u_dmem2",
+          "u_dmem3"
+        ],
+        "raw_opensta_reports": {
+          "power.rpt": {
+            "sha256": "a3efe775738fd5e6e2dfa2cc7f1c42b14d86d16b86e3aa5995d342bdff19fa18",
+            "bytes": 1098
+          },
+          "macro-instances.rpt": {
+            "sha256": "337cc9fd1aad335475af5e71d3a51d7938316cfad5d4c679becc0b6f26a3f6e7",
+            "bytes": 919
+          },
+          "opensta.log": {
+            "sha256": "678e3831c1f8e6e510177f82b22cb97cfb56fa99fb587bef3c2b4d43d2c57f4b",
+            "bytes": 706
+          },
+          "report-opensta-power.tcl": {
+            "sha256": "cd4a25e35b92ad872a52182a206cf8111ca44bee1919650db097753946d219cd",
+            "bytes": 2675
+          },
+          "parasitic-annotation.rpt": {
+            "sha256": "3d6f8064ec2910fe81559b46d281a5fe3d40765e5f250ead5fcc9567259c014e",
+            "bytes": 68
+          },
+          "measure/resources.json": {
+            "sha256": "093e5ed512af4de42edb18ab93ee18d90f65956d8033d1075178e717382c2289",
+            "bytes": 1784
+          }
+        },
+        "shared_observations": {
+          "extraction": {
+            "exit_code": 0,
+            "status": "extracted_not_qualified",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "db7366404c286b788778f6398107efb9b4e38e9b5f9c7ba3deb30f888caa7072",
+              "bytes": 39881
+            }
+          },
+          "timing": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "db7366404c286b788778f6398107efb9b4e38e9b5f9c7ba3deb30f888caa7072",
+              "bytes": 39881
+            }
+          },
+          "logic": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "db7366404c286b788778f6398107efb9b4e38e9b5f9c7ba3deb30f888caa7072",
+              "bytes": 39881
+            }
+          },
+          "antenna": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": 0,
+            "summary_identity": {
+              "sha256": "5ee1b5642674bc5c37b451fd7c104ad5b54e915cb9dfca21c5869aed179cfa4e",
+              "bytes": 31690
+            }
+          },
+          "lvs": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "5ee1b5642674bc5c37b451fd7c104ad5b54e915cb9dfca21c5869aed179cfa4e",
+              "bytes": 31690
+            }
+          },
+          "simulation": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "5ee1b5642674bc5c37b451fd7c104ad5b54e915cb9dfca21c5869aed179cfa4e",
+              "bytes": 31690
+            }
+          },
+          "density": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "5ee1b5642674bc5c37b451fd7c104ad5b54e915cb9dfca21c5869aed179cfa4e",
+              "bytes": 31690
+            }
+          },
+          "drc": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": 4,
+            "summary_identity": {
+              "sha256": "d9f38215cd55d53fe31e3913d640fd52624e6ca56ea4e219b5a060c76e18c78d",
+              "bytes": 8843
+            }
+          }
+        },
+        "setup_sweep": {
+          "sha256": "7d6ed75d513563d966ce002b69c89fa33b965067be107c745041d25854ea674d",
+          "bytes": 16103
+        }
+      }
+    },
+    "gf180_aligned_delay": {
+      "receipt": {
+        "sha256": "f8ae01160acec586130b3388cfed1a254ba40ede312158ba366851034d9e1b22",
+        "bytes": 7877
+      },
+      "scope_and_results": {
+        "scope": "Experimental RustSys aligned-select decode on exact GF180 native profile, no after-reset specialization",
+        "variant": "aligned-delay-gds",
+        "manifest": {
+          "sha256": "6b9a74e51b5c2b0acecf1b8266ca0aa241332d4980574c059800a660390e99ec",
+          "bytes": 75827
+        },
+        "synthesis_binary": {
+          "sha256": "b363972b19586acb5ba793d3b53045f6c18d45a8c5fe6987713152af3ebddb3f",
+          "bytes": 75112584
+        },
+        "reference_comparison": {
+          "sha256": "439fdfddb042a88d9f2bf2a487085eb052fe67de1f2785fd6d6bcbddd18f4d79",
+          "bytes": 86027
+        },
+        "power_policy": {
+          "type": "vectorless",
+          "input_activity_per_cycle": 0.1,
+          "input_duty": 0.5,
+          "reference_clock": "clk_i",
+          "clock_from_original_sdc": true,
+          "input_reset": "rst_ni",
+          "inactive_reset_level": 1,
+          "power_unit": "W"
+        },
+        "opensta_binary": {
+          "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+          "bytes": 16264
+        },
+        "inputs": {
+          "gds": {
+            "sha256": "2da34db79ebc311cbe3f655370843986a13d784226d8a34c5e70a0d320b705b8",
+            "bytes": 33303234
+          },
+          "def": {
+            "sha256": "b2d568ed4f2f680974ee6ffbdd39a78b4dd9407f2ae582fff87c028beea1d157",
+            "bytes": 16652482
+          },
+          "netlist": {
+            "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5",
+            "bytes": 2966995
+          },
+          "sdc": {
+            "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+            "bytes": 36142
+          },
+          "std_tt": {
+            "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+            "bytes": 20122761
+          },
+          "ram_tt": {
+            "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446",
+            "bytes": 35624
+          },
+          "spef_openrcx": {
+            "sha256": "fec24bb0a8822d91ceec97b3f0df28022946abd98df26792d33fd0a36c02a9dc",
+            "bytes": 30173426
+          }
+        },
+        "producer": {
+          "allowed_cpus": [
+            22,
+            23
+          ],
+          "wall_seconds": 564.87,
+          "gnu_time_max_rss_kib": 650748,
+          "cgroup_v2_memory_peak_bytes": 2829983744
+        },
+        "gds_artifact": {
+          "sha256": "2da34db79ebc311cbe3f655370843986a13d784226d8a34c5e70a0d320b705b8",
+          "bytes": 33303234
+        },
+        "total_modeled_power_mw": 92.33562648296,
+        "power_w": {
+          "Sequential": {
+            "internal": 0.01228260248899,
+            "switching": 0.001410059747286,
+            "leakage": 8.699978479854e-07,
+            "total": 0.01369353197515
+          },
+          "Combinational": {
+            "internal": 0.01769209094346,
+            "switching": 0.03123928233981,
+            "leakage": 2.550504405008e-06,
+            "total": 0.04893392696977
+          },
+          "Clock": {
+            "internal": 0.005237384699285,
+            "switching": 0.005761011503637,
+            "leakage": 1.083751897113e-07,
+            "total": 0.01099850423634
+          },
+          "Macro": {
+            "internal": 0.01870468631387,
+            "switching": 0.0,
+            "leakage": 4.99360021422e-06,
+            "total": 0.01870968006551
+          },
+          "Pad": {
+            "internal": 0.0,
+            "switching": 0.0,
+            "leakage": 0.0,
+            "total": 0.0
+          },
+          "Total": {
+            "internal": 0.05391684174538,
+            "switching": 0.03841026499867,
+            "leakage": 8.522313692083e-06,
+            "total": 0.09233562648296
+          }
+        },
+        "power_delta_percent_to_librelane": -33.61646014319929,
+        "power_delta_percent_to_prior_rusteda": -40.76898040413174,
+        "fmax_mhz_bracket_ss": [
+          15.036887364315588,
+          15.037593984962406
+        ],
+        "fmax_delta_percent_to_librelane": 39.90320003759222,
+        "fmax_delta_percent_to_prior_rusteda": 25.236596024622916,
+        "area_std_cells_um2": 571373.2416,
+        "area_delta_percent_to_librelane": 16.413965221124926,
+        "ss_clock_period_ns_pass": 66.503125,
+        "ss_clock_period_ns_fail": 66.5,
+        "timing": {
+          "tt": {
+            "status": "failed",
+            "setup_ws_ns": 48.919174194336,
+            "hold_ws_ns": 0.0339703665159643,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 33,
+            "cap_violations": 9,
+            "fanout_violations": 0
+          },
+          "ss": {
+            "status": "failed",
+            "setup_ws_ns": 33.499816894531,
+            "hold_ws_ns": 0.3303164356064041,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 37,
+            "cap_violations": 8,
+            "fanout_violations": 0
+          }
+        },
+        "sum_nominal_spef_d_net_capacitance_pf": 367.478648694,
+        "sram_models": {
+          "cell_leakage_power_attributes": 1,
+          "state_leakage_power_groups": 0,
+          "internal_power_groups": 3,
+          "is_macro_cell_attributes": 0,
+          "leakage_power_unit": "\"1mW\"",
+          "nominal_v": "5.0",
+          "nominal_temperature_c": "25"
+        },
+        "sram_instances": [
+          "u_imem0",
+          "u_imem1",
+          "u_imem2",
+          "u_imem3",
+          "u_dmem0",
+          "u_dmem1",
+          "u_dmem2",
+          "u_dmem3"
+        ],
+        "raw_opensta_reports": {
+          "power.rpt": {
+            "sha256": "4f88dc3bf10e36f006f2f3a57611604a8acdbf1929c54ae743dc474caf3037ef",
+            "bytes": 1098
+          },
+          "macro-instances.rpt": {
+            "sha256": "a4328f26a779685eef473ca8ae30ccba51d7e671179b8143f85ec9e4ecbdc6a0",
+            "bytes": 919
+          },
+          "opensta.log": {
+            "sha256": "c232a04092f08828e5dbd12f41074da29cabb5002ca116d71e8c8a3dccdec877",
+            "bytes": 706
+          },
+          "report-opensta-power.tcl": {
+            "sha256": "f306efe1b9f46fe31d3cad50c49cfcf965df9edc10ba501364279ee341f27e1e",
+            "bytes": 2681
+          },
+          "parasitic-annotation.rpt": {
+            "sha256": "3d6f8064ec2910fe81559b46d281a5fe3d40765e5f250ead5fcc9567259c014e",
+            "bytes": 68
+          },
+          "measure/resources.json": {
+            "sha256": "47a32f3a231c51513c94494b2bdf5be52c14e15b144989dc8865d5255bab20dc",
+            "bytes": 1792
+          }
+        },
+        "shared_observations": {
+          "extraction": {
+            "exit_code": 0,
+            "status": "extracted_not_qualified",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "44696d781803bedc3852e62fb74070beeff3a41a23ee64f12b0cd0e31c8ab126",
+              "bytes": 39867
+            }
+          },
+          "timing": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "44696d781803bedc3852e62fb74070beeff3a41a23ee64f12b0cd0e31c8ab126",
+              "bytes": 39867
+            }
+          },
+          "logic": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "44696d781803bedc3852e62fb74070beeff3a41a23ee64f12b0cd0e31c8ab126",
+              "bytes": 39867
+            }
+          },
+          "antenna": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": 6,
+            "summary_identity": {
+              "sha256": "4d388d396a1e1254874473fddffab35c325f3788ee65d65eaf1c3484f080780c",
+              "bytes": 40555
+            }
+          },
+          "lvs": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "4d388d396a1e1254874473fddffab35c325f3788ee65d65eaf1c3484f080780c",
+              "bytes": 40555
+            }
+          },
+          "simulation": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "4d388d396a1e1254874473fddffab35c325f3788ee65d65eaf1c3484f080780c",
+              "bytes": 40555
+            }
+          },
+          "density": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "4d388d396a1e1254874473fddffab35c325f3788ee65d65eaf1c3484f080780c",
+              "bytes": 40555
+            }
+          },
+          "drc": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": 10,
+            "summary_identity": {
+              "sha256": "7b6082850a642cb4fc5548ac29ad47cd9a19230b7f9ef941902a6ad2bcc9af24",
+              "bytes": 9957
+            }
+          }
+        },
+        "setup_sweep": {
+          "sha256": "b2bbdd6bf1b7bc77349dd2e25ebe93aa13c40dd595ba26b5a9052c9b8e0abdc2",
+          "bytes": 16081
+        }
+      }
+    },
+    "gf180_aligned_delay_antenna_repair": {
+      "receipt": {
+        "sha256": "c6937d8199340f70981588e648639d301036aa0df317a123ccc6b77bc8f2b28b",
+        "bytes": 9021
+      },
+      "scope_and_results": {
+        "scope": "Warm DEF/GDS from two selected antenna jumpers on GF180 aligned-delay. Exact same logical and powered netlists, SDC, Liberty and RCX rule deck.",
+        "variant": "aligned-delay-two-jumper-warm",
+        "manifest": {
+          "sha256": "6b9a74e51b5c2b0acecf1b8266ca0aa241332d4980574c059800a660390e99ec",
+          "bytes": 75827
+        },
+        "synthesis_binary": {
+          "sha256": "b363972b19586acb5ba793d3b53045f6c18d45a8c5fe6987713152af3ebddb3f",
+          "bytes": 75112584
+        },
+        "reference_comparison": {
+          "sha256": "439fdfddb042a88d9f2bf2a487085eb052fe67de1f2785fd6d6bcbddd18f4d79",
+          "bytes": 86027
+        },
+        "power_policy": {
+          "type": "vectorless",
+          "input_activity_per_cycle": 0.1,
+          "input_duty": 0.5,
+          "reference_clock": "clk_i",
+          "clock_from_original_sdc": true,
+          "input_reset": "rst_ni",
+          "inactive_reset_level": 1,
+          "power_unit": "W"
+        },
+        "opensta_binary": {
+          "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+          "bytes": 16264
+        },
+        "inputs": {
+          "gds": {
+            "sha256": "e65a91a0ba131ed26f34e456b3a223c46c8e0f2fca86ebe8782ed53fa6439219",
+            "bytes": 33304002
+          },
+          "def": {
+            "sha256": "090a2c9752ab792f487d0bf821742f8781266dd642beae14a5e61656646462cd",
+            "bytes": 16652592
+          },
+          "netlist": {
+            "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5",
+            "bytes": 2966995
+          },
+          "sdc": {
+            "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+            "bytes": 36142
+          },
+          "std_tt": {
+            "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+            "bytes": 20122761
+          },
+          "ram_tt": {
+            "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446",
+            "bytes": 35624
+          },
+          "spef_openrcx": {
+            "sha256": "9deead026b634c6b7c2970a042b9bc79a7543cf0232998f956d0dbb8114ef4d8",
+            "bytes": 30173873
+          }
+        },
+        "warm_export_resources": {
+          "allowed_cpus": [
+            30,
+            31
+          ],
+          "wall_seconds": 1.51,
+          "gnu_time_max_rss_kib": 127228,
+          "cgroup_v2_memory_peak_bytes": null
+        },
+        "gds_artifact": {
+          "sha256": "e65a91a0ba131ed26f34e456b3a223c46c8e0f2fca86ebe8782ed53fa6439219",
+          "bytes": 33304002
+        },
+        "total_modeled_power_mw": 92.3356115818,
+        "power_w": {
+          "Sequential": {
+            "internal": 0.01228260248899,
+            "switching": 0.001410059747286,
+            "leakage": 8.699978479854e-07,
+            "total": 0.01369353197515
+          },
+          "Combinational": {
+            "internal": 0.01769208721817,
+            "switching": 0.03123927675188,
+            "leakage": 2.550504405008e-06,
+            "total": 0.0489339157939
+          },
+          "Clock": {
+            "internal": 0.005237384699285,
+            "switching": 0.005761011503637,
+            "leakage": 1.083751897113e-07,
+            "total": 0.01099850423634
+          },
+          "Macro": {
+            "internal": 0.01870468631387,
+            "switching": 0.0,
+            "leakage": 4.99360021422e-06,
+            "total": 0.01870968006551
+          },
+          "Pad": {
+            "internal": 0.0,
+            "switching": 0.0,
+            "leakage": 0.0,
+            "total": 0.0
+          },
+          "Total": {
+            "internal": 0.0539168342948,
+            "switching": 0.03841025754809,
+            "leakage": 8.522313692083e-06,
+            "total": 0.0923356115818
+          }
+        },
+        "power_delta_percent_to_librelane": -33.61647085620126,
+        "power_delta_percent_to_prior_rusteda": -40.76898996285716,
+        "fmax_mhz_bracket_ss": [
+          15.036887364315588,
+          15.037593984962406
+        ],
+        "fmax_delta_percent_to_librelane": 39.90320003759222,
+        "fmax_delta_percent_to_prior_rusteda": 25.236596024622916,
+        "area_std_cells_um2": 571373.2416,
+        "area_delta_percent_to_librelane": 16.413965221124926,
+        "ss_clock_period_ns_pass": 66.503125,
+        "ss_clock_period_ns_fail": 66.5,
+        "timing": {
+          "tt": {
+            "status": "failed",
+            "setup_ws_ns": 48.919174194336,
+            "hold_ws_ns": 0.0339703665159643,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 33,
+            "cap_violations": 9,
+            "fanout_violations": 0
+          },
+          "ss": {
+            "status": "failed",
+            "setup_ws_ns": 33.499816894531,
+            "hold_ws_ns": 0.3303164356064041,
+            "setup_violations": 0,
+            "hold_violations": 0,
+            "slew_violations": 37,
+            "cap_violations": 8,
+            "fanout_violations": 0
+          }
+        },
+        "sum_nominal_spef_d_net_capacitance_pf": 367.478461854,
+        "sram_models": {
+          "cell_leakage_power_attributes": 1,
+          "state_leakage_power_groups": 0,
+          "internal_power_groups": 3,
+          "is_macro_cell_attributes": 0,
+          "leakage_power_unit": "\"1mW\"",
+          "nominal_v": "5.0",
+          "nominal_temperature_c": "25"
+        },
+        "sram_instances": [
+          "u_imem0",
+          "u_imem1",
+          "u_imem2",
+          "u_imem3",
+          "u_dmem0",
+          "u_dmem1",
+          "u_dmem2",
+          "u_dmem3"
+        ],
+        "raw_opensta_reports": {
+          "power.rpt": {
+            "sha256": "f27c09083343399bcae762f625a6b6b29e3010301abcb16a842834fc9390628b",
+            "bytes": 1098
+          },
+          "macro-instances.rpt": {
+            "sha256": "a4328f26a779685eef473ca8ae30ccba51d7e671179b8143f85ec9e4ecbdc6a0",
+            "bytes": 919
+          },
+          "opensta.log": {
+            "sha256": "c232a04092f08828e5dbd12f41074da29cabb5002ca116d71e8c8a3dccdec877",
+            "bytes": 706
+          },
+          "report-opensta-power.tcl": {
+            "sha256": "03c90aa8f8f13b8052137f0b9186e29eb0b5b427fc788c9de82ede2838df9245",
+            "bytes": 2847
+          },
+          "parasitic-annotation.rpt": {
+            "sha256": "3d6f8064ec2910fe81559b46d281a5fe3d40765e5f250ead5fcc9567259c014e",
+            "bytes": 68
+          },
+          "measure/resources.json": {
+            "sha256": "85499cb21a3b95e2586e58c1d567103a2c26243c4755acfa2999a4db05905f9d",
+            "bytes": 1829
+          }
+        },
+        "shared_observations": {
+          "extraction": {
+            "exit_code": 0,
+            "status": "extracted_not_qualified",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "9a5de246c2c7ac578cd081bff1ca280e764e1cd82bf911a04cfd19f80f162149",
+              "bytes": 40150
+            }
+          },
+          "timing": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "9a5de246c2c7ac578cd081bff1ca280e764e1cd82bf911a04cfd19f80f162149",
+              "bytes": 40150
+            }
+          },
+          "logic": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "9a5de246c2c7ac578cd081bff1ca280e764e1cd82bf911a04cfd19f80f162149",
+              "bytes": 40150
+            }
+          },
+          "antenna": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": 0,
+            "summary_identity": {
+              "sha256": "455e14846b86c8d507d6deb29e33fc5c6f78dea722e06d69cbbb21561c788ba8",
+              "bytes": 39565
+            }
+          },
+          "lvs": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "455e14846b86c8d507d6deb29e33fc5c6f78dea722e06d69cbbb21561c788ba8",
+              "bytes": 39565
+            }
+          },
+          "simulation": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "455e14846b86c8d507d6deb29e33fc5c6f78dea722e06d69cbbb21561c788ba8",
+              "bytes": 39565
+            }
+          },
+          "density": {
+            "exit_code": 0,
+            "status": "passed",
+            "violations": null,
+            "summary_identity": {
+              "sha256": "455e14846b86c8d507d6deb29e33fc5c6f78dea722e06d69cbbb21561c788ba8",
+              "bytes": 39565
+            }
+          },
+          "drc": {
+            "exit_code": 1,
+            "status": "failed",
+            "violations": 4,
+            "summary_identity": {
+              "sha256": "8a5945b1d1e801a9ab9df16a3645b3a53c5876fe1eb6aa80718c8bf2a1e70ef5",
+              "bytes": 8865
+            }
+          }
+        },
+        "setup_sweep": {
+          "sha256": "31e3792fb4d768e0a83b1c31df8c0be7b1667cc94a49f40ebf50bf3e4b1c36d3",
+          "bytes": 16216
+        },
+        "cold_source_receipt": {
+          "sha256": "f8ae01160acec586130b3388cfed1a254ba40ede312158ba366851034d9e1b22",
+          "bytes": 7877
+        },
+        "warm_export": {
+          "sha256": "ffb6b47fcfa8bb34e491d8dd4d138e6bba0c276a7239855b282661c9a6e13b25",
+          "bytes": 4660
+        },
+        "warm_antenna_repair": {
+          "sha256": "407c219bb915992856fb0b583f35bb6eed361ffb154f6147329a882cabc800d8",
+          "bytes": 2176
+        },
+        "warm_antenna_resources": {
+          "sha256": "a72bbadf1ff03ee154f1e95a335f3b3a320cf3059475bd03337b4ebe81c65a2a",
+          "bytes": 2068
+        },
+        "warm_def_scope_check": {
+          "sha256": "47bf5aaca7ec34d96c3dd92e1d90c70d31735b48f65e500f08bd2d8cdf53df56",
+          "bytes": 544
+        },
+        "separate_10mhz_vcd_workload": {
+          "source_receipt": {
+            "sha256": "c2fca78b41051f87c5701fa9a8c3c36dec4a3d1a97412a79a583e4948c69a5a8",
+            "bytes": 4761
+          },
+          "sampled_cycles": 17,
+          "modeled_total_mw": 92.64174103737,
+          "librelane_mw": 94.32695060968,
+          "scope": "Same 17-cycle aligned-delay VCD rebound to warm antenna-repaired artifact's independently extracted nominal SPEF; same 10 MHz TT constraints"
+        }
+      }
+    },
+    "ihp_aligned_after_reset": {
+      "receipt": {
+        "sha256": "425485050ff398f7602f6c2eecb73a9fb772b4d911b71f3c0de55a63223dbc6c",
+        "bytes": 11686
+      },
+      "scope_and_results": {
+        "schema": "rusteda.ihp-after-reset-layout-qor-trial.v1",
+        "scope": {
+          "power": {
+            "tool": "OpenSTA 3.1.0",
+            "clock_mhz": 10,
+            "corner": "tt",
+            "wire_model": "nominal OpenRCX SPEF",
+            "clock_model": "propagated",
+            "activity": {
+              "type": "vectorless",
+              "input_activity_per_cycle": 0.1,
+              "input_duty": 0.5,
+              "reference_clock": "clk_i",
+              "clock_from_original_sdc": true,
+              "input_reset": "rst_ni",
+              "inactive_reset_level": 1,
+              "power_unit": "W"
+            }
+          },
+          "frequency": {
+            "corner": "ss",
+            "metric": "setup-limited estimate at shortest passing trial period",
+            "wire_model": "nominal OpenRCX SPEF",
+            "clock_model": "propagated",
+            "clock": "clk_i"
+          },
+          "candidate_logic": "Two-state after rst_ni=0. The retained RustSys checker proves functional outputs, paired state and hard-SRAM input pins; the original vendor-model testbench passed separately.",
+          "limit": "Vectorless modeled power and SS setup ceiling under identical checked input constraints. The lower-power candidate uses a reset-dependent logic contract and remains separate from the original published paired comparison."
+        },
+        "candidate": {
+          "producer": "Retained Ibex campaign3 val3/signoff-tiles GDS from frozen RustSys 491195b with --after-reset rst_ni=0 --aligned-selects",
+          "inputs": {
+            "bytes": 6116,
+            "sha256": "23d48afc44b811cec330278a016dd85462408c6645d903fa0bad4849ffa7be57"
+          },
+          "gds": {
+            "sha256": "e65b22575f01262e4c1d7fac70dacbbd8f757b25d79e0eaa1cc61ed9af4657b9",
+            "bytes": 25079958
+          },
+          "area_um2": 176103.648,
+          "power": {
+            "sequential": {
+              "internal_mw": 0.3294950292911,
+              "switching_mw": 0.026210122086919998,
+              "leakage_mw": 0.0004979481218470001,
+              "total_mw": 0.3562030906323
+            },
+            "combinational": {
+              "internal_mw": 0.1938850182341,
+              "switching_mw": 0.5452871555462,
+              "leakage_mw": 0.001058491307049,
+              "total_mw": 0.7402306655422001
+            },
+            "clock": {
+              "internal_mw": 0.05868279549759,
+              "switching_mw": 0.12760687968690002,
+              "leakage_mw": 4.2622605889159997e-05,
+              "total_mw": 0.1863322977442
+            },
+            "macro": {
+              "internal_mw": 0.21473661763590002,
+              "switching_mw": 0.0,
+              "leakage_mw": 0.0007920619964352,
+              "total_mw": 0.21552867838179998
+            },
+            "pad": {
+              "internal_mw": 0.0,
+              "switching_mw": 0.0,
+              "leakage_mw": 0.0,
+              "total_mw": 0.0
+            },
+            "total": {
+              "internal_mw": 0.7967959973030001,
+              "switching_mw": 0.6991038098931001,
+              "leakage_mw": 0.0023911118205430003,
+              "total_mw": 1.498290919699
+            }
+          },
+          "setup_sweep": {
+            "matched_setup_only_frequency_mhz": 40.44284919872605,
+            "period_pass_ns": 24.72625,
+            "period_fail_ns": 24.723125,
+            "setup_slack_at_pass_ns": 0.001854516566,
+            "hold_slack_at_pass_ns": 0.256611287594,
+            "setup_slack_at_fail_ns": -0.001270095119,
+            "native_tool_min_period_report": "clk_i period_min = 24.72 fmax = 40.45",
+            "worst_path_at_pass": {
+              "slack_ns": 0.001854516566,
+              "startpoint": "r226 (rising edge-triggered flip-flop clocked by clk_i)",
+              "endpoint": "observe_valid_o (output port clocked by clk_i)",
+              "path_group": "clk_i",
+              "edges": [
+                {
+                  "step_ns": 0.0,
+                  "time_ns": 0.0,
+                  "edge": "rise"
+                },
+                {
+                  "step_ns": 24.726249694824,
+                  "time_ns": 24.726249694824,
+                  "edge": "rise"
+                }
+              ]
+            }
+          },
+          "gate_exit_codes": {
+            "drc": 0,
+            "antenna": 0,
+            "latchup": 0,
+            "extraction": 0,
+            "timing": 0,
+            "lvs": 0,
+            "simulation": 0,
+            "logic_reset": 0,
+            "density": 0
+          },
+          "proofs": {
+            "synthesis": {
+              "proof": {
+                "bytes": 3310,
+                "sha256": "ff10e6f73f50e9a93a4467b4a475bdaad8645eaa3d47a4d4d410f0e7c62b2ffa"
+              },
+              "counts": {
+                "outputs_checked": 68,
+                "state_pairs_checked": 1887,
+                "rtl_state_bits": 2023,
+                "netlist_state_elements": 1803,
+                "unmatched_rtl_state_bits": 65,
+                "constant_states_checked": 71,
+                "equivalent_states_checked": 84,
+                "box_inputs_checked": 316,
+                "undecided": 0,
+                "mismatches": 0,
+                "sat_calls": 28116,
+                "sweep": {
+                  "candidates": 15853,
+                  "merged": 10057,
+                  "refuted": 5241,
+                  "undecided": 555,
+                  "solver_calls": 28116,
+                  "skipped_candidates": 0
+                },
+                "checker_runtime_s": 1762.07713332
+              },
+              "wall_seconds": 1762.283
+            },
+            "final": {
+              "proof": {
+                "bytes": 3300,
+                "sha256": "f27281c24e32a1839f8ce089165e667f7f6bca5f9b2d27aabbe44e608cc310f6"
+              },
+              "counts": {
+                "outputs_checked": 68,
+                "state_pairs_checked": 1887,
+                "rtl_state_bits": 2023,
+                "netlist_state_elements": 1803,
+                "unmatched_rtl_state_bits": 65,
+                "constant_states_checked": 71,
+                "equivalent_states_checked": 84,
+                "box_inputs_checked": 316,
+                "undecided": 0,
+                "mismatches": 0,
+                "sat_calls": 28417,
+                "sweep": {
+                  "candidates": 16014,
+                  "merged": 10058,
+                  "refuted": 5376,
+                  "undecided": 580,
+                  "solver_calls": 28417,
+                  "skipped_candidates": 0
+                },
+                "checker_runtime_s": 1577.460293688
+              },
+              "wall_seconds": 1577.625
+            }
+          },
+          "vendor_model_simulation": {
+            "bytes": 4764,
+            "sha256": "af850018a8795dc7afd610267dda622b68de562ccb96af8562293b34992b89a2"
+          },
+          "fully_unannotated_driver_rows": 72,
+          "power_report": {
+            "bytes": 1098,
+            "sha256": "59b7b898c48e096fc8d296f3921ebf1a340f7a8b3d1c98f0f5b110ffae6c160d"
+          },
+          "power_log": {
+            "bytes": 707,
+            "sha256": "8c727e6f47bebeceb791d7057281a50b4efcc7a76adaa19ddf04dc9bf25c3d34"
+          },
+          "setup_receipt": {
+            "bytes": 15505,
+            "sha256": "9b93b7892e7cad7aa200cf076fa190615c966753e50d4139c049c04d14fd95ca"
+          },
+          "peak_rss_kib": {
+            "power": 161796,
+            "setup": 158728
+          }
+        },
+        "original_rusteda": {
+          "power": {
+            "sequential": {
+              "internal_mw": 0.3457512939349,
+              "switching_mw": 0.01994515332626,
+              "leakage_mw": 0.0005528408451028,
+              "total_mw": 0.3662492672447
+            },
+            "combinational": {
+              "internal_mw": 2.680234611034,
+              "switching_mw": 5.0695007666950005,
+              "leakage_mw": 0.001098257371268,
+              "total_mw": 7.7508334070439995
+            },
+            "clock": {
+              "internal_mw": 0.06364002183545,
+              "switching_mw": 0.1407319650752,
+              "leakage_mw": 4.623263194503e-05,
+              "total_mw": 0.2044182183454
+            },
+            "macro": {
+              "internal_mw": 0.3110758552793,
+              "switching_mw": 0.0,
+              "leakage_mw": 0.0007920619964352,
+              "total_mw": 0.3118679160252
+            },
+            "pad": {
+              "internal_mw": 0.0,
+              "switching_mw": 0.0,
+              "leakage_mw": 0.0,
+              "total_mw": 0.0
+            },
+            "total": {
+              "internal_mw": 3.400688059628,
+              "switching_mw": 5.2301790565249995,
+              "leakage_mw": 0.002489362259439,
+              "total_mw": 8.633356541395
+            }
+          },
+          "area_um2": 187585.1712,
+          "setup_sweep": {
+            "matched_setup_only_frequency_mhz": 42.02232435981615,
+            "period_pass_ns": 23.796875,
+            "period_fail_ns": 23.79375,
+            "setup_slack_at_pass_ns": 0.00149569253,
+            "hold_slack_at_pass_ns": 0.21097946167,
+            "setup_slack_at_fail_ns": -0.001628919272,
+            "native_tool_min_period_report": "clk_i period_min = 23.80 fmax = 42.02",
+            "worst_path_at_pass": {
+              "slack_ns": 0.00149569253,
+              "startpoint": "r223 (rising edge-triggered flip-flop clocked by clk_i)",
+              "endpoint": "observe_valid_o (output port clocked by clk_i)",
+              "path_group": "clk_i",
+              "edges": [
+                {
+                  "step_ns": 0.0,
+                  "time_ns": 0.0,
+                  "edge": "rise"
+                },
+                {
+                  "step_ns": 23.796875,
+                  "time_ns": 23.796875,
+                  "edge": "rise"
+                }
+              ]
+            }
+          },
+          "candidate_improvement_pct": {
+            "power": 82.64532557511053,
+            "area": 6.120698734634322,
+            "setup_frequency": -3.758657297406598
+          }
+        },
+        "original_librelane": {
+          "power": {
+            "sequential": {
+              "internal_mw": 0.3642298397608,
+              "switching_mw": 0.03477921200101,
+              "leakage_mw": 0.0005280520554152,
+              "total_mw": 0.3995371225756
+            },
+            "combinational": {
+              "internal_mw": 1.1647054925559999,
+              "switching_mw": 3.115452127531,
+              "leakage_mw": 0.0009256575026484,
+              "total_mw": 4.281083121896
+            },
+            "clock": {
+              "internal_mw": 0.22273753711490002,
+              "switching_mw": 0.1785529311746,
+              "leakage_mw": 0.055133525165729995,
+              "total_mw": 0.45642402255910003
+            },
+            "macro": {
+              "internal_mw": 0.4348699003458,
+              "switching_mw": 0.0,
+              "leakage_mw": 0.0007920619964352,
+              "total_mw": 0.43566196109169997
+            },
+            "pad": {
+              "internal_mw": 0.0,
+              "switching_mw": 0.0,
+              "leakage_mw": 0.0,
+              "total_mw": 0.0
+            },
+            "total": {
+              "internal_mw": 2.186540979892,
+              "switching_mw": 3.328778548166,
+              "leakage_mw": 0.05738188338,
+              "total_mw": 5.572701338679
+            }
+          },
+          "area_um2": 204848.3808,
+          "setup_sweep": {
+            "matched_setup_only_frequency_mhz": 24.86132044688223,
+            "period_pass_ns": 40.223125,
+            "period_fail_ns": 40.22,
+            "setup_slack_at_pass_ns": 0.002817302011,
+            "hold_slack_at_pass_ns": 0.312263995409,
+            "setup_slack_at_fail_ns": -0.000309086085,
+            "native_tool_min_period_report": "clk_i period_min = 40.22 fmax = 24.86",
+            "worst_path_at_pass": {
+              "slack_ns": 0.002817302011,
+              "startpoint": "_22144_ (rising edge-triggered flip-flop clocked by clk_i)",
+              "endpoint": "_21797_ (rising edge-triggered flip-flop clocked by clk_i)",
+              "path_group": "clk_i",
+              "edges": [
+                {
+                  "step_ns": 0.0,
+                  "time_ns": 0.0,
+                  "edge": "rise"
+                },
+                {
+                  "step_ns": 40.223125457764,
+                  "time_ns": 40.223125457764,
+                  "edge": "rise"
+                }
+              ]
+            }
+          },
+          "candidate_improvement_pct": {
+            "power": 73.11374091951306,
+            "area": 14.032199174698102,
+            "setup_frequency": 62.673777867650806
+          }
+        }
+      }
+    }
+  },
+  "gate_level_workload_models": {
+    "gf180": {
+      "receipt": {
+        "sha256": "b3b01435d7aa595785930b8323e55394684a90d4a544c9f239822cb4a7fc116f",
+        "bytes": 44223
+      },
+      "scope_and_results": {
+        "scope": "Retained GF180MCU layouts; fixed 10 MHz and matched program smoke workload",
+        "analysis_corner": "nom_tt_025C_5v00",
+        "activity": "Icarus gate-level VCD",
+        "differences_percent": {
+          "aligned_vs_native_baseline": 0.3009068182695307,
+          "aligned_vs_librelane": -1.786562123992863,
+          "native_baseline_vs_librelane": -2.081206450151618
+        },
+        "flows": {
+          "librelane": {
+            "sample": {
+              "sampled_cycles": 17,
+              "start_ps": 4400000,
+              "end_ps": 6100000,
+              "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+              "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+            },
+            "trace": {
+              "start_ps": 4400000,
+              "end_ps": 6100000,
+              "cycles": 17,
+              "clock_period_ns": 100,
+              "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+              "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+            },
+            "power_mw": {
+              "sequential": {
+                "internal": 9.511075913906,
+                "switching": 0.09253339521819999,
+                "leakage": 0.0008343004651579,
+                "total": 9.604443795979
+              },
+              "combinational": {
+                "internal": 2.1221975330259997,
+                "switching": 3.44162620604,
+                "leakage": 0.002027311438724,
+                "total": 5.565850995481
+              },
+              "clock": {
+                "internal": 6.229181308299,
+                "switching": 5.536967422813,
+                "leakage": 0.002348407861064,
+                "total": 11.76849752665
+              },
+              "macro": {
+                "internal": 67.38322228193,
+                "switching": 0.0,
+                "leakage": 0.00499360021422,
+                "total": 67.38821417093
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 85.24560928345,
+                "switching": 9.071135893464,
+                "leakage": 0.01020368563331,
+                "total": 94.32695060968
+              }
+            },
+            "activity_annotation": {
+              "vcd": 62259,
+              "unannotated": 0
+            },
+            "checks": {
+              "sampled_output_equivalent": true,
+              "vendor_testbench_passed": true
+            },
+            "inputs": {
+              "gds": {
+                "bytes": 32658112,
+                "sha256": "a7a1ae8c6ba1a2056854c1172d5e5b53f6d6835d28f39ba5514b4789a4b4fb21"
+              },
+              "def": {
+                "bytes": 22908513,
+                "sha256": "38fc6c54f036135044a8c8f2c23a81788a054c35d13598f089b9e456bbb2c3f2"
+              },
+              "netlist": {
+                "bytes": 5132574,
+                "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb"
+              },
+              "sdc": {
+                "bytes": 36142,
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84"
+              },
+              "spef_openrcx": {
+                "bytes": 24698767,
+                "sha256": "009d30effa96760acdc116f17a6773f76607e7d7a07aae51e68bc0d60581a243"
+              },
+              "std_tt": {
+                "bytes": 20122761,
+                "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+              },
+              "ram_tt": {
+                "bytes": 35624,
+                "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446"
+              }
+            },
+            "waveform": {
+              "bytes": 14281583,
+              "sha256": "8ee3a46eb30f55f4ea2b72bf56e591a9849038aebc587368f303c8935b8719b4"
+            },
+            "testbench": {
+              "bytes": 3694,
+              "sha256": "059756839d2f737d6d78e53e56e6d4ff37050861c1f5fb130d33469526a7eb06"
+            },
+            "original_bench": {
+              "sha256": "039d5ed33c8a3f94a66a7634dab57debb46088dfb0a875b3ecf8271f2f314360",
+              "bytes": 3217
+            },
+            "compiled_files": [
+              {
+                "bytes": 5132574,
+                "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb"
+              },
+              {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "bytes": 5541,
+                "sha256": "ccc0f447f71ce35c635e08d49eb0ed77aa2ec91cf31d8e3e45a246114d3cae92"
+              },
+              {
+                "bytes": 975393,
+                "sha256": "9a21c5f98200acfe77d8ba52067164e0802284dc1c1e117f0e64fb6ac42eb64b"
+              },
+              {
+                "bytes": 16737,
+                "sha256": "a9574a2adfe37ba51b8b16359eae93826eb5848bf39ba20a6b64926affebc70b"
+              }
+            ],
+            "power_receipt": {
+              "bytes": 1098,
+              "sha256": "896ef4e3c55826aa74ddc0e7462cdefb6159598151446827b778da0eba03a0cf"
+            },
+            "resources": {
+              "compile": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-librelane-compile",
+                "command": ".work/three-pdk-20261114/reference-tools/run-env .work/three-pdk-20261114/reference-tools/nix-store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/iverilog -g2012 -s tb -DFUNCTIONAL -o .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/librelane/sim .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/tb-power.sv .work/three-pdk-20261114/gf180/ll-ref-05/runs/run-05/54-openroad-fillinsertion/ibex_sram_bench.nl.v .work/three-pdk-20261114/gf180/ll-ref-05/shared-subset/simulation/physical-only-sim.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+                "started": "2026-11-15T13:40:14+01:00",
+                "wall_seconds": 1.78,
+                "executor_wall_seconds": 1.846,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 450300,
+                "cpu_seconds": 1.87,
+                "unit": "ibex-campaign-sky-workload-candidate-librelane-compile-2523324.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.84,
+                  3.98,
+                  3.88
+                ],
+                "loadavg_at_end": [
+                  3.84,
+                  3.98,
+                  3.88
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.84,
+                "loadavg_1m_max": 3.84,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 8.19,
+                  "allowed_set_busy_cpu_seconds": 1.88,
+                  "own_cpu_seconds": 1.87,
+                  "other_cpu_seconds_host": 6.32,
+                  "other_cpu_seconds_on_allowed_set": 0.01,
+                  "mean_other_busy_cpus_host": 3.424,
+                  "mean_other_busy_cpus_on_allowed_set": 0.005,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "simulate": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-librelane-simulate",
+                "command": ".work/three-pdk-20261114/reference-tools/run-env .work/three-pdk-20261114/reference-tools/nix-store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/vvp .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/librelane/sim",
+                "started": "2026-11-15T13:40:15+01:00",
+                "wall_seconds": 2.1,
+                "executor_wall_seconds": 2.149,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 162444,
+                "cpu_seconds": 2.1,
+                "unit": "ibex-campaign-sky-workload-candidate-librelane-simulate-2523355.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 175681536,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 175681536,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.84,
+                  3.98,
+                  3.88
+                ],
+                "loadavg_at_end": [
+                  3.85,
+                  3.98,
+                  3.88
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.84,
+                "loadavg_1m_max": 3.85,
+                "samples": 2,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 9.16,
+                  "allowed_set_busy_cpu_seconds": 2.12,
+                  "own_cpu_seconds": 2.1,
+                  "other_cpu_seconds_host": 7.06,
+                  "other_cpu_seconds_on_allowed_set": 0.02,
+                  "mean_other_busy_cpus_host": 3.285,
+                  "mean_other_busy_cpus_on_allowed_set": 0.009,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "opensta": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-librelane-opensta",
+                "command": ".work/three-pdk-20261114/reference-tools/wrap/sta -no_init -threads 2 -exit .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/librelane/workload-power.tcl",
+                "started": "2026-11-15T13:40:18+01:00",
+                "wall_seconds": 4.45,
+                "executor_wall_seconds": 4.502,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 229632,
+                "cpu_seconds": 4.76,
+                "unit": "ibex-campaign-sky-workload-candidate-librelane-opensta-2523384.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 221626368,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 221626368,
+                "cgroup_limit_bytes": 1610612736,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.85,
+                  3.98,
+                  3.88
+                ],
+                "loadavg_at_end": [
+                  3.94,
+                  4.0,
+                  3.88
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.88,
+                "loadavg_1m_max": 3.94,
+                "samples": 3,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 21.26,
+                  "allowed_set_busy_cpu_seconds": 4.79,
+                  "own_cpu_seconds": 4.76,
+                  "other_cpu_seconds_host": 16.5,
+                  "other_cpu_seconds_on_allowed_set": 0.03,
+                  "mean_other_busy_cpus_host": 3.665,
+                  "mean_other_busy_cpus_on_allowed_set": 0.007,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              }
+            }
+          },
+          "rusteda_original": {
+            "sample": {
+              "sampled_cycles": 17,
+              "start_ps": 4400000,
+              "end_ps": 6100000,
+              "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+              "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+            },
+            "trace": {
+              "start_ps": 4400000,
+              "end_ps": 6100000,
+              "cycles": 17,
+              "clock_period_ns": 100,
+              "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+              "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+            },
+            "power_mw": {
+              "sequential": {
+                "internal": 9.928742423654,
+                "switching": 0.12216955656189998,
+                "leakage": 0.0008748318691687,
+                "total": 10.05178689957
+              },
+              "combinational": {
+                "internal": 1.5734778717159998,
+                "switching": 3.332023508847,
+                "leakage": 0.001933777184604,
+                "total": 4.907435271889
+              },
+              "clock": {
+                "internal": 4.813886713236999,
+                "switching": 5.202154628932,
+                "leakage": 0.0001086074306045,
+                "total": 10.01614984125
+              },
+              "macro": {
+                "internal": 67.38322228193,
+                "switching": 0.0,
+                "leakage": 0.00499360021422,
+                "total": 67.38821417093
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 83.69955420494,
+                "switching": 8.656348101795,
+                "leakage": 0.00791069760453,
+                "total": 92.36381202936
+              }
+            },
+            "activity_annotation": {
+              "vcd": 64720,
+              "unannotated": 0
+            },
+            "checks": {
+              "sampled_output_equivalent": true,
+              "vendor_testbench_passed": true
+            },
+            "inputs": {
+              "gds": {
+                "bytes": 32018564,
+                "sha256": "8c854b5d39f4c5159f96dd3cc69666296c531face07faa6199f56c59729fd94b"
+              },
+              "def": {
+                "bytes": 16733166,
+                "sha256": "e46eef0f50d7b26a6d81c68cbbe7c2d57e3ad4a276474ab2d48e71ae0b08f58c"
+              },
+              "netlist": {
+                "bytes": 2891676,
+                "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114"
+              },
+              "sdc": {
+                "bytes": 36142,
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84"
+              },
+              "spef_openrcx": {
+                "bytes": 28336536,
+                "sha256": "b0093e3dc7842b07f185b1a2fe3909ef5b86fef73d907d43bedbd663a51f3fd6"
+              },
+              "std_tt": {
+                "bytes": 20122761,
+                "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+              },
+              "ram_tt": {
+                "bytes": 35624,
+                "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446"
+              }
+            },
+            "waveform": {
+              "bytes": 9739610,
+              "sha256": "e9b2ecf6890f45acb817f0819758fc052cb87ff5ec082065200a1b1e6037978e"
+            },
+            "testbench": {
+              "bytes": 3694,
+              "sha256": "059756839d2f737d6d78e53e56e6d4ff37050861c1f5fb130d33469526a7eb06"
+            },
+            "original_bench": {
+              "sha256": "039d5ed33c8a3f94a66a7634dab57debb46088dfb0a875b3ecf8271f2f314360",
+              "bytes": 3217
+            },
+            "compiled_files": [
+              {
+                "bytes": 2891676,
+                "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114"
+              },
+              {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "bytes": 5541,
+                "sha256": "ccc0f447f71ce35c635e08d49eb0ed77aa2ec91cf31d8e3e45a246114d3cae92"
+              },
+              {
+                "bytes": 975393,
+                "sha256": "9a21c5f98200acfe77d8ba52067164e0802284dc1c1e117f0e64fb6ac42eb64b"
+              },
+              {
+                "bytes": 16737,
+                "sha256": "a9574a2adfe37ba51b8b16359eae93826eb5848bf39ba20a6b64926affebc70b"
+              }
+            ],
+            "power_receipt": {
+              "bytes": 1098,
+              "sha256": "a5f61fb0d522d3cac11184c54a2f46ab805172549802d84a869a0cab6c22a013"
+            },
+            "resources": {
+              "compile": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_original-compile",
+                "command": ".work/three-pdk-20261114/reference-tools/run-env .work/three-pdk-20261114/reference-tools/nix-store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/iverilog -g2012 -s tb -DFUNCTIONAL -o .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/rusteda_original/sim .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/tb-power.sv .work/three-pdk-20261114/gf180/run-13-area-notch-repair/output/logs/be_netlist.stdout .work/three-pdk-20261114/gf180/run-13-area-notch-repair/shared-analysis/gates/simulation/physical-only-sim.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+                "started": "2026-11-15T13:40:22+01:00",
+                "wall_seconds": 1.31,
+                "executor_wall_seconds": 1.345,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 322876,
+                "cpu_seconds": 1.35,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-original-compile-2523443.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.94,
+                  4.0,
+                  3.88
+                ],
+                "loadavg_at_end": [
+                  3.94,
+                  4.0,
+                  3.88
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.94,
+                "loadavg_1m_max": 3.94,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 6.19,
+                  "allowed_set_busy_cpu_seconds": 1.38,
+                  "own_cpu_seconds": 1.35,
+                  "other_cpu_seconds_host": 4.84,
+                  "other_cpu_seconds_on_allowed_set": 0.03,
+                  "mean_other_busy_cpus_host": 3.597,
+                  "mean_other_busy_cpus_on_allowed_set": 0.022,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "simulate": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_original-simulate",
+                "command": ".work/three-pdk-20261114/reference-tools/run-env .work/three-pdk-20261114/reference-tools/nix-store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/vvp .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/rusteda_original/sim",
+                "started": "2026-11-15T13:40:24+01:00",
+                "wall_seconds": 1.87,
+                "executor_wall_seconds": 1.944,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 137568,
+                "cpu_seconds": 1.86,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-original-simulate-2523466.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.94,
+                  4.0,
+                  3.88
+                ],
+                "loadavg_at_end": [
+                  3.94,
+                  4.0,
+                  3.88
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.94,
+                "loadavg_1m_max": 3.94,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 8.32,
+                  "allowed_set_busy_cpu_seconds": 1.89,
+                  "own_cpu_seconds": 1.86,
+                  "other_cpu_seconds_host": 6.46,
+                  "other_cpu_seconds_on_allowed_set": 0.03,
+                  "mean_other_busy_cpus_host": 3.323,
+                  "mean_other_busy_cpus_on_allowed_set": 0.015,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "opensta": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_original-opensta",
+                "command": ".work/three-pdk-20261114/reference-tools/wrap/sta -no_init -threads 2 -exit .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/rusteda_original/workload-power.tcl",
+                "started": "2026-11-15T13:40:26+01:00",
+                "wall_seconds": 4.84,
+                "executor_wall_seconds": 4.901,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 215000,
+                "cpu_seconds": 5.21,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-original-opensta-2523493.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 207007744,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 207007744,
+                "cgroup_limit_bytes": 1610612736,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.94,
+                  4.0,
+                  3.88
+                ],
+                "loadavg_at_end": [
+                  4.11,
+                  4.03,
+                  3.89
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 1.0,
+                  "max": 1,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.05,
+                "loadavg_1m_max": 4.11,
+                "samples": 3,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 21.88,
+                  "allowed_set_busy_cpu_seconds": 5.23,
+                  "own_cpu_seconds": 5.21,
+                  "other_cpu_seconds_host": 16.67,
+                  "other_cpu_seconds_on_allowed_set": 0.02,
+                  "mean_other_busy_cpus_host": 3.402,
+                  "mean_other_busy_cpus_on_allowed_set": 0.004,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              }
+            }
+          },
+          "rusteda_aligned_delay": {
+            "sample": {
+              "sampled_cycles": 17,
+              "start_ps": 4400000,
+              "end_ps": 6100000,
+              "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+              "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+            },
+            "trace": {
+              "start_ps": 4400000,
+              "end_ps": 6100000,
+              "cycles": 17,
+              "clock_period_ns": 100,
+              "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+              "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+            },
+            "power_mw": {
+              "sequential": {
+                "internal": 9.935650974511999,
+                "switching": 0.12238486669960001,
+                "leakage": 0.0008748318691687,
+                "total": 10.05891058594
+              },
+              "combinational": {
+                "internal": 1.84919545427,
+                "switching": 3.212274052203,
+                "leakage": 0.002555455694164,
+                "total": 5.064025055617001
+              },
+              "clock": {
+                "internal": 4.799283109605,
+                "switching": 5.331321153789999,
+                "leakage": 0.0001084531433548,
+                "total": 10.13071276248
+              },
+              "macro": {
+                "internal": 67.38322228193,
+                "switching": 0.0,
+                "leakage": 0.00499360021422,
+                "total": 67.38821417093
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 83.96723121405,
+                "switching": 8.665979839860999,
+                "leakage": 0.008531865205441,
+                "total": 92.64174103737
+              }
+            },
+            "activity_annotation": {
+              "vcd": 67629,
+              "unannotated": 0
+            },
+            "checks": {
+              "sampled_output_equivalent": true,
+              "vendor_testbench_passed": true
+            },
+            "inputs": {
+              "gds": {
+                "bytes": 33303234,
+                "sha256": "2da34db79ebc311cbe3f655370843986a13d784226d8a34c5e70a0d320b705b8"
+              },
+              "def": {
+                "bytes": 16652482,
+                "sha256": "b2d568ed4f2f680974ee6ffbdd39a78b4dd9407f2ae582fff87c028beea1d157"
+              },
+              "netlist": {
+                "bytes": 2966995,
+                "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5"
+              },
+              "sdc": {
+                "bytes": 36142,
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84"
+              },
+              "spef_openrcx": {
+                "bytes": 30173426,
+                "sha256": "fec24bb0a8822d91ceec97b3f0df28022946abd98df26792d33fd0a36c02a9dc"
+              },
+              "std_tt": {
+                "bytes": 20122761,
+                "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+              },
+              "ram_tt": {
+                "bytes": 35624,
+                "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446"
+              }
+            },
+            "waveform": {
+              "bytes": 9586770,
+              "sha256": "a3a66ea049051216bcd314af86d9356e2422af2b6ccc828fd89f786ed2451f85"
+            },
+            "testbench": {
+              "bytes": 3694,
+              "sha256": "059756839d2f737d6d78e53e56e6d4ff37050861c1f5fb130d33469526a7eb06"
+            },
+            "original_bench": {
+              "sha256": "039d5ed33c8a3f94a66a7634dab57debb46088dfb0a875b3ecf8271f2f314360",
+              "bytes": 3217
+            },
+            "compiled_files": [
+              {
+                "bytes": 2966995,
+                "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5"
+              },
+              {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "bytes": 5541,
+                "sha256": "ccc0f447f71ce35c635e08d49eb0ed77aa2ec91cf31d8e3e45a246114d3cae92"
+              },
+              {
+                "bytes": 975393,
+                "sha256": "9a21c5f98200acfe77d8ba52067164e0802284dc1c1e117f0e64fb6ac42eb64b"
+              },
+              {
+                "bytes": 16737,
+                "sha256": "a9574a2adfe37ba51b8b16359eae93826eb5848bf39ba20a6b64926affebc70b"
+              }
+            ],
+            "power_receipt": {
+              "bytes": 1098,
+              "sha256": "a7892d545027b7ad29e0c1f1b15913542a8a81bfd908e09e6d1fc344ea0e7bd0"
+            },
+            "resources": {
+              "compile": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_aligned_delay-compile",
+                "command": ".work/three-pdk-20261114/reference-tools/run-env .work/three-pdk-20261114/reference-tools/nix-store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/iverilog -g2012 -s tb -DFUNCTIONAL -o .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/rusteda_aligned_delay/sim .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/tb-power.sv .work/three-pdk-20261114/gf180/power-optimization-screen-20261115/aligned-delay-gds/output/logs/be_netlist.stdout .work/three-pdk-20261114/gf180/power-optimization-screen-20261115/aligned-delay-gds/shared-physical-secondary/gates/simulation/physical-only-sim.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/primitives.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/verilog/gf180mcu_fd_sc_mcu7t5v0.v /home/cgao/pdks/ciel/gf180mcu/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/gf180mcuD/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+                "started": "2026-11-15T13:40:31+01:00",
+                "wall_seconds": 1.33,
+                "executor_wall_seconds": 1.397,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 328592,
+                "cpu_seconds": 1.38,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-aligned-delay-compile-2523569.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.11,
+                  4.03,
+                  3.89
+                ],
+                "loadavg_at_end": [
+                  4.1,
+                  4.03,
+                  3.9
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.11,
+                "loadavg_1m_max": 4.11,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 7.35,
+                  "allowed_set_busy_cpu_seconds": 1.4,
+                  "own_cpu_seconds": 1.38,
+                  "other_cpu_seconds_host": 5.97,
+                  "other_cpu_seconds_on_allowed_set": 0.02,
+                  "mean_other_busy_cpus_host": 4.274,
+                  "mean_other_busy_cpus_on_allowed_set": 0.014,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "simulate": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_aligned_delay-simulate",
+                "command": ".work/three-pdk-20261114/reference-tools/run-env .work/three-pdk-20261114/reference-tools/nix-store/fvj1mg3g7ihj3sjiyv5khdms6rzhjjm5-iverilog-13.0/bin/vvp .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/rusteda_aligned_delay/sim",
+                "started": "2026-11-15T13:40:32+01:00",
+                "wall_seconds": 1.82,
+                "executor_wall_seconds": 1.897,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 139672,
+                "cpu_seconds": 1.8,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-aligned-delay-simulate-2523667.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.1,
+                  4.03,
+                  3.9
+                ],
+                "loadavg_at_end": [
+                  4.1,
+                  4.03,
+                  3.9
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.1,
+                "loadavg_1m_max": 4.1,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 8.93,
+                  "allowed_set_busy_cpu_seconds": 1.87,
+                  "own_cpu_seconds": 1.8,
+                  "other_cpu_seconds_host": 7.13,
+                  "other_cpu_seconds_on_allowed_set": 0.07,
+                  "mean_other_busy_cpus_host": 3.759,
+                  "mean_other_busy_cpus_on_allowed_set": 0.037,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "opensta": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_aligned_delay-opensta",
+                "command": ".work/three-pdk-20261114/reference-tools/wrap/sta -no_init -threads 2 -exit .work/three-pdk-20261114/power-workload-vcd-20261115/gf180/rusteda_aligned_delay/workload-power.tcl",
+                "started": "2026-11-15T13:40:34+01:00",
+                "wall_seconds": 4.96,
+                "executor_wall_seconds": 5.003,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 222776,
+                "cpu_seconds": 5.34,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-aligned-delay-opensta-2523699.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 215113728,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 215113728,
+                "cgroup_limit_bytes": 1610612736,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.1,
+                  4.03,
+                  3.9
+                ],
+                "loadavg_at_end": [
+                  4.17,
+                  4.05,
+                  3.9
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.12,
+                "loadavg_1m_max": 4.17,
+                "samples": 3,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 23.07,
+                  "allowed_set_busy_cpu_seconds": 5.37,
+                  "own_cpu_seconds": 5.34,
+                  "other_cpu_seconds_host": 17.73,
+                  "other_cpu_seconds_on_allowed_set": 0.03,
+                  "mean_other_busy_cpus_host": 3.544,
+                  "mean_other_busy_cpus_on_allowed_set": 0.006,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "gf180_aligned_delay_antenna_repair": {
+      "receipt": {
+        "sha256": "c2fca78b41051f87c5701fa9a8c3c36dec4a3d1a97412a79a583e4948c69a5a8",
+        "bytes": 4761
+      },
+      "scope_and_results": {
+        "scope": "Same 17-cycle aligned-delay VCD rebound to warm antenna-repaired artifact's independently extracted nominal SPEF; same 10 MHz TT constraints",
+        "layouts": {
+          "gds": {
+            "bytes": 33304002,
+            "sha256": "e65a91a0ba131ed26f34e456b3a223c46c8e0f2fca86ebe8782ed53fa6439219"
+          },
+          "def": {
+            "bytes": 16652592,
+            "sha256": "090a2c9752ab792f487d0bf821742f8781266dd642beae14a5e61656646462cd"
+          },
+          "netlist": {
+            "bytes": 2966995,
+            "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5"
+          },
+          "spef_openrcx": {
+            "bytes": 30173873,
+            "sha256": "9deead026b634c6b7c2970a042b9bc79a7543cf0232998f956d0dbb8114ef4d8"
+          },
+          "sdc": {
+            "bytes": 36142,
+            "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84"
+          },
+          "std_tt": {
+            "bytes": 20122761,
+            "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a"
+          },
+          "ram_tt": {
+            "bytes": 35624,
+            "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446"
+          }
+        },
+        "reused_vcd": {
+          "bytes": 9586770,
+          "sha256": "a3a66ea049051216bcd314af86d9356e2422af2b6ccc828fd89f786ed2451f85"
+        },
+        "trace": {
+          "sampled_cycles": 17,
+          "start_ps": 4400000,
+          "end_ps": 6100000,
+          "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+          "output_values_sha256": "c23ec65d02738d83e1b1e4826b689fdb210187a74cf90bd63c2ab4540857d470"
+        },
+        "activity_annotation": {
+          "vcd": 67629,
+          "unannotated": 0
+        },
+        "verified_byte_identities": [
+          "functional_netlist",
+          "powered_netlist",
+          "sdc",
+          "std_tt",
+          "ram_tt"
+        ],
+        "power_mw": {
+          "sequential": {
+            "internal": 9.935650974511999,
+            "switching": 0.12238486669960001,
+            "leakage": 0.0008748318691687,
+            "total": 10.05891058594
+          },
+          "combinational": {
+            "internal": 1.849195221439,
+            "switching": 3.212272422388,
+            "leakage": 0.002555455694164,
+            "total": 5.064023192972
+          },
+          "clock": {
+            "internal": 4.799283109605,
+            "switching": 5.331321153789999,
+            "leakage": 0.0001084531433548,
+            "total": 10.13071276248
+          },
+          "macro": {
+            "internal": 67.38322228193,
+            "switching": 0.0,
+            "leakage": 0.00499360021422,
+            "total": 67.38821417093
+          },
+          "pad": {
+            "internal": 0.0,
+            "switching": 0.0,
+            "leakage": 0.0,
+            "total": 0.0
+          },
+          "total": {
+            "internal": 83.96723121405,
+            "switching": 8.665977977215999,
+            "leakage": 0.008531865205441,
+            "total": 92.64174103737
+          }
+        },
+        "comparison_mw": {
+          "aligned_delay_cold": 92.64174103737,
+          "librelane": 94.32695060968
+        },
+        "differences_percent": {
+          "warm_vs_cold": 0.0,
+          "warm_vs_librelane": -1.786562123992863
+        },
+        "resources": {
+          "wall_seconds": 5.01,
+          "gnu_time_max_rss_kib": 222580,
+          "allowed_cpus": [
+            22,
+            23
+          ]
+        },
+        "report": {
+          "bytes": 1098,
+          "sha256": "2e53fbd2a9d843e5b7a27aa462f4f6991ba00a9753355f597edf44955b7997b3"
+        },
+        "annotation": {
+          "bytes": 54,
+          "sha256": "4191077f8c1261ea0bcd51777a160e3a241108e044ef9b6f63d3cd107af38dd5"
+        }
+      }
+    },
+    "ihp": {
+      "receipt": {
+        "sha256": "d5cd08e27100b98c15030bd703d0e5b59cc888cff389f5050cbf369778d80878",
+        "bytes": 41455
+      },
+      "scope_and_results": {
+        "scope": "Retained IHP layouts; common 10 MHz matched vendor gate smoke workload",
+        "analysis_corner": "nom_typ_1p20V_25C",
+        "activity": "Icarus gate-level VCD",
+        "differences_percent": {
+          "after_reset_vs_native_baseline": -7.3810802448982304,
+          "after_reset_vs_librelane": -23.319317616906567,
+          "native_baseline_vs_librelane": -17.208403438683384
+        },
+        "flows": {
+          "librelane": {
+            "sample": {
+              "sampled_cycles": 17,
+              "start_ps": 4000000,
+              "end_ps": 5700000,
+              "input_values_sha256": "033e22671e538c7c31dad9a532c2936dcbc83d2c8eec9ba08e8a3a05274bf202",
+              "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+            },
+            "trace": {
+              "start_ps": 4000000,
+              "end_ps": 5700000,
+              "cycles": 17,
+              "clock_period_ns": 100,
+              "input_values_sha256": "033e22671e538c7c31dad9a532c2936dcbc83d2c8eec9ba08e8a3a05274bf202",
+              "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+            },
+            "power_mw": {
+              "sequential": {
+                "internal": 0.279080006294,
+                "switching": 0.002899313813032,
+                "leakage": 0.0005323815912561,
+                "total": 0.28251169715080005
+              },
+              "combinational": {
+                "internal": 0.03041271884285,
+                "switching": 0.10963468230330001,
+                "leakage": 0.0009332965191788,
+                "total": 0.1409807009622
+              },
+              "clock": {
+                "internal": 0.204989060876,
+                "switching": 0.1634522486711,
+                "leakage": 0.055134816648209996,
+                "total": 0.42357612983320003
+              },
+              "macro": {
+                "internal": 0.4579086962622,
+                "switching": 0.0,
+                "leakage": 0.0007920619964352,
+                "total": 0.458700757008
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.9723908733577,
+                "switching": 0.2759866183624,
+                "leakage": 0.057389865105509995,
+                "total": 1.3057673349980001
+              }
+            },
+            "activity_annotation": {
+              "vcd": 56963,
+              "unannotated": 0
+            },
+            "checks": {
+              "sampled_output_equivalent": true,
+              "vendor_testbench_passed": true
+            },
+            "inputs": {
+              "gds": {
+                "bytes": 18109678,
+                "sha256": "44974b6cd6ecad6d4b36c8ee4ef27a5cb82d66eb12f3de3a0847fb76274ec060"
+              },
+              "def": {
+                "bytes": 21705643,
+                "sha256": "7c26910976a5239b9f32cfd00b52c1f7a4e5a030446e5ab5487282633120539a"
+              },
+              "netlist": {
+                "bytes": 3537951,
+                "sha256": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf"
+              },
+              "sdc": {
+                "bytes": 35191,
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba"
+              },
+              "spef_openrcx": {
+                "bytes": 19002628,
+                "sha256": "a2692fbff9e36962255806d60adfd6b5a330d8a05212a56cf8db9356374908f0"
+              },
+              "std_tt": {
+                "bytes": 9292203,
+                "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c"
+              },
+              "ram_tt": {
+                "bytes": 49322,
+                "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3"
+              }
+            },
+            "waveform": {
+              "bytes": 8571044,
+              "sha256": "43abc5aa5a5d588327e5d2c1c7cb5669faaac2fb6ef8bc997c09adfe046639c0"
+            },
+            "testbench": {
+              "bytes": 3027,
+              "sha256": "b67078744bc2ddaada90589666d413a0e5506bc677ad2be4a1092b881acb9f8a"
+            },
+            "original_bench": {
+              "sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+              "bytes": 2550
+            },
+            "compiled_files": [
+              {
+                "bytes": 3537951,
+                "sha256": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf"
+              },
+              {
+                "bytes": 169,
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65"
+              },
+              {
+                "bytes": 207305,
+                "sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12"
+              },
+              {
+                "bytes": 6925,
+                "sha256": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669"
+              },
+              {
+                "bytes": 3932,
+                "sha256": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787"
+              }
+            ],
+            "power_receipt": {
+              "bytes": 1098,
+              "sha256": "e7219d37c80009c04cc17fb85854d3babdb0e561ae1077589032f8bafe312216"
+            },
+            "resources": {
+              "compile": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-librelane-compile",
+                "command": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/iverilog -g2012 -s tb -I /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog -o .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/librelane/sim .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/tb-power.sv .work/ibex-campaign-20261110/ll-final/runs/final/54-openroad-fillinsertion/ibex_sram_bench.nl.v .work/ibex-campaign-20261110/signoff-librelane/simulation/physical-only.v /home/cgao/pdks/ez130_8t_v1p1/verilog/ez130_8t.v /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+                "started": "2026-11-15T13:42:54+01:00",
+                "wall_seconds": 1.2,
+                "executor_wall_seconds": 1.246,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 310688,
+                "cpu_seconds": 1.25,
+                "unit": "ibex-campaign-sky-workload-candidate-librelane-compile-2525207.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.91,
+                  3.96,
+                  3.89
+                ],
+                "loadavg_at_end": [
+                  3.91,
+                  3.96,
+                  3.89
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.91,
+                "loadavg_1m_max": 3.91,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 7.91,
+                  "allowed_set_busy_cpu_seconds": 1.29,
+                  "own_cpu_seconds": 1.25,
+                  "other_cpu_seconds_host": 6.66,
+                  "other_cpu_seconds_on_allowed_set": 0.04,
+                  "mean_other_busy_cpus_host": 5.346,
+                  "mean_other_busy_cpus_on_allowed_set": 0.032,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "simulate": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-librelane-simulate",
+                "command": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/vvp .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/librelane/sim",
+                "started": "2026-11-15T13:42:55+01:00",
+                "wall_seconds": 1.51,
+                "executor_wall_seconds": 1.595,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 113528,
+                "cpu_seconds": 1.51,
+                "unit": "ibex-campaign-sky-workload-candidate-librelane-simulate-2525232.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.91,
+                  3.96,
+                  3.89
+                ],
+                "loadavg_at_end": [
+                  3.91,
+                  3.96,
+                  3.89
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 3.91,
+                "loadavg_1m_max": 3.91,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 9.36,
+                  "allowed_set_busy_cpu_seconds": 1.57,
+                  "own_cpu_seconds": 1.51,
+                  "other_cpu_seconds_host": 7.85,
+                  "other_cpu_seconds_on_allowed_set": 0.06,
+                  "mean_other_busy_cpus_host": 4.923,
+                  "mean_other_busy_cpus_on_allowed_set": 0.038,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "opensta": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-librelane-opensta",
+                "command": ".work/three-pdk-20261114/reference-tools/wrap/sta -no_init -threads 2 -exit .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/librelane/workload-power.tcl",
+                "started": "2026-11-15T13:42:57+01:00",
+                "wall_seconds": 3.92,
+                "executor_wall_seconds": 3.954,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 190548,
+                "cpu_seconds": 4.35,
+                "unit": "ibex-campaign-sky-workload-candidate-librelane-opensta-2525297.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 140943360,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 140943360,
+                "cgroup_limit_bytes": 1610612736,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  3.91,
+                  3.96,
+                  3.89
+                ],
+                "loadavg_at_end": [
+                  4.16,
+                  4.01,
+                  3.91
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.04,
+                "loadavg_1m_max": 4.16,
+                "samples": 2,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 21.55,
+                  "allowed_set_busy_cpu_seconds": 4.36,
+                  "own_cpu_seconds": 4.35,
+                  "other_cpu_seconds_host": 17.2,
+                  "other_cpu_seconds_on_allowed_set": 0.01,
+                  "mean_other_busy_cpus_host": 4.35,
+                  "mean_other_busy_cpus_on_allowed_set": 0.003,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              }
+            }
+          },
+          "rusteda_original": {
+            "sample": {
+              "sampled_cycles": 17,
+              "start_ps": 4000000,
+              "end_ps": 5700000,
+              "input_values_sha256": "033e22671e538c7c31dad9a532c2936dcbc83d2c8eec9ba08e8a3a05274bf202",
+              "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+            },
+            "trace": {
+              "start_ps": 4000000,
+              "end_ps": 5700000,
+              "cycles": 17,
+              "clock_period_ns": 100,
+              "input_values_sha256": "033e22671e538c7c31dad9a532c2936dcbc83d2c8eec9ba08e8a3a05274bf202",
+              "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+            },
+            "power_mw": {
+              "sequential": {
+                "internal": 0.2949701156467,
+                "switching": 0.003036416728719,
+                "leakage": 0.0005654399615196,
+                "total": 0.2985719474964
+              },
+              "combinational": {
+                "internal": 0.029639910280819998,
+                "switching": 0.10604712588250001,
+                "leakage": 0.001086066390599,
+                "total": 0.1367731019855
+              },
+              "clock": {
+                "internal": 0.05840689846082,
+                "switching": 0.12856523972,
+                "leakage": 4.67335539156e-05,
+                "total": 0.18701888620850002
+              },
+              "macro": {
+                "internal": 0.4579086962622,
+                "switching": 0.0,
+                "leakage": 0.0007920619964352,
+                "total": 0.458700757008
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.8409265428781999,
+                "switching": 0.23764882644170002,
+                "leakage": 0.0024902428776840003,
+                "total": 1.081065624021
+              }
+            },
+            "activity_annotation": {
+              "vcd": 53790,
+              "unannotated": 0
+            },
+            "checks": {
+              "sampled_output_equivalent": true,
+              "vendor_testbench_passed": true
+            },
+            "inputs": {
+              "gds": {
+                "bytes": 26690616,
+                "sha256": "e6438e8473913661cb29b3d303edc79b8f36584d376f4098300d726aa67bdb42"
+              },
+              "def": {
+                "bytes": 13172249,
+                "sha256": "981ec4dfff62f62c17a45da312dc98f55df424d00df77c6f8f9a438b16280583"
+              },
+              "netlist": {
+                "bytes": 2049571,
+                "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7"
+              },
+              "sdc": {
+                "bytes": 35191,
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba"
+              },
+              "spef_openrcx": {
+                "bytes": 19283902,
+                "sha256": "83523921c83928cc8fe418d3353b1f66b837e3694e7fda5d682081863b3a1698"
+              },
+              "std_tt": {
+                "bytes": 9292203,
+                "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c"
+              },
+              "ram_tt": {
+                "bytes": 49322,
+                "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3"
+              }
+            },
+            "waveform": {
+              "bytes": 7238756,
+              "sha256": "70a372c0096b4c72f43f0fe8c4a3ff9917268a962abe55f3dda7008aea853733"
+            },
+            "testbench": {
+              "bytes": 3027,
+              "sha256": "b67078744bc2ddaada90589666d413a0e5506bc677ad2be4a1092b881acb9f8a"
+            },
+            "original_bench": {
+              "sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+              "bytes": 2550
+            },
+            "compiled_files": [
+              {
+                "bytes": 2049571,
+                "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7"
+              },
+              {
+                "bytes": 169,
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65"
+              },
+              {
+                "bytes": 207305,
+                "sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12"
+              },
+              {
+                "bytes": 6925,
+                "sha256": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669"
+              },
+              {
+                "bytes": 3932,
+                "sha256": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787"
+              }
+            ],
+            "power_receipt": {
+              "bytes": 1098,
+              "sha256": "4c3c13aa68173c21e2ee3f71029fe963abe8719a173d3f0837b85b22b2c888e6"
+            },
+            "resources": {
+              "compile": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_original-compile",
+                "command": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/iverilog -g2012 -s tb -I /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog -o .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/rusteda_original/sim .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/tb-power.sv .work/ibex-campaign-20261110/native-final/output/logs/be_netlist.stdout .work/ibex-campaign-20261110/signoff-native/simulation/physical-only.v /home/cgao/pdks/ez130_8t_v1p1/verilog/ez130_8t.v /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+                "started": "2026-11-15T13:43:01+01:00",
+                "wall_seconds": 1.04,
+                "executor_wall_seconds": 1.098,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 245600,
+                "cpu_seconds": 1.06,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-original-compile-2525339.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.16,
+                  4.01,
+                  3.91
+                ],
+                "loadavg_at_end": [
+                  4.39,
+                  4.06,
+                  3.93
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.16,
+                "loadavg_1m_max": 4.16,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 6.86,
+                  "allowed_set_busy_cpu_seconds": 1.74,
+                  "own_cpu_seconds": 1.06,
+                  "other_cpu_seconds_host": 5.8,
+                  "other_cpu_seconds_on_allowed_set": 0.68,
+                  "mean_other_busy_cpus_host": 5.283,
+                  "mean_other_busy_cpus_on_allowed_set": 0.619,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "simulate": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_original-simulate",
+                "command": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/vvp .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/rusteda_original/sim",
+                "started": "2026-11-15T13:43:02+01:00",
+                "wall_seconds": 1.62,
+                "executor_wall_seconds": 1.698,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 105732,
+                "cpu_seconds": 1.61,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-original-simulate-2525375.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.39,
+                  4.06,
+                  3.93
+                ],
+                "loadavg_at_end": [
+                  4.39,
+                  4.06,
+                  3.93
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 1.0,
+                  "max": 1,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.39,
+                "loadavg_1m_max": 4.39,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 12.37,
+                  "allowed_set_busy_cpu_seconds": 3.34,
+                  "own_cpu_seconds": 1.61,
+                  "other_cpu_seconds_host": 10.76,
+                  "other_cpu_seconds_on_allowed_set": 1.73,
+                  "mean_other_busy_cpus_host": 6.335,
+                  "mean_other_busy_cpus_on_allowed_set": 1.019,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "opensta": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_original-opensta",
+                "command": ".work/three-pdk-20261114/reference-tools/wrap/sta -no_init -threads 2 -exit .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/rusteda_original/workload-power.tcl",
+                "started": "2026-11-15T13:43:04+01:00",
+                "wall_seconds": 4.85,
+                "executor_wall_seconds": 4.913,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 172264,
+                "cpu_seconds": 4.68,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-original-opensta-2525394.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 163569664,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 163569664,
+                "cgroup_limit_bytes": 1610612736,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.39,
+                  4.06,
+                  3.93
+                ],
+                "loadavg_at_end": [
+                  4.68,
+                  4.13,
+                  3.95
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.49,
+                "loadavg_1m_max": 4.68,
+                "samples": 3,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 36.17,
+                  "allowed_set_busy_cpu_seconds": 9.75,
+                  "own_cpu_seconds": 4.68,
+                  "other_cpu_seconds_host": 31.49,
+                  "other_cpu_seconds_on_allowed_set": 5.07,
+                  "mean_other_busy_cpus_host": 6.41,
+                  "mean_other_busy_cpus_on_allowed_set": 1.032,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              }
+            }
+          },
+          "rusteda_after_reset": {
+            "sample": {
+              "sampled_cycles": 17,
+              "start_ps": 4000000,
+              "end_ps": 5700000,
+              "input_values_sha256": "033e22671e538c7c31dad9a532c2936dcbc83d2c8eec9ba08e8a3a05274bf202",
+              "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+            },
+            "trace": {
+              "start_ps": 4000000,
+              "end_ps": 5700000,
+              "cycles": 17,
+              "clock_period_ns": 100,
+              "input_values_sha256": "033e22671e538c7c31dad9a532c2936dcbc83d2c8eec9ba08e8a3a05274bf202",
+              "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+            },
+            "power_mw": {
+              "sequential": {
+                "internal": 0.2665872743819,
+                "switching": 0.002794435431497,
+                "leakage": 0.0005076370257484,
+                "total": 0.2698893367779
+              },
+              "combinational": {
+                "internal": 0.022947977413419997,
+                "switching": 0.07967320561874999,
+                "leakage": 0.0010600688256090002,
+                "total": 0.10368125367679999
+              },
+              "clock": {
+                "internal": 0.05392139064497,
+                "switching": 0.1166015354102,
+                "leakage": 4.307818812777e-05,
+                "total": 0.17056599608620002
+              },
+              "macro": {
+                "internal": 0.4563412803691,
+                "switching": 0.0,
+                "leakage": 0.0007920619964352,
+                "total": 0.457133341115
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.7997992215678,
+                "switching": 0.1990692690015,
+                "leakage": 0.0024027976905930002,
+                "total": 1.0012713028120002
+              }
+            },
+            "activity_annotation": {
+              "vcd": 51148,
+              "unannotated": 0
+            },
+            "checks": {
+              "sampled_output_equivalent": true,
+              "vendor_testbench_passed": true
+            },
+            "inputs": {
+              "gds": {
+                "bytes": 25079958,
+                "sha256": "e65b22575f01262e4c1d7fac70dacbbd8f757b25d79e0eaa1cc61ed9af4657b9"
+              },
+              "def": {
+                "bytes": 12686042,
+                "sha256": "7796969387c76a228c39fa7dff6e58cf166f96cfd7d6f705c3fdf673679bf938"
+              },
+              "netlist": {
+                "sha256": "0e2609fba21b3b7597ce5024c5d4989076a59b0c375316b38fa3b7b449485452",
+                "bytes": 1919826
+              },
+              "sdc": {
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+                "bytes": 35191
+              },
+              "spef_openrcx": {
+                "sha256": "85fa5316d44a36fe42450e429a883a161462ebc3eda0fe087d78eb744c125b01",
+                "bytes": 18049384
+              },
+              "std_tt": {
+                "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+                "bytes": 9292203
+              },
+              "ram_tt": {
+                "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+                "bytes": 49322
+              }
+            },
+            "waveform": {
+              "bytes": 6616346,
+              "sha256": "98be9d46d25bdf095819f364bd9c3c3121700ce48866b1d52952941c4302e095"
+            },
+            "testbench": {
+              "bytes": 3027,
+              "sha256": "b67078744bc2ddaada90589666d413a0e5506bc677ad2be4a1092b881acb9f8a"
+            },
+            "original_bench": {
+              "sha256": "e3bda2eaf1a136855197129a701cec3286d819373138881382d88bf00c6247f3",
+              "bytes": 2550
+            },
+            "compiled_files": [
+              {
+                "bytes": 1919826,
+                "sha256": "0e2609fba21b3b7597ce5024c5d4989076a59b0c375316b38fa3b7b449485452"
+              },
+              {
+                "bytes": 169,
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65"
+              },
+              {
+                "bytes": 207305,
+                "sha256": "030ab84b191b8d1ad236a773d083c993b045565fa7a42d954100da58a3ab5b12"
+              },
+              {
+                "bytes": 6925,
+                "sha256": "eb86690331565d646b661ede3012e049468885798fa20a3f146ece311ec57669"
+              },
+              {
+                "bytes": 3932,
+                "sha256": "e2e43ec0159cbc34662fe91114e8cb03a697a2a829ad63b0d4f06631908ea787"
+              }
+            ],
+            "power_receipt": {
+              "bytes": 1098,
+              "sha256": "140f78afdac65604775e46035708d142c065c47115161a3634c44c1c10a4d49c"
+            },
+            "resources": {
+              "compile": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_after_reset-compile",
+                "command": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/iverilog -g2012 -s tb -I /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog -o .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/rusteda_after_reset/sim .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/tb-power.sv .work/ibex-campaign-20261110/val3/native-tiles/output/logs/be_netlist.stdout .work/ibex-campaign-20261110/val3/signoff-tiles/simulation/physical-only.v /home/cgao/pdks/ez130_8t_v1p1/verilog/ez130_8t.v /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_1024x32_c2_bm_bist.v /home/cgao/pdks/ihp-open-pdk/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+                "started": "2026-11-15T13:43:09+01:00",
+                "wall_seconds": 1.0,
+                "executor_wall_seconds": 1.075,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 231304,
+                "cpu_seconds": 0.98,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-after-reset-compile-2525481.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": null,
+                "cgroup_v2_swap_peak_bytes": null,
+                "sampled_peak_memory_current_bytes": null,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.68,
+                  4.13,
+                  3.95
+                ],
+                "loadavg_at_end": [
+                  4.68,
+                  4.13,
+                  3.95
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.68,
+                "loadavg_1m_max": 4.68,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 7.97,
+                  "allowed_set_busy_cpu_seconds": 2.11,
+                  "own_cpu_seconds": 0.98,
+                  "other_cpu_seconds_host": 6.99,
+                  "other_cpu_seconds_on_allowed_set": 1.13,
+                  "mean_other_busy_cpus_host": 6.501,
+                  "mean_other_busy_cpus_on_allowed_set": 1.051,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "simulate": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_after_reset-simulate",
+                "command": "/home/cgao/tools/iverilog/f2a02667c27193216867e7d9fa249e155b6f76f1efb8aa79949d69abe439f18d/root/bin/vvp .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/rusteda_after_reset/sim",
+                "started": "2026-11-15T13:43:10+01:00",
+                "wall_seconds": 1.46,
+                "executor_wall_seconds": 1.522,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 99612,
+                "cpu_seconds": 1.41,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-after-reset-simulate-2525507.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 6230016,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 6230016,
+                "cgroup_limit_bytes": 2147483648,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.68,
+                  4.13,
+                  3.95
+                ],
+                "loadavg_at_end": [
+                  4.68,
+                  4.13,
+                  3.95
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.68,
+                "loadavg_1m_max": 4.68,
+                "samples": 1,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 10.28,
+                  "allowed_set_busy_cpu_seconds": 2.98,
+                  "own_cpu_seconds": 1.41,
+                  "other_cpu_seconds_host": 8.87,
+                  "other_cpu_seconds_on_allowed_set": 1.57,
+                  "mean_other_busy_cpus_host": 5.827,
+                  "mean_other_busy_cpus_on_allowed_set": 1.031,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              },
+              "opensta": {
+                "schema": "rusteda.host-measured-run.v1",
+                "name": "sky-workload-candidate-rusteda_after_reset-opensta",
+                "command": ".work/three-pdk-20261114/reference-tools/wrap/sta -no_init -threads 2 -exit .work/three-pdk-20261114/power-workload-vcd-20261115/ihp/rusteda_after_reset/workload-power.tcl",
+                "started": "2026-11-15T13:43:12+01:00",
+                "wall_seconds": 4.49,
+                "executor_wall_seconds": 4.566,
+                "exit_code": 0,
+                "gnu_time_max_rss_kib": 166048,
+                "cpu_seconds": 4.36,
+                "unit": "ibex-campaign-sky-workload-candidate-rusteda-after-reset-opensta-2525533.scope",
+                "cgroup": "v2 (systemd user scope)",
+                "cgroup_v2_memory_peak_bytes": 157073408,
+                "cgroup_v2_swap_peak_bytes": 0,
+                "sampled_peak_memory_current_bytes": 157073408,
+                "cgroup_limit_bytes": 1610612736,
+                "cgroup_swap_limit_bytes": 0,
+                "allowed_cpus": [
+                  22,
+                  23
+                ],
+                "loadavg_at_start": [
+                  4.68,
+                  4.13,
+                  3.95
+                ],
+                "loadavg_at_end": [
+                  4.86,
+                  4.18,
+                  3.96
+                ],
+                "foreign_runnable_on_allowed_cpus": {
+                  "mean": 0.0,
+                  "max": 0,
+                  "samples": 1,
+                  "period_seconds": 10,
+                  "note": "runnable processes outside this scope whose last CPU was one of the allowed CPUs (ps psr, stat R)"
+                },
+                "loadavg_1m_mean": 4.8,
+                "loadavg_1m_max": 4.86,
+                "samples": 3,
+                "sample_period_seconds": 2,
+                "cpus_online": 32,
+                "detached_processes_killed": false,
+                "other_load": {
+                  "host_busy_cpu_seconds": 28.71,
+                  "allowed_set_busy_cpu_seconds": 9.07,
+                  "own_cpu_seconds": 4.36,
+                  "other_cpu_seconds_host": 24.35,
+                  "other_cpu_seconds_on_allowed_set": 4.71,
+                  "mean_other_busy_cpus_host": 5.333,
+                  "mean_other_busy_cpus_on_allowed_set": 1.031,
+                  "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
