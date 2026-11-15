@@ -463,6 +463,106 @@
             "sha256": "2dbe80703e248d047f602043e53486f4966f2d9e40bd718607a08349f4124777",
             "bytes": 1797
           }
+        },
+        "paired_layout_figure": {
+          "path": "docs/benchmarks/figures/ibex-gf180-density-fill.png",
+          "sha256": "df9048a84e753bebf815535e7bbb9c9aae770c89029e0eec7efb0235e77927bd",
+          "bytes": 3297407
+        },
+        "same_core_filled_producer": {
+          "receipt": {
+            "sha256": "cacf89c70b2b8a83e9b1b4b60b4a5205320b6eec576391925bf8c9140d707fb8",
+            "bytes": 6014
+          },
+          "scope": "One fresh RTL-to-GDS producer on CPUs22/23. Includes cold flow, prerequisite extracted timing and ABC, two corrective warm reroutes and the phase-searched floating fill through final GDS write. Independent acceptance and byte-normalized GDS comparison outside the timer.",
+          "reference_scope": "Archived LibreLane Magic.StreamOut replay on the same assigned CPU pair and resource guards. One separately elapsed sample per flow.",
+          "native_filled": {
+            "started": "2026-11-15T16:47:57+01:00",
+            "wall_seconds": 637.13,
+            "cpu_seconds": 659.36,
+            "allowed_cpus": [
+              22,
+              23
+            ],
+            "gnu_time_max_rss_kib": 633424,
+            "cgroup_v2_memory_peak_bytes": 3975860224,
+            "cgroup_v2_swap_peak_bytes": 0,
+            "other_load": {
+              "host_busy_cpu_seconds": 3338.05,
+              "allowed_set_busy_cpu_seconds": 671.77,
+              "own_cpu_seconds": 659.36,
+              "other_cpu_seconds_host": 2678.69,
+              "other_cpu_seconds_on_allowed_set": 12.41,
+              "mean_other_busy_cpus_host": 4.204,
+              "mean_other_busy_cpus_on_allowed_set": 0.019,
+              "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+            },
+            "resources": {
+              "sha256": "6b3f51af868963b6c62d61eb9bf4ba26ff4fd90969c608dc2174c9c9d8c4be89",
+              "bytes": 1877
+            },
+            "emitted_gds": {
+              "sha256": "bad3c01932bc0f670674fd2e03cc184015d82ba6ab07902a06de5a9de32c599b",
+              "bytes": 45526342
+            },
+            "qualified_gds": {
+              "sha256": "b1d43923f9638ed9bc68e772a2f44757e5fb017de672545ad24c730e34c73063",
+              "bytes": 45526342
+            },
+            "geometry_equality_ignoring_timestamp_pairs": {
+              "sha256": "8c5157616748e596cf3203aaaf76c829568a2dd7a29033b947048d0956e3301e",
+              "records": 3570417,
+              "timestamp_records": 649
+            },
+            "phase_selected_dummy_boxes": {
+              "2": 26220,
+              "5": 196586
+            },
+            "cold_component_observed_seconds": 380.9667,
+            "fill_component_observed_seconds": 98.1773
+          },
+          "librelane": {
+            "started": "2026-11-15T02:54:19+01:00",
+            "wall_seconds": 851.48,
+            "cpu_seconds": 1285.87,
+            "allowed_cpus": [
+              22,
+              23
+            ],
+            "gnu_time_max_rss_kib": 1217760,
+            "cgroup_v2_memory_peak_bytes": 2332647424,
+            "cgroup_v2_swap_peak_bytes": 0,
+            "other_load": {
+              "host_busy_cpu_seconds": 4622.16,
+              "allowed_set_busy_cpu_seconds": 1290.72,
+              "own_cpu_seconds": 1285.87,
+              "other_cpu_seconds_host": 3336.29,
+              "other_cpu_seconds_on_allowed_set": 4.85,
+              "mean_other_busy_cpus_host": 3.918,
+              "mean_other_busy_cpus_on_allowed_set": 0.006,
+              "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+            },
+            "resources": {
+              "sha256": "4d4b9215b32689e2d47350b56432371a255ff8f25c9632b9a6f3836ef473978b",
+              "bytes": 2090
+            },
+            "emitted_gds": {
+              "sha256": "a2657fc5002275c95b696e8e165e0c5cc0d46d02fbe048a7d49ce0fa87da904c",
+              "bytes": 32658112
+            },
+            "qualified_gds": {
+              "sha256": "a7a1ae8c6ba1a2056854c1172d5e5b53f6d6835d28f39ba5514b4789a4b4fb21",
+              "bytes": 32658112
+            },
+            "geometry_equality_ignoring_timestamp_pairs": {
+              "sha256": "8d840bf96d75a1171df8f2a7e0243484c8bc06ef3fb7620df5c25c2981ab2fd8",
+              "records": 2493671,
+              "timestamp_records": 684
+            }
+          },
+          "observed_reference_seconds_over_filled_native_seconds": 1.336430555773547,
+          "observed_filled_native_delta_percent": -25.173815004462817,
+          "electrical_scope": "Producer timing binds the filled GDS geometry. The paired electrical estimates remain scoped to the unfilled source."
         }
       }
     }

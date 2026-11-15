@@ -215,6 +215,13 @@ simulation and ABC passed. The OpenRCX control emitted identical SPEF with and
 without explicit `FILLS` geometry. Power and Fmax in the table use the unfilled
 routed layout. [Fill geometry, DRC and extraction control](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
+On CPUs 22 and 23, the complete RustEDA producer including both ECOs and
+floating fill took **637.13 s**. LibreLane took **851.48 s** on the same CPU
+pair with 4 GiB of memory and no swap. Both output streams matched the checked
+GDS geometry after masking timestamps. [Filled producer replay](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+![GF180 layouts at the same scale with eight identical SRAM placements. The RustEDA fill trial has one foundry density finding and the LibreLane layout has four.](figures/ibex-gf180-density-fill.png)
+
 The IHP trial uses the earlier aligned-select and after-reset compiler recipe.
 Its synthesis and final netlists passed equivalence after asserted reset,
 and the shared vendor-model simulation passed. Its setup ceiling is above
