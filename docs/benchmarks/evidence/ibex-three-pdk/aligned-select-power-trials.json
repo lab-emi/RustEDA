@@ -24,6 +24,91 @@
         "sha256": "eb02dac212536d1951358ebca721f432347e05717f7386cc59d8e823d6e2a798",
         "bytes": 579
       }
+    },
+    "gf180_full_replay": {
+      "scope": "Current RustSys port through all 105 cold delay-goal producer steps before the two-jumper repair",
+      "routing_table": {
+        "sha256": "4bfe7d0e0172d912bf27d7f143d4821b9bccb328725d64ddf9ce5bc7b2255934",
+        "bytes": 26992320
+      },
+      "artifact_comparison": [
+        {
+          "artifact": "gds",
+          "before": {
+            "sha256": "2da34db79ebc311cbe3f655370843986a13d784226d8a34c5e70a0d320b705b8",
+            "bytes": 33303234
+          },
+          "replay": {
+            "sha256": "2da34db79ebc311cbe3f655370843986a13d784226d8a34c5e70a0d320b705b8",
+            "bytes": 33303234
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "def",
+          "before": {
+            "sha256": "b2d568ed4f2f680974ee6ffbdd39a78b4dd9407f2ae582fff87c028beea1d157",
+            "bytes": 16652482
+          },
+          "replay": {
+            "sha256": "b2d568ed4f2f680974ee6ffbdd39a78b4dd9407f2ae582fff87c028beea1d157",
+            "bytes": 16652482
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_synth",
+          "before": {
+            "sha256": "ff0e0a59b95c1da4e2673c47021b78e3bf80a00f7e40c3557167cdf76b1fa11c",
+            "bytes": 2270908
+          },
+          "replay": {
+            "sha256": "ff0e0a59b95c1da4e2673c47021b78e3bf80a00f7e40c3557167cdf76b1fa11c",
+            "bytes": 2270908
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_final",
+          "before": {
+            "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5",
+            "bytes": 2966995
+          },
+          "replay": {
+            "sha256": "1484bfffd72cc10eb95b2bf7949ff3f3361a85bf1813b3d49904a7a0827cb6f5",
+            "bytes": 2966995
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "netlist_powered_final",
+          "before": {
+            "sha256": "bf2254165d66398377dfb3f9dea4518ce8a0abfe75d0cc75f6156158f89a6279",
+            "bytes": 6972493
+          },
+          "replay": {
+            "sha256": "bf2254165d66398377dfb3f9dea4518ce8a0abfe75d0cc75f6156158f89a6279",
+            "bytes": 6972493
+          },
+          "byte_equal": true
+        },
+        {
+          "artifact": "spef_native_nom",
+          "before": {
+            "sha256": "7573aeffe37ebc07be46b5b9caf3235c80474be4a52d40295849b2f1acb54e9a",
+            "bytes": 42970337
+          },
+          "replay": {
+            "sha256": "7573aeffe37ebc07be46b5b9caf3235c80474be4a52d40295849b2f1acb54e9a",
+            "bytes": 42970337
+          },
+          "byte_equal": true
+        }
+      ],
+      "producer_receipt": {
+        "sha256": "020c002830ceb9e37d24bd703e9b1f5b6a912b348ea6b59d8bf1f9acd87e0a27",
+        "bytes": 1948
+      }
     }
   },
   "tt_at_candidate_ss_passing_period": {
@@ -3210,6 +3295,68 @@
             }
           }
         }
+      }
+    }
+  },
+  "incomplete_routed_trials": {
+    "sky-aligned-full": {
+      "pdk": "SKY130A",
+      "status": "route_deadline",
+      "exit_code": 124,
+      "wall_seconds": 2700.063,
+      "reported_error": "cancelled by signal 15",
+      "resources": {
+        "sha256": "4502d3dc6a65326b6f83148e32ee297bce39a740ed8763d78b5026fbdf300b36",
+        "bytes": 1994
+      },
+      "summary": {
+        "sha256": "f608c065d0aa54ead016ae4fbefd70525e0b3598f3f9fe0da2b7ee6bee984485",
+        "bytes": 1225
+      }
+    },
+    "sky-aligned-verified": {
+      "pdk": "SKY130A",
+      "status": "route_deadline",
+      "exit_code": 124,
+      "wall_seconds": 3000.058,
+      "reported_error": "cancelled by signal 15",
+      "resources": {
+        "sha256": "6f4828cd00f8295b46facb9d12805228854fbab715e8395aa61c6586e5f5f461",
+        "bytes": 1963
+      },
+      "summary": {
+        "sha256": "7880330e319247637a58ed5047b5d39fde5feab613dbc41683498e9351a57880",
+        "bytes": 1221
+      }
+    },
+    "ihp-aligned-full": {
+      "pdk": "IHP SG13G2",
+      "status": "route_rule_failure",
+      "exit_code": 1,
+      "wall_seconds": 200.17,
+      "reported_error": "step failed: be_route, exit=2",
+      "resources": {
+        "sha256": "82d5537f30d9cbfa3efb4e299132154b805d7a8108538cbf74af5e46bf4633cd",
+        "bytes": 1924
+      },
+      "summary": {
+        "sha256": "d11a04179cbe66f58396adc6564151d5861c97f0691f59a89d1fa8fc74d0c802",
+        "bytes": 1140
+      }
+    },
+    "ihp-aligned-new-router": {
+      "pdk": "IHP SG13G2",
+      "status": "route_rule_failure",
+      "exit_code": 1,
+      "wall_seconds": 285.24,
+      "reported_error": "step failed: be_route, exit=2",
+      "resources": {
+        "sha256": "7ca62cf53d8d4e341d6f34ead1d08854a3e2a773921f8d32dfe5dbe7654d3417",
+        "bytes": 1947
+      },
+      "summary": {
+        "sha256": "54f140f84d7469ba0415ad01bb794fa954a7f90f7e69fb0e5df6bf31f5f92534",
+        "bytes": 1145
       }
     }
   }

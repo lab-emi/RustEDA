@@ -187,7 +187,8 @@ The GF180 delay goal and aligned selects reduce the vectorless power estimate
 by 40.8% and raise setup Fmax by 25.2% relative to the original RustEDA layout.
 Use `synthesis.goal = "delay"` and `synthesis.aligned_selects = true` in a
 copy of the native GF180 profile to select this mapping policy. The source
-port reproduced the trial's mapped netlist byte for byte. The warm physical
+port replayed all 105 steps and reproduced the cold trial's GDS, DEF,
+three netlists, SPEF and routing table byte for byte. The warm physical
 trial added two antenna jumpers. Its final netlists passed ABC equivalence,
 and shared LVS, simulation and antenna checks passed. The foundry DRC
 reported the same four density findings as the original GF180 pair. At the
@@ -201,6 +202,8 @@ The IHP trial uses the earlier aligned-select and after-reset compiler recipe.
 Its synthesis and final netlists passed equivalence after asserted reset,
 and the shared vendor-model simulation passed. Its setup ceiling is above
 LibreLane's 24.86 MHz and below the original RustEDA layout's 42.02 MHz.
+The all-state IHP trial reached detailed routing and reported two unresolved
+minimum-area cases with both tested RustROAD builds.
 
 For a matching 17-cycle gate-level smoke workload at 10 MHz, the
 VCD-annotated TT estimates are **92.64 / 94.33 mW** on the repaired GF180
@@ -208,6 +211,11 @@ pair and **1.001 / 1.306 mW** on the after-reset IHP pair. The original
 RustEDA layouts estimate 92.36 mW and 1.081 mW on those respective
 workloads. Input traces and valid-output traces match within each pair.
 [Waveform identities and activity coverage](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+The SKY130 aligned-select candidate passed external mapped-netlist
+equivalence. Its TT power estimate on mapped cell pin loads dropped from
+17.04 to 4.08 mW. Full routing reached the 45-minute and 50-minute deadlines
+in the two trials. Aligned SKY130 post-route power and Fmax are unverified.
 
 ## Frontend validation
 
