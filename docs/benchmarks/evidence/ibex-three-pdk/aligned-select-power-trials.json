@@ -901,6 +901,14 @@
           "sha256": "b85921a3a18161d5df2bd795dcc0d14a35e6c9555bc353ed37f6c7c8a3bb2b64",
           "bytes": 2724
         }
+      },
+      "independent_drc": {
+        "receipt": {
+          "sha256": "67d09d15facb810ae3fdf19276b3ae8f9a69b967d45b2d8ec90074566ab13b00",
+          "bytes": 14075
+        },
+        "magic_violations": 0,
+        "klayout_violations": 0
       }
     }
   },

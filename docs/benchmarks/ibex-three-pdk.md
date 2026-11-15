@@ -278,11 +278,12 @@ with RustROAD containing the disjoint row-blockage fix `9028a2f`.
 
 Eleven measured-capacitance buffers and a five-pin OR-path rebalance form a
 separate warm-routed GDS. Extraction, LVS, vendor simulation, ABC equivalence
-and placement density passed. The 17-cycle workload estimates **2.740 / 2.837 mW**,
+and placement density passed. Both independent DRC decks report zero violations.
+The 17-cycle workload estimates **2.740 / 2.837 mW**,
 and TT and SS setup and hold are nonnegative at 41.636250 ns. The SS electrical
 rows fell to 16 transition and two capacitance violations. The warm producer
 was separately observed in 137.69 s on CPUs 8 and 10. The combined cold and warm
-producer's matched time and final physical checks are pending.
+producer's matched time and the independent antenna result are pending.
 
 ## Frontend validation
 
