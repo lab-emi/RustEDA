@@ -1025,6 +1025,113 @@
         "independent_physical_scope": "Final physical, power and timing qualifications are independent of this producer timer.",
         "cold_and_final_native_artifacts_verified": 12
       }
+    },
+    "sky130_dual_channel_antenna_and_cap_repair": {
+      "scope": "Exact routed GDS after 136 targeted antenna diodes and two measured-capacitance buffers. Independent physical gates and matched producer timing have separate scopes.",
+      "gds": {
+        "sha256": "97803bdcf30f4c5ea7e94bdd9b7b34dd839654029b64189c1e2e82a7f0c68c5c",
+        "bytes": 70756900
+      },
+      "source_gds": {
+        "sha256": "443ae26174445cbdf9b4df28bd42f6109a1e1693311004d021bb1a470a611791",
+        "bytes": 70566276
+      },
+      "standard_cell_area_um2": 173532.6816,
+      "vectorless_tt_10mhz_mw": 6.563583388925,
+      "vectorless_power": {
+        "sha256": "34ffa9cb5527d95ba0a9ec6280de518c87247b9aa7b1d84c409273a4ce9edbe3",
+        "bytes": 3981
+      },
+      "matched_10mhz_tt_workload": {
+        "rusteda_mw": 2.740777563304,
+        "librelane_mw": 2.836818806827,
+        "trace": {
+          "start_ps": 4400000,
+          "end_ps": 6100000,
+          "cycles": 17,
+          "clock_period_ns": 100,
+          "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+          "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+        },
+        "activity_annotation": {
+          "vcd": 56684,
+          "unannotated": 0
+        },
+        "receipt": {
+          "sha256": "7a3508f9739a13927dbb5c938a1a9b5f9018c0e44373e5ef34fb5e133c0fc233",
+          "bytes": 11130
+        }
+      },
+      "ss_setup_frequency_bracket_mhz": [
+        24.013567665731138,
+        24.015369836695484
+      ],
+      "setup_sweep": {
+        "sha256": "065903ecfbfc770a836dddfab24ed9edabd78fd904da498101b8f3587fe7b6a2",
+        "bytes": 15914
+      },
+      "tt_and_ss_at_shortest_ss_pass_period": {
+        "period_ns": 41.643125,
+        "tt_setup_slack_ns": 13.349025726318,
+        "tt_hold_slack_ns": 0.04991896078,
+        "ss_setup_slack_ns": 0.000753175293,
+        "ss_hold_slack_ns": 0.348141521215,
+        "tt_log": {
+          "sha256": "5ea3e91683b7bf1f24ee8173452f5293b490dfd27b8f602fda737fd6df8d946e",
+          "bytes": 565
+        }
+      },
+      "tt_ss_at_10mhz": {
+        "tt": {
+          "status": "passed",
+          "setup_ws_ns": 42.527462005615,
+          "hold_ws_ns": 0.04991896078,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "status": "failed",
+          "setup_ws_ns": 40.898181915283,
+          "hold_ws_ns": 0.348141521215,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 18,
+          "cap_violations": 2,
+          "fanout_violations": 0
+        }
+      },
+      "independent_analysis": {
+        "sha256": "649bac29f46529b3113e37bbd8b7be5213dc9d0d0b9bc4c546cca8d2a3ef289c",
+        "bytes": 71353
+      },
+      "independent_analysis_exit_codes": {
+        "extraction": 0,
+        "timing": 1,
+        "lvs": 0,
+        "simulation": 0,
+        "logic": 0,
+        "density": 0
+      },
+      "warm_producer_observation": {
+        "wall_seconds": 244.54,
+        "cpu_affinity": [
+          16,
+          17,
+          18,
+          19
+        ],
+        "resources": {
+          "sha256": "d94bff8764316ecbee97aecf94dd8c0044216bc8497f738f3f232a13b8f760a3",
+          "bytes": 2122
+        },
+        "producer": {
+          "sha256": "544e026c56d4addfa9f518285bd35ccf9b7324445e0afd908fa33c5d5db59d70",
+          "bytes": 4102
+        }
+      }
     }
   },
   "trials": {

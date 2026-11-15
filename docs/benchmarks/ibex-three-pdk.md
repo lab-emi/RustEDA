@@ -186,6 +186,7 @@ cell lists **the RustEDA trial / LibreLane**.
 | IHP SG13G2, aligned selects with arbitrary initial state | 1.21 / 5.57 | 43.42 / 24.86 | 186,285 / 204,848 |
 | SKY130A, aligned selects and two vertical placement channels | 6.54 / 9.50 | 23.07 / 17.21 | 173,080 / 176,427 |
 | SKY130A, dual channels with electrical repair and OR-path rebalance | 6.57 / 9.50 | 24.02 / 17.21 | 173,174 / 176,427 |
+| SKY130A, dual channels with targeted antenna and capacitance repair | 6.56 / 9.50 | 24.01 / 17.21 | 173,533 / 176,427 |
 
 The GF180 delay goal and aligned selects reduce the vectorless power estimate
 by 40.8% and raise setup Fmax by 25.2% relative to the original RustEDA layout.
@@ -294,6 +295,14 @@ electrical variant and LibreLane. The gate ran outside the producer interval.
 `integration/ibex_pdks/sky130hd/native/bind_magic_antenna.py` reproduced all
 158 bindings to exact gate rectangles and routed DEF terminals. This identifies
 136 nets for the next physical repair. [Exact replays and antenna results](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+The next warm revision added 136 diodes and two load buffers with the original
+clock sites preserved. Its exact GDS passed extraction, LVS, vendor simulation,
+ABC equivalence and placement density. The 17-cycle 10 MHz workload estimates
+**2.741 / 2.837 mW**, and TT and SS setup and hold are nonnegative at 41.643125 ns.
+At 10 MHz it has 18 SS transition violations and two SS capacitance violations.
+Final DRC, Magic antenna and the matched producer replay are pending.
+[Routed trial measurements](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 ## Frontend validation
 
