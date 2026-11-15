@@ -563,6 +563,30 @@
           "observed_reference_seconds_over_filled_native_seconds": 1.336430555773547,
           "observed_filled_native_delta_percent": -25.173815004462817,
           "electrical_scope": "Producer timing binds the filled GDS geometry. The paired electrical estimates remain scoped to the unfilled source."
+        },
+        "opt_in_emitter": {
+          "path": "integration/ibex_pdks/gf180mcu/native/floating_fill.py",
+          "sha256": "a07d71fb056b863d9bd842d06c3afc2b4d77aca387e3fe7df9a0def9596bf185",
+          "bytes": 8537,
+          "standalone_geometry_replay": {
+            "sha256": "f4116d0be8ea9de6059bcda1a7096857c1db32a5550249730e6047e7c1755b81",
+            "bytes": 2676
+          },
+          "geometry_equality_ignoring_timestamps": {
+            "sha256": "8c5157616748e596cf3203aaaf76c829568a2dd7a29033b947048d0956e3301e",
+            "records": 3570417,
+            "timestamp_records": 649
+          },
+          "refusal_checks": {
+            "existing": {
+              "sha256": "6cb9e9a6070c4568bdaeda86ff4e5442569f73143a4b8899a59898ca9343f229",
+              "bytes": 350
+            },
+            "prefilled": {
+              "sha256": "9e361e4dc404ae7cdf1c2926cd2e2fbeee075ac8379cab01983a5335954e3eef",
+              "bytes": 361
+            }
+          }
         }
       }
     }

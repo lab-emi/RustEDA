@@ -220,6 +220,10 @@ floating fill took **637.13 s**. LibreLane took **851.48 s** on the same CPU
 pair with 4 GiB of memory and no swap. Both output streams matched the checked
 GDS geometry after masking timestamps. [Filled producer replay](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
+The opt-in `integration/ibex_pdks/gf180mcu/native/floating_fill.py` emitter
+reproduces the checked filled geometry from the routed GDS, DEF and SRAM LEF.
+It reports the selected fill phases and source hashes in JSON.
+
 ![GF180 layouts at the same scale with eight identical SRAM placements. The RustEDA fill trial has one foundry density finding and the LibreLane layout has four.](figures/ibex-gf180-density-fill.png)
 
 The IHP trial uses the earlier aligned-select and after-reset compiler recipe.
