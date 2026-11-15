@@ -270,8 +270,9 @@ slack at the shortest tested passing SS period of 43.346250 ns. At 10 MHz,
 the dual layout has 83 SS transition and 11 SS capacitance violations.
 On CPUs 30 and 31 with 4 GiB and no swap, the dual-channel RTL-to-GDS
 producer took **1,283.14 s** against LibreLane's **1,771.63 s**. The replay
-reproduced the native GDS, DEF, three netlists and SPEF byte for byte. The
-independent antenna check for this layout is pending. To select the frozen placement policy, use
+reproduced the native GDS, DEF, three netlists and SPEF byte for byte. Magic
+reported 219 antenna findings for this layout and 13 for the LibreLane reference.
+To select the frozen placement policy, use
 `--profile integration/ibex_pdks/sky130hd/native/profile-aligned-dual-channel.json`
 with RustROAD containing the disjoint row-blockage fix `9028a2f`.
 [Exact trial inputs and checks](evidence/ibex-three-pdk/aligned-select-power-trials.json)
@@ -282,8 +283,17 @@ and placement density passed. Both independent DRC decks report zero violations.
 The 17-cycle workload estimates **2.740 / 2.837 mW**,
 and TT and SS setup and hold are nonnegative at 41.636250 ns. The SS electrical
 rows fell to 16 transition and two capacitance violations. The warm producer
-was separately observed in 137.69 s on CPUs 8 and 10. The combined cold and warm
-producer's matched time and the independent antenna result are pending.
+was separately observed in 137.69 s on CPUs 8 and 10. One elapsed replay through
+cold production, ECO prerequisites, the warm reroute and final GDS took
+**1,483.81 s** against LibreLane's **1,771.63 s** on CPUs 30 and 31 with
+4 GiB and no swap. All twelve native cold and final artifacts matched their
+checked originals byte for byte.
+
+The independent Magic check recorded **158 / 13** antenna findings on the
+electrical variant and LibreLane. The gate ran outside the producer interval.
+`integration/ibex_pdks/sky130hd/native/bind_magic_antenna.py` reproduced all
+158 bindings to exact gate rectangles and routed DEF terminals. This identifies
+136 nets for the next physical repair. [Exact replays and antenna results](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 ## Frontend validation
 

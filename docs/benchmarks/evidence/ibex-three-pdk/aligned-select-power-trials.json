@@ -795,6 +795,32 @@
           "sha256": "c8cc8f9b8589629aa678aaf9d03e7ae01a2ffdd4284a5395cfca60ed62f903fc",
           "bytes": 479
         }
+      },
+      "independent_magic_antenna": {
+        "receipt": {
+          "sha256": "32b540958a5566aba39637b2b8410bf473c9578240769467044e1ed84f6a6c53",
+          "bytes": 8833
+        },
+        "violations": 219,
+        "librelane_violations": 13,
+        "librelane_raw_log": {
+          "sha256": "582aa736722acf8ea2c58bf42f6d86d1276cc54c1363fe0ad8a65c00d5f8e6db",
+          "bytes": 25204
+        },
+        "librelane_parsed_evidence": {
+          "sha256": "63aa906edc62ed9a884414233699a35de05970cdf7080ac2ade9cbe08f0ce1ea",
+          "bytes": 5839
+        },
+        "bound_nets": 186,
+        "binder": {
+          "path": "integration/ibex_pdks/sky130hd/native/bind_magic_antenna.py",
+          "sha256": "bc79046c818cc1bf9a5a53013561fb7d74109e97d9165c857aa629d26241b586",
+          "bytes": 9504
+        },
+        "exact_geometry_binding": {
+          "sha256": "ca9536df1c53549eb9ad7bf639c82538eef3a5669c916a9672a1bb5ae100ad84",
+          "bytes": 171608
+        }
       }
     },
     "sky130_dual_channel_warm_electrical": {
@@ -909,6 +935,95 @@
         },
         "magic_violations": 0,
         "klayout_violations": 0
+      },
+      "independent_magic_antenna": {
+        "receipt": {
+          "sha256": "df430a70a29dc8564aa8ee9f1a25a1dab0158142a2345520aff0732f1d7c310c",
+          "bytes": 8846
+        },
+        "violations": 158,
+        "librelane_violations": 13,
+        "librelane_raw_log": {
+          "sha256": "582aa736722acf8ea2c58bf42f6d86d1276cc54c1363fe0ad8a65c00d5f8e6db",
+          "bytes": 25204
+        },
+        "librelane_parsed_evidence": {
+          "sha256": "63aa906edc62ed9a884414233699a35de05970cdf7080ac2ade9cbe08f0ce1ea",
+          "bytes": 5839
+        },
+        "bound_nets": 136,
+        "binder": {
+          "path": "integration/ibex_pdks/sky130hd/native/bind_magic_antenna.py",
+          "sha256": "bc79046c818cc1bf9a5a53013561fb7d74109e97d9165c857aa629d26241b586",
+          "bytes": 9504
+        },
+        "exact_geometry_binding": {
+          "sha256": "742cc60c07d1d6055a0a09472d8bd58a92d10c82cc7aad2a90dd013c3dd9cc68",
+          "bytes": 124282
+        }
+      },
+      "integrated_same_core_producer": {
+        "receipt": {
+          "sha256": "54e07499dafa20d9a4fa4840d9910e09aebb681d3adf1430de4b74f8a3508e15",
+          "bytes": 14092
+        },
+        "scope": "Single fresh elapsed RTL through jointly repaired GDS on the matched two host CPUs. Includes cold production, prerequisite extraction/timing/logic, targeted logical and anchor regeneration, fresh joint equivalence, warm placement/CTS/route reuse, antenna processing and lineage, native extraction and export.",
+        "native": {
+          "exit_code": 0,
+          "wall_seconds": 1483.81,
+          "cpu_seconds": 1493.76,
+          "allowed_cpus": [
+            30,
+            31
+          ],
+          "cgroup_v2_memory_peak_bytes": 3025571840,
+          "cgroup_v2_swap_peak_bytes": 0,
+          "gnu_time_max_rss_kib": 674004,
+          "other_load": {
+            "host_busy_cpu_seconds": 4925.96,
+            "allowed_set_busy_cpu_seconds": 1500.87,
+            "own_cpu_seconds": 1493.76,
+            "other_cpu_seconds_host": 3432.2,
+            "other_cpu_seconds_on_allowed_set": 7.11,
+            "mean_other_busy_cpus_host": 2.313,
+            "mean_other_busy_cpus_on_allowed_set": 0.005,
+            "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+          },
+          "receipt": {
+            "bytes": 1675,
+            "sha256": "d425dd8ac604456d20d8e03c1fbada951bf8f5a48a9cb940ee7c818cdf2493f3"
+          }
+        },
+        "librelane": {
+          "exit_code": 0,
+          "wall_seconds": 1771.63,
+          "cpu_seconds": 3072.89,
+          "allowed_cpus": [
+            30,
+            31
+          ],
+          "cgroup_v2_memory_peak_bytes": 2289549312,
+          "cgroup_v2_swap_peak_bytes": 0,
+          "gnu_time_max_rss_kib": 1556720,
+          "other_load": {
+            "host_busy_cpu_seconds": 10341.08,
+            "allowed_set_busy_cpu_seconds": 3080.94,
+            "own_cpu_seconds": 3072.89,
+            "other_cpu_seconds_host": 7268.19,
+            "other_cpu_seconds_on_allowed_set": 8.05,
+            "mean_other_busy_cpus_host": 4.102,
+            "mean_other_busy_cpus_on_allowed_set": 0.005,
+            "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+          },
+          "receipt": {
+            "bytes": 2193,
+            "sha256": "67cc874bb7f25dbe8140a3638a59a094106808517be011940a714a32f7a352f6"
+          }
+        },
+        "elapsed_reference_over_native": 1.193973621959685,
+        "native_wall_delta_percent": -16.24605589203164,
+        "independent_physical_scope": "Final physical, power and timing qualifications are independent of this producer timer.",
+        "cold_and_final_native_artifacts_verified": 12
       }
     }
   },
