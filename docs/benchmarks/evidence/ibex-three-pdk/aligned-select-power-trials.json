@@ -1131,6 +1131,14 @@
           "sha256": "544e026c56d4addfa9f518285bd35ccf9b7324445e0afd908fa33c5d5db59d70",
           "bytes": 4102
         }
+      },
+      "independent_drc": {
+        "receipt": {
+          "sha256": "fe137e896dfc608dd5b937de6b59e5468facc588e61dd0e82410c0775daaf795",
+          "bytes": 13998
+        },
+        "magic_violations": 0,
+        "klayout_violations": 0
       }
     }
   },

@@ -298,10 +298,11 @@ electrical variant and LibreLane. The gate ran outside the producer interval.
 
 The next warm revision added 136 diodes and two load buffers with the original
 clock sites preserved. Its exact GDS passed extraction, LVS, vendor simulation,
-ABC equivalence and placement density. The 17-cycle 10 MHz workload estimates
+ABC equivalence, placement density and both independent DRC decks. The 17-cycle 10 MHz workload estimates
 **2.741 / 2.837 mW**, and TT and SS setup and hold are nonnegative at 41.643125 ns.
 At 10 MHz it has 18 SS transition violations and two SS capacitance violations.
-Final DRC, Magic antenna and the matched producer replay are pending.
+Final Magic antenna and the calibrated-profile producer replay are pending. The
+initial Magic discovery ran in 1,234.39 s and is recorded separately.
 [Routed trial measurements](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 ## Frontend validation
