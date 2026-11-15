@@ -14,9 +14,10 @@ uses the same signoff scripts. Bank capacity and the cell library vary by PDK.
 ## Power, area and frequency
 
 Each cell lists **RustEDA / LibreLane** for the GDS pair shown on this page.
-Percentages show RustEDA's change relative to LibreLane.
+Every power estimate uses **10 MHz (100 ns) for both flows** on all three
+processes. Percentages show RustEDA's change relative to LibreLane.
 
-| Open PDK | TT modeled power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) |
+| Open PDK | TT modeled power at 10 MHz for both (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) |
 | --- | ---: | ---: | ---: |
 | IHP SG13G2 | 8.63 / 5.57 (+54.9%) | 187,585 / 204,848 (**−8.4%**) | 42.02 / 24.86 (**+69.0%**) |
 | SKY130A | 28.99 / 9.50 (+205.2%) | 176,089 / 176,427 (**−0.19%**) | 23.75 / 17.21 (**+37.9%**) |

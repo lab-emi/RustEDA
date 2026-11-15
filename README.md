@@ -53,19 +53,20 @@ GDS side by side, with **RustEDA on the left** and **LibreLane on the right**.
 
 ![IHP SG13G2 final GDS side by side for the 10 November pair. Both 4 KiB SRAM banks are highlighted on each layout.](docs/benchmarks/figures/ibex-ihp-20261110.png)
 
-Each measurement lists **RustEDA / LibreLane**. Percentages show RustEDA's
+Each measurement lists **RustEDA / LibreLane**. Both flows use the same
+**10 MHz clock (100 ns)** for the power estimate. Percentages show RustEDA's
 change relative to LibreLane.
 
-| Open PDK | Modeled power (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | SS setup slack at 10 MHz (ns) | Time to GDS (s) |
+| Open PDK | Modeled power at 10 MHz for both (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | SS setup slack at 10 MHz (ns) | Time to GDS (s) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | [IHP SG13G2](docs/benchmarks/ibex-three-pdk.md#ihp-sg13g2-layout-pair) | 8.63 / 5.57<br>+54.9% | 187,585 / 204,848<br>**−8.4%** | 42.02 / 24.86<br>**+69.0%** | +49.44 / +47.94 | 1,348.3 / 2,073.4<br>**1.54× faster** |
 | [SKY130A, two cores](docs/benchmarks/ibex-three-pdk.md#sky130a-layout-pair) | 28.99 / 9.50<br>+205.2% | 176,089 / 176,427<br>**−0.19%** | 23.75 / 17.21<br>**+37.9%** | +40.59 / +35.64 | 1,241.0 / 1,771.6<br>**1.43× faster** |
 | [GF180MCU D, two cores](docs/benchmarks/ibex-three-pdk.md#gf180mcu-d-layout-pair) | 155.89 / 139.09<br>+12.1% | 478,020 / 490,812<br>**−2.6%** | 12.01 / 10.75<br>**+11.7%** | +16.72 / +6.96 | 474.4 / 851.5<br>**1.79× faster** |
 
-Power is a post-route OpenSTA estimate at TT and the shared 10 MHz clock,
-using identical vectorless input activity. Setup Fmax is the clock ceiling
-from SS period sweeps on the fixed routed layouts. Area measures the
-standard-cell footprint within the same die. [QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
+Power uses post-route OpenSTA at TT with identical vectorless input activity.
+The Fmax column reports the setup ceiling from SS period sweeps on the fixed
+routed layouts. Area measures the standard-cell footprint within the same
+die. [QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
 
 The IHP figure and table use the 10 November pair measured under competing
 host load. The SKY130A and GF180MCU D pairs used matched cores within each
