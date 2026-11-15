@@ -155,6 +155,17 @@ class ProfileComposition(unittest.TestCase):
         self.assertIn('wireload_lumped', steps['fe_mapped_run']['arguments'])
         self.assertIn('spef_rc', steps['fe_final_run']['arguments'])
 
+    def test_aligned_selects_fits_the_full_sky130_exclusion_list(self):
+        sky = json.loads((ROOT / 'integration/ibex_pdks/sky130hd/native/profile.json').read_text())
+        synthesis = {**sky['synthesis'], 'aligned_selects': True}
+        manifest, _ = self.manifest(profile={**self.tree.profile, 'synthesis': synthesis})
+        args = next(step['arguments'] for step in manifest['steps'] if step['id'] == 'fe_synth')
+        self.assertLessEqual(len(args), 256)
+        self.assertIn('--aligned-selects', args)
+        self.assertIn('--threads=2', args)
+        self.assertEqual([arg.removeprefix('--dont-use=') for arg in args if arg.startswith('--dont-use=')],
+                         sky['synthesis']['dont_use'])
+
     def test_unknown_synthesis_goal_is_rejected(self):
         profile = {**self.tree.profile, 'synthesis': {'goal': 'balanced'}}
         done, _ = self.tree.compose(profile=profile)

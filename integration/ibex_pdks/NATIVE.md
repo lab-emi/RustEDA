@@ -82,7 +82,7 @@ What the steps do with the profile:
 | `fe_context` | renders the pinned files, the tools and `selection.json` for the helpers |
 | `fe_profiles` (`rusteda frontend-profiles`) | the cell Liberty of every corner (`std_<corner>`), the first cell LEF, the SDC, `floorplan.json` (database unit, pin buses), `interfaces.json`; the profile's `pdk`, `library` and corners label the delay and sizing profiles |
 | `fe_caps_<corner>_<group>` | one pin-capacitance table per Liberty file |
-| `fe_synth*` | the first corner's Liberty files, `synthesis.goal`, `synthesis.dont_use` |
+| `fe_synth*` | the first corner's Liberty files, `synthesis.goal`, `synthesis.dont_use`, `synthesis.aligned_selects` |
 | `fe_*_import`, `fe_*_run`, reports | every corner's Liberty files, the SDC |
 | `fe_eco_*` (`rusteda eco-round`) | the tables and reports of both corners, `selection.json` |
 | `fe_physical_config` (`rusteda frontend-physical`) | `physical.json`, `routing.json`, checked against `contract.json` |
@@ -100,6 +100,11 @@ with a default wire-load model, such as SKY130 HD. Before placement the
 executor requires that model in both timing reports. After placement the ECO
 rounds require estimated SPEF, and shared signoff uses extracted SPEF. Profiles
 without `early_wire_model` use the original ideal pre-placement diagnostics.
+
+Set `synthesis.aligned_selects` to `true` to enable RustSys
+`--aligned-selects` when the pinned synthesis binary supports it. RustSys
+can decode dynamic part-selects whose possible bit windows are disjoint.
+The option defaults to `false`.
 
 ### Directory layout
 

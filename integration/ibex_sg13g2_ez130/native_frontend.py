@@ -142,10 +142,12 @@ class Profile:
         require(isinstance(self.allocations, list) and self.allocations
                 and all(type(n) is int and 1 <= n <= 16 for n in self.allocations), 'PDK profile allocations')
         synthesis = data.get('synthesis', {})
-        require(isinstance(synthesis, dict) and not set(synthesis) - {'dont_use', 'goal'},
+        require(isinstance(synthesis, dict) and not set(synthesis) - {'dont_use', 'goal', 'aligned_selects'},
                 'PDK profile synthesis fields')
         self.synthesis_goal = synthesis.get('goal')
         require('goal' not in synthesis or self.synthesis_goal in ('area', 'delay'), 'PDK profile synthesis.goal')
+        self.aligned_selects = synthesis.get('aligned_selects', False)
+        require(type(self.aligned_selects) is bool, 'PDK profile synthesis.aligned_selects must be boolean')
         self.dont_use = synthesis.get('dont_use', [])
         require(isinstance(self.dont_use, list)
                 and all(isinstance(g, str) and re.match(r'[A-Za-z0-9_*?.-]{1,128}\Z', g) for g in self.dont_use),
@@ -312,14 +314,18 @@ def recipe(config, four, profile=None):
     imp=command('synth_import','rusteda',['import','-w',ws,'--base-rev','rev0','--threads','2','--format','json','--lib-cache',lib_cache,*typical,'--rtl','{files:rtl}','--top',config['selection']['top']],after=[init])
     synth_prefix = ['--workspace', ws, 'synth']
     synth_args = [*synth_prefix, '--base-rev', 'rev1', '--threads', '2']
-    goal = [f'--goal={profile.synthesis_goal}'] if profile.synthesis_goal else []
+    options = [f'--goal={profile.synthesis_goal}'] if profile.synthesis_goal else []
+    if profile.aligned_selects:
+        options.append('--aligned-selects')
     excluded = [arg for glob in profile.dont_use for arg in ('--dont-use', glob)]
     # Large libraries can use one argv token per glob without changing the exclusion set.
-    if len(synth_args) + len(excluded) + len(goal) > 256:
+    if len(synth_args) + len(excluded) + len(options) > 256:
         excluded = [f'--dont-use={glob}' for glob in profile.dont_use]
-    if len(synth_args) + len(excluded) + len(goal) > 256:
+    if len(synth_args) + len(excluded) + len(options) > 256:
         synth_args = [*synth_prefix, '--base-rev=rev1', '--threads', '2']
-    arguments = [*synth_args, *excluded, *goal]
+    if len(synth_args) + len(excluded) + len(options) > 256:
+        synth_args = [*synth_prefix, '--base-rev=rev1', '--threads=2']
+    arguments = [*synth_args, *excluded, *options]
     require(len(arguments) <= 256, 'PDK profile synthesis command exceeds the executor argument limit')
     synth=command('synth','rustsys',arguments,600,after=[imp])
     mapped=command('synth_export','rusteda',['export','-w',ws,'--rev','rev2','--netlist',out+'mapped.v','--cell-buses',out+'profiles/cell-buses.json'],after=[synth,profiles],slots=[0])
