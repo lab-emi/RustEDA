@@ -1,0 +1,2136 @@
+{
+  "schema": "rusteda.ibex-three-pdk-paired-qor.v1",
+  "scope": "Fixed routed Ibex layouts shown in the three-PDK figures. Area is the standard-cell footprint.",
+  "power_analysis": {
+    "source_receipt": {
+      "sha256": "31dbe79ac1f8263c307e481ee01c8edffae02ee6fe03308976fe7c4750711ed1",
+      "bytes": 48189
+    },
+    "scope": {
+      "opensta": "3.1.0",
+      "corner": "TT cell and SRAM Liberty",
+      "nominal_openrcx_spef": true,
+      "clock_policy": "One original SDC clock clk_i, 100 ns, propagated",
+      "data_input_transitions_per_cycle": 0.1,
+      "data_input_duty": 0.5,
+      "reset": "Active-low rst_ni held inactive at 1 with activity 0 and duty 1",
+      "power_report_unit": "W",
+      "vcd_or_saif_activity": false,
+      "explicit_data_input_annotations": "All non-clock, non-reset primary input bits",
+      "limits": [
+        "Estimates depend on vectorless activity propagation and characterization coverage.",
+        "Uncharacterized physical-only stubs carry no Liberty power model.",
+        "SRAM instance power comes from the matching TT Liberty models, with zero modeled SRAM switching in the OpenSTA Macro rows of these reports.",
+        "The scope does not measure silicon power, workload energy, or analog SRAM internals."
+      ]
+    },
+    "tool_identity": {
+      "opensta_binary": {
+        "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+        "bytes": 16264
+      },
+      "opensta_launcher": {
+        "sha256": "590cdd8dff65f272449938ffb7b9747312b4e10fdf6533a2524e5a9cc734692b",
+        "bytes": 117
+      },
+      "launcher_environment": {
+        "sha256": "f8250ee9714616fdf6fc46814224c17889eeb4ebc738fe1f3dc913a94d4fdeb2",
+        "bytes": 790
+      }
+    },
+    "method_source": "https://opensta.readthedocs.io/en/latest/Commands/#set_power_activity",
+    "local_method_provenance": {
+      "run-power.py": {
+        "sha256": "51868fb20d5182c9a9ebecd567c8013355ce886b981c79cbecd1314237d2702d",
+        "bytes": 10512
+      },
+      "summarize-power.py": {
+        "sha256": "ee2de310045616e9b0add78577b613053c272f25df1dc340098cc03935ddbfb9",
+        "bytes": 10349
+      },
+      "resource-plan.json": {
+        "sha256": "c7485c22766f5ae2db4ee38b2580e7c339bdc99d1b16d23f193bf7eb548b27d4",
+        "bytes": 564
+      }
+    }
+  },
+  "setup_frequency_analysis": {
+    "source_receipt": {
+      "sha256": "ea024ad8ffee625f89ea3595dd2da40dfafed8289bb97ccd0b316c44ce5ed3cf",
+      "bytes": 26179
+    },
+    "scope": {
+      "method": "Only the one clk_i period in the retained SDC varies. Sweep brackets worst max timing slack at zero.",
+      "corner": "ss",
+      "original_clock_period_ns": 100,
+      "clock_model": "propagated",
+      "waveform": "default 50 percent duty cycle",
+      "rc_corner": "nom",
+      "spef_source": "OpenRCX",
+      "cppr": "off",
+      "tool": "OpenSTA 3.1.0",
+      "paths": "All max timing groups, including timed I/O and gating checks",
+      "limits": "Setup-limited fixed-layout ceiling. Hold, max transition/capacitance/fanout, pulse width, physical checks and silicon qualification are separate."
+    },
+    "driver": {
+      "sha256": "d42ee500012f4808075c2422e25285820c90b3c3177674b44385e13809e6bb20",
+      "bytes": 8679
+    }
+  },
+  "pairs": {
+    "IHP SG13G2": {
+      "source_run_ids": {
+        "paired_layout": "10 November retained IHP SG13G2 / EZ130 pair",
+        "RustEDA": "native-final",
+        "LibreLane": "ll-final"
+      },
+      "flows": {
+        "RustEDA": {
+          "layout_receipt": "ihp-20261110-layouts.json",
+          "standard_cell_area_um2": 187585.1712,
+          "modeled_power_mw": 8.633356541395,
+          "setup_fmax_mhz": 42.02232435981615,
+          "power_analysis": {
+            "power_w": {
+              "sequential": {
+                "internal": 0.0003457512939349,
+                "switching": 1.994515332626e-05,
+                "leakage": 5.528408451028e-07,
+                "total": 0.0003662492672447
+              },
+              "combinational": {
+                "internal": 0.002680234611034,
+                "switching": 0.005069500766695,
+                "leakage": 1.098257371268e-06,
+                "total": 0.007750833407044
+              },
+              "clock": {
+                "internal": 6.364002183545e-05,
+                "switching": 0.0001407319650752,
+                "leakage": 4.623263194503e-08,
+                "total": 0.0002044182183454
+              },
+              "macro": {
+                "internal": 0.0003110758552793,
+                "switching": 0.0,
+                "leakage": 7.920619964352e-07,
+                "total": 0.0003118679160252
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.003400688059628,
+                "switching": 0.005230179056525,
+                "leakage": 2.489362259439e-06,
+                "total": 0.008633356541395
+              }
+            },
+            "sram_instance_power_w": {
+              "u_dmem": {
+                "internal": 0.0002314898301847,
+                "switching": 0.0,
+                "leakage": 3.960309982176e-07,
+                "total": 0.0002318858605577
+              },
+              "u_imem": {
+                "internal": 7.958603237057e-05,
+                "switching": 0.0,
+                "leakage": 3.960309982176e-07,
+                "total": 7.998206274351e-05
+              }
+            },
+            "sram_liberty_coverage": {
+              "cell_leakage_power_attributes": 1,
+              "state_leakage_power_groups": 0,
+              "internal_power_groups": 41,
+              "is_macro_cell_attributes": 0,
+              "leakage_power_unit": "\"1nW\"",
+              "nominal_v": "1.20",
+              "nominal_temperature_c": "25"
+            },
+            "inputs": {
+              "gds": {
+                "sha256": "e6438e8473913661cb29b3d303edc79b8f36584d376f4098300d726aa67bdb42",
+                "bytes": 26690616
+              },
+              "def": {
+                "sha256": "981ec4dfff62f62c17a45da312dc98f55df424d00df77c6f8f9a438b16280583",
+                "bytes": 13172249
+              },
+              "netlist": {
+                "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+                "bytes": 2049571
+              },
+              "sdc": {
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+                "bytes": 35191
+              },
+              "spef_openrcx": {
+                "sha256": "83523921c83928cc8fe418d3353b1f66b837e3694e7fda5d682081863b3a1698",
+                "bytes": 19283902
+              },
+              "std_tt": {
+                "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+                "bytes": 9292203
+              },
+              "ram_tt": {
+                "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+                "bytes": 49322
+              },
+              "physical_stubs": {
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65",
+                "bytes": 169
+              },
+              "original_command": {
+                "sha256": "ce9316a58b53708488ba343171a95e14895f3603eb73d5a883aeb84c7855a72e",
+                "bytes": 33697
+              },
+              "original_annotation": {
+                "sha256": "300841696b93a2fcdf5bf87604b08881d3ae6a7f7c1f516df37a57bef3e8aed7",
+                "bytes": 102
+              },
+              "layout_timing_plan": {
+                "sha256": "2bc48e94de36033475df09dff7421ba1c3af8121fc70b1f339a0ce7346a58b04",
+                "bytes": 3450
+              },
+              "layout_timing_summary": {
+                "sha256": "eee901618058ea1102310b34907e4a72c2f8eb8fdbb5c9cf5a9c566a35561e39",
+                "bytes": 398491
+              },
+              "layout_extraction_plan": {
+                "sha256": "9667988307047f73712b57ffdb45fff84f18741d3a31256717f9a15aecc834ba",
+                "bytes": 1776
+              },
+              "published_figure_receipt": {
+                "sha256": "18b07f462bb2c8897ca4ce4f56065cd3cc22aa2679dba98b6e3c1a31f0ceb7bc",
+                "bytes": 5777
+              }
+            },
+            "extraction": {
+              "tool": "openrcx",
+              "rc_corner": "nom",
+              "annotated_net_records": 14178,
+              "rc_rules": {
+                "sha256": "ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905",
+                "bytes": 50282
+              }
+            },
+            "coverage": {
+              "explicit_data_input_annotations": 50,
+              "explicit_reset_annotations": 1,
+              "sdc_clocks": 1,
+              "clock_period_ns": 100.0,
+              "fully_unannotated_disconnected_drivers": 4,
+              "active_unannotated_drivers": 0,
+              "partially_unannotated_drivers": 0,
+              "annotation_report_exact_match_to_prior_timing_gate": true,
+              "physical_only_stub_masters": [
+                "FILLER1",
+                "FILLER16",
+                "FILLER2",
+                "FILLER4",
+                "FILLER8",
+                "WELLTAP"
+              ],
+              "uncharacterized_stub_instances_in_netlist": {},
+              "linked_sram_instances": 2
+            },
+            "resources": {
+              "wall_seconds": 4.88,
+              "cpu_seconds": 5.25,
+              "allowed_cpus": [
+                20,
+                21
+              ],
+              "gnu_time_max_rss_kib": 168628,
+              "cgroup_limit_bytes": 2147483648,
+              "cgroup_v2_memory_peak_bytes": 159629312,
+              "cgroup_v2_swap_peak_bytes": 0,
+              "exit_code": 0
+            },
+            "evidence_files": {
+              "inputs.json": {
+                "sha256": "25ad2c60179faf4e6fd64014627452387eb8baad40448fcadd4fd9b62b5ea029",
+                "bytes": 4596
+              },
+              "report-opensta-power.tcl": {
+                "sha256": "ef16b5e9f85f9b17daef477058dc6f8f5fcda8373987cb5599becc8a27305c21",
+                "bytes": 2154
+              },
+              "opensta.log": {
+                "sha256": "b5366d01a957f9e7339c8d28b1d207c134817938f84b3e3cd6178d006bb9e91e",
+                "bytes": 707
+              },
+              "power.rpt": {
+                "sha256": "ba32342137e5d555964855d30877603eb1ba2d0056b73ac5fa5def58710ddc19",
+                "bytes": 1098
+              },
+              "macro-instances.rpt": {
+                "sha256": "c7b415041ba5c4891cc058f8ff64895ddd090509b450fd6681ea36dc846f7190",
+                "bytes": 407
+              },
+              "parasitic-annotation.rpt": {
+                "sha256": "300841696b93a2fcdf5bf87604b08881d3ae6a7f7c1f516df37a57bef3e8aed7",
+                "bytes": 102
+              },
+              "resources.json": {
+                "sha256": "e55f5aaf517d04e342f46ca64e486f7f3730d597044d280e8b7bba03d1a32687",
+                "bytes": 1720
+              },
+              "time.txt": {
+                "sha256": "be0cc4f4dcf6b6a72d6a4b5723f33c3a0c125d4200487c813b89014f0856dabb",
+                "bytes": 929
+              }
+            },
+            "prior_annotation_inventory": {
+              "sha256": "d841636afb3867311ef2443136330da74b936a7654663dec43f0d9c1b876852d",
+              "bytes": 11057
+            }
+          },
+          "setup_sweep": {
+            "gds": {
+              "sha256": "e6438e8473913661cb29b3d303edc79b8f36584d376f4098300d726aa67bdb42",
+              "bytes": 26690616
+            },
+            "input_identities": {
+              "netlist": {
+                "sha256": "a03ce194fe34911b8a55d4ade5915de9411d2294adfe12ff885d680d92d0d2a7",
+                "bytes": 2049571
+              },
+              "sdc": {
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+                "bytes": 35191
+              },
+              "std_ss": {
+                "sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+                "bytes": 9331080
+              },
+              "ram_ss": {
+                "sha256": "34497364ed23734a929454b451ee9d209b16923e03b80cba258379069af1908c",
+                "bytes": 49335
+              },
+              "spef_openrcx": {
+                "sha256": "83523921c83928cc8fe418d3353b1f66b837e3694e7fda5d682081863b3a1698",
+                "bytes": 19283902
+              },
+              "physical_only_stub": {
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65",
+                "bytes": 169
+              },
+              "original_report_tcl": {
+                "sha256": "6f0d1881f27e7dc22477557c47c294b7fc5939e3ccfe9d9bf33881bfb69ac061",
+                "bytes": 33700
+              },
+              "tool": {
+                "sha256": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b",
+                "bytes": 9077264
+              },
+              "launcher": {
+                "sha256": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b",
+                "bytes": 9077264
+              }
+            },
+            "original_max_slack_ns": 49.441905975342,
+            "clock_min_period_report": "clk_i period_min = 23.80 fmax = 42.02",
+            "frequency_range_mhz": [
+              42.02232435981615,
+              42.027843446283164
+            ],
+            "pass_at_period": {
+              "period_ns": 23.796875,
+              "max_slack_ns": 0.00149569253,
+              "min_slack_ns": 0.21097946167,
+              "min_period_report": "clk_i period_min = 23.80 fmax = 42.02",
+              "worst_max_path": {
+                "slack_ns": 0.00149569253,
+                "startpoint": "r223 (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "observe_valid_o (output port clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 23.796875,
+                    "time_ns": 23.796875,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "1368cd8a35c4f31dd3139d9201dbc4758c04d6990d736d1b721f1e44a003bf4d",
+                "tcl": "e0a03885d06bbbf5ef9ab6565b6ecc4be25f51c81faaadaeca82bc2eb785913d",
+                "log": "2aa35c9376e09b5a401c4ee24d2146f3eb5e823f617fd74e9666bed2a9d9885b",
+                "paths": "5258d054ce93128eb0c6dbc2fb6cb8077a61c3c757d04afcc41f9a2a361c51c8"
+              }
+            },
+            "fail_at_period": {
+              "period_ns": 23.79375,
+              "max_slack_ns": -0.001628919272,
+              "min_slack_ns": 0.21097946167,
+              "min_period_report": "clk_i period_min = 23.80 fmax = 42.02",
+              "worst_max_path": {
+                "slack_ns": -0.001628919272,
+                "startpoint": "r223 (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "observe_valid_o (output port clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 23.793750762939,
+                    "time_ns": 23.793750762939,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "ce16a2da158f4ba835abcf5b2720c52d528c8542b3c9a4cf91bec69c5e0f6c21",
+                "tcl": "99088bfed683216ebb3c376d23c35f9b2020bf1acfc8b63054a464d3e11376f8",
+                "log": "d86c88f44bfd4f2eacd0eedacf8f9bab729bb94b76a56bcb47ed8f83f0691628",
+                "paths": "90cfa0f811b4394679a01bf6fc0fd6f0a8b6e172bd5c5d96f1a3a7c5943f6526"
+              }
+            },
+            "trials": 10,
+            "run_receipt": {
+              "sha256": "3a7073e3b536b20e3a796fc1a06230c277597cba995012997a117416547c31af",
+              "bytes": 15416
+            }
+          }
+        },
+        "LibreLane": {
+          "layout_receipt": "ihp-20261110-layouts.json",
+          "standard_cell_area_um2": 204848.3808,
+          "modeled_power_mw": 5.572701338679,
+          "setup_fmax_mhz": 24.86132044688223,
+          "power_analysis": {
+            "power_w": {
+              "sequential": {
+                "internal": 0.0003642298397608,
+                "switching": 3.477921200101e-05,
+                "leakage": 5.280520554152e-07,
+                "total": 0.0003995371225756
+              },
+              "combinational": {
+                "internal": 0.001164705492556,
+                "switching": 0.003115452127531,
+                "leakage": 9.256575026484e-07,
+                "total": 0.004281083121896
+              },
+              "clock": {
+                "internal": 0.0002227375371149,
+                "switching": 0.0001785529311746,
+                "leakage": 5.513352516573e-05,
+                "total": 0.0004564240225591
+              },
+              "macro": {
+                "internal": 0.0004348699003458,
+                "switching": 0.0,
+                "leakage": 7.920619964352e-07,
+                "total": 0.0004356619610917
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.002186540979892,
+                "switching": 0.003328778548166,
+                "leakage": 5.738188338e-05,
+                "total": 0.005572701338679
+              }
+            },
+            "sram_instance_power_w": {
+              "u_dmem": {
+                "internal": 0.0003535315336194,
+                "switching": 0.0,
+                "leakage": 3.960309982176e-07,
+                "total": 0.0003539275785442
+              },
+              "u_imem": {
+                "internal": 8.133836672641e-05,
+                "switching": 0.0,
+                "leakage": 3.960309982176e-07,
+                "total": 8.173439709935e-05
+              }
+            },
+            "sram_liberty_coverage": {
+              "cell_leakage_power_attributes": 1,
+              "state_leakage_power_groups": 0,
+              "internal_power_groups": 41,
+              "is_macro_cell_attributes": 0,
+              "leakage_power_unit": "\"1nW\"",
+              "nominal_v": "1.20",
+              "nominal_temperature_c": "25"
+            },
+            "inputs": {
+              "gds": {
+                "sha256": "44974b6cd6ecad6d4b36c8ee4ef27a5cb82d66eb12f3de3a0847fb76274ec060",
+                "bytes": 18109678
+              },
+              "def": {
+                "sha256": "7c26910976a5239b9f32cfd00b52c1f7a4e5a030446e5ab5487282633120539a",
+                "bytes": 21705643
+              },
+              "netlist": {
+                "sha256": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf",
+                "bytes": 3537951
+              },
+              "sdc": {
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+                "bytes": 35191
+              },
+              "spef_openrcx": {
+                "sha256": "a2692fbff9e36962255806d60adfd6b5a330d8a05212a56cf8db9356374908f0",
+                "bytes": 19002628
+              },
+              "std_tt": {
+                "sha256": "847cb30b38f15ef0b9c4a735cfaf96c1782c013b1952261b25e5e38cd3ae072c",
+                "bytes": 9292203
+              },
+              "ram_tt": {
+                "sha256": "4eba4f904ad61e1c0dbb78a6b636e486335be19803370048276438e41a0c26d3",
+                "bytes": 49322
+              },
+              "physical_stubs": {
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65",
+                "bytes": 169
+              },
+              "original_command": {
+                "sha256": "bc8300f22464dfd287fc53bb20b16705aa23b9c607c8661a7eafcd3e0c2a63fa",
+                "bytes": 33757
+              },
+              "original_annotation": {
+                "sha256": "a11d511cefeba6d6e896fac8377bf631d672623b1c430bc5db85ae733e79c736",
+                "bytes": 2816
+              },
+              "layout_timing_plan": {
+                "sha256": "dffff557b045f90966327bebc1ce8a15e9ae9a4e187d34d9278508ed114100d3",
+                "bytes": 3477
+              },
+              "layout_timing_summary": {
+                "sha256": "0519d25ffee5589ed3fcf327c2d86b7680092c61586b99470b564cb18f9566ba",
+                "bytes": 892277
+              },
+              "layout_extraction_plan": {
+                "sha256": "c6e1fb0fb8cb3244a307f8bfd77fbb8db3f5389858727bc856baf891cf5d7e0a",
+                "bytes": 1804
+              },
+              "published_figure_receipt": {
+                "sha256": "18b07f462bb2c8897ca4ce4f56065cd3cc22aa2679dba98b6e3c1a31f0ceb7bc",
+                "bytes": 5777
+              }
+            },
+            "extraction": {
+              "tool": "openrcx",
+              "rc_corner": "nom",
+              "annotated_net_records": 15379,
+              "rc_rules": {
+                "sha256": "ffda02d57a6ecb39b02268be9511d89ef072911f17bd2dcd095f3f3cbeb5a905",
+                "bytes": 50282
+              }
+            },
+            "coverage": {
+              "explicit_data_input_annotations": 50,
+              "explicit_reset_annotations": 1,
+              "sdc_clocks": 1,
+              "clock_period_ns": 100.0,
+              "fully_unannotated_disconnected_drivers": 204,
+              "active_unannotated_drivers": 0,
+              "partially_unannotated_drivers": 0,
+              "annotation_report_exact_match_to_prior_timing_gate": true,
+              "physical_only_stub_masters": [
+                "FILLER1",
+                "FILLER16",
+                "FILLER2",
+                "FILLER4",
+                "FILLER8",
+                "WELLTAP"
+              ],
+              "uncharacterized_stub_instances_in_netlist": {
+                "FILLER1": 9905,
+                "FILLER2": 13159,
+                "WELLTAP": 6900
+              },
+              "linked_sram_instances": 2
+            },
+            "resources": {
+              "wall_seconds": 5.47,
+              "cpu_seconds": 5.91,
+              "allowed_cpus": [
+                20,
+                21
+              ],
+              "gnu_time_max_rss_kib": 186376,
+              "cgroup_limit_bytes": 2147483648,
+              "cgroup_v2_memory_peak_bytes": 176607232,
+              "cgroup_v2_swap_peak_bytes": 0,
+              "exit_code": 0
+            },
+            "evidence_files": {
+              "inputs.json": {
+                "sha256": "2c223f2f14fd6f28a8e2f4584c319cdbbf0d1fdf211edd088537f501a3fe3a5d",
+                "bytes": 4683
+              },
+              "report-opensta-power.tcl": {
+                "sha256": "70a5abcdbae274ce60134ad0fd18fb908131f690ec0d612b35052e042e7032d9",
+                "bytes": 2190
+              },
+              "opensta.log": {
+                "sha256": "b9d35344e4f498f4c68055e4d845ce1504f9c8688e8dc58e2db9b1b304e5099c",
+                "bytes": 707
+              },
+              "power.rpt": {
+                "sha256": "25fadfabb9b3e26c2e72790338c43e7523f9bbb87a44ffe9787fefdd9ee2db77",
+                "bytes": 1098
+              },
+              "macro-instances.rpt": {
+                "sha256": "d94234070d990e23e80618cdecfe1b5cb02ad526f85180d8c921f82a9bc7edfd",
+                "bytes": 407
+              },
+              "parasitic-annotation.rpt": {
+                "sha256": "a11d511cefeba6d6e896fac8377bf631d672623b1c430bc5db85ae733e79c736",
+                "bytes": 2816
+              },
+              "resources.json": {
+                "sha256": "1be53f9a0da507f693e42c2544396f68035c03efae0cf045aa3b21e7c15b07ed",
+                "bytes": 1725
+              },
+              "time.txt": {
+                "sha256": "e9c0b63a47a1b8fc1eea009bc5c8845e775a9ddbca04d9cb05e186b635d38841",
+                "bytes": 931
+              }
+            },
+            "prior_annotation_inventory": {
+              "sha256": "311526c13cc9f2615e8fd1972d1ed58b2e909d929aafc3e6dcbbaf85a1fbd18a",
+              "bytes": 18769
+            }
+          },
+          "setup_sweep": {
+            "gds": {
+              "sha256": "44974b6cd6ecad6d4b36c8ee4ef27a5cb82d66eb12f3de3a0847fb76274ec060",
+              "bytes": 18109678
+            },
+            "input_identities": {
+              "netlist": {
+                "sha256": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf",
+                "bytes": 3537951
+              },
+              "sdc": {
+                "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba",
+                "bytes": 35191
+              },
+              "std_ss": {
+                "sha256": "168c935573250c955e88802b229458fb1dc2f1acf714c1fee72d9963f1de6fb8",
+                "bytes": 9331080
+              },
+              "ram_ss": {
+                "sha256": "34497364ed23734a929454b451ee9d209b16923e03b80cba258379069af1908c",
+                "bytes": 49335
+              },
+              "spef_openrcx": {
+                "sha256": "a2692fbff9e36962255806d60adfd6b5a330d8a05212a56cf8db9356374908f0",
+                "bytes": 19002628
+              },
+              "physical_only_stub": {
+                "sha256": "c6f7afa6e452a100093fbdc1703eca294087ba717e529e150d6c88e12ee10a65",
+                "bytes": 169
+              },
+              "original_report_tcl": {
+                "sha256": "d654b004b72d0ea840b1b2cdf797119bcd54e020e73422f9abb6a93cb491697f",
+                "bytes": 33760
+              },
+              "tool": {
+                "sha256": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b",
+                "bytes": 9077264
+              },
+              "launcher": {
+                "sha256": "49ddbd40385e6b54152aed6d7435e4114e409e5f168884d8945374a42f00301b",
+                "bytes": 9077264
+              }
+            },
+            "original_max_slack_ns": 47.93627166748,
+            "clock_min_period_report": "clk_i period_min = 40.22 fmax = 24.86",
+            "frequency_range_mhz": [
+              24.86132044688223,
+              24.86325211337643
+            ],
+            "pass_at_period": {
+              "period_ns": 40.223125,
+              "max_slack_ns": 0.002817302011,
+              "min_slack_ns": 0.312263995409,
+              "min_period_report": "clk_i period_min = 40.22 fmax = 24.86",
+              "worst_max_path": {
+                "slack_ns": 0.002817302011,
+                "startpoint": "_22144_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "_21797_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 40.223125457764,
+                    "time_ns": 40.223125457764,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "94a3ffe9e3df67cafb65958e7ab528f6015f4716935925dff98a8aa091f813a0",
+                "tcl": "eb2da4031c5542defc133a4d7b57b3acbee90f72531c92021fde2f5a3b184f1d",
+                "log": "e3fc21187e9cdda5648b75e08f5a68d7c785c881e28ff90977281e95828058fc",
+                "paths": "6eec7598f9bf963fe168fd6bf462d264abb089783e7774a67ff480c08202f4d3"
+              }
+            },
+            "fail_at_period": {
+              "period_ns": 40.22,
+              "max_slack_ns": -0.000309086085,
+              "min_slack_ns": 0.312263995409,
+              "min_period_report": "clk_i period_min = 40.22 fmax = 24.86",
+              "worst_max_path": {
+                "slack_ns": -0.000309086085,
+                "startpoint": "_22144_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "_21797_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 40.219997406006,
+                    "time_ns": 40.219997406006,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "1530ad1fec2c1770ebaa5a9801e5c16587f9fff0f3b0d7d85955baa17db6f793",
+                "tcl": "8d8c9f2ec38237e9ca6e07b4d24d2ab9f1002f8065cbd9f935b7a554a27a3df3",
+                "log": "20cd5bb6c9e4521579c0deaf4b2991ecd9caf35a050ee4f3c7d61807ecd759f9",
+                "paths": "b90b1c9715cb051cb8f2bfb4cb3bddcd0c0f714865199ac01cbcccb5837fdb03"
+              }
+            },
+            "trials": 10,
+            "run_receipt": {
+              "sha256": "cc1faaf531ec09813c7e63f0252a81170aa0b8154b1f2ca6a2e0d2d606f02771",
+              "bytes": 15699
+            }
+          }
+        }
+      },
+      "rusteda_change_vs_librelane_percent": {
+        "modeled_power_mw": 54.922290227050354,
+        "standard_cell_area_um2": -8.427310742013926,
+        "setup_fmax_mhz": 69.02692055154303
+      }
+    },
+    "SKY130A": {
+      "source_run_ids": {
+        "paired_layout": "SKY130A two-core layout pair",
+        "RustEDA": "native-12-macro-obs-spacing",
+        "LibreLane": "ll-ref-03"
+      },
+      "flows": {
+        "RustEDA": {
+          "layout_receipt": "physical-iterations.json#sky130_macro_clearance_producer",
+          "standard_cell_area_um2": 176088.8832,
+          "modeled_power_mw": 28.994498774409998,
+          "setup_fmax_mhz": 23.747328425552126,
+          "power_analysis": {
+            "power_w": {
+              "sequential": {
+                "internal": 0.0008961788262241,
+                "switching": 0.0001712168304948,
+                "leakage": 2.3310391839e-08,
+                "total": 0.001067418954335
+              },
+              "combinational": {
+                "internal": 0.008484742604196,
+                "switching": 0.01773148030043,
+                "leakage": 5.106937805976e-08,
+                "total": 0.02621627412736
+              },
+              "clock": {
+                "internal": 0.0001637940586079,
+                "switching": 0.0004065433749929,
+                "leakage": 1.505714886108e-09,
+                "total": 0.0005703389178962
+              },
+              "macro": {
+                "internal": 0.00110467209015,
+                "switching": 0.0,
+                "leakage": 3.54520016117e-05,
+                "total": 0.001140124048106
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.01064972858876,
+                "switching": 0.01830924488604,
+                "leakage": 3.55266565748e-05,
+                "total": 0.02899449877441
+              }
+            },
+            "sram_instance_power_w": {
+              "u_imem": {
+                "internal": 0.0005523360450752,
+                "switching": 0.0,
+                "leakage": 1.772600080585e-05,
+                "total": 0.0005700620240532
+              },
+              "u_dmem": {
+                "internal": 0.0005523360450752,
+                "switching": 0.0,
+                "leakage": 1.772600080585e-05,
+                "total": 0.0005700620240532
+              }
+            },
+            "sram_liberty_coverage": {
+              "cell_leakage_power_attributes": 1,
+              "state_leakage_power_groups": 1,
+              "internal_power_groups": 6,
+              "is_macro_cell_attributes": 0,
+              "leakage_power_unit": "\"1mW\"",
+              "nominal_v": "1.8",
+              "nominal_temperature_c": "25"
+            },
+            "inputs": {
+              "gds": {
+                "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+                "bytes": 72136758
+              },
+              "def": {
+                "sha256": "89c470a774338c2867207bb8583b2541559bebe255539c3d34d6722b977f6270",
+                "bytes": 21756913
+              },
+              "netlist": {
+                "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+                "bytes": 2446392
+              },
+              "sdc": {
+                "sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+                "bytes": 35734
+              },
+              "spef_openrcx": {
+                "sha256": "b801bdda437d736c0c882cd0be719edaea90bb9a23b7acdcf5fbbd16e6b75b33",
+                "bytes": 32152968
+              },
+              "std_tt": {
+                "sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+                "bytes": 12841637
+              },
+              "ram_tt": {
+                "sha256": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db",
+                "bytes": 15805
+              },
+              "physical_stubs": {
+                "sha256": "586cfb40fd58239a6e8617f8b594e7f10b7143db2cd87efa5e8896615c1fcbde",
+                "bytes": 587
+              },
+              "original_command": {
+                "sha256": "cf3fb18dcab264b2309e94c7e032b02bb7ddfc8645026e40ad0289b651ec4329",
+                "bytes": 8506
+              },
+              "original_annotation": {
+                "sha256": "88ba81b1ae935c1e4528ac33249ed8577bd56a7c5c6b919632c334b492580dc7",
+                "bytes": 1201
+              },
+              "layout_timing_plan": {
+                "sha256": "61fbfc542d232fc3d945ff8f76c59093acd5d817986d9dc3ac5e0f7f271dd45f",
+                "bytes": 6228
+              },
+              "layout_timing_summary": {
+                "sha256": "0f6b96e74481daecb3a1ee19cb4004ffcf4b866ed4b0d72a8e45342ae2baccce",
+                "bytes": 72135
+              },
+              "layout_extraction_plan": {
+                "sha256": "6c1745c10ca5f007caf42a0be9d5513a880fc0e26cd8df6b329045f13f180c26",
+                "bytes": 2430
+              },
+              "published_figure_receipt": {
+                "sha256": "f82fb0ca9d060625e35f31df1940e5801503657c18fe60110b095cb280a399bc",
+                "bytes": 47279
+              }
+            },
+            "extraction": {
+              "tool": "openrcx",
+              "rc_corner": "nom",
+              "annotated_net_records": 15366,
+              "rc_rules": {
+                "sha256": "0b0678968a3d8665ee1ac882df2b0eb31e3896ac05130b9de6bd67ef2027c757",
+                "bytes": 45409
+              }
+            },
+            "coverage": {
+              "explicit_data_input_annotations": 49,
+              "explicit_reset_annotations": 1,
+              "sdc_clocks": 1,
+              "clock_period_ns": 100.0,
+              "fully_unannotated_disconnected_drivers": 64,
+              "active_unannotated_drivers": 0,
+              "partially_unannotated_drivers": 0,
+              "annotation_report_exact_match_to_prior_timing_gate": true,
+              "physical_only_stub_masters": [
+                "sky130_ef_sc_hd__decap_12",
+                "sky130_ef_sc_hd__fill_12",
+                "sky130_ef_sc_hd__fill_4",
+                "sky130_ef_sc_hd__fill_8",
+                "sky130_fd_sc_hd__fill_1",
+                "sky130_fd_sc_hd__fill_2",
+                "sky130_fd_sc_hd__fill_4",
+                "sky130_fd_sc_hd__fill_8",
+                "sky130_fd_sc_hd__tap_1",
+                "sky130_fd_sc_hd__tap_2",
+                "sky130_fd_sc_hd__tapvgnd2_1",
+                "sky130_fd_sc_hd__tapvgnd_1",
+                "sky130_fd_sc_hd__tapvpwrvgnd_1"
+              ],
+              "uncharacterized_stub_instances_in_netlist": {},
+              "linked_sram_instances": 2
+            },
+            "resources": {
+              "wall_seconds": 5.71,
+              "cpu_seconds": 5.97,
+              "allowed_cpus": [
+                22,
+                23
+              ],
+              "gnu_time_max_rss_kib": 191964,
+              "cgroup_limit_bytes": 2147483648,
+              "cgroup_v2_memory_peak_bytes": 183468032,
+              "cgroup_v2_swap_peak_bytes": 0,
+              "exit_code": 0
+            },
+            "evidence_files": {
+              "inputs.json": {
+                "sha256": "5261524184322d6a3842fdd41cfdc83794e9535bfb3f43a19e54fac6e2640086",
+                "bytes": 5239
+              },
+              "report-opensta-power.tcl": {
+                "sha256": "afbf349fb64ae6ab2957afad7a7fe810a260a3e66e46f3f6e5d933ac2bc36cad",
+                "bytes": 2443
+              },
+              "opensta.log": {
+                "sha256": "6e1008545d54ba3d23de0e552164cc991392b239e48c487a87fb56b7b8501319",
+                "bytes": 707
+              },
+              "power.rpt": {
+                "sha256": "b3f2aa179470fd4e895dd7270d6f561ea24b5fa6824946b1921265fc47083d11",
+                "bytes": 1098
+              },
+              "macro-instances.rpt": {
+                "sha256": "140f7bd0b6f883d7eff7be3dff6b46592ab17486b10082bc2b876126887da335",
+                "bytes": 407
+              },
+              "parasitic-annotation.rpt": {
+                "sha256": "88ba81b1ae935c1e4528ac33249ed8577bd56a7c5c6b919632c334b492580dc7",
+                "bytes": 1201
+              },
+              "resources.json": {
+                "sha256": "90233d4ab96cf2527851cc8d8469cf19645581bee3a2d1e26ab5acf70e6e1c5f",
+                "bytes": 1729
+              },
+              "time.txt": {
+                "sha256": "11ebb6877b23f35fca7e5bf97bf28a3aadb738d03a08e72c9b433f8fab9613ca",
+                "bytes": 932
+              }
+            },
+            "prior_annotation_inventory": {
+              "sha256": "4d6effdf5845d31acee66d2197a54be7a5093607bd652408a3ee092587b368e9",
+              "bytes": 4565
+            }
+          },
+          "setup_sweep": {
+            "gds": {
+              "sha256": "3feca80297311f3e72b640389183a63b830a6850fcd2b1e91f0d1291890b7a2a",
+              "bytes": 72136758
+            },
+            "input_identities": {
+              "netlist": {
+                "sha256": "624a3d771529bfcbcf9805aa7d17f9a3c5fcccf6b9f50d65aba9ddf2c83ed7cb",
+                "bytes": 2446392
+              },
+              "sdc": {
+                "sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+                "bytes": 35734
+              },
+              "std_ss": {
+                "sha256": "9b24f0db3967ac67b4cae1f74bb480fd47922d18d0ed577e3c121739b412c361",
+                "bytes": 12845260
+              },
+              "ram_ss": {
+                "sha256": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db",
+                "bytes": 15805
+              },
+              "spef_openrcx": {
+                "sha256": "b801bdda437d736c0c882cd0be719edaea90bb9a23b7acdcf5fbbd16e6b75b33",
+                "bytes": 32152968
+              },
+              "physical_only_stub": {
+                "sha256": "586cfb40fd58239a6e8617f8b594e7f10b7143db2cd87efa5e8896615c1fcbde",
+                "bytes": 587
+              },
+              "original_report_tcl": {
+                "sha256": "8872098c77149049418b96e87402bce503b112944df44b72c410f47b3afed904",
+                "bytes": 8506
+              },
+              "tool": {
+                "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+                "bytes": 16264
+              },
+              "launcher": {
+                "sha256": "590cdd8dff65f272449938ffb7b9747312b4e10fdf6533a2524e5a9cc734692b",
+                "bytes": 117
+              }
+            },
+            "original_max_slack_ns": 40.586162567139,
+            "clock_min_period_report": "clk_i period_min = 42.11 fmax = 23.75",
+            "frequency_range_mhz": [
+              23.747328425552126,
+              23.7490908551157
+            ],
+            "pass_at_period": {
+              "period_ns": 42.11,
+              "max_slack_ns": 0.001449507196,
+              "min_slack_ns": 0.489082574844,
+              "min_period_report": "clk_i period_min = 42.11 fmax = 23.75",
+              "worst_max_path": {
+                "slack_ns": 0.001449507196,
+                "startpoint": "r251 (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "r75 (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 42.110000610352,
+                    "time_ns": 42.110000610352,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "f9f4c6a370f27aa7aabe143f2e9e6b34731f8ff258d5656e3580298f9c15be09",
+                "tcl": "fa474f21bae3febda76e42b5e6fb26428c2724d5f4ff1f05af372ce1277a364c",
+                "log": "17e96278ff1a0fdd97996a6b9099e45277ae8e456a6cc5c006282c919e8d7b92",
+                "paths": "884e37595fb32420ae18d890059addd402e5e6e448fde2fffad027f7956dd9e3"
+              }
+            },
+            "fail_at_period": {
+              "period_ns": 42.106875,
+              "max_slack_ns": -0.001676880871,
+              "min_slack_ns": 0.489082574844,
+              "min_period_report": "clk_i period_min = 42.11 fmax = 23.75",
+              "worst_max_path": {
+                "slack_ns": -0.001676880871,
+                "startpoint": "r251 (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "r75 (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 42.106872558594,
+                    "time_ns": 42.106872558594,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "9aa3dfb62ca4c1763c1239ecee5e45d8c50ba85fd9b41f6b02410a419e5cb32f",
+                "tcl": "41c08bda9d9456e36edefc9dd5321c190de0dd43f86e9e383c91813d9f891a92",
+                "log": "9d9504944974e593140f070881d8fcac51ff9ae66283ceb670244a1a61354351",
+                "paths": "1561c2802595e2214160f643f8ea5fe0af7dab1474a16fdee8e98bb0ebd805c3"
+              }
+            },
+            "trials": 10,
+            "run_receipt": {
+              "sha256": "c926ca3fd0d0bd9d2bf51481075a5149ca914ee1aa8c00d548f8dd571213ad0b",
+              "bytes": 16034
+            }
+          }
+        },
+        "LibreLane": {
+          "layout_receipt": "sky130-reference-layout.json",
+          "standard_cell_area_um2": 176426.7072,
+          "modeled_power_mw": 9.501222521067,
+          "setup_fmax_mhz": 17.214666896195556,
+          "power_analysis": {
+            "power_w": {
+              "sequential": {
+                "internal": 0.0008433727780357,
+                "switching": 0.0001013654109556,
+                "leakage": 2.227302431379e-08,
+                "total": 0.0009447604534216
+              },
+              "combinational": {
+                "internal": 0.001882029580884,
+                "switching": 0.004914244171232,
+                "leakage": 4.799729680371e-08,
+                "total": 0.006796321831644
+              },
+              "clock": {
+                "internal": 0.0002646644716151,
+                "switching": 0.0003550047404133,
+                "leakage": 3.245513653383e-07,
+                "total": 0.0006199937779456
+              },
+              "macro": {
+                "internal": 0.00110467209015,
+                "switching": 0.0,
+                "leakage": 3.54520016117e-05,
+                "total": 0.001140124048106
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.00409476319328,
+                "switching": 0.00537061272189,
+                "leakage": 3.584687874536e-05,
+                "total": 0.009501222521067
+              }
+            },
+            "sram_instance_power_w": {
+              "u_imem": {
+                "internal": 0.0005523360450752,
+                "switching": 0.0,
+                "leakage": 1.772600080585e-05,
+                "total": 0.0005700620240532
+              },
+              "u_dmem": {
+                "internal": 0.0005523360450752,
+                "switching": 0.0,
+                "leakage": 1.772600080585e-05,
+                "total": 0.0005700620240532
+              }
+            },
+            "sram_liberty_coverage": {
+              "cell_leakage_power_attributes": 1,
+              "state_leakage_power_groups": 1,
+              "internal_power_groups": 6,
+              "is_macro_cell_attributes": 0,
+              "leakage_power_unit": "\"1mW\"",
+              "nominal_v": "1.8",
+              "nominal_temperature_c": "25"
+            },
+            "inputs": {
+              "gds": {
+                "sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6",
+                "bytes": 52867560
+              },
+              "def": {
+                "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+                "bytes": 26159186
+              },
+              "netlist": {
+                "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+                "bytes": 7753419
+              },
+              "sdc": {
+                "sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+                "bytes": 35734
+              },
+              "spef_openrcx": {
+                "sha256": "e4e234fc82715e0b64f65aea9093a8418db1ace8aa9fcb647698c307aee97967",
+                "bytes": 23897204
+              },
+              "std_tt": {
+                "sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+                "bytes": 12841637
+              },
+              "ram_tt": {
+                "sha256": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db",
+                "bytes": 15805
+              },
+              "physical_stubs": {
+                "sha256": "586cfb40fd58239a6e8617f8b594e7f10b7143db2cd87efa5e8896615c1fcbde",
+                "bytes": 587
+              },
+              "original_command": {
+                "sha256": "4dee55fe976912ac41bce372c063a0d2e3e818ac621c7a590a768b04a09761b6",
+                "bytes": 8258
+              },
+              "original_annotation": {
+                "sha256": "bf324b6417065c62a27b53ac98ed86e8c78ff1183503f948b357760c82b52f5d",
+                "bytes": 1691
+              },
+              "layout_timing_plan": {
+                "sha256": "0c8bcced682fecc9b53b7463a4ef28174fd5f34b6ac43ffddb77ebc906749fe3",
+                "bytes": 6200
+              },
+              "layout_timing_summary": {
+                "sha256": "ae7ff54078e4c5d4d14eab7944efa647e93177de7e205ef1d683bdb2b5442d2e",
+                "bytes": 55586
+              },
+              "layout_extraction_plan": {
+                "sha256": "91a870f87d92e212931b7ebd816329c8250fc65456dc3d850c8736ed443f4617",
+                "bytes": 2444
+              },
+              "published_figure_receipt": {
+                "sha256": "63aa906edc62ed9a884414233699a35de05970cdf7080ac2ade9cbe08f0ce1ea",
+                "bytes": 5839
+              }
+            },
+            "extraction": {
+              "tool": "openrcx",
+              "rc_corner": "nom",
+              "annotated_net_records": 14597,
+              "rc_rules": {
+                "sha256": "0b0678968a3d8665ee1ac882df2b0eb31e3896ac05130b9de6bd67ef2027c757",
+                "bytes": 45409
+              }
+            },
+            "coverage": {
+              "explicit_data_input_annotations": 49,
+              "explicit_reset_annotations": 1,
+              "sdc_clocks": 1,
+              "clock_period_ns": 100.0,
+              "fully_unannotated_disconnected_drivers": 97,
+              "active_unannotated_drivers": 0,
+              "partially_unannotated_drivers": 0,
+              "annotation_report_exact_match_to_prior_timing_gate": true,
+              "physical_only_stub_masters": [
+                "sky130_ef_sc_hd__decap_12",
+                "sky130_ef_sc_hd__fill_12",
+                "sky130_ef_sc_hd__fill_4",
+                "sky130_ef_sc_hd__fill_8",
+                "sky130_fd_sc_hd__fill_1",
+                "sky130_fd_sc_hd__fill_2",
+                "sky130_fd_sc_hd__fill_4",
+                "sky130_fd_sc_hd__fill_8",
+                "sky130_fd_sc_hd__tap_1",
+                "sky130_fd_sc_hd__tap_2",
+                "sky130_fd_sc_hd__tapvgnd2_1",
+                "sky130_fd_sc_hd__tapvgnd_1",
+                "sky130_fd_sc_hd__tapvpwrvgnd_1"
+              ],
+              "uncharacterized_stub_instances_in_netlist": {
+                "sky130_fd_sc_hd__fill_1": 7092,
+                "sky130_fd_sc_hd__fill_2": 4710,
+                "sky130_fd_sc_hd__tapvpwrvgnd_1": 8083
+              },
+              "linked_sram_instances": 2
+            },
+            "resources": {
+              "wall_seconds": 4.34,
+              "cpu_seconds": 4.52,
+              "allowed_cpus": [
+                22,
+                23
+              ],
+              "gnu_time_max_rss_kib": 236744,
+              "cgroup_limit_bytes": 2147483648,
+              "cgroup_v2_memory_peak_bytes": 229277696,
+              "cgroup_v2_swap_peak_bytes": 0,
+              "exit_code": 0
+            },
+            "evidence_files": {
+              "inputs.json": {
+                "sha256": "c97dc765b96e7ec6fcb095e62a3a35cb5810e1fdf9bf086dc6279e48c6b06cb1",
+                "bytes": 5130
+              },
+              "report-opensta-power.tcl": {
+                "sha256": "5cb7a7bc9dd26e7265a1fdbf963f59a6e4227935fb01eeed8173398d6ed089cc",
+                "bytes": 2421
+              },
+              "opensta.log": {
+                "sha256": "902debff3c555e5709cbf3eec88db0c6b4354145c5be6e25be5169b2784bf857",
+                "bytes": 707
+              },
+              "power.rpt": {
+                "sha256": "e7ec42176bf8316608391707665cd67abebd0becb250df769065ab638a33b924",
+                "bytes": 1098
+              },
+              "macro-instances.rpt": {
+                "sha256": "140f7bd0b6f883d7eff7be3dff6b46592ab17486b10082bc2b876126887da335",
+                "bytes": 407
+              },
+              "parasitic-annotation.rpt": {
+                "sha256": "bf324b6417065c62a27b53ac98ed86e8c78ff1183503f948b357760c82b52f5d",
+                "bytes": 1691
+              },
+              "resources.json": {
+                "sha256": "d335ad283ea63bac3907e143af81c8303d3aa270e45652a850ec1e6186c5a7c4",
+                "bytes": 1734
+              },
+              "time.txt": {
+                "sha256": "3a1b774ebd4fd14c97517e9ee8cb1fad234c69002dfb3df0e4885f0c4549be8e",
+                "bytes": 934
+              }
+            },
+            "prior_annotation_inventory": {
+              "sha256": "9354f9fb84916d4d00532281b001bf04901fe29942ed7b157fab48a0e83995a5",
+              "bytes": 5880
+            }
+          },
+          "setup_sweep": {
+            "gds": {
+              "sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6",
+              "bytes": 52867560
+            },
+            "input_identities": {
+              "netlist": {
+                "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+                "bytes": 7753419
+              },
+              "sdc": {
+                "sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d",
+                "bytes": 35734
+              },
+              "std_ss": {
+                "sha256": "9b24f0db3967ac67b4cae1f74bb480fd47922d18d0ed577e3c121739b412c361",
+                "bytes": 12845260
+              },
+              "ram_ss": {
+                "sha256": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db",
+                "bytes": 15805
+              },
+              "spef_openrcx": {
+                "sha256": "e4e234fc82715e0b64f65aea9093a8418db1ace8aa9fcb647698c307aee97967",
+                "bytes": 23897204
+              },
+              "physical_only_stub": {
+                "sha256": "586cfb40fd58239a6e8617f8b594e7f10b7143db2cd87efa5e8896615c1fcbde",
+                "bytes": 587
+              },
+              "original_report_tcl": {
+                "sha256": "ea93703d01fddd1864043fcb423f0df9427c0f1b05e9daece6fe296a60bac84d",
+                "bytes": 8258
+              },
+              "tool": {
+                "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+                "bytes": 16264
+              },
+              "launcher": {
+                "sha256": "590cdd8dff65f272449938ffb7b9747312b4e10fdf6533a2524e5a9cc734692b",
+                "bytes": 117
+              }
+            },
+            "original_max_slack_ns": 35.637813568115,
+            "clock_min_period_report": "clk_i period_min = 58.09 fmax = 17.21",
+            "frequency_range_mhz": [
+              17.214666896195556,
+              17.215593023380926
+            ],
+            "pass_at_period": {
+              "period_ns": 58.09,
+              "max_slack_ns": 0.000788702455,
+              "min_slack_ns": 0.694885253906,
+              "min_period_report": "clk_i period_min = 58.09 fmax = 17.21",
+              "worst_max_path": {
+                "slack_ns": 0.000788702455,
+                "startpoint": "_21336_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "_20949_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 58.090000152588,
+                    "time_ns": 58.090000152588,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "45a6127e73641677aedc61e10eddeeee61ec736397490fb67169ce2ef024285a",
+                "tcl": "f4a52afb0f54eec6daead427f537f241a8a324de4094253b8eabd9698b3f2fbb",
+                "log": "cb76408edadd5f36a35106dbacb9ee626f26f8a2135292f7f0f0fe87c194c690",
+                "paths": "b73a2d3569ffbad68f79e6865e9c09ed48a4777c47392c369727fb52e0069ce2"
+              }
+            },
+            "fail_at_period": {
+              "period_ns": 58.086875,
+              "max_slack_ns": -0.002337685553,
+              "min_slack_ns": 0.694885253906,
+              "min_period_report": "clk_i period_min = 58.09 fmax = 17.21",
+              "worst_max_path": {
+                "slack_ns": -0.002337685553,
+                "startpoint": "_21336_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "_20949_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 58.08687210083,
+                    "time_ns": 58.08687210083,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "1e5b506bebe0371db5fd9e5b1b862cad6e0d58818780ea931e8c5d9b72e9e0da",
+                "tcl": "ad9d6a41cad4619cce789de83ed82830e7695baf3d3a063ecc228a41864c9e11",
+                "log": "abc4a7a4bda79c28ad74462aa62d77fb476723f1b316328aade4cb68be5ad603",
+                "paths": "09b236526553cce36f3931a34e86ec500eba3b676f828d72d65ba1a062591f44"
+              }
+            },
+            "trials": 10,
+            "run_receipt": {
+              "sha256": "46eb85f64292ec3998cf2dccda5eeb89e1d82fe7fc087c0286dc4558b6e5b8c2",
+              "bytes": 16056
+            }
+          }
+        }
+      },
+      "rusteda_change_vs_librelane_percent": {
+        "modeled_power_mw": 205.1659795370615,
+        "standard_cell_area_um2": -0.19148121356538095,
+        "setup_fmax_mhz": 37.948230824032315
+      }
+    },
+    "GF180MCU D": {
+      "source_run_ids": {
+        "paired_layout": "GF180MCU D two-core layout pair",
+        "RustEDA": "run-13-area-notch-repair",
+        "LibreLane": "ll-ref-05"
+      },
+      "flows": {
+        "RustEDA": {
+          "layout_receipt": "gf180-native-layout.json",
+          "standard_cell_area_um2": 478020.1664,
+          "modeled_power_mw": 155.89065849780002,
+          "setup_fmax_mhz": 12.006783832865569,
+          "power_analysis": {
+            "power_w": {
+              "sequential": {
+                "internal": 0.01268044672906,
+                "switching": 0.00164902349934,
+                "leakage": 8.713275860828e-07,
+                "total": 0.01433034241199
+              },
+              "combinational": {
+                "internal": 0.04059066995978,
+                "switching": 0.07139094173908,
+                "leakage": 1.934457714015e-06,
+                "total": 0.1119835525751
+              },
+              "clock": {
+                "internal": 0.005251437425613,
+                "switching": 0.005619297735393,
+                "leakage": 1.085294698555e-07,
+                "total": 0.01087084412575
+              },
+              "macro": {
+                "internal": 0.01870091818273,
+                "switching": 0.0,
+                "leakage": 4.99360021422e-06,
+                "total": 0.01870591193438
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.07722346484661,
+                "switching": 0.07865928858519,
+                "leakage": 7.907949111541e-06,
+                "total": 0.1558906584978
+              }
+            },
+            "sram_instance_power_w": {
+              "u_dmem3": {
+                "internal": 0.002338415477425,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.00233903969638
+              },
+              "u_dmem2": {
+                "internal": 0.00233828695491,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338911173865
+              },
+              "u_imem0": {
+                "internal": 0.002337744925171,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338369144127
+              },
+              "u_imem1": {
+                "internal": 0.002337744925171,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338369144127
+              },
+              "u_imem2": {
+                "internal": 0.002337744925171,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338369144127
+              },
+              "u_imem3": {
+                "internal": 0.002337744925171,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338369144127
+              },
+              "u_dmem1": {
+                "internal": 0.002337518148124,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.00233814236708
+              },
+              "u_dmem0": {
+                "internal": 0.00233571883291,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002336343051866
+              }
+            },
+            "sram_liberty_coverage": {
+              "cell_leakage_power_attributes": 1,
+              "state_leakage_power_groups": 0,
+              "internal_power_groups": 3,
+              "is_macro_cell_attributes": 0,
+              "leakage_power_unit": "\"1mW\"",
+              "nominal_v": "5.0",
+              "nominal_temperature_c": "25"
+            },
+            "inputs": {
+              "gds": {
+                "sha256": "8c854b5d39f4c5159f96dd3cc69666296c531face07faa6199f56c59729fd94b",
+                "bytes": 32018564
+              },
+              "def": {
+                "sha256": "e46eef0f50d7b26a6d81c68cbbe7c2d57e3ad4a276474ab2d48e71ae0b08f58c",
+                "bytes": 16733166
+              },
+              "netlist": {
+                "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+                "bytes": 2891676
+              },
+              "sdc": {
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+                "bytes": 36142
+              },
+              "spef_openrcx": {
+                "sha256": "b0093e3dc7842b07f185b1a2fe3909ef5b86fef73d907d43bedbd663a51f3fd6",
+                "bytes": 28336536
+              },
+              "std_tt": {
+                "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+                "bytes": 20122761
+              },
+              "ram_tt": {
+                "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446",
+                "bytes": 35624
+              },
+              "physical_stubs": {
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              "original_command": {
+                "sha256": "5079af9a23352bd9338c643fecb3081f2d5073b701e902051a717959143028d2",
+                "bytes": 4565
+              },
+              "original_annotation": {
+                "sha256": "3d6f8064ec2910fe81559b46d281a5fe3d40765e5f250ead5fcc9567259c014e",
+                "bytes": 68
+              },
+              "layout_timing_plan": {
+                "sha256": "1a9a71e3f2881310bc9a59814571e28ffd5327adddd545615b77d55e5aab3fbe",
+                "bytes": 5769
+              },
+              "layout_timing_summary": {
+                "sha256": "6ebe879d52af4ea6b06482e9f5500762b8b9626b5e8ba1dce26e666b638bc6bb",
+                "bytes": 49164
+              },
+              "layout_extraction_plan": {
+                "sha256": "b6c44a1dd446b9193e8e9b12907e0a17930640d90644ab5a7c56f4057e943e4b",
+                "bytes": 2180
+              },
+              "published_figure_receipt": {
+                "sha256": "55d98b6278b78d0da823f126569bfc1d8df2efa9b4ae305a728dbbe798b5df2f",
+                "bytes": 5123
+              }
+            },
+            "extraction": {
+              "tool": "openrcx",
+              "rc_corner": "nom",
+              "annotated_net_records": 18532,
+              "rc_rules": {
+                "sha256": "d83a04ea28af9b74a097fb479bbab9ed52859a1e3428b33d3151cb5afae62ddf",
+                "bytes": 31291
+              }
+            },
+            "coverage": {
+              "explicit_data_input_annotations": 49,
+              "explicit_reset_annotations": 1,
+              "sdc_clocks": 1,
+              "clock_period_ns": 100.0,
+              "fully_unannotated_disconnected_drivers": 0,
+              "active_unannotated_drivers": 0,
+              "partially_unannotated_drivers": 0,
+              "annotation_report_exact_match_to_prior_timing_gate": true,
+              "physical_only_stub_masters": [],
+              "uncharacterized_stub_instances_in_netlist": {},
+              "linked_sram_instances": 8
+            },
+            "resources": {
+              "wall_seconds": 7.23,
+              "cpu_seconds": 7.6,
+              "allowed_cpus": [
+                28,
+                29
+              ],
+              "gnu_time_max_rss_kib": 210320,
+              "cgroup_limit_bytes": 2147483648,
+              "cgroup_v2_memory_peak_bytes": 202293248,
+              "cgroup_v2_swap_peak_bytes": 0,
+              "exit_code": 0
+            },
+            "evidence_files": {
+              "inputs.json": {
+                "sha256": "c9210c88633c35f35106e0c5357274cdfaa050393dd2bde5b114bc2d0ad67545",
+                "bytes": 5163
+              },
+              "report-opensta-power.tcl": {
+                "sha256": "e889fb5dee95d638bca7c61e6660a6eb1836ce634dfe65973b93eee09b6bc609",
+                "bytes": 2474
+              },
+              "opensta.log": {
+                "sha256": "7c3802342e6186840bf91c9f1a11f96c577a8041124ce0bce75df11594924f4d",
+                "bytes": 706
+              },
+              "power.rpt": {
+                "sha256": "459a4c9a1404ce8c99aed0a1140d013f7a7d8c7976ad54aef7c6cdcae309b893",
+                "bytes": 1098
+              },
+              "macro-instances.rpt": {
+                "sha256": "125bb825258c51721e31b1cb045beebe27eb1b15c16f54823e4681449b9b06e0",
+                "bytes": 919
+              },
+              "parasitic-annotation.rpt": {
+                "sha256": "3d6f8064ec2910fe81559b46d281a5fe3d40765e5f250ead5fcc9567259c014e",
+                "bytes": 68
+              },
+              "resources.json": {
+                "sha256": "9b168e59f285d9846fbb927d406255e2372752baef8c526eb7a28900a6ec252b",
+                "bytes": 1725
+              },
+              "time.txt": {
+                "sha256": "a511d256c7c10ffcac410d12b464e42b8601a40235286587f6300883a0a07dae",
+                "bytes": 931
+              }
+            },
+            "prior_annotation_inventory": {
+              "sha256": "ad86c5b19476cc426af948b260810195769838e689453ba2ea59cd6b28784802",
+              "bytes": 636
+            }
+          },
+          "setup_sweep": {
+            "gds": {
+              "sha256": "8c854b5d39f4c5159f96dd3cc69666296c531face07faa6199f56c59729fd94b",
+              "bytes": 32018564
+            },
+            "input_identities": {
+              "netlist": {
+                "sha256": "cec16026d38de426a1e491b6375c6049313bd71eecab64c850c70e323b405114",
+                "bytes": 2891676
+              },
+              "sdc": {
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+                "bytes": 36142
+              },
+              "std_ss": {
+                "sha256": "4c2657ae12581bc18ed408f3fda0accd10b855118b9993070dbb360dfa3aa874",
+                "bytes": 20001645
+              },
+              "ram_ss": {
+                "sha256": "bf411ffa77f14d92e0c1e9023521d3b30551547ddc8e09b9a8458dcc17f19e36",
+                "bytes": 35362
+              },
+              "spef_openrcx": {
+                "sha256": "b0093e3dc7842b07f185b1a2fe3909ef5b86fef73d907d43bedbd663a51f3fd6",
+                "bytes": 28336536
+              },
+              "physical_only_stub": {
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              "original_report_tcl": {
+                "sha256": "e5c79e1acb84128eda4ec333c0528cace7eba185ac4f096bfc18a7a8d9c7cda2",
+                "bytes": 4565
+              },
+              "tool": {
+                "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+                "bytes": 16264
+              },
+              "launcher": {
+                "sha256": "590cdd8dff65f272449938ffb7b9747312b4e10fdf6533a2524e5a9cc734692b",
+                "bytes": 117
+              }
+            },
+            "original_max_slack_ns": 16.716825485229,
+            "clock_min_period_report": "clk_i period_min = 83.28 fmax = 12.01",
+            "frequency_range_mhz": [
+              12.006783832865569,
+              12.007234358701117
+            ],
+            "pass_at_period": {
+              "period_ns": 83.28625,
+              "max_slack_ns": 0.003076650202,
+              "min_slack_ns": 0.826072096825,
+              "min_period_report": "clk_i period_min = 83.28 fmax = 12.01",
+              "worst_max_path": {
+                "slack_ns": 0.003076650202,
+                "startpoint": "r228 (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "r65 (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 83.286247253418,
+                    "time_ns": 83.286247253418,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "f86a315fc85931b3e6a221bcc2379eefde9fc98aa2dc4c3e2cd83f02d35bc549",
+                "tcl": "cf46aec832b6974c08227b744c73735b1760e36535af478cc92e95429b1697b5",
+                "log": "4bc29e2dc9347c9a27106795b0d23ee7156f1ac320904f1c26b7d5b243ed8117",
+                "paths": "a87f443c3d64406032469442f9a3222333417af8296c267d8844f0ebd8db4183"
+              }
+            },
+            "fail_at_period": {
+              "period_ns": 83.283125,
+              "max_slack_ns": -4.2632564e-05,
+              "min_slack_ns": 0.826072096825,
+              "min_period_report": "clk_i period_min = 83.28 fmax = 12.01",
+              "worst_max_path": {
+                "slack_ns": -4.2632564e-05,
+                "startpoint": "r228 (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "r65 (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 83.283126831055,
+                    "time_ns": 83.283126831055,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "69888cf6d393c5480aa0198cc10449f62ebec9a7d8ff8cb58236f6e1c239e336",
+                "tcl": "4e8a4d21e266abc45f181d1acadcea99eb28fda3326027d14687f6e9436c9033",
+                "log": "bf054383c0a921328f2e01e15ebdf971b14d4d5c3ff2f1b0a9cc911b61d555d5",
+                "paths": "f98a174a2a8c0c9b044b69e231ddb22a001a5349265bbbf064320e4a90d1083f"
+              }
+            },
+            "trials": 10,
+            "run_receipt": {
+              "sha256": "7e9c32809ff37ac1c4f2432f19eaa877e0f74bab7e2a198bdaed40cc8bddb69e",
+              "bytes": 15969
+            }
+          }
+        },
+        "LibreLane": {
+          "layout_receipt": "gf180-reference-layout.json",
+          "standard_cell_area_um2": 490811.5968,
+          "modeled_power_mw": 139.09415900710002,
+          "setup_fmax_mhz": 10.748065348237317,
+          "power_analysis": {
+            "power_w": {
+              "sequential": {
+                "internal": 0.01288483012468,
+                "switching": 0.001374638173729,
+                "leakage": 8.307152370435e-07,
+                "total": 0.0142602995038
+              },
+              "combinational": {
+                "internal": 0.03665487840772,
+                "switching": 0.05681134015322,
+                "leakage": 2.031218627963e-06,
+                "total": 0.09346825629473
+              },
+              "clock": {
+                "internal": 0.006690041162074,
+                "switching": 0.005974440835416,
+                "leakage": 2.348612724745e-06,
+                "total": 0.01266683079302
+              },
+              "macro": {
+                "internal": 0.01869393512607,
+                "switching": 0.0,
+                "leakage": 4.99360021422e-06,
+                "total": 0.01869892887771
+              },
+              "pad": {
+                "internal": 0.0,
+                "switching": 0.0,
+                "leakage": 0.0,
+                "total": 0.0
+              },
+              "total": {
+                "internal": 0.07492364943027,
+                "switching": 0.06416030228138,
+                "leakage": 1.020422132569e-05,
+                "total": 0.1390941590071
+              }
+            },
+            "sram_instance_power_w": {
+              "u_dmem1": {
+                "internal": 0.002337906975299,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338531194255
+              },
+              "u_dmem2": {
+                "internal": 0.002337520010769,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002338144229725
+              },
+              "u_dmem3": {
+                "internal": 0.00233714049682,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002337764715776
+              },
+              "u_imem0": {
+                "internal": 0.002336695790291,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002337320009246
+              },
+              "u_imem1": {
+                "internal": 0.002336695790291,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002337320009246
+              },
+              "u_imem2": {
+                "internal": 0.002336695790291,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002337320009246
+              },
+              "u_imem3": {
+                "internal": 0.002336695790291,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.002337320009246
+              },
+              "u_dmem0": {
+                "internal": 0.002334584714845,
+                "switching": 0.0,
+                "leakage": 6.242000267775e-07,
+                "total": 0.0023352089338
+              }
+            },
+            "sram_liberty_coverage": {
+              "cell_leakage_power_attributes": 1,
+              "state_leakage_power_groups": 0,
+              "internal_power_groups": 3,
+              "is_macro_cell_attributes": 0,
+              "leakage_power_unit": "\"1mW\"",
+              "nominal_v": "5.0",
+              "nominal_temperature_c": "25"
+            },
+            "inputs": {
+              "gds": {
+                "sha256": "a7a1ae8c6ba1a2056854c1172d5e5b53f6d6835d28f39ba5514b4789a4b4fb21",
+                "bytes": 32658112
+              },
+              "def": {
+                "sha256": "38fc6c54f036135044a8c8f2c23a81788a054c35d13598f089b9e456bbb2c3f2",
+                "bytes": 22908513
+              },
+              "netlist": {
+                "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+                "bytes": 5132574
+              },
+              "sdc": {
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+                "bytes": 36142
+              },
+              "spef_openrcx": {
+                "sha256": "009d30effa96760acdc116f17a6773f76607e7d7a07aae51e68bc0d60581a243",
+                "bytes": 24698767
+              },
+              "std_tt": {
+                "sha256": "330aa9439255e3870ad7adfb987cd4d7bcfa7b6f9fb0cd0a712400e9bd80e38a",
+                "bytes": 20122761
+              },
+              "ram_tt": {
+                "sha256": "37176ba5b13be51f6197d1da2cd34f6c2710fd10d53f24e9bda67fec7d333446",
+                "bytes": 35624
+              },
+              "physical_stubs": {
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              "original_command": {
+                "sha256": "bd3bbbd5d95e0c8e449d2d5d25cd0ff55e9d61a2bdd67a9604923688510eeead",
+                "bytes": 4516
+              },
+              "original_annotation": {
+                "sha256": "8b3cb8ab142639b10aefbd9614a871f6cfea0884ff1720868b86fd53142eaffb",
+                "bytes": 1319
+              },
+              "layout_timing_plan": {
+                "sha256": "750f79a3d2337b311527714f01b3d52649a6a6a655a5559408e1386acff2ff92",
+                "bytes": 5771
+              },
+              "layout_timing_summary": {
+                "sha256": "8ee7d86eb1d88d3b1cc99b390aa250301ef01d22febb66d249b8a3fd5b3f8b9a",
+                "bytes": 21235
+              },
+              "layout_extraction_plan": {
+                "sha256": "ff60fc3c41cf86af1d820f781af7de7a165283c69b052b4fc4154585b437c558",
+                "bytes": 2198
+              },
+              "published_figure_receipt": {
+                "sha256": "47e71eb44e052732ce1b37376517a4d80a0cb6d25072d0a580b66e88805c818d",
+                "bytes": 5610
+              }
+            },
+            "extraction": {
+              "tool": "openrcx",
+              "rc_corner": "nom",
+              "annotated_net_records": 18050,
+              "rc_rules": {
+                "sha256": "d83a04ea28af9b74a097fb479bbab9ed52859a1e3428b33d3151cb5afae62ddf",
+                "bytes": 31291
+              }
+            },
+            "coverage": {
+              "explicit_data_input_annotations": 49,
+              "explicit_reset_annotations": 1,
+              "sdc_clocks": 1,
+              "clock_period_ns": 100.0,
+              "fully_unannotated_disconnected_drivers": 94,
+              "active_unannotated_drivers": 0,
+              "partially_unannotated_drivers": 0,
+              "annotation_report_exact_match_to_prior_timing_gate": true,
+              "physical_only_stub_masters": [],
+              "uncharacterized_stub_instances_in_netlist": {},
+              "linked_sram_instances": 8
+            },
+            "resources": {
+              "wall_seconds": 6.71,
+              "cpu_seconds": 6.99,
+              "allowed_cpus": [
+                28,
+                29
+              ],
+              "gnu_time_max_rss_kib": 225380,
+              "cgroup_limit_bytes": 2147483648,
+              "cgroup_v2_memory_peak_bytes": 216915968,
+              "cgroup_v2_swap_peak_bytes": 0,
+              "exit_code": 0
+            },
+            "evidence_files": {
+              "inputs.json": {
+                "sha256": "97d9985a757c4d88e34c0e65ce30fd9dc9dcdd3f44b7970c73120e9b7a481cb6",
+                "bytes": 5159
+              },
+              "report-opensta-power.tcl": {
+                "sha256": "6f215d48f30dab1076d686b707bb74f5fcef0dff4a1397285739936f6c136e29",
+                "bytes": 2482
+              },
+              "opensta.log": {
+                "sha256": "523d9617b5e981d8c0a506ddfa2a3626a3449abc570adfb65894501bc3cf333a",
+                "bytes": 706
+              },
+              "power.rpt": {
+                "sha256": "f0644cb09746bec4f2fa20bbfbc86f49d3821e35cebdfff94ad3ffbcbdb3e481",
+                "bytes": 1098
+              },
+              "macro-instances.rpt": {
+                "sha256": "303df001cd04f3a1502daba748f4183455c163d04ffc63223bc7657f92c0abd6",
+                "bytes": 919
+              },
+              "parasitic-annotation.rpt": {
+                "sha256": "8b3cb8ab142639b10aefbd9614a871f6cfea0884ff1720868b86fd53142eaffb",
+                "bytes": 1319
+              },
+              "resources.json": {
+                "sha256": "7c4427969a12d7a0a4dfd05143787a61a6676818e117eae17db5b316304c7ad8",
+                "bytes": 1729
+              },
+              "time.txt": {
+                "sha256": "dadcc490bf008c446c480c37f0a4eb6c62fb58dc5fee1bca5299a0d8351f0a66",
+                "bytes": 934
+              }
+            },
+            "prior_annotation_inventory": {
+              "sha256": "a8aa96448af91cb9f5816be43bd040e207f4fd07c156dd31050930f0e5b1e95c",
+              "bytes": 4236
+            }
+          },
+          "setup_sweep": {
+            "gds": {
+              "sha256": "a7a1ae8c6ba1a2056854c1172d5e5b53f6d6835d28f39ba5514b4789a4b4fb21",
+              "bytes": 32658112
+            },
+            "input_identities": {
+              "netlist": {
+                "sha256": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+                "bytes": 5132574
+              },
+              "sdc": {
+                "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84",
+                "bytes": 36142
+              },
+              "std_ss": {
+                "sha256": "4c2657ae12581bc18ed408f3fda0accd10b855118b9993070dbb360dfa3aa874",
+                "bytes": 20001645
+              },
+              "ram_ss": {
+                "sha256": "bf411ffa77f14d92e0c1e9023521d3b30551547ddc8e09b9a8458dcc17f19e36",
+                "bytes": 35362
+              },
+              "spef_openrcx": {
+                "sha256": "009d30effa96760acdc116f17a6773f76607e7d7a07aae51e68bc0d60581a243",
+                "bytes": 24698767
+              },
+              "physical_only_stub": {
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              "original_report_tcl": {
+                "sha256": "6d1f16d8ee4943ec5ee6a771f165dc96a150ab78c559ad91668cc638a9347d24",
+                "bytes": 4516
+              },
+              "tool": {
+                "sha256": "87e7d744a9213eeb1c1146225be167e46b69895e8fc426f4f6f396880a21b2c7",
+                "bytes": 16264
+              },
+              "launcher": {
+                "sha256": "590cdd8dff65f272449938ffb7b9747312b4e10fdf6533a2524e5a9cc734692b",
+                "bytes": 117
+              }
+            },
+            "original_max_slack_ns": 6.962885379791,
+            "clock_min_period_report": "clk_i period_min = 93.04 fmax = 10.75",
+            "frequency_range_mhz": [
+              10.748065348237317,
+              10.748426363202762
+            ],
+            "pass_at_period": {
+              "period_ns": 93.04,
+              "max_slack_ns": 0.002891909098,
+              "min_slack_ns": -0.414241105318,
+              "min_period_report": "clk_i period_min = 93.04 fmax = 10.75",
+              "worst_max_path": {
+                "slack_ns": 0.002891909098,
+                "startpoint": "_26521_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "_26649_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 93.040000915527,
+                    "time_ns": 93.040000915527,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "ad695f356bfb0e3f6453ea0f216f65f0019c528937ec906ed1fef135ad4db70b",
+                "tcl": "aa3b67c82000b99f99e572a33f3582733a2393648b297256d61d2b5a27d41f6d",
+                "log": "568e690f0766da941e9b5316c873d363b3c5ba4cbb757a6418c6b55b933152d2",
+                "paths": "01059a14dd193da9760f252a7fd339e6332fc3e175d1e3ef7561d349dd6eed69"
+              }
+            },
+            "fail_at_period": {
+              "period_ns": 93.036875,
+              "max_slack_ns": -0.000234479114,
+              "min_slack_ns": -0.414241105318,
+              "min_period_report": "clk_i period_min = 93.04 fmax = 10.75",
+              "worst_max_path": {
+                "slack_ns": -0.000234479114,
+                "startpoint": "_26521_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "endpoint": "_26649_ (rising edge-triggered flip-flop clocked by clk_i)",
+                "path_group": "clk_i",
+                "edges": [
+                  {
+                    "step_ns": 0.0,
+                    "time_ns": 0.0,
+                    "edge": "rise"
+                  },
+                  {
+                    "step_ns": 93.036880493164,
+                    "time_ns": 93.036880493164,
+                    "edge": "rise"
+                  }
+                ]
+              },
+              "hashes": {
+                "derived_sdc": "18c39fe199de5e309b6108192ecae0acd1d33c6cda88ab15315c851315ae4020",
+                "tcl": "adbd3dc0753cab738b7df82ea8713cf6e7329de53ea83bd0c04d3c5caa9b8257",
+                "log": "ea9db5780350b84c41d256d97b505f0fc881c916e57fa396d24f629d4ffd963c",
+                "paths": "d37af1b719911fcdab9874e4ce89e5280e51de90decd8a021392e62a6d3677de"
+              }
+            },
+            "trials": 10,
+            "run_receipt": {
+              "sha256": "82018927f7314143b6405fc1dbf3f874f5a4fad8c0faf7e909244a71a09457c8",
+              "bytes": 16054
+            }
+          }
+        }
+      },
+      "rusteda_change_vs_librelane_percent": {
+        "modeled_power_mw": 12.07563251440531,
+        "standard_cell_area_um2": -2.6061793330470873,
+        "setup_fmax_mhz": 11.711116780981268
+      }
+    }
+  }
+}

@@ -11,6 +11,40 @@ uses the same signoff scripts. Bank capacity and the cell library vary by PDK.
 | SKY130A | `sky130_fd_sc_hd` | Two OpenRAM 512 × 32 macros, one 2 KiB bank each. This macro configuration was included in the [UCSC OpenRAM MPW2 tape-out](https://escholarship.org/uc/item/9dc0v8g3). |
 | GF180MCU D | `gf180mcu_fd_sc_mcu7t5v0` | Eight foundry 512 × 8 macros, four byte lanes per 2 KiB bank. [GlobalFoundries SRAM data sheet](https://gf180mcu-pdk.readthedocs.io/en/latest/IPs/SRAM/gf180mcu_fd_ip_sram/cells/gf180mcu_fd_ip_sram__sram512x8m8wm1/gf180mcu_fd_ip_sram__sram512x8m8wm1.html) |
 
+## Power, area and frequency
+
+Each cell lists **RustEDA / LibreLane** for the GDS pair shown on this page.
+Percentages show RustEDA's change relative to LibreLane.
+
+| Open PDK | TT modeled power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) |
+| --- | ---: | ---: | ---: |
+| IHP SG13G2 | 8.63 / 5.57 (+54.9%) | 187,585 / 204,848 (**−8.4%**) | 42.02 / 24.86 (**+69.0%**) |
+| SKY130A | 28.99 / 9.50 (+205.2%) | 176,089 / 176,427 (**−0.19%**) | 23.75 / 17.21 (**+37.9%**) |
+| GF180MCU D | 155.89 / 139.09 (+12.1%) | 478,020 / 490,812 (**−2.6%**) | 12.01 / 10.75 (**+11.7%**) |
+
+Power is the sum of internal, switching and leakage power reported by OpenSTA
+3.1.0 on the linked post-route netlist. Each pair uses the same TT cell and
+SRAM Liberty, nominal OpenRCX SPEF for each layout and its original propagated
+10 MHz clock. Vectorless propagation starts at the non-clock data inputs
+with 0.10 transitions per cycle and a duty factor of 0.5. The active-low reset
+is held high. All six layouts had full parasitic annotation on active drivers.
+[OpenSTA power analysis](https://github.com/The-OpenROAD-Project/OpenSTA/blob/master/doc/Examples.md#power-analysis)
+
+The estimates include the SRAM models' internal and leakage terms. The SKY130
+Liberty charges clock energy on both SRAM ports, including the unused read
+port. The GF180 macro tables model read, write and disabled states. Enabled
+writes with all bits masked fall outside those tables.
+
+To find setup Fmax, OpenSTA swept the single `clk_i` period at SS on the fixed
+netlists, using nominal extracted parasitics, propagated clocks and the
+original fixed I/O delays. The sweep brackets the transition to nonnegative
+setup slack within 0.005 ns for every layout. The table reports the reciprocal
+of the shortest passing period observed, including timed I/O and clock-gating
+paths. The hold, electrical and physical check outcomes appear with each
+layout below. Area uses the standard-cell footprint, excluding SRAM, gap
+fillers and decap cells, within the same die.
+[Paired QoR receipt](evidence/ibex-three-pdk/paired-qor.json)
+
 ## IHP SG13G2 layout pair
 
 ![Final GDS from RustEDA and LibreLane at the same IHP die size. Both SRAM banks are outlined on each layout, with standard-cell area and slow-corner timing below.](figures/ibex-ihp-20261110.png)
