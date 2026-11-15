@@ -128,7 +128,7 @@ more than 200 IDs is not expanded: only its first number counts as cited.
 | FLOWEXEC-REQ-0020 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
 | FLOWEXEC-REQ-0021 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
 | FLOWEXEC-REQ-0022 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
-| FLOWEXEC-REQ-0023 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
+| FLOWEXEC-REQ-0023 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs<br>crates/apps/rusteda-flow/tests/exec_contract/profile.rs |
 | FLOWEXEC-REQ-0024 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
 | FLOWEXEC-REQ-0025 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
 | FLOWEXEC-REQ-0026 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/tests/exec_contract.rs |
@@ -138,6 +138,7 @@ more than 200 IDs is not expanded: only its first number counts as cited.
 | FLOWEXEC-REQ-0030 | docs/specs/flow/exec.md | crates/apps/rusteda-cli/tests/flow_exec.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
 | FLOWEXEC-REQ-0031 | docs/specs/flow/exec.md | crates/apps/rusteda-cli/tests/flow_exec.rs<br>crates/apps/rusteda-flow/tests/exec_contract.rs |
 | FLOWEXEC-REQ-0032 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/cli.rs<br>crates/apps/rusteda-flow/tests/worker_contract.rs |
+| FLOWEXEC-REQ-0033 | docs/specs/flow/exec.md | crates/apps/rusteda-flow/src/cli.rs<br>crates/apps/rusteda-flow/tests/exec_contract/profile.rs |
 | JOB-REQ-0001 | docs/specs/core/README.md | @common/crates/core/rusteda-core/src/job.rs |
 | JOB-REQ-0002 | docs/specs/core/README.md | @common/crates/core/rusteda-core/src/job.rs |
 | JOB-REQ-0003 | docs/specs/core/README.md | @common/crates/core/rusteda-core/src/job.rs<br>crates/apps/rusteda-studio/src/model/snapshot.rs |
