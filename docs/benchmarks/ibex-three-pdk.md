@@ -324,10 +324,17 @@ hold, transition, capacitance and fanout checks.
 | SS setup Fmax lower bound (MHz) | **24.02** | 17.21 |
 | Independent DRC violations | 0 | 0 |
 | Independent Magic antenna findings | **12** | 13 |
-| Matched RTL-to-GDS time (s) | Pending | 1,771.63 |
+| Matched RTL-to-GDS time with calibrated RustEDA plans (s) | **1,729.99** | 1,771.63 |
 
 The power comparison uses the same 17-cycle gate-level workload and nominal
 OpenRCX extraction. Both layouts retain Magic antenna findings.
+
+The RustEDA replay used a profile-guided build for the cold detailed route
+and reproduced the checked GDS, DEF, three netlists and nominal SPEF byte for
+byte. Both flows used CPUs 30 and 31 with 4 GiB and no swap. The RustEDA
+timer includes both physical repair passes and fresh equivalence checks. Its
+two prior Magic target discovery runs took 1,234.39 s and 1,171.28 s in
+separate resource scopes. Fresh target selection remains unverified.
 [Exact layout, workload and gate results](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 ## Frontend validation

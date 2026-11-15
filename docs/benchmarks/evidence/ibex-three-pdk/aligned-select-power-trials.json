@@ -1340,7 +1340,33 @@
         }
       },
       "matched_producer_runtime": {
-        "status": "pending"
+        "status": "matched_calibrated_profile",
+        "scope": "The same resource envelope for both complete physical producers. RustEDA uses PGO on cold detailed routing and reapplies two preselected Magic repair plans with fresh all-state proofs. Full independent checks are separate.",
+        "rusteda_seconds": 1729.99,
+        "librelane_seconds": 1771.63,
+        "rusteda_wall_delta_percent": -2.3503779005774383,
+        "allowed_cpus": [
+          30,
+          31
+        ],
+        "memory_limit_mib": 4096,
+        "peak_swap_bytes": 0,
+        "rusteda_cgroup_peak_bytes": 3560488960,
+        "librelane_cgroup_peak_bytes": 2289549312,
+        "profile_guided_cold_router": {
+          "bytes": 77121432,
+          "sha256": "c211633919dd8a6ae30e388e8e3391bd112a320ee82e2e2b5816b22ba6af9c48"
+        },
+        "byte_identical_final_artifacts": 6,
+        "offline_magic_target_selection_seconds": [
+          1234.39,
+          1171.28
+        ],
+        "fresh_target_selection_interval": "unverified",
+        "receipt": {
+          "bytes": 5072,
+          "sha256": "df3db913362c9adbd97b6d5e5abfafdf5d07496d7cae199f73e7660ea98e1d53"
+        }
       }
     }
   },

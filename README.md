@@ -60,7 +60,7 @@ show RustEDA's change relative to LibreLane.
 | Open PDK | TT workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | Matched RTL-to-GDS time (s) |
 | --- | ---: | ---: | ---: | ---: |
 | IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.7%** | 248.07 / 1,917.16<br>**7.73×** |
-| SKY130A, two cores | 2.740 / 2.837<br>**−3.4%** | 173,629 / 176,427<br>**−1.6%** | 24.02 / 17.21<br>**+39.5%** | Pending / 1,771.63 |
+| SKY130A, two cores | 2.740 / 2.837<br>**−3.4%** | 173,629 / 176,427<br>**−1.6%** | 24.02 / 17.21<br>**+39.5%** | 1,729.99 / 1,771.63<br>Calibrated plans |
 | GF180MCU D, two cores | 91.24 / 94.33<br>**−3.3%** | 475,913 / 490,812<br>**−3.0%** | 10.91 / 10.75<br>**+1.5%** | 637.13 / 851.48<br>**1.34×** |
 
 OpenSTA uses the matched workload activity and nominal OpenRCX parasitics.
@@ -69,9 +69,11 @@ the standard-cell footprint within the common die.
 [QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
 
 Both SKY130A layouts passed DRC and recorded **12 / 13** Magic antenna
-findings. GF180MCU D recorded **1 / 4** foundry density findings. Its producer
-time includes floating fill. Power and timing use the unfilled routed
-snapshot and have a separate extraction control.
+findings. The RustEDA timer includes both repair passes and reuses their
+previously selected Magic targets. Fresh target selection remains
+unverified. GF180MCU D recorded **1 / 4** foundry density findings. Its
+producer time includes floating fill. Power and timing use the unfilled
+routed snapshot and have a separate extraction control.
 [Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md#aligned-select-power-trials)
 
 ### IHP SG13G2 results
