@@ -208,6 +208,13 @@ including both corrections and their prerequisite extractions and logic
 checks. LibreLane used 851.48 s on the same CPU pair. Final signoff ran
 outside the producer timings. [Replay and layout identities](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
+A separate GF180 physical trial adds 2 × 2 µm floating fill to Metal2 and
+Metal5/top while preserving all routed conductors, instances and macro geometry.
+The full foundry deck reports one finding, M4.4. Antenna, device LVS, vendor
+simulation and ABC passed. The OpenRCX control emitted identical SPEF with and
+without explicit `FILLS` geometry. Power and Fmax in the table use the unfilled
+routed layout. [Fill geometry, DRC and extraction control](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
 The IHP trial uses the earlier aligned-select and after-reset compiler recipe.
 Its synthesis and final netlists passed equivalence after asserted reset,
 and the shared vendor-model simulation passed. Its setup ceiling is above

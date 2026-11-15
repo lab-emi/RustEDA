@@ -364,6 +364,106 @@
           "bytes": 2577
         },
         "librelane_observed_elapsed_seconds": 851.48
+      },
+      "physical_fill_followup": {
+        "receipt": {
+          "sha256": "7dcd61358638d5f91b20254b6f33fdee4a9ff432faa96410166bea264b2202d7",
+          "bytes": 6584
+        },
+        "scope": "Separate physical fill candidate using unchanged GF180MCU D routed geometry. The matched PPA benchmark still refers to the original unfilled GDS.",
+        "source": {
+          "sha256": "0a0b9d00606a0afe40b323d07c9f9705d803d0d64f5599e1a8ccd12f564c0c8a",
+          "bytes": 31266758
+        },
+        "filled": {
+          "sha256": "b1d43923f9638ed9bc68e772a2f44757e5fb017de672545ad24c730e34c73063",
+          "bytes": 45526342
+        },
+        "fill_only_geometry_proof": {
+          "sha256": "c6f5f2603ead0c0246f8294a2186fe49f65c25e6747fdca5f34fe829d7ded87f",
+          "bytes": 1690
+        },
+        "independent_clearance_proof": {
+          "sha256": "181692ae8c2c4747914a257e2cd5172c5d9ef8e85d0d693cfb2aa13d40de18d2",
+          "bytes": 1744
+        },
+        "coverage_by_layer": {
+          "36": {
+            "added_boxes": 26220,
+            "clipped_union_pct": 30.355827739661297
+          },
+          "81": {
+            "added_boxes": 196586,
+            "clipped_union_pct": 31.651511166833473
+          }
+        },
+        "original_density_counts": {
+          "M2.4": 1,
+          "M4.4": 1,
+          "M5.4": 1,
+          "MT.3": 1
+        },
+        "filled_full_deck": {
+          "rdb_bytes": 140594,
+          "rdb_sha256": "5fa9cd1e8dfae58300aa046f32f2c7f498ea3c184c15bca3af33dd1bbc3feb74",
+          "violations": 1,
+          "violations_by_rule": {
+            "M4.4": 1
+          }
+        },
+        "filled_full_deck_resources": {
+          "sha256": "626031aedd7d53bfe2a40ead4ba5dae30836229220fabd9d2b67acfa3fc56f42",
+          "bytes": 1441
+        },
+        "physical_gates": {
+          "antenna": "passed",
+          "lvs": "passed",
+          "simulation": "passed",
+          "density": "passed"
+        },
+        "physical_gate_summary": {
+          "sha256": "aae611735965103e1f5944f640546a8025c7fea40189866250da82b8cc7223d3",
+          "bytes": 31303
+        },
+        "antenna_violations": 0,
+        "arbitrary_initial_state_abc": "passed",
+        "fill_aware_parasitics": "unverified",
+        "electrical_model_scope": "Original routed geometry only. Pinned OpenRCX net results are insensitive to the floating squares even when all are imported explicitly as DEF FILLS.",
+        "floating_fill_electrical_ab": {
+          "sha256": "7d52190679e1945cb3b71ad872cfb22f52d7e8e61fb17ac585afc1040c392c1b",
+          "bytes": 1406
+        },
+        "remaining_metal4_bound": {
+          "scope": "Fixed circuit geometry at documented GF180 layout spacing. This loose upper bound already omits entire SRAM footprints as keepouts and further packing restrictions.",
+          "upper_bound_pct": 19.67242458443932,
+          "deficit_um2_even_at_upper_bound": 303792.6536,
+          "minimum_required_density_pct_strictly_greater_than": 30,
+          "eligibility_receipt": {
+            "sha256": "50217a541d131ea0c4611b66e8335cbda621434113233ac34344f04ab4557fd7",
+            "bytes": 3839
+          }
+        },
+        "separately_timed_fill_only_replay": {
+          "elapsed_seconds": 106.67,
+          "cores": [
+            20,
+            21
+          ],
+          "includes": "Both eight-phase searches, GDS outputs, verified joint emission and exact hierarchy comparisons. No upstream routing or downstream physical checks.",
+          "overlap_scope": "Full-deck validation ran concurrently on the same CPU set. This time is a component observation, separate from the matched whole-producer comparison.",
+          "original_and_replay_match_after_timestamp_removal": {
+            "digest": "8c5157616748e596cf3203aaaf76c829568a2dd7a29033b947048d0956e3301e",
+            "timestamp_records_normalized": 649
+          },
+          "replay_geometry": {
+            "sha256": "0d2dd0cc327e651a5ca59edf159bc767b9107c81ac2cf20337a1f50e0f3e7cc5",
+            "bytes": 1726
+          },
+          "resources": {
+            "sha256": "2dbe80703e248d047f602043e53486f4966f2d9e40bd718607a08349f4124777",
+            "bytes": 1797
+          }
+        }
       }
     }
   },
