@@ -1,8 +1,10 @@
 # PULPissimo SoC synthesis on IHP SG13G2 / EZ130
 
-This is a **synthesis-only** full-SoC test of PULPissimo on IHP SG13G2 with the
-EZ130 8T standard-cell library and **80 official IHP SRAM macros**. It is not an
-RTL-to-GDS result and it has no equivalence or timing-closure claim.
+**Withdrawn full-SoC measurement.** The synthesis run used the EZ130 8T
+standard-cell library and 80 official IHP SRAM macros. Its prepared RTL
+removed `sv2v_cast_*` width casts, which shifted AXI request fields in the
+SoC. The run records below are preserved for diagnosis. The SRAM adapter
+smoke test exercises the macro interface independently.
 
 [Summary receipt](pulpissimo-ihp-20261106.json) ·
 [Raw synthesis receipt](evidence/pulpissimo-ihp-20261106/synthesis-receipt.json) ·
@@ -14,11 +16,11 @@ RTL-to-GDS result and it has no equivalence or timing-closure claim.
 
 ## Result
 
-One run, 16 threads, 32 GiB address-space guard, 2026-11-06:
+Historical run on 2026-11-06, with 16 threads and a 32 GiB address-space guard.
 
 | | Value |
 | --- | ---: |
-| Wall time | **426.343 s** |
+| Wall time | 426.343 s |
 | Peak process RSS | 1,316,868 KiB (1.26 GiB) |
 | Standard cells | 161,034 |
 | SRAM macro instances | **80** |
@@ -83,6 +85,9 @@ synthesis result, not a quality-sweep optimum.
   standard-cell library and memory implementation together.
 
 ## Reproduce
+
+These commands record the historical setup. A new full-SoC measurement
+requires a width-cast-preserving input and independent RTL validation.
 
 ```sh
 python3 integration/pulpissimo_soc/ihp/prepare_ihp.py \

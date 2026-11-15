@@ -205,7 +205,10 @@ The [Ibex SG13G2/EZ130 benchmark page](docs/benchmarks.md) holds the 2026-11-13,
 
 The host campaigns add module head-to-heads. On identical inputs: RustSys against Yosys with ABC (LibreLane's synthesis script), RustSTA against OpenSTA, RustROAD extraction against OpenRCX and RustROAD GDS export against KLayout. RustROAD placement, CTS and routing are compared with OpenROAD's stages inside the two flows. RustSpice is compared with ngspice-45 on RC networks extracted from the final Ibex layout, not at transistor level: it does not support IHP's PSP103 transistor models. RustSpice is not timed in the RTL-to-GDS main flow.
 
-A second design adds [PULPissimo on SKY130 HD](docs/benchmarks/pulpissimo.md). It is a **synthesis-only** comparison of the PULPissimo Ibex core against a bounded Yosys 0.70/ABC reference on the same prepared Verilog: RustSys is **1.07× slower** on this sample but produces an **8.96% smaller-area, 32.35% smaller-cell-count** netlist, using **1.58× more peak memory**. On SKY130 the full SoC still exceeds a 2 h budget with the behavioral L2 memory. An IHP SG13G2 / EZ130 synthesis-only test with 80 official SRAM macros completes in 426 s, but has no physical, equivalence or timing-closure result. The receipt is [here](docs/benchmarks/pulpissimo-soc-20261106.json). This result does not extend the Ibex RTL-to-GDS qualification.
+The PULPissimo full-SoC synthesis measurements were withdrawn after the
+input converter removed width casts and altered AXI request packing. The
+standalone PULPissimo Ibex-core comparisons remain historical observations
+pending independent validation. [PULPissimo archive](docs/benchmarks/pulpissimo.md)
 
 ## PDKs and standard-cell libraries
 
@@ -213,7 +216,7 @@ A second design adds [PULPissimo on SKY130 HD](docs/benchmarks/pulpissimo.md). I
 | --- | --- | --- |
 | SkyWater SKY130A | `sky130_fd_sc_hd`, `hdll`, `hs`, `ms`, `ls`, `lp`, `hvl` | HD: synthesis, timing and small-block physical flow qualification. Other libraries: installed; integrated physical flow unverified. |
 | GlobalFoundries GF180MCU | `gf180mcu_fd_sc_mcu7t5v0`, `gf180mcu_fd_sc_mcu9t5v0` | 7T: synthesis, timing and small-block physical flow qualification. The 9T library is also a library-coverage baseline, not the qualified physical-flow default. |
-| IHP SG13G2 | `sg13g2_stdcell`, [EZ130 8T v1.1](https://iip.ethz.ch/ez-library/ihp130-8t.html) | EZ130: Ibex with two real SRAMs completes native RTL-to-GDS with all 16 gates (retained runs on one host). Host campaigns with reconstructed EZ130 tech LEF and GDS: on 2026-11-13 and 2026-11-05 the recipe of the day passed every shared gate with a pass/fail verdict and the 1 ps RustSTA/OpenSTA parity gate; on 2026-11-02 the earlier recipe passed every design gate but not the parity gate. All are `unqualified`. Other EZ130 designs: PULPissimo full-SoC synthesis with 80 official SRAM macros is timed at 426 s; its physical/RTL-to-GDS result is unverified. IHP standard cells: installed; integrated flow unverified. |
+| IHP SG13G2 | `sg13g2_stdcell`, [EZ130 8T v1.1](https://iip.ethz.ch/ez-library/ihp130-8t.html) | EZ130: Ibex with two real SRAMs completes native RTL-to-GDS with all 16 gates (retained runs on one host). Host campaigns with reconstructed EZ130 tech LEF and GDS: on 2026-11-13 and 2026-11-05 the recipe of the day passed every shared gate with a pass/fail verdict and the 1 ps RustSTA/OpenSTA parity gate; on 2026-11-02 the earlier recipe passed every design gate but not the parity gate. All are `unqualified`. IHP standard cells: installed; integrated flow unverified. |
 
 Select an installed Liberty corner for direct RustSys commands with
 `./rusteda library NAME --corner tt` (also `ff` or `ss` where catalogued).

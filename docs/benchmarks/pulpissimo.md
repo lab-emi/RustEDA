@@ -1,14 +1,13 @@
 # PULPissimo Ibex-core synthesis
 
-This is the second RustEDA design benchmark. It is a **synthesis-only**
-comparison on the Ibex core extracted from the PULPissimo SoC; it is not an
-RTL-to-GDS result and it cannot be compared with the [Ibex SG13G2/EZ130 flow
-times](../benchmarks.md). The full PULPissimo SoC was also attempted separately:
-on SKY130 with the behavioral L2 memory it passes hierarchy elaboration but
-exceeds a 2 h budget; an IHP SG13G2 / EZ130 synthesis test with 80 official SRAM
-macros completes in 426 s. Both are synthesis-only and unverified for physical
-signoff. See the [IHP full-SoC test](pulpissimo-ihp.md) and the
-[elaboration analysis](pulpissimo-elaboration.md).
+**Historical synthesis comparison.** The recorded top was `ibex_core`.
+Both tools read Verilog prepared by a converter that removed `sv2v_cast_*`
+width casts. The removal shifted AXI request fields by 24 bits in the full
+SoC, so its historical SKY130 and IHP measurements were withdrawn. The AXI
+bridge is outside the standalone core top, and the core comparison remains
+unverified against the original RTL.
+[IHP full-SoC record](pulpissimo-ihp.md) ·
+[Elaboration trace](pulpissimo-elaboration.md)
 
 [Machine-readable receipt](pulpissimo-soc-20261106.json) ·
 [Input manifest](evidence/pulpissimo-20261106/input.json) · [RustSys receipt](evidence/pulpissimo-20261106/rustsys-ibex-core-receipt.json) · [Yosys receipt](evidence/pulpissimo-20261106/yosys-ibex-core-receipt.json) · [SoC attempt](evidence/pulpissimo-20261106/full-soc-attempt.json) ·
@@ -16,8 +15,9 @@ signoff. See the [IHP full-SoC test](pulpissimo-ihp.md) and the
 
 ## Result
 
-Three consecutive single-thread samples per producer, same prepared Verilog,
-same SKY130 HD TT Liberty, 2026-11-06; medians:
+Historical medians from three consecutive single-thread measurements per
+producer, using the recorded prepared Verilog and SKY130 HD TT Liberty on
+2026-11-06.
 
 | | RustSys | Yosys 0.70 + ABC, bounded mapping |
 | --- | ---: | ---: |
@@ -29,10 +29,6 @@ same SKY130 HD TT Liberty, 2026-11-06; medians:
 | AIG nodes, before → after | 33,249 → 26,703 | — |
 | State bits, RTL → retained | 2,579 → 2,557 | — |
 | Equivalence | not run in this comparison | not run in this comparison |
-
-RustSys is **1.07× slower** on this sample, but produces an **8.96%
-smaller-area, 32.35% smaller-cell-count** netlist. It uses **1.58× more peak
-memory**. The result is mixed, not a universal win.
 
 ## What was compared
 
@@ -50,9 +46,10 @@ memory**. The result is mixed, not a universal win.
   reads the 25-module reachable subset; RustSys reads the full 366-module file
   and selects the same top. The RustSys time therefore includes parsing modules
   that Yosys never reads, so the comparison does not favour RustSys. The
-  conversion strips non-synthesizable assertion/fatal blocks, the unreachable
-  FPU path and the dropped sv2v APB-interface object; the exact counters and
-  input hash are in the [input manifest](../../integration/pulpissimo_soc/README.md).
+  historical conversion stripped non-synthesizable assertion/fatal blocks,
+  the unreachable FPU path, the dropped sv2v APB-interface object and sv2v
+  width casts. The counters and input hash are recorded in the
+  [input manifest](evidence/pulpissimo-20261106/input.json).
 - **Threads:** one for both. Yosys/ABC is single-threaded in this profile.
 - **Timer:** the whole process, including read, elaboration, AIG construction,
   mapping and export. GNU time records peak RSS.
@@ -82,6 +79,7 @@ time.
 ## Full SoC attempt on SKY130
 
 A `pulpissimo_soc_wrapper` elaboration was attempted on the same conversion.
+The AXI width-cast error applies to both attempts below.
 Before the fix it stopped after **2,241.09 s** with
 `error[S0105]: 'i_soc_domain' is not declared`; sv2v had inlined the
 interface-bearing `soc_domain` into a generate scope and left module-scope
@@ -99,20 +97,16 @@ while a one-word control elaborates the whole SoC in 4.249 s with 605,650
 nodes. Replacing the banks with official IHP SRAM macros is the subject of the
 [IHP SG13G2 / EZ130 test](pulpissimo-ihp.md).
 
-## What this does not say
+## Measurement scope
 
-- It does not say RustEDA completes PULPissimo RTL-to-GDS. The SKY130 full-SoC
-  run still exceeds a 2 h budget with the behavioral L2 memory; the IHP
-  full-SoC run is a synthesis-only test with 80 SRAM macros, not a physical
-  implementation.
-- It does not compare the full PULPissimo SoC with LibreLane, OpenROAD or Yosys.
-- It does not measure placement, clock trees, routing, extraction, DRC, LVS,
-  simulation, equivalence or signoff.
-- It does not claim a confidence interval or a larger distribution; three
-  consecutive samples per producer are recorded and their median is reported.
-- The RustSys and Yosys netlists were not proven equivalent in this comparison.
+The archived comparative data covers synthesis of the standalone core on the
+shared prepared input. The RustSys and Yosys netlists are unverified for
+equivalence. A new measurement requires preparation that preserves width casts
+and independent validation against the original RTL.
 
 ## Reproduce
+
+These commands record the historical preparation and synthesis setup.
 
 ```sh
 python3 integration/pulpissimo_soc/prepare.py \

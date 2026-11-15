@@ -1,9 +1,10 @@
 # PULPissimo full-SoC elaboration analysis
 
-The [full SoC attempt](pulpissimo.md#full-soc-attempt-on-sky130) passed the former
-generate-scope rejection but did not finish inside a 2 h synthesis budget. This
-page records where the time goes. It is a **diagnostic**, not a benchmark: the
-control run changes the L2 memory size and is not a PULPissimo result.
+**Historical elaboration diagnostic.** The full-SoC attempt used prepared
+RTL whose width-cast conversion changed AXI request packing. Its trace
+records the cost seen in the behavioral L2 model. Both the original run and
+the one-word control are preserved as diagnostics for that input.
+[Archived full-SoC attempt](pulpissimo.md#full-soc-attempt-on-sky130)
 
 [Trace](evidence/pulpissimo-20261106/elaboration-trace.log) ·
 [Analysis record](evidence/pulpissimo-20261106/elaboration-analysis.json) ·
@@ -14,8 +15,8 @@ control run changes the L2 memory size and is not a PULPissimo result.
 RustSys was built with an opt-in elaboration trace (`RUSTSYS_ELAB_TRACE=1`) that
 records each module instance, generate block and generate loop with wall time,
 signal count and AIG node count. The trace is off by default. The full input is
-the same [prepared Verilog](evidence/pulpissimo-20261106/input.json) used by the
-published core benchmark.
+the same historical [prepared Verilog](evidence/pulpissimo-20261106/input.json) as
+the archived core comparison.
 
 ## Finding
 
@@ -58,10 +59,8 @@ The control completed: elaboration 4.249 s, optimize 476.909 s (merge alone
 logic depth 98 and 30,460 retained state bits. The merge optimization is thus a
 second, independent bottleneck on the non-memory logic.
 
-The control is not a PULPissimo benchmark. It only shows that hierarchy
-elaboration, the core, the peripherals and the interconnect are small compared
-with the behavioral L2 memory, and it sizes the remaining logic. The 2 h timeout
-is a **memory modeling** limit, not a generate-scope limit.
+The control shows how the size of the behavioral L2 model affected the measured
+elaboration workload on this prepared input.
 
 ## What this means
 
@@ -75,15 +74,13 @@ paths are possible:
 2. Replace `tc_sram` with a technology SRAM macro whose Liberty pin interface
    matches the bank configuration, or add memory inference to RustSys.
 
-The [IHP SG13G2 / EZ130 test](pulpissimo-ihp.md) now takes the second path for
-the L2 banks: an adapter maps each bank to official 1024×32 SRAM macros, and the
-full SoC synthesizes in 426 s. It is synthesis-only and unverified for physical
-signoff. A generic module blackbox remains useful for memories that have no
-matching Liberty macro. Until then, the SKY130 behavioral-memory full SoC stays
-`unverified`; no full-SoC ratio is published for it. The core benchmark remains
-the published comparison.
+The archived IHP SG13G2 / EZ130 test maps each bank to official 1024×32 SRAM
+macros. Its SoC-level measurements carry the same width-cast withdrawal.
+[IHP full-SoC record](pulpissimo-ihp.md)
 
 ## Reproduce
+
+This command records the historical diagnostic setup.
 
 ```sh
 RUSTSYS_ELAB_TRACE=1 /path/to/rustsys --threads 16 synth \
