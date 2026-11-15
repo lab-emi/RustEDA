@@ -706,6 +706,201 @@
           "sha256": "d33ab3c7a48356cf42d8bf594b0db656dbd217f7b54c949a3e335ce9e860c013",
           "bytes": 2063
         }
+      },
+      "checked_in_opt_in": {
+        "profile": {
+          "path": "integration/ibex_pdks/sky130hd/native/profile-aligned-dual-channel.json",
+          "sha256": "29a21a64be7d5f5119809034c9963918be54455b363bac2c579eafed64ab56df",
+          "bytes": 12426
+        },
+        "physical_policy": {
+          "path": "integration/ibex_pdks/sky130hd/native/physical-aligned-dual-channel.json",
+          "sha256": "00b7e9cde30fe71a4d8524dcbddb71fa8a49109518cb1a8b0811dc6816492dbd",
+          "bytes": 2720
+        },
+        "recipe_equivalence": {
+          "sha256": "7b01ffe7846a1fecebd80368547f65c6f10794ababc46b57027f763810403730",
+          "bytes": 3269
+        }
+      },
+      "independent_drc": {
+        "receipt": {
+          "sha256": "79a7114dc486e6fecfa2b22c14c10d5da6ae27ab75b48e0441cd3fdc9150ba22",
+          "bytes": 14077
+        },
+        "magic_violations": 0,
+        "klayout_violations": 0
+      },
+      "same_core_producer": {
+        "receipt": {
+          "sha256": "1f0bf42f97d65a819139f379fe2453be2b5329e859aa70584bec1fc17e2191fb",
+          "bytes": 9907
+        },
+        "scope": "Fresh RustEDA cold RTL through be_gds on the same two host CPUs and resource guards as the qualified LibreLane Magic.StreamOut producer. Independent gates and artifact checks outside the elapsed interval.",
+        "native": {
+          "exit_code": 0,
+          "wall_seconds": 1283.14,
+          "cpu_seconds": 1289.39,
+          "allowed_cpus": [
+            30,
+            31
+          ],
+          "cgroup_v2_memory_peak_bytes": 2051588096,
+          "cgroup_v2_swap_peak_bytes": 0,
+          "gnu_time_max_rss_kib": 667312,
+          "other_load": {
+            "host_busy_cpu_seconds": 7038.07,
+            "allowed_set_busy_cpu_seconds": 1315.89,
+            "own_cpu_seconds": 1289.39,
+            "other_cpu_seconds_host": 5748.68,
+            "other_cpu_seconds_on_allowed_set": 26.5,
+            "mean_other_busy_cpus_host": 4.48,
+            "mean_other_busy_cpus_on_allowed_set": 0.021,
+            "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+          },
+          "resources": {
+            "bytes": 2054,
+            "sha256": "d5db7e42dec2e3548baa6c94a7ed119364e5d0ef6454c12a2b2cfb2afb7b53b3"
+          }
+        },
+        "librelane": {
+          "exit_code": 0,
+          "wall_seconds": 1771.63,
+          "cpu_seconds": 3072.89,
+          "allowed_cpus": [
+            30,
+            31
+          ],
+          "cgroup_v2_memory_peak_bytes": 2289549312,
+          "cgroup_v2_swap_peak_bytes": 0,
+          "gnu_time_max_rss_kib": 1556720,
+          "other_load": {
+            "host_busy_cpu_seconds": 10341.08,
+            "allowed_set_busy_cpu_seconds": 3080.94,
+            "own_cpu_seconds": 3072.89,
+            "other_cpu_seconds_host": 7268.19,
+            "other_cpu_seconds_on_allowed_set": 8.05,
+            "mean_other_busy_cpus_host": 4.102,
+            "mean_other_busy_cpus_on_allowed_set": 0.005,
+            "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+          },
+          "resources": {
+            "bytes": 2193,
+            "sha256": "67cc874bb7f25dbe8140a3638a59a094106808517be011940a714a32f7a352f6"
+          }
+        },
+        "reference_over_native": 1.3806989104852159,
+        "all_six_native_outputs_byte_identical": true,
+        "reference_geometry": {
+          "sha256": "c8cc8f9b8589629aa678aaf9d03e7ae01a2ffdd4284a5395cfca60ed62f903fc",
+          "bytes": 479
+        }
+      }
+    },
+    "sky130_dual_channel_warm_electrical": {
+      "scope": "Exact SKY130 GDS after the measured-cap split and critical OR rebalance. Common independent OpenRCX/OpenSTA power and setup-limited frequency. The measured warm stage begins at the earlier routed dual input.",
+      "gds": {
+        "sha256": "443ae26174445cbdf9b4df28bd42f6109a1e1693311004d021bb1a470a611791",
+        "bytes": 70566276
+      },
+      "source_gds": {
+        "sha256": "503b020f24d9ff1365d1da53396d7cb6a6c2e774aab826b69ad2a5f493997c85",
+        "bytes": 70343754
+      },
+      "standard_cell_area_um2": 173173.5872,
+      "vectorless_tt_10mhz_mw": 6.567323580384,
+      "vectorless_power": {
+        "sha256": "bd4f43d867f6bc836aff709f50266983b28ebd9c0d3ace3ab8e002c30b9b95bc",
+        "bytes": 4002
+      },
+      "matched_10mhz_tt_workload": {
+        "rusteda_mw": 2.7396895457059998,
+        "librelane_mw": 2.836818806827,
+        "trace": {
+          "start_ps": 4400000,
+          "end_ps": 6100000,
+          "cycles": 17,
+          "clock_period_ns": 100,
+          "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+          "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d"
+        },
+        "activity_annotation": {
+          "vcd": 56544,
+          "unannotated": 0
+        },
+        "receipt": {
+          "sha256": "73aedca36aa674cf8e237e6608a842b7e7c943eb3022d6a89a3ceee4e3201ab1",
+          "bytes": 11123
+        }
+      },
+      "ss_setup_frequency_bracket_mhz": [
+        24.01753279894323,
+        24.01933556512993
+      ],
+      "setup_sweep": {
+        "sha256": "082244a940b2e668355d845e1fc6013b3253b7bc976c2d1a6ac7e90277c093cd",
+        "bytes": 15953
+      },
+      "tt_and_ss_at_shortest_ss_pass_period": {
+        "period_ns": 41.63625,
+        "tt_setup_slack_ns": 13.370348930359,
+        "tt_hold_slack_ns": 0.048357319087,
+        "ss_setup_slack_ns": 0.002614797326,
+        "ss_hold_slack_ns": 0.345099508762,
+        "tt_log": {
+          "sha256": "88fb294ddf0a3a798c3c6226e4bfe64a3f8502f86b480ddda23741b38ad66189",
+          "bytes": 565
+        }
+      },
+      "tt_ss_at_10mhz": {
+        "tt": {
+          "status": "passed",
+          "setup_ws_ns": 42.552223205566,
+          "hold_ws_ns": 0.048357319087,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 0
+        },
+        "ss": {
+          "status": "failed",
+          "setup_ws_ns": 40.939834594727,
+          "hold_ws_ns": 0.345099508762,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 16,
+          "cap_violations": 2,
+          "fanout_violations": 0
+        }
+      },
+      "independent_analysis_exit_codes": {
+        "extraction": 0,
+        "timing": 1,
+        "lvs": 0,
+        "simulation": 0,
+        "logic": 0,
+        "density": 0
+      },
+      "independent_analysis": {
+        "sha256": "77fbcb30596707c1aa5a235c33bb46fa8972bc82372f13cf24095889eb5d5341",
+        "bytes": 71542
+      },
+      "warm_producer_observation": {
+        "wall_seconds": 137.69,
+        "cpu_affinity": [
+          8,
+          10
+        ],
+        "cgroup_peak_bytes": 896827392,
+        "resources": {
+          "sha256": "045612fae17b3f16af12b65fb9543ed1a5287d43a138ee46a4d3ca74048544e0",
+          "bytes": 1656
+        },
+        "producer": {
+          "sha256": "b85921a3a18161d5df2bd795dcc0d14a35e6c9555bc353ed37f6c7c8a3bb2b64",
+          "bytes": 2724
+        }
       }
     }
   },

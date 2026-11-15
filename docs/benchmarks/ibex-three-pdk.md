@@ -185,6 +185,7 @@ cell lists **the RustEDA trial / LibreLane**.
 | IHP SG13G2, aligned selects with reset specialization | 1.50 / 5.57 | 40.44 / 24.86 | 176,104 / 204,848 |
 | IHP SG13G2, aligned selects with arbitrary initial state | 1.21 / 5.57 | 43.42 / 24.86 | 186,285 / 204,848 |
 | SKY130A, aligned selects and two vertical placement channels | 6.54 / 9.50 | 23.07 / 17.21 | 173,080 / 176,427 |
+| SKY130A, dual channels with electrical repair and OR-path rebalance | 6.57 / 9.50 | 24.02 / 17.21 | 173,174 / 176,427 |
 
 The GF180 delay goal and aligned selects reduce the vectorless power estimate
 by 40.8% and raise setup Fmax by 25.2% relative to the original RustEDA layout.
@@ -263,12 +264,25 @@ workloads. Input traces and valid-output traces match within each pair.
 The SKY130 dual-channel trial leaves two signal-free vertical placement
 strips and keeps the original die, ports, and SRAM macro positions. Its final
 GDS passed independent extraction, device LVS, vendor simulation, ABC
-equivalence and placement density. The matched 17-cycle workload at 10 MHz
+equivalence, placement density, and both Magic and KLayout DRC checks. The matched 17-cycle workload at 10 MHz
 estimates **2.739 / 2.837 mW**. Both TT and SS have nonnegative setup and hold
 slack at the shortest tested passing SS period of 43.346250 ns. At 10 MHz,
 the dual layout has 83 SS transition and 11 SS capacitance violations.
-The producer timing comparison, DRC and antenna gates have separate scopes
-and are pending for this layout. [Exact trial inputs and electrical checks](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+On CPUs 30 and 31 with 4 GiB and no swap, the dual-channel RTL-to-GDS
+producer took **1,283.14 s** against LibreLane's **1,771.63 s**. The replay
+reproduced the native GDS, DEF, three netlists and SPEF byte for byte. The
+independent antenna check for this layout is pending. To select the frozen placement policy, use
+`--profile integration/ibex_pdks/sky130hd/native/profile-aligned-dual-channel.json`
+with RustROAD containing the disjoint row-blockage fix `9028a2f`.
+[Exact trial inputs and checks](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+Eleven measured-capacitance buffers and a five-pin OR-path rebalance form a
+separate warm-routed GDS. Extraction, LVS, vendor simulation, ABC equivalence
+and placement density passed. The 17-cycle workload estimates **2.740 / 2.837 mW**,
+and TT and SS setup and hold are nonnegative at 41.636250 ns. The SS electrical
+rows fell to 16 transition and two capacitance violations. The warm producer
+was separately observed in 137.69 s on CPUs 8 and 10. The combined cold and warm
+producer's matched time and final physical checks are pending.
 
 ## Frontend validation
 
