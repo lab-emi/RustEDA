@@ -13,6 +13,27 @@ uses the same signoff scripts. Bank capacity and the cell library vary by PDK.
 
 ## Power, area and frequency
 
+Each entry lists **RustEDA / LibreLane**. The matched 17-cycle workload runs
+at **10 MHz** within each PDK. Fmax is the lower bound from the SS setup
+sweep, and area is the standard-cell footprint inside the common die.
+
+| PDK | TT workload power (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | Matched RTL-to-GDS elapsed time (s) |
+|---|---:|---:|---:|---:|
+| IHP SG13G2 | **1.045** / 1.306 | **186,285** / 204,848 | **43.42** / 24.86 | **248.07** / 1,917.16 |
+| SKY130A | **2.741** / 2.837 | **174,096** / 176,427 | **24.10** / 17.21 | **1,675.78** / 1,771.63 |
+| GF180MCU D | **91.24** / 94.33 | **475,913** / 490,812 | **10.91** / 10.75 | **637.13** / 851.48 |
+
+Each pair uses the same CPU allocation and memory envelope. The IHP
+sample uses four cores, and the SKY130A and GF180MCU D samples use two.
+Independent final checks run outside the producer timings. The GF180MCU D
+producer includes floating fill. Its timing and power use nominal OpenRCX,
+whose extracted parasitics matched before and after the DEF fill.
+
+[SKY130A native local repair](#sky130a-native-local-antenna-repair) ·
+[IHP and GF180MCU D receipts](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+### Earlier vectorless results
+
 Each cell lists **RustEDA / LibreLane** for the GDS pair shown on this page.
 Every power estimate uses **10 MHz (100 ns) for both flows** on all three
 processes. Percentages show RustEDA's change relative to LibreLane.
@@ -307,7 +328,63 @@ of this revision reproduced all six final artifacts byte for byte. It took
 The replay reused repair targets from the earlier 1,234.39 s Magic discovery.
 [Routed trial measurements](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
-### SKY130A antenna and load repair
+### SKY130A native local antenna repair
+
+RustEDA starts with an electrically repaired layout and selects grouped
+metal jumpers from bounded native checks. A second native scan identifies
+near-overlapping V3 and V4 cuts. The local pass moves 59 V3 cuts across 47
+nets. It retains the V4 cuts, M5 wires and terminal access records. An
+aligned M4 patch fills each new pad gap. Every accepted change passes
+native antenna analysis and full route validation.
+
+![Matched SKY130A GDS layouts at the same scale. The panels label both SRAM banks, 10 MHz load power, standard-cell area, SS setup Fmax, DRC and Magic antenna findings.](figures/ibex-sky130-native-local-repair.png)
+
+[Open the full-resolution comparison](figures/ibex-sky130-native-local-repair.png)
+
+| Metric | RustEDA | LibreLane |
+|---|---:|---:|
+| TT workload power at 10 MHz (mW) | **2.741** | 2.837 |
+| Standard-cell area (µm²) | **174,096** | 176,427 |
+| SS setup Fmax lower bound (MHz) | **24.10** | 17.21 |
+| Independent DRC findings | 0 | 0 |
+| Independent Magic antenna findings | **12** | 13 |
+| Matched RTL-to-GDS elapsed time (s) | **1,675.78** | 1,771.63 |
+
+Both layouts use the same prepared RTL, constraints, die and two hard
+SRAMs. The 17-cycle workload reproduces the same input and output trace.
+OpenSTA uses nominal OpenRCX parasitics. RustEDA's final layout has no TT or
+SS setup, hold, transition, capacitance or fanout violations at 10 MHz.
+Hold margin at its fastest setup-passing SS period is 0.357 ns. Independent
+device LVS, vendor simulation and ABC equivalence passed.
+
+Magic and KLayout report zero DRC findings on both layouts. The separate
+Magic antenna check counts standard-cell gates with each SRAM represented
+by its LEF abstract. Relative to RustEDA's grouped-jumper checkpoint, the
+local pass clears 14 findings and adds none.
+
+The single timed replay from RTL to checked GDS took **1,675.78 s**.
+LibreLane took **1,771.63 s** on the same two CPU cores with 4 GiB and no
+swap. RustEDA generated its repair plans inside the timed run and
+reproduced the final GDS, DEF and netlists byte for byte. The final
+independent checks run separately.
+
+The local replay starts from the already routed electrical variant.
+It regenerates the grouped and V3 plans and reproduces the checked GDS,
+DEF and netlists in **77.37 s** on CPUs 30 and 31 with 4 GiB and no swap.
+An A/B test on the same CPU pair reproduced all 62 candidate decisions and
+all output bytes. Preparing the pad gap before geometry checking lowered the final repair
+and export stage from **112.74 s to 39.15 s**, with one full geometry check
+for each accepted edit.
+
+The portable selectors and a single current RustROAD executable also
+reproduced the checked postroute artifacts byte for byte. The timed
+recipe records the exact binary for each stage, including the
+profile-guided route builds. The captured RustSTA build reports local
+source changes. Its executable hash identifies the timed tool.
+[Exact layout and gate evidence](evidence/ibex-three-pdk/sky130-native-local-repair.json) ·
+[Plan generator and commands](../../integration/ibex_pdks/sky130hd/native/horizontal_repair/README.md)
+
+### SKY130A calibrated antenna and load repair
 
 The second repair added 28 receiver-anchored diodes and three load buffers.
 It preserves the die and both SRAM instances, including their placement,

@@ -4,7 +4,7 @@
   <img src="docs/assets/rusteda-wordmark.svg" alt="RustEDA wordmark" width="360">
 </p>
 
-**Agent-friendly RTL-to-GDS in Rust.** RustEDA gives AI agents and engineers
+**AI agent-friendly RTL-to-GDS in Rust.** RustEDA gives AI agents and engineers
 a CLI for synthesis, timing analysis and physical design. An agent can inspect
 a plan before running it, watch individual steps and use timing, geometry and
 check results to decide what to change next.
@@ -47,7 +47,7 @@ Ibex with hard instruction and data SRAM. Within each PDK both use the same
 RTL, constraints, macro views and floorplan. The panels show the exported
 GDS side by side, with **RustEDA on the left** and **LibreLane on the right**.
 
-![SKY130A final GDS side by side after antenna and load repair. Labels show the two OpenRAM banks, same-frequency power, layout area, slow-corner timing and physical checks.](docs/benchmarks/figures/ibex-sky130-antenna-load-repair.png)
+![Matched SKY130A GDS layouts with two OpenRAM banks, 10 MHz workload power, area, slow-corner timing and independent physical checks.](docs/benchmarks/figures/ibex-sky130-native-local-repair.png)
 
 ![GF180MCU D final GDS side by side with floating fill in the RustEDA layout. Four foundry SRAM byte lanes form each bank. Labels show the matched placements and foundry density results.](docs/benchmarks/figures/ibex-gf180-density-fill.png)
 
@@ -59,8 +59,8 @@ show RustEDA's change relative to LibreLane.
 
 | Open PDK | TT workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | Matched RTL-to-GDS time (s) |
 | --- | ---: | ---: | ---: | ---: |
-| IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.7%** | 248.07 / 1,917.16<br>**7.73×** |
-| SKY130A, two cores | 2.740 / 2.837<br>**−3.4%** | 173,629 / 176,427<br>**−1.6%** | 24.02 / 17.21<br>**+39.5%** | 1,729.99 / 1,771.63<br>Calibrated plans |
+| IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.6%** | 248.07 / 1,917.16<br>**7.73×** |
+| SKY130A, two cores | 2.741 / 2.837<br>**−3.4%** | 174,096 / 176,427<br>**−1.3%** | 24.10 / 17.21<br>**+40.0%** | 1,675.78 / 1,771.63<br>**1.06×** |
 | GF180MCU D, two cores | 91.24 / 94.33<br>**−3.3%** | 475,913 / 490,812<br>**−3.0%** | 10.91 / 10.75<br>**+1.5%** | 637.13 / 851.48<br>**1.34×** |
 
 OpenSTA uses the matched workload activity and nominal OpenRCX parasitics.
@@ -69,12 +69,12 @@ the standard-cell footprint within the common die.
 [QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
 
 Both SKY130A layouts passed DRC and recorded **12 / 13** Magic antenna
-findings. The RustEDA timer includes both repair passes and reuses their
-previously selected Magic targets. Fresh target selection remains
-unverified. GF180MCU D recorded **1 / 4** foundry density findings. Its
-producer time includes floating fill. Power and timing use the unfilled
-routed snapshot and have a separate extraction control.
-[Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md#aligned-select-power-trials)
+findings. RustEDA selects its repair targets from the current native route.
+The matched RTL-to-GDS run includes that selection and reproduces the checked GDS.
+GF180MCU D recorded **1 / 4** foundry density findings. Its producer time
+includes floating fill. Power and Fmax use nominal OpenRCX, whose extracted
+parasitics matched before and after adding DEF fills.
+[Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md#sky130a-native-local-antenna-repair)
 
 ### IHP SG13G2 results
 

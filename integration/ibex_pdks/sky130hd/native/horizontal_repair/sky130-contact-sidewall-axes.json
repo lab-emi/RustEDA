@@ -1,0 +1,28 @@
+{
+  "schema": "rustroad.antenna-cut-area.v1",
+  "technology_lef_sha256": "5de46c6f7c2cf82599b93d30a6459465f770f63c85b36182c672782219938519",
+  "dbu_per_micron": 1000,
+  "lower_cut": {
+    "layer": "via3",
+    "square_dbu": 200
+  },
+  "upper_cut": {
+    "layer": "via4",
+    "square_dbu": 800
+  },
+  "containment_dbu": 430,
+  "overlap_dbu": 750,
+  "sidewall_bridge": {
+    "receiver_cut": "via2",
+    "portal_cut": "via3",
+    "cut_square_dbu": 200,
+    "measured_pad_width_dbu": 380,
+    "measured_pad_height_dbu": 320,
+    "bridge_pad_square_dbu": 330,
+    "bridge_width_dbu": 300,
+    "portal_spacing_min_dbu": 910,
+    "portal_spacing_max_dbu": 6000,
+    "receiver_cut_offset_dbu": 230,
+    "thickness_dbu": 845
+  }
+}

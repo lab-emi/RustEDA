@@ -378,3 +378,11 @@ checkout that has them with `--source-root`.
 - One extraction corner (`nom`) for all timing corners; one cell library per corner.
 - Per-PDK tuning of command-line budgets (expansion limits, timeouts) is not data yet; say in your report
   if a default of the IHP recipe does not fit.
+
+### SKY130A native local antenna repair
+
+The [SKY130A planning helpers](sky130hd/native/horizontal_repair/README.md)
+screen a checked routed workspace and generate typed plans for grouped metal
+jumpers and local V3 offsets. RustROAD binds each plan to the source
+revision and validates the edits before committing. Supply the exported
+artifacts to the independent physical and electrical checks.

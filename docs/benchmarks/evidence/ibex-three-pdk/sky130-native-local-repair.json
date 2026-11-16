@@ -1,0 +1,424 @@
+{
+  "component_observations": {
+    "accepted_offsets": 59,
+    "canonical_antenna_candidate_count": 62,
+    "eager_same_component_hard_checks": [
+      118,
+      59
+    ],
+    "generated_local_tail_seconds": 77.37,
+    "same_cpu_local_replay_seconds": [
+      112.74,
+      39.15
+    ],
+    "uniform_output_vs_conservative": true
+  },
+  "design": "ibex_sram_bench",
+  "layout_pair_figure": {
+    "bytes": 1774858,
+    "path": "figures/ibex-sky130-native-local-repair.png",
+    "sha256": "9998221b07b4b5af15f86e47e87f5b66c969fbddfb322dfcf9f0e7fdb588e83d"
+  },
+  "librelane": {
+    "antenna_scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+    "artifacts": {
+      "def": {
+        "original": {
+          "bytes": 26159186,
+          "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187"
+        },
+        "timed": {
+          "bytes": 26159186,
+          "sha256": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187"
+        }
+      },
+      "gds": {
+        "original": {
+          "bytes": 52867560,
+          "sha256": "d28c06381c393c13433595ab27647df5cbe0f9411c849d02eadfed46f3aec9c6"
+        },
+        "timed": {
+          "bytes": 52867560,
+          "sha256": "ab7061e0e11aad3b935ee4a3b683ab1d6a46d9ffd5a72cd6ee806d8acad9ceef"
+        }
+      },
+      "netlist": {
+        "original": {
+          "bytes": 7753419,
+          "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc"
+        },
+        "timed": {
+          "bytes": 7753419,
+          "sha256": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc"
+        }
+      },
+      "powered_netlist": {
+        "original": {
+          "bytes": 15687593,
+          "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6"
+        },
+        "timed": {
+          "bytes": 15687593,
+          "sha256": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6"
+        }
+      },
+      "synthesis_netlist": {
+        "original": {
+          "bytes": 2186826,
+          "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28"
+        },
+        "timed": {
+          "bytes": 2186826,
+          "sha256": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28"
+        }
+      }
+    },
+    "drc_findings": 0,
+    "magic_antenna_findings": 13,
+    "magic_findings_by_plane": {
+      "metal1": 2,
+      "metal3": 3,
+      "metal4 contact": 8
+    },
+    "ss_setup_fmax_mhz": 17.214666896195556,
+    "standard_cell_area_um2": 176426.7072,
+    "timed_gds_geometry_proof": {
+      "bytes": 479,
+      "sha256": "c8cc8f9b8589629aa678aaf9d03e7ae01a2ffdd4284a5395cfca60ed62f903fc"
+    },
+    "tt_workload_mw_at_10mhz": 2.836818806827,
+    "version": "3.0.17",
+    "workload_activity": {
+      "unannotated": 0,
+      "vcd": 55179
+    }
+  },
+  "matched_cold_rtl_to_gds": {
+    "exact_native_exports": {
+      "def": {
+        "bytes": 21883162,
+        "sha256": "fccc18168a34ca74ed8c17ae990d74e5401e26ee8f5639b0ed992beb75bd30ed"
+      },
+      "gds": {
+        "bytes": 71116102,
+        "sha256": "d3705e7b57bdcd3572b49bba1d6a53dda048a24e3cf52051812ced3d03dad8ad"
+      },
+      "netlist": {
+        "bytes": 2440811,
+        "sha256": "25d4392b2020ee89bffbc3ec4a13a4e52ecee04247b842c9c798ac704ef1bc36"
+      },
+      "powered_netlist": {
+        "bytes": 9581721,
+        "sha256": "d654d1df5fcc8749359f69918b2f16d2507c47d15ab05e629a56ef45f2138f8c"
+      },
+      "synthesis_netlist": {
+        "bytes": 1845754,
+        "sha256": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1"
+      }
+    },
+    "librelane_resources_receipt": {
+      "bytes": 2193,
+      "sha256": "67cc874bb7f25dbe8140a3638a59a094106808517be011940a714a32f7a352f6"
+    },
+    "local_tail_stage_seconds": {
+      "fresh-grouped-through-gds": 21.926809,
+      "fresh-horizontal-native-selector": 18.860541,
+      "fresh-validated-horizontal-through-gds": 35.11063
+    },
+    "matched_input_proof": {
+      "bytes": 1816,
+      "sha256": "07be4a2a876c0d4db2d54f6d0c388218bcb6decd696a069f4bae51c63308cab1"
+    },
+    "native_producer_receipt": {
+      "bytes": 10259,
+      "sha256": "3c3fbe66a4502f4c9eee547692ad92d9b0b18dd06e7c2102a9a62fe05bb9c0cc"
+    },
+    "native_resources_receipt": {
+      "bytes": 1657,
+      "sha256": "dd006f714b416e81ba7bdb87fe4984f284d5723ee9fefef7d59feb91b51189ef"
+    },
+    "native_routed_table": {
+      "bytes": 31973120,
+      "sha256": "74dc83490c0f7290034d9303205b66a77465cead2f2598a4c5ac90039e028271"
+    },
+    "resources": {
+      "librelane": {
+        "allowed_cpus": [
+          30,
+          31
+        ],
+        "cgroup_limit_bytes": 4294967296,
+        "cgroup_swap_limit_bytes": 0,
+        "cgroup_v2_memory_peak_bytes": 2289549312,
+        "cgroup_v2_swap_peak_bytes": 0,
+        "cpu_seconds": 3072.89,
+        "gnu_time_max_rss_kib": 1556720,
+        "wall_seconds": 1771.63
+      },
+      "rusteda": {
+        "allowed_cpus": [
+          30,
+          31
+        ],
+        "cgroup_limit_bytes": 4294967296,
+        "cgroup_swap_limit_bytes": 0,
+        "cgroup_v2_memory_peak_bytes": 4294967296,
+        "cgroup_v2_swap_peak_bytes": 0,
+        "cpu_seconds": 1765.61,
+        "gnu_time_max_rss_kib": 705728,
+        "wall_seconds": 1675.78
+      }
+    },
+    "rusteda_elapsed_reduction_percent": 5.410271896502095,
+    "scope": "One matched cold RTL to final GDS sample per flow. Independent final gates run separately.",
+    "wall_seconds": {
+      "librelane": 1771.63,
+      "rusteda": 1675.78
+    }
+  },
+  "portable_postroute_source_replay": {
+    "accepted_offsets": 59,
+    "all_final_exports_byte_equal": true,
+    "binary": {
+      "bytes": 89646064,
+      "sha256": "0935636c43b14e8a5e68a56a69206cc588485685d8dff73250340574bbd1dd44"
+    },
+    "grouped_jumper_count": 64,
+    "scope": "Current RustROAD release executable and published selectors reproduce checked postroute artifacts"
+  },
+  "receipts": {
+    "librelane_antenna": {
+      "bytes": 9069,
+      "sha256": "bab0feac451f8fc0247dbc3aebec4d84df2885321761980034120ff2090b21d5"
+    },
+    "librelane_drc": {
+      "bytes": 14411,
+      "sha256": "155ffc895a6270c5733914fcdd6b41569d30efef12a977612fa825986241014d"
+    },
+    "librelane_layout": {
+      "bytes": 5839,
+      "sha256": "63aa906edc62ed9a884414233699a35de05970cdf7080ac2ade9cbe08f0ce1ea"
+    },
+    "local_source_review": {
+      "bytes": 4555,
+      "sha256": "69b2aef78e88bd8dadb7cfa91c8f050aaa9e954477474ce28092f27b0ec76e2d"
+    },
+    "matched_controls": {
+      "bytes": 9907,
+      "sha256": "1f0bf42f97d65a819139f379fe2453be2b5329e859aa70584bec1fc17e2191fb"
+    },
+    "matched_workload": {
+      "bytes": 12456,
+      "sha256": "3e1960cdbd5b008ca0609c58349670e337127ace4a5c3967918d27a3c5045d1b"
+    },
+    "native_antenna": {
+      "bytes": 7012,
+      "sha256": "79cd4ce887e7dee71ec0bc48d93a632227f9f5cf3a87ba6e7724ea441ed91cdb"
+    },
+    "native_drc": {
+      "bytes": 14173,
+      "sha256": "5cc189de2f177d09a0668d7372ce2deb7de864fbf11d8a1b16cdc60641f127cf"
+    },
+    "native_layout": {
+      "bytes": 3996,
+      "sha256": "913c750b377923f8edcb833a69bf850dd39594a8b5c8d6362c0e755f938cda39"
+    },
+    "native_marker_binding": {
+      "bytes": 6618,
+      "sha256": "105f9d74b65719563bbfa39390d61c929e17a93c6d24fe428d7de2f41c61850a"
+    },
+    "native_power_timing": {
+      "bytes": 4044,
+      "sha256": "b13dcc37ec9796ff764870850dc8ea0bf94b5e46ce23f78393095b40dbc429cb"
+    },
+    "native_profile_replay": {
+      "bytes": 3276,
+      "sha256": "d41549f620121e9045e00cbf03f97ff022b9234f358d80eae8f26664cde954ec"
+    },
+    "native_profile_resources": {
+      "bytes": 1634,
+      "sha256": "f74c43d4d64cc8201db86aa0304eac3e32ff8b7e3d4014bcbca6d259a5be9550"
+    },
+    "native_shared": {
+      "bytes": 71669,
+      "sha256": "cf14ed168a431f7c2a8be077378bac78bd1bd32a4231fb05db9bb0b09bf0bd95"
+    },
+    "native_workload": {
+      "bytes": 11773,
+      "sha256": "d3f03ab2684987655ed74f2f262f713c26ffa6996dabdaeb4e70c1bcf47d913f"
+    },
+    "public_selector_replay": {
+      "bytes": 4389,
+      "sha256": "de3f9c24421bb5990c5ebbfef177a1310a648709b4681e151030db0ebcacbac7"
+    },
+    "public_selector_resources": {
+      "bytes": 1659,
+      "sha256": "ceebdbf0684658112a516e42118a67950a9bb786198cab78550c8507c39e3e04"
+    },
+    "stage_ab": {
+      "bytes": 1932,
+      "sha256": "48385f7183875e876f1a72f43588580593baafbf5bbdce3669edc31342aa48e9"
+    },
+    "timed_route_manifest": {
+      "bytes": 87897,
+      "sha256": "1e5bf71b6af85be2759aa90b4cc0eb0f306d5d21dda06c244f9b6ab926e56d9e"
+    },
+    "timed_wireload_build": {
+      "bytes": 1241,
+      "sha256": "7a48165be7cbd9a819c38fa2f9127680ee7c9165301c425ca70e4e0356eac17d"
+    }
+  },
+  "rusteda": {
+    "antenna_scope": "every gate of a standard cell; gates inside macro masters (LEF abstract views) are not checked",
+    "artifacts": {
+      "def": {
+        "bytes": 21883162,
+        "sha256": "fccc18168a34ca74ed8c17ae990d74e5401e26ee8f5639b0ed992beb75bd30ed"
+      },
+      "gds": {
+        "bytes": 71116102,
+        "sha256": "d3705e7b57bdcd3572b49bba1d6a53dda048a24e3cf52051812ced3d03dad8ad"
+      },
+      "netlist": {
+        "bytes": 2440811,
+        "sha256": "25d4392b2020ee89bffbc3ec4a13a4e52ecee04247b842c9c798ac704ef1bc36"
+      },
+      "powered_netlist": {
+        "bytes": 9581721,
+        "sha256": "d654d1df5fcc8749359f69918b2f16d2507c47d15ab05e629a56ef45f2138f8c"
+      },
+      "synthesis_netlist": {
+        "bytes": 1845754,
+        "sha256": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1"
+      }
+    },
+    "drc_findings": 0,
+    "equivalence": "proven",
+    "independent_gate_status": {
+      "density": "passed",
+      "extraction": "extracted_not_qualified",
+      "lvs": "passed",
+      "simulation": "passed",
+      "timing": "passed"
+    },
+    "magic_antenna_findings": 12,
+    "magic_findings_by_plane": {
+      "metal1": 1,
+      "metal3": 6,
+      "metal4": 1,
+      "metal4 contact": 4
+    },
+    "measurement_corners": {
+      "ss": {
+        "cap_violations": 0,
+        "fanout_violations": 0,
+        "hold_violations": 0,
+        "hold_ws_ns": 0.356754183769,
+        "setup_violations": 0,
+        "setup_ws_ns": 40.920841217041,
+        "slew_violations": 0
+      },
+      "tt": {
+        "cap_violations": 0,
+        "fanout_violations": 0,
+        "hold_violations": 0,
+        "hold_ws_ns": 0.055044416338,
+        "setup_violations": 0,
+        "setup_ws_ns": 42.542064666748,
+        "slew_violations": 0
+      }
+    },
+    "ss_frequency_bracket_mhz": [
+      24.098200165675124,
+      24.100015062509414
+    ],
+    "ss_setup_fmax_mhz": 24.098200165675124,
+    "ss_shortest_passing_period_hold_margin_ns": 0.356754183769,
+    "standard_cell_area_um2": 174095.7216,
+    "tt_workload_mw_at_10mhz": 2.7408539317550003,
+    "workload_activity": {
+      "unannotated": 0,
+      "vcd": 56909
+    }
+  },
+  "schema": "rusteda.ibex-sky130-native-local-repair.v1",
+  "scope": "Matched SKY130A Ibex producer and design metrics with two hard SRAMs",
+  "status": "complete",
+  "timed_recipe_other_tools": {
+    "rusteda": {
+      "file": {
+        "bytes": 42518088,
+        "sha256": "c3e8b1c0c6381742b6d517768fc9d915d9013637b987fbd794f27740f88cc8fd"
+      },
+      "recorded_build_source_dirty": true,
+      "recorded_build_source_head": "c5380bf11d2db415ed677daa7674491af8dc6fef"
+    },
+    "ruststa": {
+      "file": {
+        "bytes": 67567944,
+        "sha256": "2f203a48535bf8f5bbbdb80a90b1addefe9654a24a6fb4d7a0ef8d9f285438e7"
+      },
+      "recorded_build_source_dirty": true,
+      "recorded_build_source_head": "4c424d8d0c48cbc5d8e13dbe162bed9c92187b15"
+    },
+    "rustsys": {
+      "file": {
+        "bytes": 73180520,
+        "sha256": "c60ac4f610ff94d5ca536a32d1c6c8a63266ed97ed17c5bdc75bdf0148c09964"
+      },
+      "source_revision": "c09f2ce3e163785c2973c44025fbba2de9c3128b"
+    }
+  },
+  "timed_recipe_rustroad_binaries": {
+    "batch_check": {
+      "file": {
+        "bytes": 88217392,
+        "sha256": "ac09a895c2d0576182466e700c3d3a45f8b33c6bed729b1e837d9394fdfd75a6"
+      },
+      "source_revision": "505e462"
+    },
+    "cold_and_warm_track_route_pgo": {
+      "file": {
+        "bytes": 77121432,
+        "sha256": "c211633919dd8a6ae30e388e8e3391bd112a320ee82e2e2b5816b22ba6af9c48"
+      },
+      "source_revision": "e0f16159cd554c56adf701b54f5f7e628d32661b"
+    },
+    "eager_lower_cut_repair": {
+      "file": {
+        "bytes": 89646064,
+        "sha256": "0935636c43b14e8a5e68a56a69206cc588485685d8dff73250340574bbd1dd44"
+      },
+      "source_revision": "40717d270b66c72aabdfe0e97c02c25edc7fd5e0"
+    },
+    "placement_extraction_and_streamout": {
+      "file": {
+        "bytes": 86599128,
+        "sha256": "bd867310d5c7eeaf1e83202a88fa288dcbbf01e59a4db61feb8efe2b16759d5a"
+      },
+      "source_revision": "9028a2f"
+    },
+    "ranked_group_repair": {
+      "file": {
+        "bytes": 88616464,
+        "sha256": "47b6f90adf154b9ada95cc9fffc747a9474823d57c9066ea771aea7f9201eaf5"
+      },
+      "source_revision": "18609ce"
+    },
+    "staged_diode_prior_route_pgo": {
+      "file": {
+        "bytes": 79939584,
+        "sha256": "b7490d2caed2903b234e0e7297b0e50aed85bec730b525a75e51663053f5f58c"
+      },
+      "source_revision": "270cfc3"
+    }
+  },
+  "workload": {
+    "clock_period_ns": 100,
+    "cycles": 17,
+    "end_ps": 6100000,
+    "input_values_sha256": "8562e54b73f6b19aad2e79ed678562251e5f9dafe47593b6f6c160a105ea46e5",
+    "output_values_sha256": "5ec80f8c0fc0ec89b56990746493b73f99de027389cb925bafd2947bab24385d",
+    "start_ps": 4400000
+  }
+}
