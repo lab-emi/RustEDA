@@ -534,6 +534,11 @@ def prove(job, label, source, gold_interface, relation_module):
                   export_initial_state_map=True)
     common.save(directory / "checker-config.json", config)
     stage(job, directory, "export", [job["tools"]["checker"], directory / "checker-config.json", directory / "checker-result.json"])
+    if not (directory / "obligations/manifest.json").is_file():
+        # No complete state map (for example a register that leaves its valid codes refutes
+        # the map's own obligations): nothing is exported, so nothing can pass.
+        reasons = common.read_json(directory / "checker-result.json", 16 * MIB).get("undecided") or ["no reason given"]
+        raise ValueError("obligation export incomplete: " + "; ".join(map(str, reasons))[:2000])
     manifest = common.read_json(directory / "obligations/manifest.json", 2 * MIB)
     verified = verify_manifest(relation_module, directory / "obligations", manifest)
     semantics = manifest.get("semantics", "arbitrary_initial")
