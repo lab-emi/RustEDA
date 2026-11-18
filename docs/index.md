@@ -33,7 +33,10 @@ from the same 10 MHz workload. The latest RustEDA layouts estimate **20.0%**,
 **3.4%** and **3.3%** lower workload power on IHP, SKY130 and GF180,
 respectively. The latest SKY130 pair reports **12 / 13** Magic antenna
 findings and zero DRC findings on both layouts.
-Its matched RTL-to-GDS pair ran in **1,675.78 s / 1,771.63 s**.
+Over three alternating runs, RustEDA reached GDS in **1,665.5 s**. LibreLane's
+fastest screened arm took **1,370.0 s** and left 105 antenna findings. In one
+run of each published configuration, RustEDA took 1,660.6 s and LibreLane
+1,730.6 s.
 [Three-PDK benchmark](benchmarks/ibex-three-pdk.md)
 
 ### IHP SG13G2 results

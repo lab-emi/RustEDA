@@ -1,0 +1,65 @@
+{
+  "schema": "rusteda.paired-bench-tmpdir-control.v1",
+  "pdk": "ihp-sg13g2",
+  "date": "2026-11-18",
+  "question": "Does TMPDIR on tmpfs instead of the ext4 home volume change LibreLane Yosys.Synthesis time or output on IHP SG13G2?",
+  "method": "LibreLane 3.0.17 (Yosys 0.62) with the rendered config of confirm-b1-1-librelane-antenna-default, stopped after Yosys.Synthesis, under .work/scale.lock in a scope with CPUs 24-27, 4 GiB and no swap; only TMPDIR varies; order ext4, tmpfs, tmpfs, ext4.",
+  "config": {
+    "path": ".work/paired-bench-20261117/ihp/samples/confirm-b1-1-librelane-antenna-default/design/config.json",
+    "sha256": "9f9a5e1efcdd69e22c56acbdf4e61fe3a6b01f6f4f3f2e7fa3e31c1bce12b342"
+  },
+  "reference_netlist": {
+    "path": ".work/paired-bench-20261117/ihp/samples/confirm-b1-1-librelane-antenna-default/design/runs/bench/06-yosys-synthesis/ibex_sram_bench.nl.v",
+    "sha256": "74b11eb49197134a2178ec2d1e1c7ed9e4098e89806cf025dd7d9e07f1d28e12"
+  },
+  "script": {
+    "path": ".work/paired-bench-20261117/ihp-tmpdir-synthesis/run.sh",
+    "sha256": "bd8a69ae5d3d19224660beb40bca58b63c2ec3e48d05fc7f9b4decaab8ae867b"
+  },
+  "runs": [
+    {
+      "variant": "ext4-1",
+      "tmpdir_volume": "ext4",
+      "exit_code": 0,
+      "wall_seconds": 136.42,
+      "synthesis_seconds": 132.428,
+      "netlist_matches_campaign": true
+    },
+    {
+      "variant": "tmpfs-1",
+      "tmpdir_volume": "tmpfs",
+      "exit_code": 0,
+      "wall_seconds": 135.96,
+      "synthesis_seconds": 132.03,
+      "netlist_matches_campaign": true
+    },
+    {
+      "variant": "tmpfs-2",
+      "tmpdir_volume": "tmpfs",
+      "exit_code": 0,
+      "wall_seconds": 135.46,
+      "synthesis_seconds": 131.531,
+      "netlist_matches_campaign": true
+    },
+    {
+      "variant": "ext4-2",
+      "tmpdir_volume": "ext4",
+      "exit_code": 0,
+      "wall_seconds": 135.73,
+      "synthesis_seconds": 131.838,
+      "netlist_matches_campaign": true
+    }
+  ],
+  "summary": {
+    "ext4_synthesis_seconds": [
+      132.428,
+      131.838
+    ],
+    "tmpfs_synthesis_seconds": [
+      132.03,
+      131.531
+    ],
+    "all_netlists_identical_to_campaign": true,
+    "hang": false
+  }
+}

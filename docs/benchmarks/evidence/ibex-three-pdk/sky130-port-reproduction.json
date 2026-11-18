@@ -1,0 +1,74 @@
+{
+  "schema": "rusteda.port-reproduction.v1",
+  "pdk": "sky130A",
+  "scope": "Untimed reproduction of the published r02 producer through producers/sky130_rusteda.py, launched as r02 was (CPUs 30-31, 4 GiB, no swap). Every stage assertion of r02 ran.",
+  "outputs": {
+    "gds": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/sky130-port-verify/case/local-tail/trial/horizontal/exports/ibex_sram_bench.gds",
+      "sha256": "d3705e7b57bdcd3572b49bba1d6a53dda048a24e3cf52051812ced3d03dad8ad",
+      "bytes": 71116102
+    },
+    "def": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/sky130-port-verify/case/local-tail/trial/horizontal/exports/ibex_sram_bench.def",
+      "sha256": "fccc18168a34ca74ed8c17ae990d74e5401e26ee8f5639b0ed992beb75bd30ed",
+      "bytes": 21883162
+    },
+    "netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/sky130-port-verify/case/local-tail/trial/horizontal/exports/ibex_sram_bench.v",
+      "sha256": "25d4392b2020ee89bffbc3ec4a13a4e52ecee04247b842c9c798ac704ef1bc36",
+      "bytes": 2440811
+    },
+    "powered_netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/sky130-port-verify/case/local-tail/trial/horizontal/exports/ibex_sram_bench-powered.v",
+      "sha256": "d654d1df5fcc8749359f69918b2f16d2507c47d15ab05e629a56ef45f2138f8c",
+      "bytes": 9581721
+    },
+    "synthesis_netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/sky130-port-verify/case/output/frontend/mapped.v",
+      "sha256": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1",
+      "bytes": 1845754
+    }
+  },
+  "published": {
+    "gds": "d3705e7b57bdcd3572b49bba1d6a53dda048a24e3cf52051812ced3d03dad8ad",
+    "def": "fccc18168a34ca74ed8c17ae990d74e5401e26ee8f5639b0ed992beb75bd30ed",
+    "netlist": "25d4392b2020ee89bffbc3ec4a13a4e52ecee04247b842c9c798ac704ef1bc36",
+    "powered_netlist": "d654d1df5fcc8749359f69918b2f16d2507c47d15ab05e629a56ef45f2138f8c",
+    "synthesis_netlist": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1"
+  },
+  "byte_identical": {
+    "gds": true,
+    "def": true,
+    "netlist": true,
+    "powered_netlist": true,
+    "synthesis_netlist": true
+  },
+  "producer_reported_artifacts_match": true,
+  "port": {
+    "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/sky130-port-verify/case/port.json",
+    "sha256": "1173c41d6911b4154bcf5d96ff482a68adad1a63f94db0418fb88ae7a69e9407",
+    "bytes": 15359
+  },
+  "resources": {
+    "wall_seconds": 1692.6,
+    "exit_code": 0,
+    "cpu_seconds": 1782.69,
+    "allowed_cpus": [
+      30,
+      31
+    ],
+    "cgroup_v2_memory_peak_bytes": 3566477312,
+    "cgroup_v2_swap_peak_bytes": 0,
+    "other_load": {
+      "host_busy_cpu_seconds": 3425.74,
+      "allowed_set_busy_cpu_seconds": 1792.85,
+      "own_cpu_seconds": 1782.69,
+      "other_cpu_seconds_host": 1643.05,
+      "other_cpu_seconds_on_allowed_set": 10.16,
+      "mean_other_busy_cpus_host": 0.971,
+      "mean_other_busy_cpus_on_allowed_set": 0.006,
+      "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+    }
+  },
+  "all_identical": true
+}

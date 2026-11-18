@@ -17,17 +17,33 @@ Each entry lists **RustEDA / LibreLane**. The matched 17-cycle workload runs
 at **10 MHz** within each PDK. Fmax is the lower bound from the SS setup
 sweep, and area is the standard-cell footprint inside the common die.
 
-| PDK | TT workload power (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | Matched RTL-to-GDS elapsed time (s) |
-|---|---:|---:|---:|---:|
-| IHP SG13G2 | **1.045** / 1.306 | **186,285** / 204,848 | **43.42** / 24.86 | **248.07** / 1,917.16 |
-| SKY130A | **2.741** / 2.837 | **174,096** / 176,427 | **24.10** / 17.21 | **1,675.78** / 1,771.63 |
-| GF180MCU D | **91.24** / 94.33 | **475,913** / 490,812 | **10.91** / 10.75 | **637.13** / 851.48 |
+| PDK | TT workload power (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | RTL to GDS, selected LibreLane arm, median of three (s) | RTL to GDS of these layouts, one run (s) |
+|---|---:|---:|---:|---:|---:|
+| IHP SG13G2 | **1.045** / 1.306 | **186,285** / 204,848 | **43.42** / 24.86 | **219.6** / 1,745.5 | **219.8** / 1,806.0 |
+| SKY130A | **2.741** / 2.837 | **174,096** / 176,427 | **24.10** / 17.21 | 1,665.5 / **1,370.0** | **1,660.6** / 1,730.6 |
+| GF180MCU D | **91.24** / 94.33 | **475,913** / 490,812 | **10.91** / 10.75 | **591.3** / 885.6 | **594.1** / 911.0 |
 
 Each pair uses the same CPU allocation and memory envelope. The IHP
-sample uses four cores, and the SKY130A and GF180MCU D samples use two.
-Independent final checks run outside the producer timings. The GF180MCU D
-producer includes floating fill. Its timing and power use nominal OpenRCX,
-whose extracted parasitics matched before and after the DEF fill.
+samples use four cores, and the SKY130A and GF180MCU D samples use two.
+The GF180MCU D producer includes floating fill. Its timing and power use
+nominal OpenRCX, whose extracted parasitics matched before and after the DEF
+fill. Power covers one 17-cycle activity trace.
+
+Both time columns run from RTL to GDS. The first is the median of three
+alternating runs against the LibreLane arm chosen by a rule fixed before a
+tuning screen: on IHP the fastest arm that passes the physical gates, and on
+SKY130A and GF180MCU D, where no arm passes them, the fastest GDS. The
+selected SKY130A arm repairs antennas with jumpers and keeps 105 Magic
+antenna findings, where RustEDA keeps 12 and the published LibreLane
+configuration 13. The second column is one screening run of each flow's
+published configuration, which reproduced the DEF and netlists of the
+layouts measured in the power, area and Fmax columns. One run of each is not
+a confirmed difference. Both GF180MCU D flows end in the same floating fill.
+Neither flow passes every shared gate on SKY130A or GF180MCU D, so neither
+reaches a signoff endpoint there.
+[IHP](#repeated-ihp-comparison-at-the-same-signoff) ·
+[SKY130A](#repeated-sky130a-comparison-at-the-same-signoff) ·
+[GF180MCU D](#repeated-gf180mcu-d-comparison-at-the-same-signoff)
 
 [SKY130A native local repair](#sky130a-native-local-antenna-repair) ·
 [IHP and GF180MCU D receipts](evidence/ibex-three-pdk/aligned-select-power-trials.json)
@@ -66,6 +82,234 @@ paths. The hold, electrical and physical check outcomes appear with each
 layout below. Area uses the standard-cell footprint, excluding SRAM, gap
 fillers and decap cells, within the same die.
 [Paired QoR receipt](evidence/ibex-three-pdk/paired-qor.json)
+
+## Repeated IHP comparison at the same signoff
+
+The published IHP pair was one sample of each flow (248.07 / 1,917.16 s),
+timed to GDS, with LibreLane's published recipe. This comparison changes three
+things. LibreLane first gets a screen of tuning arms. Every sample then runs
+the shared gates on its own layout within the measurement. Finally, the selected
+LibreLane arm and RustEDA alternate over three blocks.
+
+Every sample used CPUs 24–27 with 4 GiB and no swap, and started after the
+host had been idle for a minute. The gates ran right after each producer, in
+a second scope with the same limits.
+[Harness, plan and selection rule](../../integration/paired_bench/README.md)
+
+LibreLane kept its temporary files on the home volume, as in the published
+IHP run. That setting stalled Yosys 0.70 on GF180MCU D (below), but not
+IHP's Yosys 0.62. In a control run, moving them to `/tmp` changed synthesis
+time by under 0.5 s: 131.8–132.4 s on the home volume, 131.5–132.0 s on
+`/tmp`, with the same netlist each time.
+[TMPDIR control](evidence/ibex-three-pdk/ihp-tmpdir-synthesis.json)
+
+### LibreLane tuning screen
+
+The rule fixed before the first sample selects the arm with the shortest
+time through every shared gate except logic equivalence. If no arm passes
+them, it selects the fastest GDS among arms that pass DRC, antenna, latch-up
+and LVS.
+
+| LibreLane arm | To GDS (s) | To DRC, antenna, latch-up and LVS (s) | TT slew / capacitance / fanout findings |
+|---|---:|---:|---:|
+| Published recipe, antenna margin 50 | 1,806.0 | 2,527.8 | 1 / 29 / 33 |
+| **Default antenna repair**, margin 10 | **1,747.4** | **2,473.4** | 1 / 29 / 33 |
+| Default antenna repair and resizer margins | 1,875.6 | 2,598.8 | 1 / 29 / 38 |
+| Jumpers instead of diodes after routing | 1,424.0 | 240 antenna findings | 1 / 29 / 4 |
+| *RustEDA* | *219.8* | *754.3* | *0 / 0 / 0* |
+
+Setup and hold pass on every layout. The recipe arm reproduced the published
+LibreLane DEF and netlists byte for byte, and its GDS after masking dates.
+The antenna margin did not change the routed repair: margins 10 and 50 both
+inserted 409, 66 and 15 diodes in the first three passes. The default margin
+stops one pass earlier and saves about 60 s.
+
+Every arm fails the timing gate on electrical limits. Thirty-one of the 33
+fanout findings are on nets that carry those diodes, up to 21 on one buffer
+output. Twenty of the 29 capacitance findings are on nets without diodes.
+LibreLane's classic flow has no electrical repair after detailed routing.
+Repairing with jumpers instead added none after routing and left 240 antenna
+findings. The rule therefore selected default antenna repair.
+
+The jumper arm was added after the first sample by a recorded plan
+amendment that may only add arms. A harness error stopped the first RustEDA
+sample before its first step. That sample was moved aside with its reason
+and rerun.
+
+### Confirmation blocks
+
+The selected arm and RustEDA then ran three blocks in the order AB, BA, AB.
+No sample used swap or recorded foreign load on its CPUs. Each flow produced
+identical outputs in every run; LibreLane's GDS matched after masking dates.
+
+| Endpoint | RustEDA (s) | LibreLane (s) | Ratio | Lowest to highest ratio |
+|---|---:|---:|---:|---:|
+| GDS | **219.6** (219.6–219.7) | 1,745.5 (1,743.7–1,745.9) | **7.95×** | 7.94–7.95× |
+| DRC, antenna, latch-up and LVS | **754.2** (754.2–756.0) | 2,467.7 (2,465.2–2,471.9) | **3.27×** | 3.26–3.28× |
+| Every gate except logic equivalence | **783.2** (783.0–785.0) | not reached | | |
+| Every gate | **800.5** (800.3–802.3) | not reached | | |
+
+Each cell shows the median and the range of three runs. The ratio divides the
+LibreLane median by the RustEDA median. The lowest ratio divides the fastest
+LibreLane run by the slowest RustEDA run. Every LibreLane run was slower than
+every RustEDA run at both endpoints LibreLane reached.
+
+The shared gates add about 535 s to RustEDA's time and 722 s to LibreLane's.
+The physical-gate ratio is therefore well below the GDS ratio. LibreLane does
+not reach the last two endpoints: every run fails the timing gate on the
+electrical limits above. The logic checker cannot judge its netlists either.
+Yosys renames 431 registers and merges duplicated ones, and the checker needs
+a unique named counterpart for each register before it starts a proof. This
+is a limit of the checker, not evidence against LibreLane's netlist.
+[Samples, selection and verdicts](evidence/ibex-three-pdk/ihp-repeated-signoff.json) ·
+[Plan before the amendment](evidence/ibex-three-pdk/ihp-repeated-signoff-plan-v1.json)
+
+These are three runs of one design on one host. They show that the IHP lead
+is stable under the same limits and gates. They do not measure other designs
+or other CPU allocations.
+
+## Repeated SKY130A comparison at the same signoff
+
+The published SKY130A pair was one sample of each flow (1,675.78 /
+1,771.63 s), timed to GDS. This comparison applies the IHP protocol on
+CPUs 30–31 with 4 GiB and no swap. The gates are Magic and KLayout DRC, Magic antenna,
+Netgen LVS, OpenRCX extraction, TT and SS timing, Icarus simulation, density
+and logic equivalence. Magic's antenna check alone took 1,354–1,967 s per
+layout.
+
+The RustEDA arm reruns the published producer from copies of the inputs it
+had at launch. Only the six lines that located its own directory changed.
+Every run reproduced the published GDS, DEF and netlists byte for byte.
+[Port receipt](evidence/ibex-three-pdk/sky130-port-reproduction.json)
+
+### SKY130A LibreLane tuning screen
+
+As on GF180MCU D, the published configuration already uses LibreLane's
+defaults for the knobs screened on IHP, so this screen tries the IHP
+recipe's closure settings and jumper-only repair. The selection rule is the
+IHP rule.
+
+| LibreLane arm | To GDS (s) | Magic antenna findings | TT slew / capacitance / fanout findings |
+|---|---:|---:|---:|
+| Published configuration | 1,730.6 | 13 | 203 / 27 / 64 |
+| IHP antenna repair, margin 50 | 2,312.5 | 8 | 424 / 32 / 250 |
+| IHP antenna repair and resizer margins | 2,299.3 | 8 | 424 / 32 / 250 |
+| **Jumpers instead of diodes after routing** | **1,371.4** | 105 | 221 / 31 / 34 |
+| *RustEDA* | *1,660.6* | *12* | *0 / 0 / 0* |
+
+DRC, LVS, simulation, setup and hold pass on every layout. RustEDA's layout
+passes every timing row at TT and SS and the logic gate. Every LibreLane
+layout fails the timing gate on electrical limits, with 2,953–3,661 SS slew
+findings, and the logic checker cannot judge its netlists.
+
+Antenna repair at margin 50 cut Magic's findings from 13 to 8 and added
+about 580 s. The resizer margins changed nothing: both IHP-closure arms
+produced the same DEF and netlists. Every layout keeps Magic antenna
+findings, so no arm passes the physical gates, and the rule selected the
+fastest GDS. Jumper-only repair was 359 s faster than the published
+configuration, with 105 antenna findings instead of 13. That choice favours
+LibreLane's time. The published configuration reproduced the published
+LibreLane DEF and netlists byte for byte.
+
+### SKY130A confirmation blocks
+
+The selected arm and RustEDA then ran three blocks in the order AB, BA, AB.
+No sample used swap or recorded foreign load on its CPUs. RustEDA produced
+the same GDS, DEF and netlists in every run. LibreLane produced the same DEF
+and netlists. Its GDS also matched after masking dates and the random
+two-character prefix that Magic gives the SRAM macro's 160 sub-cells in each
+run.
+
+| Endpoint | RustEDA (s) | LibreLane (s) | Ratio | Lowest to highest ratio |
+|---|---:|---:|---:|---:|
+| GDS | 1,665.5 (1,659.7–1,673.9) | **1,370.0** (1,370.0–1,370.7) | **0.82×** | 0.82–0.83× |
+| DRC, antenna and LVS | not reached | not reached | | |
+| Every gate except logic equivalence | not reached | not reached | | |
+| Every gate | not reached | not reached | | |
+
+The selected LibreLane arm reached GDS first in every block; RustEDA took
+1.22 times as long. Neither flow reaches a signoff endpoint, because Magic's
+antenna check fails both: 12 findings on RustEDA's layout and 105 on
+LibreLane's. RustEDA's layout passes every other gate. LibreLane's also fails
+the timing gate (TT 221 / 31 / 34, SS 2,953 / 352 / 34 slew, capacitance and
+fanout findings). The published LibreLane configuration, with 13 antenna
+findings, took 1,730.6 s in its single screening run against RustEDA's
+1,660.6 s; one run of each is not a confirmed difference.
+[Samples, selection and verdicts](evidence/ibex-three-pdk/sky130-repeated-signoff.json)
+
+## Repeated GF180MCU D comparison at the same signoff
+
+The published GF180MCU D pair was one sample of each flow (637.13 /
+851.48 s), and only RustEDA's included floating fill. This comparison
+applies the IHP protocol on CPUs 22–23 with 4 GiB and no swap. Every LibreLane arm now
+ends in the fill emitter that RustEDA runs, applied to its own final GDS
+inside the timed producer, so both flows are judged on density with fill.
+The emitter lifts LibreLane's top metal only to 26 % of the die, below its
+30 % target, then emits what fits and leaves the verdict to the foundry
+density rules. The fill is GDS geometry only: OpenRCX, the timing gate and
+the power figures do not see it.
+
+The RustEDA arm reruns the published producer from copies of its launch
+inputs, with the tracked emitter in place of the scratch fill scripts. Every
+run reproduced the published DEF and netlists byte for byte, and its GDS
+after masking dates.
+[Port receipt](evidence/ibex-three-pdk/gf180-port-reproduction.json)
+
+### GF180MCU D LibreLane tuning screen
+
+The published GF180MCU D configuration already uses LibreLane's defaults for
+the knobs screened on IHP, so this screen tries the IHP recipe's closure
+settings and jumper-only repair instead. The selection rule is the IHP rule.
+
+| LibreLane arm, with fill | To GDS (s) | Density findings | Antenna findings | TT slew / capacitance / fanout findings | SS hold violations |
+|---|---:|---:|---:|---:|---:|
+| Published configuration | 911.0 | 3 | 0 | 31 / 11 / 0 | 7 |
+| IHP antenna repair, margin 50 | 1,029.1 | 3 | 0 | 21 / 9 / 2 | 10 |
+| IHP antenna repair and resizer margins | 1,041.1 | 3 | 0 | 26 / 10 / 1 | 8 |
+| **Jumpers instead of diodes after routing** | **887.9** | 3 | 82 | 31 / 11 / 0 | 7 |
+| *RustEDA* | *594.1* | *1* | *0* | *20 / 1 / 0* | *0* |
+
+Setup, LVS and simulation pass on every layout. Every LibreLane layout keeps
+whole-die coverage findings on Metal4, Metal5 and the top metal (M4.4, M5.4,
+MT.3). RustEDA's keeps one, on Metal4, a layer the emitter does not fill. No
+arm passes the physical gates, so the rule selected the fastest GDS:
+jumper-only repair, 23 s faster than the published configuration but with 82
+antenna findings. That choice favours LibreLane's time. The published
+configuration reproduced the published LibreLane DEF and netlists byte for
+byte.
+
+The first attempt of the first sample stopped in Yosys synthesis. With
+temporary files on the home volume instead of `/tmp`, Yosys 0.70's parallel
+ABC mapping waited indefinitely in three of three runs. The campaign
+restarted with `/tmp`, as in the published runs, which reproduces the
+published synthesis netlist.
+[Hang receipt](evidence/ibex-three-pdk/gf180-yosys-tmpdir-incident.json)
+
+### GF180MCU D confirmation blocks
+
+The selected arm and RustEDA then ran three blocks in the order AB, BA, AB.
+No sample used swap or recorded foreign load on its CPUs. Each flow produced
+the same DEF and netlists in every run, and the same GDS after masking dates.
+
+| Endpoint | RustEDA (s) | LibreLane (s) | Ratio | Lowest to highest ratio |
+|---|---:|---:|---:|---:|
+| GDS with fill | **591.3** (590.6–592.4) | 885.6 (884.7–889.3) | **1.50×** | 1.49–1.51× |
+| DRC, antenna and LVS | not reached | not reached | | |
+| Every gate except logic equivalence | not reached | not reached | | |
+| Every gate | not reached | not reached | | |
+
+Neither flow reaches a signoff endpoint, so only the GDS ratio is reported.
+RustEDA misses the physical gates on its Metal4 coverage finding, and the
+timing gate on 20 TT and 39 SS slew findings and one capacitance finding.
+LibreLane misses them on three coverage and 82 antenna findings, and on the
+electrical findings above and seven SS hold violations. The logic gate passed
+on RustEDA's netlists and cannot judge LibreLane's, as on IHP.
+
+Fill took 62.1–62.9 s of each RustEDA run and 68.8–69.1 s of each LibreLane
+run. Without it, LibreLane took 815.7–820.4 s, less than the published
+851.5 s sample, which ran while about four CPUs elsewhere on the host were
+busy.
+[Samples, selection and verdicts](evidence/ibex-three-pdk/gf180-repeated-signoff.json)
 
 ## IHP SG13G2 layout pair
 
@@ -242,7 +486,10 @@ routed layout. [Fill geometry, DRC and extraction control](evidence/ibex-three-p
 On CPUs 22 and 23, the complete RustEDA producer including both ECOs and
 floating fill took **637.13 s**. LibreLane took **851.48 s** on the same CPU
 pair with 4 GiB of memory and no swap. Both output streams matched the checked
-GDS geometry after masking timestamps. [Filled producer replay](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+GDS geometry after masking timestamps. Three alternating runs with the same
+fill on LibreLane's layout are in the
+[repeated GF180MCU D comparison](#repeated-gf180mcu-d-comparison-at-the-same-signoff).
+[Filled producer replay](evidence/ibex-three-pdk/aligned-select-power-trials.json)
 
 The opt-in `integration/ibex_pdks/gf180mcu/native/floating_fill.py` emitter
 reproduces the checked filled geometry from the routed GDS, DEF and SRAM LEF.
@@ -267,6 +514,9 @@ The current composer and ported RustSys reproduced its six sealed artifacts.
 The IHP arbitrary-initial-state comparison uses fresh RTL-to-GDS runs on the
 same four assigned cores with 4 GiB of memory and no swap. RustEDA took
 **248.07 s** and LibreLane took **1,917.16 s**, a **7.73×** elapsed-time ratio.
+Both ran while other jobs kept five to seven CPUs busy elsewhere on the host. The
+[repeated comparison](#repeated-ihp-comparison-at-the-same-signoff) on an
+idle host measured 7.95× to GDS and 3.27× through the physical gates.
 RustEDA reproduced all six archived outputs byte for byte. LibreLane reproduced
 the DEF and both netlists byte for byte, and all 2,024,006 GDS records matched
 after masking 243 date payloads. The independent gates ran outside both producer
@@ -366,7 +616,10 @@ The single timed replay from RTL to checked GDS took **1,675.78 s**.
 LibreLane took **1,771.63 s** on the same two CPU cores with 4 GiB and no
 swap. RustEDA generated its repair plans inside the timed run and
 reproduced the final GDS, DEF and netlists byte for byte. The final
-independent checks run separately.
+independent checks run separately. In three alternating runs under the shared
+gates, RustEDA's producer took 1,665.5 s and LibreLane's fastest screened arm
+1,370.0 s, with 105 antenna findings on that arm's layout.
+[Repeated SKY130A comparison](#repeated-sky130a-comparison-at-the-same-signoff)
 
 The local replay starts from the already routed electrical variant.
 It regenerates the grouped and V3 plans and reproduces the checked GDS,

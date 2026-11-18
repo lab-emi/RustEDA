@@ -1,0 +1,1090 @@
+{
+  "schema": "rusteda.paired-bench-report.v1",
+  "plan": {
+    "path": "/home/cgao/git/RustEDA/integration/paired_bench/plans/sky130-same-signoff.json",
+    "sha256": "e8ed15a47331cc3ed51af48e2b9eace3a594d935d0178382477bca7ff72e369e",
+    "bytes": 18605
+  },
+  "plan_name": "sky130-same-signoff-20261117",
+  "host": {
+    "cpu_model": "13th Gen Intel(R) Core(TM) i9-13900HX",
+    "kernel": "7.3.3-1-cachyos",
+    "cpus_online": 32
+  },
+  "resources": {
+    "cpus": [
+      30,
+      31
+    ],
+    "memory_mib": 4096,
+    "swap_mib": 0
+  },
+  "endpoints": {
+    "gds": [],
+    "physical_signoff": [
+      "drc",
+      "antenna",
+      "lvs"
+    ],
+    "common_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density"
+    ],
+    "full_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "head": "rev12",
+  "tuning_disclosure": {
+    "rusteda": "The RustEDA arm is the producer behind the published SKY130A row: its repair plans (measured-load buffers, five setup rewires, native diode and SS selection, grouped jumpers, horizontal V3 offsets) were developed over the recorded SKY130 trials against the shared gates' power, area, Fmax and antenna counts, not against LibreLane's runtime.",
+    "librelane": "The published SKY130A LibreLane configuration uses LibreLane's defaults for antenna repair and post-GRT resizer margins. This plan screens it against the closure settings of the IHP recipe (antenna margin 50 with 6/4 iterations; resizer setup and hold margins 1.0/0.2 ns with full TNS repair) and against jumper-only antenna repair after detailed routing, the knob classes of the IHP screen, under the same selection rule and gates. Geometry, floorplan, density, padding and CTS knobs stay as published.",
+    "harness": "LibreLane runs with TMPDIR=/tmp (tmpfs), where the published SKY130A and GF180MCU D runs kept Yosys's ABC temporary files. With TMPDIR on the ext4 /home volume, Yosys 0.70's parallel ABC mapping hung in synthesis in 3 of 3 runs (2026-11-17); with /tmp it finished in 92 s with the published synthesis netlist. Yosys also writes a merged-Liberty cache there under a new key in every run (as in the published run), so no sample reuses another's."
+  },
+  "phases": {
+    "screen": {
+      "complete": 5,
+      "scheduled": 5,
+      "samples": [
+        {
+          "id": "screen-01-librelane-antenna-tuned",
+          "arm": "librelane-antenna-tuned",
+          "block": null,
+          "seconds": {
+            "gds": 2312.46,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2870681600,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        },
+        {
+          "id": "screen-02-rusteda",
+          "arm": "rusteda",
+          "block": null,
+          "seconds": {
+            "gds": 1660.6,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed"
+            }
+          },
+          "producer_peak_bytes": 4294967296,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "passed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "passed"
+          }
+        },
+        {
+          "id": "screen-03-librelane-recipe",
+          "arm": "librelane-recipe",
+          "block": null,
+          "seconds": {
+            "gds": 1730.55,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2346844160,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        },
+        {
+          "id": "screen-04-librelane-closure-tuned",
+          "arm": "librelane-closure-tuned",
+          "block": null,
+          "seconds": {
+            "gds": 2299.28,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2823081984,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        },
+        {
+          "id": "screen-05-librelane-drt-jumpers",
+          "arm": "librelane-drt-jumpers",
+          "block": null,
+          "seconds": {
+            "gds": 1371.41,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2132402176,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        }
+      ],
+      "arms": {
+        "librelane-antenna-tuned": {
+          "samples": 1,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds_dates_masked": {
+              "distinct": 1,
+              "identical": true
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 1,
+              "median": 2312.46,
+              "min": 2312.46,
+              "max": 2312.46,
+              "mean": 2312.46,
+              "stdev": null,
+              "spread_pct": 0.0,
+              "values": [
+                2312.46
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        },
+        "rusteda": {
+          "samples": 1,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds_dates_masked": {
+              "distinct": 1,
+              "identical": true
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 1,
+              "median": 1660.6,
+              "min": 1660.6,
+              "max": 1660.6,
+              "mean": 1660.6,
+              "stdev": null,
+              "spread_pct": 0.0,
+              "values": [
+                1660.6
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        },
+        "librelane-recipe": {
+          "samples": 1,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds_dates_masked": {
+              "distinct": 1,
+              "identical": true
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 1,
+              "median": 1730.55,
+              "min": 1730.55,
+              "max": 1730.55,
+              "mean": 1730.55,
+              "stdev": null,
+              "spread_pct": 0.0,
+              "values": [
+                1730.55
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        },
+        "librelane-closure-tuned": {
+          "samples": 1,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds_dates_masked": {
+              "distinct": 1,
+              "identical": true
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 1,
+              "median": 2299.28,
+              "min": 2299.28,
+              "max": 2299.28,
+              "mean": 2299.28,
+              "stdev": null,
+              "spread_pct": 0.0,
+              "values": [
+                2299.28
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        },
+        "librelane-drt-jumpers": {
+          "samples": 1,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds_dates_masked": {
+              "distinct": 1,
+              "identical": true
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 1,
+              "median": 1371.41,
+              "min": 1371.41,
+              "max": 1371.41,
+              "mean": 1371.41,
+              "stdev": null,
+              "spread_pct": 0.0,
+              "values": [
+                1371.41
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        }
+      }
+    },
+    "confirm": {
+      "complete": 6,
+      "scheduled": 6,
+      "samples": [
+        {
+          "id": "confirm-b1-1-librelane-drt-jumpers",
+          "arm": "librelane-drt-jumpers",
+          "block": "b1",
+          "seconds": {
+            "gds": 1369.99,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2158489600,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        },
+        {
+          "id": "confirm-b1-2-rusteda",
+          "arm": "rusteda",
+          "block": "b1",
+          "seconds": {
+            "gds": 1665.52,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed"
+            }
+          },
+          "producer_peak_bytes": 4294967296,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "passed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "passed"
+          }
+        },
+        {
+          "id": "confirm-b2-1-rusteda",
+          "arm": "rusteda",
+          "block": "b2",
+          "seconds": {
+            "gds": 1659.69,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed"
+            }
+          },
+          "producer_peak_bytes": 4294967296,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "passed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "passed"
+          }
+        },
+        {
+          "id": "confirm-b2-2-librelane-drt-jumpers",
+          "arm": "librelane-drt-jumpers",
+          "block": "b2",
+          "seconds": {
+            "gds": 1370.73,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2176110592,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        },
+        {
+          "id": "confirm-b3-1-librelane-drt-jumpers",
+          "arm": "librelane-drt-jumpers",
+          "block": "b3",
+          "seconds": {
+            "gds": 1370.0,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed",
+              "timing": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed",
+              "timing": "failed",
+              "logic": "unverified"
+            }
+          },
+          "producer_peak_bytes": 2144010240,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "failed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "unverified"
+          }
+        },
+        {
+          "id": "confirm-b3-2-rusteda",
+          "arm": "rusteda",
+          "block": "b3",
+          "seconds": {
+            "gds": 1673.91,
+            "physical_signoff": null,
+            "common_signoff": null,
+            "full_signoff": null
+          },
+          "blocking": {
+            "physical_signoff": {
+              "antenna": "failed"
+            },
+            "common_signoff": {
+              "antenna": "failed"
+            },
+            "full_signoff": {
+              "antenna": "failed"
+            }
+          },
+          "producer_peak_bytes": 4294967296,
+          "flags": [],
+          "verdicts": {
+            "drc": "passed",
+            "antenna": "failed",
+            "lvs": "passed",
+            "extraction": "completed",
+            "timing": "passed",
+            "simulation": "passed",
+            "density": "passed",
+            "logic": "passed"
+          }
+        }
+      ],
+      "arms": {
+        "librelane-drt-jumpers": {
+          "samples": 3,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 3,
+              "identical": false
+            },
+            "gds_dates_masked": {
+              "distinct": 3,
+              "identical": false
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 3,
+              "median": 1370.0,
+              "min": 1369.99,
+              "max": 1370.73,
+              "mean": 1370.24,
+              "stdev": 0.424,
+              "spread_pct": 0.05,
+              "values": [
+                1369.99,
+                1370.73,
+                1370.0
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        },
+        "rusteda": {
+          "samples": 3,
+          "determinism": {
+            "def": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds": {
+              "distinct": 1,
+              "identical": true
+            },
+            "gds_dates_masked": {
+              "distinct": 1,
+              "identical": true
+            },
+            "netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "powered_netlist": {
+              "distinct": 1,
+              "identical": true
+            },
+            "synthesis_netlist": {
+              "distinct": 1,
+              "identical": true
+            }
+          },
+          "endpoints": {
+            "gds": {
+              "n": 3,
+              "median": 1665.52,
+              "min": 1659.69,
+              "max": 1673.91,
+              "mean": 1666.373,
+              "stdev": 7.148,
+              "spread_pct": 0.85,
+              "values": [
+                1665.52,
+                1659.69,
+                1673.91
+              ]
+            },
+            "physical_signoff": {
+              "n": 0
+            },
+            "common_signoff": {
+              "n": 0
+            },
+            "full_signoff": {
+              "n": 0
+            }
+          }
+        }
+      },
+      "reference": "librelane-drt-jumpers",
+      "candidate": "rusteda",
+      "comparisons": {
+        "gds": {
+          "reference": {
+            "n": 3,
+            "median": 1370.0,
+            "min": 1369.99,
+            "max": 1370.73,
+            "mean": 1370.24,
+            "stdev": 0.424,
+            "spread_pct": 0.05,
+            "values": [
+              1369.99,
+              1370.73,
+              1370.0
+            ]
+          },
+          "candidate": {
+            "n": 3,
+            "median": 1665.52,
+            "min": 1659.69,
+            "max": 1673.91,
+            "mean": 1666.373,
+            "stdev": 7.148,
+            "spread_pct": 0.85,
+            "values": [
+              1665.52,
+              1659.69,
+              1673.91
+            ]
+          },
+          "verdict": "reference_faster_in_every_sample",
+          "blocks": 3,
+          "min_blocks": 3,
+          "ratio_of_medians": 0.8226,
+          "paired_ratios": {
+            "b1": 0.8226,
+            "b2": 0.8259,
+            "b3": 0.8184
+          },
+          "paired_ratio_min": 0.8184,
+          "paired_ratio_max": 0.8259,
+          "conservative_ratio_range": [
+            0.8184,
+            0.8259
+          ],
+          "candidate_faster_blocks": 0,
+          "sign_test_one_sided_p": 1.0
+        },
+        "physical_signoff": {
+          "reference": {
+            "n": 0
+          },
+          "candidate": {
+            "n": 0
+          },
+          "verdict": "not_reached",
+          "missing": {
+            "reference": [
+              "b1",
+              "b2",
+              "b3"
+            ],
+            "candidate": [
+              "b1",
+              "b2",
+              "b3"
+            ]
+          },
+          "ratio_of_medians": null,
+          "paired_ratios": {},
+          "conservative_ratio_range": null
+        },
+        "common_signoff": {
+          "reference": {
+            "n": 0
+          },
+          "candidate": {
+            "n": 0
+          },
+          "verdict": "not_reached",
+          "missing": {
+            "reference": [
+              "b1",
+              "b2",
+              "b3"
+            ],
+            "candidate": [
+              "b1",
+              "b2",
+              "b3"
+            ]
+          },
+          "ratio_of_medians": null,
+          "paired_ratios": {},
+          "conservative_ratio_range": null
+        },
+        "full_signoff": {
+          "reference": {
+            "n": 0
+          },
+          "candidate": {
+            "n": 0
+          },
+          "verdict": "not_reached",
+          "missing": {
+            "reference": [
+              "b1",
+              "b2",
+              "b3"
+            ],
+            "candidate": [
+              "b1",
+              "b2",
+              "b3"
+            ]
+          },
+          "ratio_of_medians": null,
+          "paired_ratios": {},
+          "conservative_ratio_range": null
+        }
+      },
+      "flagged_samples": []
+    }
+  },
+  "selection": {
+    "selected": "librelane-drt-jumpers",
+    "reason": "no arm passed the physical gates; fastest GDS",
+    "rule": {
+      "from_phase": "screen",
+      "flow": "librelane",
+      "baseline_arm": "librelane-recipe",
+      "physical_endpoint": "physical_signoff",
+      "target_endpoint": "common_signoff",
+      "rule": "Declared before any screening sample ran. Select the LibreLane arm with the fewest seconds to common_signoff. If no arm reaches it, select the arm with the fewest seconds to GDS among arms that pass every physical_signoff gate; otherwise the fastest GDS. The screening samples are not reused in the confirmation blocks."
+    },
+    "candidates": [
+      {
+        "arm": "librelane-antenna-tuned",
+        "sample": "screen-01-librelane-antenna-tuned",
+        "gds_seconds": 2312.46,
+        "physical_seconds": null,
+        "target_seconds": null,
+        "target_blocking": {
+          "antenna": "failed",
+          "timing": "failed"
+        },
+        "physical_blocking": {
+          "antenna": "failed"
+        }
+      },
+      {
+        "arm": "librelane-recipe",
+        "sample": "screen-03-librelane-recipe",
+        "gds_seconds": 1730.55,
+        "physical_seconds": null,
+        "target_seconds": null,
+        "target_blocking": {
+          "antenna": "failed",
+          "timing": "failed"
+        },
+        "physical_blocking": {
+          "antenna": "failed"
+        }
+      },
+      {
+        "arm": "librelane-closure-tuned",
+        "sample": "screen-04-librelane-closure-tuned",
+        "gds_seconds": 2299.28,
+        "physical_seconds": null,
+        "target_seconds": null,
+        "target_blocking": {
+          "antenna": "failed",
+          "timing": "failed"
+        },
+        "physical_blocking": {
+          "antenna": "failed"
+        }
+      },
+      {
+        "arm": "librelane-drt-jumpers",
+        "sample": "screen-05-librelane-drt-jumpers",
+        "gds_seconds": 1371.41,
+        "physical_seconds": null,
+        "target_seconds": null,
+        "target_blocking": {
+          "antenna": "failed",
+          "timing": "failed"
+        },
+        "physical_blocking": {
+          "antenna": "failed"
+        }
+      }
+    ],
+    "deltas": {
+      "librelane-antenna-tuned": {
+        "DRT_ANTENNA_REPAIR_ITERS": {
+          "baseline": null,
+          "arm": 4
+        },
+        "DRT_ANTENNA_REPAIR_MARGIN": {
+          "baseline": null,
+          "arm": 50
+        },
+        "GRT_ANTENNA_REPAIR_ITERS": {
+          "baseline": null,
+          "arm": 6
+        },
+        "GRT_ANTENNA_REPAIR_MARGIN": {
+          "baseline": null,
+          "arm": 50
+        }
+      },
+      "librelane-recipe": {},
+      "librelane-closure-tuned": {
+        "DRT_ANTENNA_REPAIR_ITERS": {
+          "baseline": null,
+          "arm": 4
+        },
+        "DRT_ANTENNA_REPAIR_MARGIN": {
+          "baseline": null,
+          "arm": 50
+        },
+        "GRT_ANTENNA_REPAIR_ITERS": {
+          "baseline": null,
+          "arm": 6
+        },
+        "GRT_ANTENNA_REPAIR_MARGIN": {
+          "baseline": null,
+          "arm": 50
+        },
+        "GRT_RESIZER_HOLD_SLACK_MARGIN": {
+          "baseline": null,
+          "arm": 0.2
+        },
+        "GRT_RESIZER_SETUP_REPAIR_TNS_PCT": {
+          "baseline": null,
+          "arm": 100
+        },
+        "GRT_RESIZER_SETUP_SLACK_MARGIN": {
+          "baseline": null,
+          "arm": 1.0
+        }
+      },
+      "librelane-drt-jumpers": {
+        "DRT_ANTENNA_REPAIR_JUMPER_ONLY": {
+          "baseline": null,
+          "arm": true
+        }
+      }
+    }
+  },
+  "amendments": [],
+  "invalidated": [],
+  "notes": []
+}

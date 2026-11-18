@@ -1,0 +1,39 @@
+{
+  "schema": "rusteda.paired-bench-incident.v1",
+  "time": "2026-11-17",
+  "sample": "screen-01-librelane-antenna-tuned-fill",
+  "workspace_moved_to": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/gf180-tmpdir-hang-20261117",
+  "symptom": "LibreLane Yosys.Synthesis (Yosys 0.70) stopped at ABC pass extraction 139.59 for 33 min at 0 % CPU: 31 yosys-abc processes had written output.blif and waited on stdin; 31 Yosys threads waited on their stdout pipes; main thread in futex_wait. No OOM, no task limit. The scope was stopped; the sample never completed.",
+  "snapshot": "incidents/gf180-screen-01-yosys-abc-hang.txt",
+  "reproduction": {
+    "script": "yosys-hang-repro/repro.sh",
+    "method": "LibreLane --to Yosys.Synthesis with the hung sample's rendered config, same scope (CPUs 22-23, 4 GiB, no swap), 600 s cap, varying only TMPDIR",
+    "results_raw": [
+      "{\"variant\": \"bench-tmpdir-1\", \"exit_code\": 124, \"seconds\": , \"synthesis_runtime\": \"\", \"extractions\": 58, \"executed\": 1}",
+      "{\"variant\": \"short-tmpdir-1\", \"exit_code\": 124, \"seconds\": , \"synthesis_runtime\": \"\", \"extractions\": 58, \"executed\": 1}",
+      "{\"variant\": \"bench-tmpdir-2\", \"exit_code\": 143, \"seconds\": , \"synthesis_runtime\": \"\", \"extractions\": 58, \"executed\": 1}",
+      "{\"variant\": \"no-tmpdir-1\", \"exit_code\": 0, \"seconds\": , \"synthesis_runtime\": \"00:01:31.755\", \"extractions\": 80, \"executed\": 80}",
+      "{\"variant\": \"tmp-explicit-1\", \"exit_code\": 0, \"seconds\": 94.8, \"synthesis_runtime\": \"00:01:31.924\", \"extractions\": 80, \"executed\": 80}",
+      "{\"variant\": \"no-tmpdir-2\", \"exit_code\": 0, \"seconds\": 95.1, \"synthesis_runtime\": \"00:01:32.152\", \"extractions\": 80, \"executed\": 80}"
+    ],
+    "summary": {
+      "TMPDIR on ext4 /home (sample path or short path)": "hang, 3 of 3 (bench-tmpdir-1, short-tmpdir-1, bench-tmpdir-2 stopped early)",
+      "TMPDIR unset (/tmp tmpfs) or TMPDIR=/tmp/...": "pass, 3 of 3, synthesis 91.8-92.2 s, 80 of 80 ABC jobs"
+    },
+    "synthesis_netlists": {
+      "no-tmpdir-1": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75",
+      "tmp-explicit-1": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75",
+      "no-tmpdir-2": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75"
+    },
+    "published_synthesis_netlist": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75",
+    "published_synthesis_seconds": 92.905,
+    "abc_direct": "yosys-abc -s replaying a hung run's abc.script over pipes returns YOSYS_ABC_DONE in 0.03 s (TERM set or unset)"
+  },
+  "fix": "LibreLane arms of plans/sky130-same-signoff.json and plans/gf180-same-signoff.json set TMPDIR=/tmp, as the published runs had; recorded in each plan's tuning_disclosure.harness. The GF180 campaign restarts in a fresh workspace at the original path.",
+  "not_a_cause": [
+    "TMPDIR path length",
+    "TERM",
+    "task or memory limits",
+    "the Yosys merged-Liberty SCL cache (used after the parallel ABC section, new key per run)"
+  ]
+}

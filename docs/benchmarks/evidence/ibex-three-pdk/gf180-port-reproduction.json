@@ -1,0 +1,100 @@
+{
+  "schema": "rusteda.port-reproduction.v1",
+  "pdk": "gf180mcuD",
+  "scope": "Untimed reproduction of the published filled producer through producers/gf180.py rusteda (copied launch inputs, tracked fill emitter), CPUs 22-23, 4 GiB, no swap.",
+  "outputs": {
+    "gds": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/gf180-port-verify/case/fill/ibex_sram_bench.gds",
+      "sha256": "d5c6dfcc1ed00012f026df7b590137ad363dc354dfdc60500dec0711c297d602",
+      "bytes": 45526342,
+      "dates_masked_sha256": "8c5157616748e596cf3203aaaf76c829568a2dd7a29033b947048d0956e3301e"
+    },
+    "def": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/gf180-port-verify/case/warm/load/eval/def.def",
+      "sha256": "59b0fee54c496f6c4eea6b2c030fa49d763f44c112eb81733c5edf4da7fe3088",
+      "bytes": 16564230
+    },
+    "netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/gf180-port-verify/case/warm/load/eval/netlist.v",
+      "sha256": "dc1de0d2d012aa173e97a9c9d177c75fe4a1b66074123e6d713c6aa7091d5c41",
+      "bytes": 2858140
+    },
+    "powered_netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/gf180-port-verify/case/warm/load/eval/powered_netlist.v",
+      "sha256": "2a4dfb7fc57f0d275d252afbe98021388205b23b45c296b327f7d9d70221fbaa",
+      "bytes": 7152674
+    },
+    "synthesis_netlist": {
+      "path": "/home/cgao/git/RustEDA/.work/paired-bench-20261117/gf180-port-verify/case/cold/output/frontend/mapped.v",
+      "sha256": "1756bef724b1847a6b4e2a87a549221f4cf6ec35118bbf501df6e00b86ec3be7",
+      "bytes": 2185063
+    }
+  },
+  "published": {
+    "gds_dates_masked": "8c5157616748e596cf3203aaaf76c829568a2dd7a29033b947048d0956e3301e",
+    "def": "59b0fee54c496f6c4eea6b2c030fa49d763f44c112eb81733c5edf4da7fe3088",
+    "netlist": "dc1de0d2d012aa173e97a9c9d177c75fe4a1b66074123e6d713c6aa7091d5c41",
+    "powered_netlist": "2a4dfb7fc57f0d275d252afbe98021388205b23b45c296b327f7d9d70221fbaa",
+    "synthesis_netlist": "1756bef724b1847a6b4e2a87a549221f4cf6ec35118bbf501df6e00b86ec3be7"
+  },
+  "identical": {
+    "def": true,
+    "netlist": true,
+    "powered_netlist": true,
+    "synthesis_netlist": true,
+    "gds_dates_masked": true
+  },
+  "warm_replay_identical_to_validated_candidate": true,
+  "stages": [
+    {
+      "stage": "cold-and-warm",
+      "seconds": 531.866,
+      "exit_code": 0
+    },
+    {
+      "stage": "floating-fill",
+      "seconds": 62.458,
+      "exit_code": 0
+    }
+  ],
+  "fill_layers": {
+    "36/4": {
+      "added_boxes": 26220,
+      "geometric_coverage_pct": 30.355827739661297,
+      "phase_dbu": [
+        1500,
+        1000
+      ]
+    },
+    "81/4": {
+      "added_boxes": 196586,
+      "geometric_coverage_pct": 31.651511166833473,
+      "phase_dbu": [
+        1500,
+        0
+      ]
+    }
+  },
+  "resources": {
+    "wall_seconds": 594.38,
+    "exit_code": 0,
+    "cpu_seconds": 617.53,
+    "allowed_cpus": [
+      22,
+      23
+    ],
+    "cgroup_v2_memory_peak_bytes": 4127969280,
+    "cgroup_v2_swap_peak_bytes": 0,
+    "other_load": {
+      "host_busy_cpu_seconds": 802.81,
+      "allowed_set_busy_cpu_seconds": 620.68,
+      "own_cpu_seconds": 617.53,
+      "other_cpu_seconds_host": 185.28,
+      "other_cpu_seconds_on_allowed_set": 3.15,
+      "mean_other_busy_cpus_host": 0.312,
+      "mean_other_busy_cpus_on_allowed_set": 0.005,
+      "note": "/proc/stat busy time of all CPUs (and of the allowed set) during the run minus the scope's own CPU time: work of other processes on this host beside the timed stage"
+    }
+  },
+  "all_identical": true
+}
