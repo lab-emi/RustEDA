@@ -1,0 +1,473 @@
+{
+  "schema": "rusteda.paired-bench-plan.v1",
+  "name": "sky130-same-signoff-20261117",
+  "description": "SKY130A Ibex: the published RustEDA producer (the r02 recipe through the parameterized port) against LibreLane 3.0.17 with a pre-declared LibreLane tuning screen, then three alternating confirmation blocks. Each sample runs its producer and the shared SKY130 gates (Magic and KLayout DRC, Magic antenna, Netgen LVS, OpenRCX, RustSTA/OpenSTA, Icarus, density, ABC) in the same 2-CPU, 4 GiB, zero-swap scope.",
+  "resources": {
+    "cpus": [
+      30,
+      31
+    ],
+    "memory_mib": 4096,
+    "swap_mib": 0
+  },
+  "quiet_host": {
+    "window_seconds": 30,
+    "windows": 2,
+    "max_host_busy_cpus": 2.0,
+    "max_allowed_set_busy_cpus": 0.2,
+    "max_package_celsius": 85,
+    "max_wait_seconds": 5400
+  },
+  "flags": {
+    "max_other_busy_cpus_on_allowed_set": 0.25,
+    "max_other_busy_cpus_host": 4.0
+  },
+  "inputs": {
+    "python": {
+      "path": "/home/cgao/.venv/bin/python3",
+      "sha256": "4ceefc12dbe6f01efa99bf5cf594df33cc8dc45a0ff23c3229e2e955059a374e"
+    },
+    "sky130_producer": {
+      "path": "{root}/integration/paired_bench/producers/sky130_rusteda.py",
+      "sha256": "138133e175400ec05f34a00b5f1bc79a4368b7c3687fa02096a10aafaff21ce1"
+    },
+    "sky130_producer_pins": {
+      "path": "{root}/.work/ppa-closure-20261115/sky-rtl-horizontal-closed-pilot-r02/producer-inputs.sha256",
+      "sha256": "b90d5a21450f2be8cae95835e8c683e9503a385810c6dac939143ccac5510e94"
+    },
+    "rusteda_flow": {
+      "path": "{root}/.work/three-pdk-20261114/bin/wireload-b07874f/rusteda-flow",
+      "sha256": "abcd0b4a22657e6a2998fc5ba0f4f3696be919b5ed266f3f44847657c598a7eb"
+    },
+    "rusteda_manifest": {
+      "path": "{root}/.work/ppa-closure-20261115/sky-router-pgo/production-dry-run/route-only-manifest.json",
+      "sha256": "1e5bf71b6af85be2759aa90b4cc0eb0f306d5d21dda06c244f9b6ab926e56d9e"
+    },
+    "run_env": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/run-env",
+      "sha256": "f8250ee9714616fdf6fc46814224c17889eeb4ebc738fe1f3dc913a94d4fdeb2"
+    },
+    "librelane": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/venv/bin/librelane",
+      "sha256": "7f5eaa32cb7c8011f5d37c0a28d8f095e19c0009f96adb9c89a33ea07a94c022"
+    },
+    "librelane_template": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/config.json.in",
+      "sha256": "74e6080ab99603f124ac3b4a305d4082b273d0a2f9a825e50b09162a494de245"
+    },
+    "librelane_published_config": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/sky130-producer-pair-two-cores/librelane/config.json",
+      "sha256": "29e40109a42c1f1e31dc0a86561405cde1cd4aacf4a303d4ea803d84bcba16d4"
+    },
+    "rtl": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/rtl/design.v",
+      "sha256": "e529ea8fe7d16c8538dc5e2f19c13434fbff2cf47268060966c6c8c8f9b18b69"
+    },
+    "constraints": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/constraints.sdc",
+      "sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d"
+    },
+    "pnr_sdc": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/pnr.sdc",
+      "sha256": "2ff82ee688dd994fb63df6cc5cea0c8800bdcf60c736d04b5bf9d54a9613fb47"
+    },
+    "cppr_off": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/cppr_off.tcl",
+      "sha256": "2a99c17f1596a21893e53ee2debb490270ec7871f73e6bf49f20f0f1c3d5616a"
+    },
+    "macro_liberty": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/macro/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib",
+      "sha256": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db"
+    },
+    "signoff_python": {
+      "path": "/usr/bin/python3.14",
+      "sha256": "9c61adf6f6882c8f00ca6023a8d6e0c35a51b80989ac1b3e8423f4c512bfcafc"
+    },
+    "signoff_driver": {
+      "path": "{root}/integration/ibex_host_benchmark/signoff_layout.py",
+      "sha256": "459841e5de291ee04e556da663a22a91315b8bacf3b3d389f6e17d7be89a71f1"
+    },
+    "signoff_profile": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/gates.json",
+      "sha256": "89aa08e515344c717a609049ab437d5c0aa2e99285e54dfc399c9caa534c245a"
+    },
+    "signoff_host": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/matched-gates/host.json",
+      "sha256": "9f689fd3d18b783a0f9fabf7db2527bebab683174f4fdb064a6cdfe65c40dceb"
+    }
+  },
+  "signoff": {
+    "argv": [
+      "{inputs.run_env}",
+      "{inputs.signoff_python}",
+      "{inputs.signoff_driver}",
+      "--profile",
+      "{inputs.signoff_profile}",
+      "--host",
+      "{inputs.signoff_host}",
+      "--layout",
+      "{sample}/layout.json",
+      "--workspace",
+      "{sample}/signoff/gates"
+    ],
+    "deadline_seconds": 10800,
+    "ownership_manifest": "{inputs.rusteda_manifest}",
+    "gates": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "endpoints": {
+    "gds": [],
+    "physical_signoff": [
+      "drc",
+      "antenna",
+      "lvs"
+    ],
+    "common_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density"
+    ],
+    "full_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "arms": {
+    "rusteda": {
+      "flow": "rusteda",
+      "role": "candidate",
+      "description": "The published 1,675.78 s producer: cold RTL-to-GDS flow, measured-load ECO with five bound setup rewires, warm reroute with antenna repair, fresh native diode and SS selection, staged routing, grouped jumpers and the horizontal V3 local repair, all inside the timed scope. integration/paired_bench/producers/sky130_rusteda.py copies r02's pinned inputs into {sample}/case and replaces only the repository and campaign location lookups.",
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.sky130_producer}",
+          "--out",
+          "{sample}/case"
+        ],
+        "deadline_seconds": 2700,
+        "worker_scope": true,
+        "ownership": "{sample}/case/ownership"
+      },
+      "layout": {
+        "gds": "{sample}/case/local-tail/trial/horizontal/exports/ibex_sram_bench.gds",
+        "def": "{sample}/case/local-tail/trial/horizontal/exports/ibex_sram_bench.def",
+        "netlist": "{sample}/case/local-tail/trial/horizontal/exports/ibex_sram_bench.v",
+        "powered_netlist": "{sample}/case/local-tail/trial/horizontal/exports/ibex_sram_bench-powered.v",
+        "synthesis_netlist": "{sample}/case/output/frontend/mapped.v"
+      },
+      "expected_outputs": {
+        "gds": "d3705e7b57bdcd3572b49bba1d6a53dda048a24e3cf52051812ced3d03dad8ad",
+        "def": "fccc18168a34ca74ed8c17ae990d74e5401e26ee8f5639b0ed992beb75bd30ed",
+        "netlist": "25d4392b2020ee89bffbc3ec4a13a4e52ecee04247b842c9c798ac704ef1bc36",
+        "powered_netlist": "d654d1df5fcc8749359f69918b2f16d2507c47d15ab05e629a56ef45f2138f8c",
+        "synthesis_netlist": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1"
+      }
+    },
+    "librelane-recipe": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published reference configuration.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks/sky130A"
+        },
+        "overlay": {
+          "DRT_THREADS": 2
+        },
+        "expect_equal": "{inputs.librelane_published_config}"
+      },
+      "producer": {
+        "argv": [
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks",
+          "--pdk",
+          "sky130A",
+          "--scl",
+          "sky130_fd_sc_hd",
+          "--flow",
+          "classic",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/final/gds/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      },
+      "expected_outputs": {
+        "def": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+        "netlist": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+        "powered_netlist": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6",
+        "synthesis_netlist": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28"
+      }
+    },
+    "librelane-antenna-tuned": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published configuration with the IHP recipe's antenna repair (GRT and DRT margin 50, 6 GRT and 4 DRT iterations) in place of LibreLane's defaults (margin 10, 3 and 3).",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks/sky130A"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "GRT_ANTENNA_REPAIR_ITERS": 6,
+          "GRT_ANTENNA_REPAIR_MARGIN": 50,
+          "DRT_ANTENNA_REPAIR_ITERS": 4,
+          "DRT_ANTENNA_REPAIR_MARGIN": 50
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks",
+          "--pdk",
+          "sky130A",
+          "--scl",
+          "sky130_fd_sc_hd",
+          "--flow",
+          "classic",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/final/gds/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    },
+    "librelane-closure-tuned": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the IHP recipe's antenna repair plus its post-GRT resizer setup (setup margin 1.0 ns, hold margin 0.2 ns, TNS repair 100 %) in place of LibreLane's defaults (0.025 ns, 0.05 ns, unset).",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks/sky130A"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "GRT_ANTENNA_REPAIR_ITERS": 6,
+          "GRT_ANTENNA_REPAIR_MARGIN": 50,
+          "DRT_ANTENNA_REPAIR_ITERS": 4,
+          "DRT_ANTENNA_REPAIR_MARGIN": 50,
+          "GRT_RESIZER_SETUP_SLACK_MARGIN": 1.0,
+          "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.2,
+          "GRT_RESIZER_SETUP_REPAIR_TNS_PCT": 100
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks",
+          "--pdk",
+          "sky130A",
+          "--scl",
+          "sky130_fd_sc_hd",
+          "--flow",
+          "classic",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/final/gds/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    },
+    "librelane-drt-jumpers": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published configuration with jumpers instead of diodes in the antenna repair after detailed routing (the IHP plan's fourth arm).",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks/sky130A"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "DRT_ANTENNA_REPAIR_JUMPER_ONLY": true
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks",
+          "--pdk",
+          "sky130A",
+          "--scl",
+          "sky130_fd_sc_hd",
+          "--flow",
+          "classic",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/final/gds/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    }
+  },
+  "phases": {
+    "screen": {
+      "samples": [
+        "librelane-antenna-tuned",
+        "rusteda",
+        "librelane-recipe",
+        "librelane-closure-tuned",
+        "librelane-drt-jumpers"
+      ]
+    },
+    "confirm": {
+      "pair": [
+        "@selected",
+        "rusteda"
+      ],
+      "blocks": 3
+    }
+  },
+  "selection": {
+    "from_phase": "screen",
+    "flow": "librelane",
+    "baseline_arm": "librelane-recipe",
+    "physical_endpoint": "physical_signoff",
+    "target_endpoint": "common_signoff",
+    "rule": "Declared before any screening sample ran. Select the LibreLane arm with the fewest seconds to common_signoff. If no arm reaches it, select the arm with the fewest seconds to GDS among arms that pass every physical_signoff gate; otherwise the fastest GDS. The screening samples are not reused in the confirmation blocks."
+  },
+  "estimates": {
+    "rusteda": {
+      "sample_seconds": 3900,
+      "disk_mib": 7800,
+      "peak_mib": 3600
+    },
+    "librelane-recipe": {
+      "sample_seconds": 4800,
+      "disk_mib": 4500,
+      "peak_mib": 2800
+    },
+    "librelane-antenna-tuned": {
+      "sample_seconds": 4800,
+      "disk_mib": 4500,
+      "peak_mib": 2800
+    },
+    "librelane-closure-tuned": {
+      "sample_seconds": 4800,
+      "disk_mib": 4500,
+      "peak_mib": 2800
+    },
+    "librelane-drt-jumpers": {
+      "sample_seconds": 4800,
+      "disk_mib": 4500,
+      "peak_mib": 2800
+    }
+  },
+  "budgets": {
+    "min_free_disk_gib": 100
+  },
+  "tuning_disclosure": {
+    "rusteda": "The RustEDA arm is the producer behind the published SKY130A row: its repair plans (measured-load buffers, five setup rewires, native diode and SS selection, grouped jumpers, horizontal V3 offsets) were developed over the recorded SKY130 trials against the shared gates' power, area, Fmax and antenna counts, not against LibreLane's runtime.",
+    "librelane": "The published SKY130A LibreLane configuration uses LibreLane's defaults for antenna repair and post-GRT resizer margins. This plan screens it against the closure settings of the IHP recipe (antenna margin 50 with 6/4 iterations; resizer setup and hold margins 1.0/0.2 ns with full TNS repair) and against jumper-only antenna repair after detailed routing, the knob classes of the IHP screen, under the same selection rule and gates. Geometry, floorplan, density, padding and CTS knobs stay as published.",
+    "harness": "LibreLane runs with TMPDIR=/tmp (tmpfs), where the published SKY130A and GF180MCU D runs kept Yosys's ABC temporary files. With TMPDIR on the ext4 /home volume, Yosys 0.70's parallel ABC mapping hung in synthesis in 3 of 3 runs (2026-11-17); with /tmp it finished in 92 s with the published synthesis netlist. Yosys also writes a merged-Liberty cache there under a new key in every run (as in the published run), so no sample reuses another's."
+  }
+}

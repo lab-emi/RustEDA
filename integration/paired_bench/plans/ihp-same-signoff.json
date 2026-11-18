@@ -1,0 +1,450 @@
+{
+  "schema": "rusteda.paired-bench-plan.v1",
+  "name": "ihp-same-signoff-20261117",
+  "description": "IHP SG13G2 Ibex: RustEDA aligned-power profile against LibreLane 3.0.17 with a pre-declared LibreLane tuning screen, then three alternating confirmation blocks. Each sample runs its producer and the shared gates in the same 4-CPU, 4 GiB, zero-swap scope.",
+  "resources": {
+    "cpus": [
+      24,
+      25,
+      26,
+      27
+    ],
+    "memory_mib": 4096,
+    "swap_mib": 0
+  },
+  "quiet_host": {
+    "window_seconds": 30,
+    "windows": 2,
+    "max_host_busy_cpus": 2.0,
+    "max_allowed_set_busy_cpus": 0.2,
+    "max_package_celsius": 85,
+    "max_wait_seconds": 5400
+  },
+  "flags": {
+    "max_other_busy_cpus_on_allowed_set": 0.25,
+    "max_other_busy_cpus_host": 4.0
+  },
+  "inputs": {
+    "rusteda_flow": {
+      "path": "{root}/.work/three-pdk-20261114/bin/wireload-b07874f/rusteda-flow",
+      "sha256": "abcd0b4a22657e6a2998fc5ba0f4f3696be919b5ed266f3f44847657c598a7eb"
+    },
+    "rusteda_manifest": {
+      "path": "{root}/.work/power-fmax-20261115/ihp-aligned-path-aware-gds/manifest.json",
+      "sha256": "c444f4e5c179ef06600b12de7492bc0b0d2843918f7df93035c09a3599edf876"
+    },
+    "librelane": {
+      "path": "/home/cgao/bin/librelane",
+      "sha256": "61c67f23de4cdaa328fb125391eac09cb7bfbf3eaca2684dd9429619e3c68d06"
+    },
+    "librelane_appimage": {
+      "path": "/home/cgao/tools/librelane/3.0.17/librelane-devshell-x86_64.AppImage",
+      "sha256": "c8ef5ae26b1fc53dd1dd30fe2f1a1da6ab0fdf471dd5a94c2b85d2b3db36833c"
+    },
+    "librelane_template": {
+      "path": "{root}/integration/ibex_sg13g2_ez130/config.json.in",
+      "sha256": "f5b458886bb76d9d15e2a569322f32f557c39fa41c07fa5d178580021f557c2f"
+    },
+    "librelane_published_config": {
+      "path": "{root}/.work/power-fmax-20261115/ihp-runtime-pair-4core/librelane/config.json",
+      "sha256": "796467064ad38615bc1b736781589fc590ab054444c2ed4cba9af41cfbb205b3"
+    },
+    "rtl": {
+      "path": "{root}/.work/ibex-campaign-20261110/prep/rtl/design.v",
+      "sha256": "8a8fe84b181e6e3b169721034850a1b8fabfd320d988eb89e016598e906911e4"
+    },
+    "constraints": {
+      "path": "{root}/.work/ibex-campaign-20261110/prep/constraints.sdc",
+      "sha256": "e792bb5d60c87e3e2fc82f98aae64f7cb7a518d3dd1a265145c18f8456dce2ba"
+    },
+    "pnr_sdc": {
+      "path": "{root}/.work/ibex-campaign-20261110/prep/pnr.sdc",
+      "sha256": "2ff82ee688dd994fb63df6cc5cea0c8800bdcf60c736d04b5bf9d54a9613fb47"
+    },
+    "signoff_host": {
+      "path": "{root}/.work/power-fmax-20261115/ihp-aligned-path-aware-gds/signoff-host.json",
+      "sha256": "af80f93f6462a611a284e85ba1b67296fc6e09c82304b9148891430dcdc34e92"
+    },
+    "signoff_driver": {
+      "path": "{root}/integration/ibex_host_benchmark/signoff_layout.py",
+      "sha256": "459841e5de291ee04e556da663a22a91315b8bacf3b3d389f6e17d7be89a71f1"
+    },
+    "python": {
+      "path": "/home/cgao/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/bin/python3.13",
+      "sha256": "4ceefc12dbe6f01efa99bf5cf594df33cc8dc45a0ff23c3229e2e955059a374e"
+    }
+  },
+  "signoff": {
+    "argv": [
+      "{inputs.python}",
+      "{inputs.signoff_driver}",
+      "--host",
+      "{inputs.signoff_host}",
+      "--layout",
+      "{sample}/layout.json",
+      "--workspace",
+      "{sample}/signoff/gates"
+    ],
+    "deadline_seconds": 4800,
+    "ownership_manifest": "{inputs.rusteda_manifest}",
+    "gates": [
+      "drc",
+      "antenna",
+      "latchup",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "endpoints": {
+    "gds": [],
+    "physical_signoff": [
+      "drc",
+      "antenna",
+      "latchup",
+      "lvs"
+    ],
+    "common_signoff": [
+      "drc",
+      "antenna",
+      "latchup",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density"
+    ],
+    "full_signoff": [
+      "drc",
+      "antenna",
+      "latchup",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "arms": {
+    "rusteda": {
+      "flow": "rusteda",
+      "role": "candidate",
+      "description": "Published qualified opt-in profile integration/ibex_pdks/ihp_sg13g2_ez130/native/profile-aligned-power.json (aligned selects, arbitrary initial state, path-aware pin access, no optional via reduction), composed manifest c444f4e5, through be_gds.",
+      "producer": {
+        "argv": [
+          "{inputs.rusteda_flow}",
+          "flow",
+          "exec",
+          "--manifest",
+          "{inputs.rusteda_manifest}",
+          "--project",
+          "{root}/.work/ibex-campaign-20261110/compose/be",
+          "--output",
+          "{sample}/output",
+          "--base-rev",
+          "empty",
+          "--pdk",
+          "ihp",
+          "--stop-after",
+          "be_gds"
+        ],
+        "deadline_seconds": 1600,
+        "worker_scope": true
+      },
+      "layout": {
+        "gds": "{sample}/output/backend/ibex_sram_bench.gds",
+        "def": "{sample}/output/logs/be_def.stdout",
+        "netlist": "{sample}/output/logs/be_netlist.stdout",
+        "powered_netlist": "{sample}/output/logs/be_powered.stdout",
+        "synthesis_netlist": "{sample}/output/frontend/mapped.v"
+      },
+      "expected_outputs": {
+        "gds": "9c96935e6f753369997c35f26fb3fa2e8873912f09a06794ad9b7a679b165b5a",
+        "def": "221f1694eafa0773ac64f5852d16779b77745c5cd7f11ad8a734cbf41c9625a4",
+        "netlist": "17b42dd3a42e2db0b84521d9dba12d6263d423d0e8495ccd427e60a054150f6b",
+        "powered_netlist": "85e6dded6210ae001b66ddc00557478d78d95f9a31f5333f9cc5a1dcab97c173",
+        "synthesis_netlist": "2fcbc5417689a7948727e5400d46baaba9469ef36d3c8074dec8000528e5d693"
+      }
+    },
+    "librelane-recipe": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "The published 7.73x LibreLane recipe: tracked IHP template with DRT_THREADS=4 and post-GRT design repair. Antenna repair margin 50 and 6/4 GRT/DRT repair iterations.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/ibex-campaign-20261110/prep"
+        },
+        "overlay": {
+          "DRT_THREADS": 4,
+          "RUN_POST_GRT_DESIGN_REPAIR": true
+        },
+        "expect_equal": "{inputs.librelane_published_config}"
+      },
+      "producer": {
+        "argv": [
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/ibex-campaign-20261110/prep/pdk",
+          "--pdk",
+          "ihp-sg13g2",
+          "--scl",
+          "ez130_8t",
+          "--jobs",
+          "4",
+          "--run-tag",
+          "{run_tag}",
+          "--to",
+          "KLayout.StreamOut",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "{sample}/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/*-klayout-streamout/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      },
+      "expected_outputs": {
+        "gds": "e6843075b1eacc7ac419e204ebecc2812242507e52ac7e99b24f9a69593b900b",
+        "def": "7c26910976a5239b9f32cfd00b52c1f7a4e5a030446e5ab5487282633120539a",
+        "netlist": "93dc27dd9a36ea10c20f47b4801b8a2a87cd0f03b83e4ab74ead42e4d56c7bbf",
+        "powered_netlist": "4e633309c6342ca27cd2c4a87d826b3280db8f851c7d8e98a9f950377defdf2b"
+      }
+    },
+    "librelane-antenna-default": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "The recipe with LibreLane's default antenna repair (margin 10, 3 GRT and 3 DRT iterations), the setting the SKY130 and GF180MCU references use.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/ibex-campaign-20261110/prep"
+        },
+        "overlay": {
+          "DRT_THREADS": 4,
+          "RUN_POST_GRT_DESIGN_REPAIR": true,
+          "GRT_ANTENNA_REPAIR_ITERS": null,
+          "GRT_ANTENNA_REPAIR_MARGIN": null,
+          "DRT_ANTENNA_REPAIR_ITERS": null,
+          "DRT_ANTENNA_REPAIR_MARGIN": null
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/ibex-campaign-20261110/prep/pdk",
+          "--pdk",
+          "ihp-sg13g2",
+          "--scl",
+          "ez130_8t",
+          "--jobs",
+          "4",
+          "--run-tag",
+          "{run_tag}",
+          "--to",
+          "KLayout.StreamOut",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "{sample}/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/*-klayout-streamout/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    },
+    "librelane-defaults": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "Default antenna repair plus LibreLane's default post-GRT resizer margins (setup 0.025 ns, hold 0.05 ns, TNS repair unset), as in the SKY130 and GF180MCU references.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/ibex-campaign-20261110/prep"
+        },
+        "overlay": {
+          "DRT_THREADS": 4,
+          "RUN_POST_GRT_DESIGN_REPAIR": true,
+          "GRT_ANTENNA_REPAIR_ITERS": null,
+          "GRT_ANTENNA_REPAIR_MARGIN": null,
+          "DRT_ANTENNA_REPAIR_ITERS": null,
+          "DRT_ANTENNA_REPAIR_MARGIN": null,
+          "GRT_RESIZER_SETUP_SLACK_MARGIN": null,
+          "GRT_RESIZER_HOLD_SLACK_MARGIN": null,
+          "GRT_RESIZER_SETUP_REPAIR_TNS_PCT": null
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/ibex-campaign-20261110/prep/pdk",
+          "--pdk",
+          "ihp-sg13g2",
+          "--scl",
+          "ez130_8t",
+          "--jobs",
+          "4",
+          "--run-tag",
+          "{run_tag}",
+          "--to",
+          "KLayout.StreamOut",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "{sample}/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/*-klayout-streamout/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    },
+    "librelane-drt-jumpers": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "Default antenna repair with jumpers instead of diodes after detailed routing (DRT_ANTENNA_REPAIR_JUMPER_ONLY). Added by amendment after screen-01: the shared timing gate's fanout and capacitance rows are on nets loaded by the 490 diodes that detailed-route repair inserts, and the classic flow has no design repair after it.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/ibex-campaign-20261110/prep"
+        },
+        "overlay": {
+          "DRT_THREADS": 4,
+          "RUN_POST_GRT_DESIGN_REPAIR": true,
+          "GRT_ANTENNA_REPAIR_ITERS": null,
+          "GRT_ANTENNA_REPAIR_MARGIN": null,
+          "DRT_ANTENNA_REPAIR_ITERS": null,
+          "DRT_ANTENNA_REPAIR_MARGIN": null,
+          "DRT_ANTENNA_REPAIR_JUMPER_ONLY": true
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/ibex-campaign-20261110/prep/pdk",
+          "--pdk",
+          "ihp-sg13g2",
+          "--scl",
+          "ez130_8t",
+          "--jobs",
+          "4",
+          "--run-tag",
+          "{run_tag}",
+          "--to",
+          "KLayout.StreamOut",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "{sample}/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/*-klayout-streamout/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    }
+  },
+  "phases": {
+    "screen": {
+      "samples": [
+        "librelane-antenna-default",
+        "rusteda",
+        "librelane-recipe",
+        "librelane-defaults",
+        "librelane-drt-jumpers"
+      ]
+    },
+    "confirm": {
+      "pair": [
+        "@selected",
+        "rusteda"
+      ],
+      "blocks": 3
+    }
+  },
+  "selection": {
+    "from_phase": "screen",
+    "flow": "librelane",
+    "baseline_arm": "librelane-recipe",
+    "physical_endpoint": "physical_signoff",
+    "target_endpoint": "common_signoff",
+    "rule": "Declared before any screening sample ran. Select the LibreLane arm with the fewest seconds to common_signoff. If no arm reaches it, select the arm with the fewest seconds to GDS among arms that pass every physical_signoff gate; otherwise the fastest GDS. The screening samples are not reused in the confirmation blocks."
+  },
+  "estimates": {
+    "rusteda": {
+      "sample_seconds": 1000,
+      "disk_mib": 1800,
+      "peak_mib": 2300
+    },
+    "librelane-recipe": {
+      "sample_seconds": 3500,
+      "disk_mib": 2200,
+      "peak_mib": 2800
+    },
+    "librelane-antenna-default": {
+      "sample_seconds": 3500,
+      "disk_mib": 2200,
+      "peak_mib": 2800
+    },
+    "librelane-defaults": {
+      "sample_seconds": 3500,
+      "disk_mib": 2200,
+      "peak_mib": 2800
+    },
+    "librelane-drt-jumpers": {
+      "sample_seconds": 3500,
+      "disk_mib": 2200,
+      "peak_mib": 2800
+    }
+  },
+  "tuning_disclosure": {
+    "rusteda": "The RustEDA arm is the qualified opt-in IHP profile chosen after the recorded IHP trials on the benchmark page (reset-specialized and arbitrary-initial-state aligned selects, path-aware pin access, optional via reduction on and off). Its tuning targeted power, area and setup Fmax at the shared gates, not LibreLane's runtime.",
+    "librelane": "The published LibreLane recipe was tuned for closure on IHP (antenna margin 50, 6/4 repair iterations, cell and diode padding, post-GRT resizer margins 1.0/0.2 ns with full TNS repair). This plan screens it against two arms that restore LibreLane defaults for the antenna and resizer knobs, under the same selection rule and the same gates. Geometry, routing layers, padding, CTS and floorplan knobs stay as published. An amendment added a fourth arm, jumper-only antenna repair after detailed routing, once the first screening sample showed that diode loads cause LibreLane's timing-gate rows; it can only help LibreLane."
+  }
+}

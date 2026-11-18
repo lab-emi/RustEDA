@@ -1,0 +1,590 @@
+{
+  "schema": "rusteda.paired-bench-plan.v1",
+  "name": "gf180-same-signoff-20261117",
+  "description": "GF180MCU D Ibex: the published filled RustEDA producer against LibreLane 3.0.17 followed by the same floating-fill emitter, with a pre-declared LibreLane tuning screen, then three alternating confirmation blocks. Each sample runs its producer and the shared GF180MCU gates (KLayout DRC and antenna, Netgen LVS, OpenRCX, RustSTA/OpenSTA, Icarus, density, ABC) in the same 2-CPU, 4 GiB, zero-swap scope.",
+  "resources": {
+    "cpus": [
+      22,
+      23
+    ],
+    "memory_mib": 4096,
+    "swap_mib": 0
+  },
+  "quiet_host": {
+    "window_seconds": 30,
+    "windows": 2,
+    "max_host_busy_cpus": 2.0,
+    "max_allowed_set_busy_cpus": 0.2,
+    "max_package_celsius": 85,
+    "max_wait_seconds": 5400
+  },
+  "flags": {
+    "max_other_busy_cpus_on_allowed_set": 0.25,
+    "max_other_busy_cpus_host": 4.0
+  },
+  "inputs": {
+    "python": {
+      "path": "/home/cgao/.venv/bin/python3",
+      "sha256": "4ceefc12dbe6f01efa99bf5cf594df33cc8dc45a0ff23c3229e2e955059a374e"
+    },
+    "gf180_producer": {
+      "path": "{root}/integration/paired_bench/producers/gf180.py",
+      "sha256": "9b55915b68c73aae5c2fd53ca0e9b9bfc9d8a1e3d194db691d4ceefd42622b7e"
+    },
+    "fill_emitter": {
+      "path": "{root}/integration/ibex_pdks/gf180mcu/native/floating_fill.py",
+      "sha256": "08b8645b80becd047d6be61104248b4c8d1ee432a16eb60b45f16e2259ceb423"
+    },
+    "eda": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/eda",
+      "sha256": "ab2812ac24e1116da664da0285ba8f8d26d6080fe4d66c849ab8971af4e67192"
+    },
+    "rusteda_run_integrated": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/gf-density-legal-closure-20261115/matched-filled-producer-22-23/run-integrated.py",
+      "sha256": "51ab67a65305131d49b5dfe9ca0435af559713160be401436abc2e9366bec2f2"
+    },
+    "rusteda_warm_replay": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/gf-density-legal-closure-20261115/matched-filled-producer-22-23/warm/replay.py",
+      "sha256": "bbcb1ae3a3070df90e47e2dd1beb244ba782ac0ca5c80dc40e4eaa07a4d60e4f"
+    },
+    "rusteda_manifest": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/gf-density-legal-closure-20261115/matched-filled-producer-22-23/cold/manifest.json",
+      "sha256": "4699aa0021890fb470dbeab03a4280a187a1afd475d9a5ce667fb8f37a4cf12a"
+    },
+    "rusteda_flow": {
+      "path": "{root}/.work/three-pdk-20261114/bin/baseline/rusteda-flow",
+      "sha256": "3ad9649419d6255e971e38ee8d5e4acc9df321659a0d795c96606fa964c07e9f"
+    },
+    "run_env": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/run-env",
+      "sha256": "f8250ee9714616fdf6fc46814224c17889eeb4ebc738fe1f3dc913a94d4fdeb2"
+    },
+    "librelane": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/venv/bin/librelane",
+      "sha256": "7f5eaa32cb7c8011f5d37c0a28d8f095e19c0009f96adb9c89a33ea07a94c022"
+    },
+    "librelane_template": {
+      "path": "{root}/integration/ibex_pdks/gf180mcu/config.json.in",
+      "sha256": "f0be93fdcc053146fc6b61aedcc3be1155f67333128f2c4dbbc197ec2130027d"
+    },
+    "librelane_published_config": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/gds-producer-pair-22-23/librelane/config.json",
+      "sha256": "41644e3ebe7a30dea50d38fa11c728062dac05abe3cb5c72720abdb74cd54a4d"
+    },
+    "rtl": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/prep/rtl/design.v",
+      "sha256": "e5910a6a310b5c0036e57e67e2bbd66986897e4569cf5738f4e296e3b69f5108"
+    },
+    "constraints": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/prep/constraints.sdc",
+      "sha256": "36bff4d1fa53fd66b50d3d602ff424a83c96ff78953057a10c72a5c9bdf97c84"
+    },
+    "pnr_sdc": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/prep/pnr.sdc",
+      "sha256": "2ff82ee688dd994fb63df6cc5cea0c8800bdcf60c736d04b5bf9d54a9613fb47"
+    },
+    "cppr_off": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/prep/cppr_off.tcl",
+      "sha256": "2a99c17f1596a21893e53ee2debb490270ec7871f73e6bf49f20f0f1c3d5616a"
+    },
+    "pdn": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/prep/pdn.tcl",
+      "sha256": "e2bc9ac952dd4c0a83bf5f443c5205261b725911e2f9dfe2fb69359eb52383ad"
+    },
+    "signoff_python": {
+      "path": "/usr/bin/python3.14",
+      "sha256": "9c61adf6f6882c8f00ca6023a8d6e0c35a51b80989ac1b3e8423f4c512bfcafc"
+    },
+    "signoff_driver": {
+      "path": "{root}/integration/ibex_host_benchmark/signoff_layout.py",
+      "sha256": "459841e5de291ee04e556da663a22a91315b8bacf3b3d389f6e17d7be89a71f1"
+    },
+    "signoff_profile": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/matched-gates/gates.json",
+      "sha256": "fde6c04c4656bdddeafaec2b75b85c6a41575c528e46bf2291998589096a5823"
+    },
+    "signoff_host": {
+      "path": "{root}/.work/three-pdk-20261114/gf180/matched-gates/host.json",
+      "sha256": "bf9a41914ac5e5459b464e2ce57b345de15fad47c18c6ec59ff41df12452c729"
+    }
+  },
+  "signoff": {
+    "argv": [
+      "{inputs.run_env}",
+      "{inputs.signoff_python}",
+      "{inputs.signoff_driver}",
+      "--profile",
+      "{inputs.signoff_profile}",
+      "--host",
+      "{inputs.signoff_host}",
+      "--layout",
+      "{sample}/layout.json",
+      "--workspace",
+      "{sample}/signoff/gates"
+    ],
+    "deadline_seconds": 7200,
+    "ownership_manifest": "{inputs.rusteda_manifest}",
+    "gates": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "endpoints": {
+    "gds": [],
+    "physical_signoff": [
+      "drc",
+      "antenna",
+      "lvs"
+    ],
+    "common_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density"
+    ],
+    "full_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "arms": {
+    "rusteda": {
+      "flow": "rusteda",
+      "role": "candidate",
+      "description": "The published 637.13 s filled producer: cold RTL-to-GDS flow, two corrective warm reroutes with their prerequisite extraction, timing and ABC, then floating fill. integration/paired_bench/producers/gf180.py copies its three launch inputs into {sample}/case unchanged; the fill step is the tracked emitter (the same one the LibreLane arms run), which reproduces the published filled GDS after masking dates.",
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.gf180_producer}",
+          "rusteda",
+          "--out",
+          "{sample}/case"
+        ],
+        "deadline_seconds": 1750,
+        "worker_scope": true,
+        "ownership": "{sample}/case/cold/ownership"
+      },
+      "layout": {
+        "gds": "{sample}/case/fill/ibex_sram_bench.gds",
+        "def": "{sample}/case/warm/load/eval/def.def",
+        "netlist": "{sample}/case/warm/load/eval/netlist.v",
+        "powered_netlist": "{sample}/case/warm/load/eval/powered_netlist.v",
+        "synthesis_netlist": "{sample}/case/cold/output/frontend/mapped.v"
+      },
+      "expected_outputs": {
+        "gds": "8c5157616748e596cf3203aaaf76c829568a2dd7a29033b947048d0956e3301e",
+        "def": "59b0fee54c496f6c4eea6b2c030fa49d763f44c112eb81733c5edf4da7fe3088",
+        "netlist": "dc1de0d2d012aa173e97a9c9d177c75fe4a1b66074123e6d713c6aa7091d5c41",
+        "powered_netlist": "2a4dfb7fc57f0d275d252afbe98021388205b23b45c296b327f7d9d70221fbaa",
+        "synthesis_netlist": "1756bef724b1847a6b4e2a87a549221f4cf6ec35118bbf501df6e00b86ec3be7"
+      }
+    },
+    "librelane-recipe-fill": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published reference configuration; then the floating-fill emitter on its final GDS and DEF (integration/paired_bench/producers/gf180.py librelane), timed inside the producer.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/gf180/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/pdks/gf180mcuD"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "KLAYOUT_DRC_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "all,-antenna,-density",
+            "threads": "2",
+            "workers": "1"
+          },
+          "KLAYOUT_ANTENNA_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "antenna",
+            "threads": "2",
+            "workers": "1"
+          },
+          "LIB": {
+            "*_tt_025C_5v00": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib"
+            ],
+            "*_ss_125C_4v50": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib"
+            ]
+          }
+        },
+        "expect_equal": "{inputs.librelane_published_config}"
+      },
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.gf180_producer}",
+          "librelane",
+          "--run",
+          "{sample}/design/runs/{run_tag}",
+          "--out",
+          "{sample}/post",
+          "--",
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/pdks",
+          "--pdk",
+          "gf180mcuD",
+          "--scl",
+          "gf180mcu_fd_sc_mcu7t5v0",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/post/fill/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      },
+      "expected_outputs": {
+        "def": "38fc6c54f036135044a8c8f2c23a81788a054c35d13598f089b9e456bbb2c3f2",
+        "netlist": "a9140419cf08f6786166fc37ec7afa870b1452004636f2c462191b2f1fa34fbb",
+        "powered_netlist": "85a06f529df76ee167b140cdc1e32695198de8a920b3b9be7013bea86b89502c",
+        "synthesis_netlist": "589fc1964505be9e3f8d3fb9c3a451d1abe676e1b72cee6a72e0d37332e5da75"
+      }
+    },
+    "librelane-antenna-tuned-fill": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published configuration with the IHP recipe's antenna repair (GRT and DRT margin 50, 6 GRT and 4 DRT iterations) in place of LibreLane's defaults (margin 10, 3 and 3); then the floating-fill emitter on its final GDS and DEF (integration/paired_bench/producers/gf180.py librelane), timed inside the producer.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/gf180/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/pdks/gf180mcuD"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "KLAYOUT_DRC_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "all,-antenna,-density",
+            "threads": "2",
+            "workers": "1"
+          },
+          "KLAYOUT_ANTENNA_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "antenna",
+            "threads": "2",
+            "workers": "1"
+          },
+          "LIB": {
+            "*_tt_025C_5v00": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib"
+            ],
+            "*_ss_125C_4v50": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib"
+            ]
+          },
+          "GRT_ANTENNA_REPAIR_ITERS": 6,
+          "GRT_ANTENNA_REPAIR_MARGIN": 50,
+          "DRT_ANTENNA_REPAIR_ITERS": 4,
+          "DRT_ANTENNA_REPAIR_MARGIN": 50
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.gf180_producer}",
+          "librelane",
+          "--run",
+          "{sample}/design/runs/{run_tag}",
+          "--out",
+          "{sample}/post",
+          "--",
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/pdks",
+          "--pdk",
+          "gf180mcuD",
+          "--scl",
+          "gf180mcu_fd_sc_mcu7t5v0",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/post/fill/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    },
+    "librelane-closure-tuned-fill": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the IHP recipe's antenna repair plus its post-GRT resizer setup (setup margin 1.0 ns, hold margin 0.2 ns, TNS repair 100 %) in place of LibreLane's defaults (0.025 ns, 0.05 ns, unset); then the floating-fill emitter on its final GDS and DEF (integration/paired_bench/producers/gf180.py librelane), timed inside the producer.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/gf180/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/pdks/gf180mcuD"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "KLAYOUT_DRC_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "all,-antenna,-density",
+            "threads": "2",
+            "workers": "1"
+          },
+          "KLAYOUT_ANTENNA_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "antenna",
+            "threads": "2",
+            "workers": "1"
+          },
+          "LIB": {
+            "*_tt_025C_5v00": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib"
+            ],
+            "*_ss_125C_4v50": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib"
+            ]
+          },
+          "GRT_ANTENNA_REPAIR_ITERS": 6,
+          "GRT_ANTENNA_REPAIR_MARGIN": 50,
+          "DRT_ANTENNA_REPAIR_ITERS": 4,
+          "DRT_ANTENNA_REPAIR_MARGIN": 50,
+          "GRT_RESIZER_SETUP_SLACK_MARGIN": 1.0,
+          "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.2,
+          "GRT_RESIZER_SETUP_REPAIR_TNS_PCT": 100
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.gf180_producer}",
+          "librelane",
+          "--run",
+          "{sample}/design/runs/{run_tag}",
+          "--out",
+          "{sample}/post",
+          "--",
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/pdks",
+          "--pdk",
+          "gf180mcuD",
+          "--scl",
+          "gf180mcu_fd_sc_mcu7t5v0",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/post/fill/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    },
+    "librelane-drt-jumpers-fill": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published configuration with jumpers instead of diodes in the antenna repair after detailed routing (the IHP plan's fourth arm); then the floating-fill emitter on its final GDS and DEF (integration/paired_bench/producers/gf180.py librelane), timed inside the producer.",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/gf180/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/pdks/gf180mcuD"
+        },
+        "overlay": {
+          "DRT_THREADS": 2,
+          "KLAYOUT_DRC_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "all,-antenna,-density",
+            "threads": "2",
+            "workers": "1"
+          },
+          "KLAYOUT_ANTENNA_OPTIONS": {
+            "variant": "gf180mcuD",
+            "decks": "antenna",
+            "threads": "2",
+            "workers": "1"
+          },
+          "LIB": {
+            "*_tt_025C_5v00": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib"
+            ],
+            "*_ss_125C_4v50": [
+              "{root}/.work/three-pdk-20261114/pdks/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib"
+            ]
+          },
+          "DRT_ANTENNA_REPAIR_JUMPER_ONLY": true
+        }
+      },
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.gf180_producer}",
+          "librelane",
+          "--run",
+          "{sample}/design/runs/{run_tag}",
+          "--out",
+          "{sample}/post",
+          "--",
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/pdks",
+          "--pdk",
+          "gf180mcuD",
+          "--scl",
+          "gf180mcu_fd_sc_mcu7t5v0",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/post/fill/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      }
+    }
+  },
+  "phases": {
+    "screen": {
+      "samples": [
+        "librelane-antenna-tuned-fill",
+        "rusteda",
+        "librelane-recipe-fill",
+        "librelane-closure-tuned-fill",
+        "librelane-drt-jumpers-fill"
+      ]
+    },
+    "confirm": {
+      "pair": [
+        "@selected",
+        "rusteda"
+      ],
+      "blocks": 3
+    }
+  },
+  "selection": {
+    "from_phase": "screen",
+    "flow": "librelane",
+    "baseline_arm": "librelane-recipe-fill",
+    "physical_endpoint": "physical_signoff",
+    "target_endpoint": "common_signoff",
+    "rule": "Declared before any screening sample ran. Select the LibreLane arm with the fewest seconds to common_signoff. If no arm reaches it, select the arm with the fewest seconds to GDS among arms that pass every physical_signoff gate; otherwise the fastest GDS. The screening samples are not reused in the confirmation blocks."
+  },
+  "estimates": {
+    "rusteda": {
+      "sample_seconds": 2100,
+      "disk_mib": 5500,
+      "peak_mib": 3600
+    },
+    "librelane-recipe-fill": {
+      "sample_seconds": 2600,
+      "disk_mib": 3500,
+      "peak_mib": 2800
+    },
+    "librelane-antenna-tuned-fill": {
+      "sample_seconds": 2600,
+      "disk_mib": 3500,
+      "peak_mib": 2800
+    },
+    "librelane-closure-tuned-fill": {
+      "sample_seconds": 2600,
+      "disk_mib": 3500,
+      "peak_mib": 2800
+    },
+    "librelane-drt-jumpers-fill": {
+      "sample_seconds": 2600,
+      "disk_mib": 3500,
+      "peak_mib": 2800
+    }
+  },
+  "budgets": {
+    "min_free_disk_gib": 100
+  },
+  "tuning_disclosure": {
+    "rusteda": "The RustEDA arm is the producer behind the published GF180MCU D row: aligned selects with the area goal, hold and measured-load repair, and Metal2/top-metal floating fill, developed over the recorded GF180 trials against the shared gates' power, area, Fmax and density findings, not against LibreLane's runtime.",
+    "librelane": "Every LibreLane arm runs the same floating-fill emitter as RustEDA on its own final GDS, with the same options, so both flows are judged on density with fill. The emitter cannot lift LibreLane's top metal to its 30 % geometric target (26.0 % on the published layout); it emits what fits and the foundry density rules decide. The published configuration uses LibreLane's defaults for antenna repair and post-GRT resizer margins; this plan screens it against the IHP recipe's closure settings and jumper-only antenna repair, the knob classes of the IHP screen. Fill is GDS geometry only: OpenRCX, the timing gate and the power figures do not see it.",
+    "harness": "LibreLane runs with TMPDIR=/tmp (tmpfs), where the published SKY130A and GF180MCU D runs kept Yosys's ABC temporary files. With TMPDIR on the ext4 /home volume, Yosys 0.70's parallel ABC mapping hung in synthesis in 3 of 3 runs (2026-11-17); with /tmp it finished in 92 s with the published synthesis netlist. Yosys also writes a merged-Liberty cache there under a new key in every run (as in the published run), so no sample reuses another's."
+  }
+}

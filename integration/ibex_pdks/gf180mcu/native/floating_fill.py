@@ -7,7 +7,7 @@ Run with the benchmark's pinned KLayout from the repository checkout:
     klayout -b -r integration/ibex_pdks/gf180mcu/native/floating_fill.py \
         -rd input_gds=routed.gds -rd input_def=routed.def \
         -rd macro_lef=gf180mcu_fd_ip_sram__sram512x8m8wm1.lef \
-        -rd output_gds=filled.gds
+        -rd output_gds=filled.gds [-rd below_target=emit]
 
 Use an unfilled routed GDS and its matching DEF. Output is published to a new
 path, with a JSON geometry receipt on stdout. Run with a wall-time guard and
@@ -19,6 +19,11 @@ The layout rules in the GF180 design manual, section 13.3, set the 2 µm square
 size, 1.2 µm layout gap, 2 µm same-metal and 1 µm adjacent-metal clearances,
 and 6 µm exclusion-marker clearance. Section 4.1 identifies drawing and
 dummy purposes. Metal4 remains outside the scope of this benchmark emitter.
+
+A filled layer must exceed 30 % geometric coverage of the die. By default a layer
+that stays at or below it stops the emitter (GF180_FILL_BELOW_GEOMETRIC_TARGET).
+With `below_target=emit` the emitter writes the fill it can place and reports
+`below_geometric_target` for that layer; the foundry density rules still decide.
 """
 
 import json
@@ -40,7 +45,9 @@ MAX_GDS_BYTES = 128 * common.MIB
 MAX_DEF_BYTES = 64 * common.MIB
 MAX_LEF_BYTES = common.MIB
 MAX_INPUT_SHAPES = 1_700_000
-MAX_CLEARANCE_VERTICES = 3_200_000
+# Merged Metal1 vertices: 2.78 M in RustEDA's layout, 3.86 M in LibreLane's (2026-11-17). The
+# square-halo Minkowski sum on 6 M vertices stays well under 1 GiB.
+MAX_CLEARANCE_VERTICES = 6_000_000
 MAX_BOXES_PER_PHASE = 300_000
 SIZE = 2000
 PITCH = 3200
@@ -120,7 +127,7 @@ def grid(die, offset_x, offset_y):
     return result
 
 
-def choose_fill(die, layer, adjacent, masks, excluded, keepout):
+def choose_fill(die, layer, adjacent, masks, excluded, keepout, emit_below_target=False):
     active = masks[layer, DRAWING]
     drawing_area = (active & pya.Region(die)).area()
     if 10 * drawing_area > 3 * die.area():
@@ -144,11 +151,16 @@ def choose_fill(die, layer, adjacent, masks, excluded, keepout):
                 best, best_phase = boxes, [offset_x, offset_y]
 
     area = drawing_area + len(best) * SIZE ** 2
-    common.require(10 * area > 3 * die.area(), f"GF180_FILL_BELOW_GEOMETRIC_TARGET: layer {layer}")
-    return best, {"added_boxes": len(best), "phase_dbu": best_phase, "geometric_coverage_pct": 100 * area / die.area()}
+    below = not 10 * area > 3 * die.area()
+    common.require(emit_below_target or not below, f"GF180_FILL_BELOW_GEOMETRIC_TARGET: layer {layer}")
+    report = {"added_boxes": len(best), "phase_dbu": best_phase, "geometric_coverage_pct": 100 * area / die.area()}
+    if below:
+        report["below_geometric_target"] = True
+    return best, report
 
 
-def emit(input_gds, input_def, macro_lef, output_gds):
+def emit(input_gds, input_def, macro_lef, output_gds, below_target="refuse"):
+    common.require(below_target in ("refuse", "emit"), "GF180_FILL_BELOW_TARGET_MODE")
     output = Path(output_gds).absolute()
     common.require(output.suffix.lower() == ".gds" and output.parent.is_dir(), "GF180_FILL_OUTPUT_PATH")
     common.require(not output.exists() and not output.is_symlink(), "OUTPUT_EXISTS")
@@ -170,7 +182,8 @@ def emit(input_gds, input_def, macro_lef, output_gds):
     excluded = clearance(markers.merged(), 6000)
     reports = {}
     for layer, adjacent, keepout in ((36, (34, 42), macro_keepout), (81, (46,), pya.Region())):
-        boxes, reports[f"{layer}/{DUMMY}"] = choose_fill(die, layer, adjacent, masks, excluded, keepout)
+        boxes, reports[f"{layer}/{DUMMY}"] = choose_fill(die, layer, adjacent, masks, excluded, keepout,
+                                                         emit_below_target=below_target == "emit")
         if boxes:
             shapes = top.shapes(layout.layer(layer, DUMMY))
             for box in boxes:
@@ -183,14 +196,16 @@ def emit(input_gds, input_def, macro_lef, output_gds):
         common.require(temporary.stat().st_size <= MAX_GDS_BYTES, "GF180_FILL_OUTPUT_BYTE_BUDGET")
         os.link(temporary, output)
     return {"schema": "rusteda.gf180-ibex-floating-fill.v1", "scope": "GDS geometry only",
-            "inputs": sources, "output": common.identity(output, MAX_GDS_BYTES), "layers": reports}
+            "inputs": sources, "output": common.identity(output, MAX_GDS_BYTES), "layers": reports,
+            "below_target": below_target}
 
 
 def main():
     parameters = globals()
     keys = ("input_gds", "input_def", "macro_lef", "output_gds")
     common.require(all(name in parameters for name in keys), "GF180_FILL_REQUIRED_ARGUMENTS: " + ", ".join(keys))
-    print(json.dumps(emit(*(parameters[name] for name in keys)), sort_keys=True))
+    options = {"below_target": parameters["below_target"]} if "below_target" in parameters else {}
+    print(json.dumps(emit(*(parameters[name] for name in keys), **options), sort_keys=True))
 
 
 if __name__ == "__main__":
