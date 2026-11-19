@@ -44,8 +44,12 @@ speedup** and **7.8× routing speedup**.
 
 **IHP SG13G2 · SKY130A · GF180MCU D.** RustEDA and LibreLane 3.0.17 build
 Ibex with hard instruction and data SRAM. Within each PDK both use the same
-RTL, constraints, macro views and floorplan. The panels show the exported
-GDS side by side, with **RustEDA on the left** and **LibreLane on the right**.
+RTL, 100 ns (10 MHz) constraints, macro views, die area and macro placements
+(on SKY130A, RustEDA adds two 7 × 50 µm vertical placement channels not in
+LibreLane's config). The panels show the exported published GDS side by side,
+with **RustEDA on the left** and **LibreLane on the right**; their embedded
+captions retain the original single-run published receipts, while the table
+below gives the repeated three-block timings.
 
 ![Matched SKY130A GDS layouts with two OpenRAM banks, 10 MHz workload power, area, slow-corner timing and independent physical checks.](docs/benchmarks/figures/ibex-sky130-native-local-repair.png)
 
@@ -53,44 +57,35 @@ GDS side by side, with **RustEDA on the left** and **LibreLane on the right**.
 
 ![IHP SG13G2 matched final GDS side by side. Labels show both 4 KiB SRAM banks, same-frequency workload power, area, slow-corner timing and producer times.](docs/benchmarks/figures/ibex-ihp-aligned-matched.png)
 
-Each measurement lists **RustEDA / LibreLane**. Power is estimated from the
-same 17-cycle gate-level workload at **10 MHz** within each PDK. Percentages
-show RustEDA's change relative to LibreLane.
+Each measurement lists **RustEDA / LibreLane**. Power, area and the SS setup
+ceiling measure each flow's **published layout** (the same pair timed in the
+one-run column); the last column gives the three-block median against the
+**screened LibreLane arm**, which on SKY130A and GF180MCU D is a different,
+unmeasured layout (`drt-jumpers`) with far more antenna violations.
 
-| Open PDK | TT workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | RTL to GDS, selected LibreLane arm, median of three (s) | RTL to GDS of these layouts, one run (s) |
+| Open PDK | TT 17-cycle workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup ceiling at 10 MHz constraints (MHz)¹ | RTL to GDS, published pair, 1 run (s) | RTL to GDS, screened LibreLane arm, median of 3 (s)² |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.6%** | 219.6 / 1,745.5<br>**7.95×** | 219.8 / 1,806.0<br>**8.22×** |
-| SKY130A, two cores | 2.741 / 2.837<br>**−3.4%** | 174,096 / 176,427<br>**−1.3%** | 24.10 / 17.21<br>**+40.0%** | 1,665.5 / 1,370.0<br>**0.82×** | 1,660.6 / 1,730.6<br>**1.04×** |
-| GF180MCU D, two cores | 91.24 / 94.33<br>**−3.3%** | 475,913 / 490,812<br>**−3.0%** | 10.91 / 10.75<br>**+1.5%** | 591.3 / 885.6<br>**1.50×** | 594.1 / 911.0<br>**1.53×** |
+| IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.6%** | 219.8 / 1,806.0<br>8.22× | 219.6 / 1,745.5<br>**7.95×** (`antenna-default`, 0 / 0 phys.) |
+| SKY130A, two cores³ | 2.741 / 2.837<br>**−3.4%** | 174,096 / 176,427<br>**−1.3%** | 24.10 / 17.21<br>**+40.0%** | 1,660.6 / 1,730.6<br>1.04× (12 / 13 ant.) | 1,665.5 / 1,370.0<br>0.82× (`drt-jumpers`, 12 / 105 ant.) |
+| GF180MCU D, two cores | 91.24 / 94.33<br>**−3.3%** | 475,913 / 490,812<br>**−3.0%** | 10.91 / 10.75<br>**+1.5%** | 594.1 / 911.0<br>1.53× (0 / 0 ant.) | 591.3 / 885.6<br>**1.50×** (`drt-jumpers-fill`, 0 / 82 ant.) |
 
-OpenSTA uses the matched workload activity and nominal OpenRCX parasitics.
-Fmax is the lower bound from each routed layout's SS setup sweep. Area is
-the standard-cell footprint within the common die.
-
-In the first time column, the IHP time is the median of three alternating runs, against the fastest
-of four screened LibreLane recipes that passes the physical gates. Through DRC,
-antenna, latch-up and LVS the medians are **754 / 2,468 s (3.27×)**.
-LibreLane fails the shared timing gate on electrical limits, so it has no
-time to full signoff. The SKY130A and GF180MCU D times are also medians of
-three alternating runs. No LibreLane arm passes their physical gates, so the
-fastest GDS was selected. On SKY130A that arm repairs antennas with jumpers
-and keeps 105 Magic antenna findings, against 13 for the published
-configuration. The last column is one screening run of each flow's published
-configuration, which reproduced the DEF and netlists of the layouts measured
-in the power, area and Fmax columns; one run of each is not a confirmed
-difference. Neither flow reaches the shared signoff on SKY130A or GF180MCU D.
-[Repeated IHP comparison](docs/benchmarks/ibex-three-pdk.md#repeated-ihp-comparison-at-the-same-signoff) ·
+¹ **Not a tight-clock Fmax race:** both flows targeted a relaxed 100 ns (10 MHz) clock with LibreLane on `SYNTH_STRATEGY = "AREA 0"` (+35–49 ns positive slack, zero setup optimization); on SKY130A RustEDA also excludes `_1` cells and applies five pre-bound OR-gate rewires.  
+² In the 2026-11-18 runs, no LibreLane arm passed every physical gate on SKY130A or GF180MCU D, so the legacy fallback picked `drt-jumpers` despite 105 and 82 antenna findings (now fixed in `bench.py` to require `no_physical_regression` from baseline for future campaigns). On IHP, through DRC, antenna, latch-up and LVS the three-block medians are **754 / 2,468 s (3.27×)**; LibreLane fails the shared timing gate on electrical limits, and neither flow reaches full signoff on SKY130A or GF180MCU D.  
+³ **SKY130A parity caveat:** the SKY130A RustEDA producer is not yet a single clean release flow — it uses Ibex-trained PGO (`-231 s` on cold detailed routing alone; without PGO it is slower than `librelane-recipe`), five distinct `.work` RustROAD binaries, two vertical placement channels not in LibreLane's config, five hardcoded OR-gate rewires and two internal OpenRCX/OpenSTA loops. IHP SG13G2 (single standard `rusteda flow exec`, no PGO, 9/9 gates passed) is the cleanest comparison.
+[Fairness audit and known asymmetries](docs/benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries) ·
+[IHP](docs/benchmarks/ibex-three-pdk.md#repeated-ihp-comparison-at-the-same-signoff) ·
 [SKY130A](docs/benchmarks/ibex-three-pdk.md#repeated-sky130a-comparison-at-the-same-signoff) ·
-[GF180MCU D](docs/benchmarks/ibex-three-pdk.md#repeated-gf180mcu-d-comparison-at-the-same-signoff)
-[QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-frequency)
+[GF180MCU D](docs/benchmarks/ibex-three-pdk.md#repeated-gf180mcu-d-comparison-at-the-same-signoff) ·
+[QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-timing-margin)
 
-Both SKY130A layouts passed DRC and recorded **12 / 13** Magic antenna
-findings. RustEDA selects its repair targets from the current native route.
-The matched RTL-to-GDS run includes that selection and reproduces the checked GDS.
-GF180MCU D recorded **1 / 4** foundry density findings, and 1 / 3 when both
-flows end in the same floating fill, which both times include. Power and
-Fmax use nominal OpenRCX, whose extracted parasitics matched before and
-after adding DEF fills.
+OpenSTA uses the matched 17-cycle workload activity and nominal OpenRCX
+parasitics (vectorless 10 MHz power on the aligned layouts is also lower for
+RustEDA: 1.21 / 5.57 mW on IHP, 6.56 / 9.50 mW on SKY130A and 79.80 / 139.09 mW
+on GF180MCU D). Both SKY130A published layouts passed DRC and recorded **12 / 13**
+Magic antenna findings; GF180MCU D recorded **1 / 3** foundry density findings
+when both flows end in the same floating fill, which both GF180MCU D times
+include. One screening run of each published layout is not a confirmed
+difference.
 [Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md#sky130a-native-local-antenna-repair)
 
 ### IHP SG13G2 results

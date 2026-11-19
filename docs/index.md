@@ -27,17 +27,21 @@ guides the next iteration.
 ## Ibex RTL-to-GDS across three open PDKs
 
 **IHP SG13G2 · SKY130 · GF180MCU.** The benchmark pairs RustEDA and
-LibreLane on Ibex with hard SRAM within each process. The comparison includes
-annotated GDS pairs, standard-cell area, SS setup Fmax and power estimated
-from the same 10 MHz workload. The latest RustEDA layouts estimate **20.0%**,
-**3.4%** and **3.3%** lower workload power on IHP, SKY130 and GF180,
-respectively. The latest SKY130 pair reports **12 / 13** Magic antenna
-findings and zero DRC findings on both layouts.
-Over three alternating runs, RustEDA reached GDS in **1,665.5 s**. LibreLane's
-fastest screened arm took **1,370.0 s** and left 105 antenna findings. In one
-run of each published configuration, RustEDA took 1,660.6 s and LibreLane
-1,730.6 s.
-[Three-PDK benchmark](benchmarks/ibex-three-pdk.md)
+LibreLane on Ibex with hard SRAM within each process under a common 100 ns
+(10 MHz) constraint. On IHP SG13G2 — the cleanest single-flow comparison, with
+all nine independent signoff gates passing for RustEDA — three alternating
+blocks measure **219.6 / 1,745.5 s (7.95×)** to GDS and **754.2 / 2,467.7 s
+(3.27×)** through physical signoff. On the published layouts across IHP,
+SKY130A and GF180MCU D, RustEDA estimates **20.0%**, **3.4%** and **3.3%**
+lower 17-cycle workload power at 10 MHz and higher post-route SS setup timing
+ceilings (measured as residual margin under 10 MHz constraints, not a
+tight-clock Fmax race). On SKY130A and GF180MCU D, the 2026-11-18 repeated runs
+selected LibreLane's jumper-only arm (105 and 82 antenna findings) at
+**1,665.5 / 1,370.0 s** and **591.3 / 885.6 s**, while SKY130A RustEDA also
+carries significant recipe asymmetries (Ibex-trained PGO, multiple `.work`
+binaries, extra placement channels and pre-bound rewires).
+[Three-PDK benchmark](benchmarks/ibex-three-pdk.md) ·
+[Fairness audit](benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries)
 
 ### IHP SG13G2 results
 

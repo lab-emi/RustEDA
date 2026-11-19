@@ -22,11 +22,33 @@ import unittest
 from integration.paired_bench import bench, stats, verdicts
 
 
+def gds_rec(kind: int, dtype: int, payload: bytes) -> bytes:
+    if dtype == 6 and len(payload) % 2:
+        payload += b"\x00"
+    return struct.pack(">HBB", 4 + len(payload), kind, dtype) + payload
+
+
 def gds_bytes(date: int, geometry: bytes = b"\x00\x01") -> bytes:
-    def rec(kind, dtype, payload):
-        return struct.pack(">HBB", 4 + len(payload), kind, dtype) + payload
-    return (rec(0, 2, b"\x02\x58") + rec(1, 2, struct.pack(">12h", *([date] * 12))) +
-            rec(13, 2, geometry) + rec(4, 0, b""))
+    return (gds_rec(0, 2, b"\x02\x58") + gds_rec(1, 2, struct.pack(">12h", *([date] * 12))) +
+            gds_rec(13, 2, geometry) + gds_rec(4, 0, b""))
+
+
+def gds_hierarchy(date: int, structures: list[tuple[str, list[str], bytes]]) -> bytes:
+    """Build a minimal valid GDSII stream from `(strname, referenced_snames, xy_bytes)` tuples."""
+    date_payload = struct.pack(">12h", *([date] * 12))
+    out = [gds_rec(0, 2, b"\x02\x58"), gds_rec(1, 2, date_payload)]
+    for name, refs, geom in structures:
+        out.append(gds_rec(5, 2, date_payload))
+        out.append(gds_rec(6, 6, name.encode("ascii")))
+        for ref in refs:
+            out.append(gds_rec(10, 0, b""))  # SREF
+            out.append(gds_rec(18, 6, ref.encode("ascii")))
+            out.append(gds_rec(17, 0, b""))  # ENDEL
+        if geom:
+            out.append(gds_rec(16, 3, geom))  # XY
+        out.append(gds_rec(7, 0, b""))  # ENDSTR
+    out.append(gds_rec(4, 0, b""))  # ENDLIB
+    return b"".join(out)
 
 
 class StatsTest(unittest.TestCase):
@@ -93,6 +115,55 @@ class GdsDigestTest(unittest.TestCase):
             c.write_bytes(gds_bytes(2026)[:-2])
             with self.assertRaises(bench.BenchError):
                 bench.gds_digest(c)
+
+    def test_magic_prefix_masked_canonicalizes_macro_subcells_without_false_positives(self):
+        def sky_like(date: int, pfx: str, extra_cell: str = "RM_IHPSG13_CELL", geom: bytes = b"\x00\x00\x00\x01"):
+            return gds_hierarchy(date, [
+                (f"{pfx}sky130_sram_macro_contact_1", [], geom),
+                (f"{pfx}sky130_fd_bd_openram_cell", [f"{pfx}sky130_sram_macro_contact_1"], b""),
+                ("sky130_sram_macro", [f"{pfx}sky130_fd_bd_openram_cell"], b""),
+                (extra_cell, [], geom),
+                ("ibex_sram_bench", ["sky130_sram_macro", extra_cell], b""),
+            ])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)
+            a, b, c, d = (p / f"{n}.gds" for n in "abcd")
+            a.write_bytes(sky_like(2025, "FF_"))
+            b.write_bytes(sky_like(2026, "M4_"))
+            c.write_bytes(sky_like(2026, "M4_", extra_cell="ZZ_IHPSG13_CELL"))
+            d.write_bytes(sky_like(2026, "M4_", geom=b"\x00\x00\x00\x02"))
+            id_a, id_b = bench.identity(a, gds=True), bench.identity(b, gds=True)
+            id_c, id_d = bench.identity(c, gds=True), bench.identity(d, gds=True)
+            # Dates-only differs because Magic randomized FF_ vs M4_.
+            self.assertNotEqual(id_a["dates_masked_sha256"], id_b["dates_masked_sha256"])
+            # Magic-prefix-masked matches both FF_sky130_sram_macro_* and descendant FF_sky130_fd_bd_*.
+            self.assertEqual(id_a["magic_prefix_masked_sha256"], id_b["magic_prefix_masked_sha256"])
+            self.assertEqual(id_a["magic_prefixes_masked"], 2)
+            # Non-Magic XX_ cell names (RM_IHPSG13_CELL vs ZZ_IHPSG13_CELL) are NOT masked.
+            self.assertNotEqual(id_b["magic_prefix_masked_sha256"], id_c["magic_prefix_masked_sha256"])
+            # Geometry changes are NEVER masked.
+            self.assertNotEqual(id_b["magic_prefix_masked_sha256"], id_d["magic_prefix_masked_sha256"])
+            det = bench.determinism([{"layout": {"gds": id_a}}, {"layout": {"gds": id_b}}])
+            self.assertFalse(det["gds_dates_masked"]["identical"])
+            self.assertTrue(det["gds_magic_prefix_masked"]["identical"])
+
+            # Two distinct macros with swapped random prefixes remain canonical in encounter order,
+            # while collapsing both into one prefix changes the digest (bijectivity).
+            e, f, g = (p / f"{n}.gds" for n in "efg")
+            def two_macros(p1: str, p2: str):
+                return gds_hierarchy(2026, [
+                    (f"{p1}macro_alpha_sub", [], b"\x00\x00\x00\x01"),
+                    ("macro_alpha", [f"{p1}macro_alpha_sub"], b""),
+                    (f"{p2}macro_beta_sub", [], b"\x00\x00\x00\x02"),
+                    ("macro_beta", [f"{p2}macro_beta_sub"], b""),
+                    ("top", ["macro_alpha", "macro_beta"], b""),
+                ])
+            e.write_bytes(two_macros("AA_", "ZZ_"))
+            f.write_bytes(two_macros("ZZ_", "AA_"))
+            g.write_bytes(two_macros("AA_", "AA_"))
+            self.assertEqual(bench.gds_magic_prefix_digest(e), bench.gds_magic_prefix_digest(f))
+            self.assertNotEqual(bench.gds_magic_prefix_digest(e), bench.gds_magic_prefix_digest(g))
 
 
 FAKE_LIBRELANE = """
@@ -333,6 +404,121 @@ class EndToEndTest(unittest.TestCase):
             with self.assertRaises(bench.BenchError) as raised:
                 bench.render_librelane_config(plan, arm)
             self.assertEqual(raised.exception.code, "CONFIG_DRIFT")
+
+
+class SelectionFallbackTest(unittest.TestCase):
+    def _write_workspace(self, tmp: Path, samples: dict[str, dict], *, baseline: str | None = "ll-recipe",
+                         fallback_policy: str | None = None) -> tuple[bench.Plan, Path]:
+        ws = tmp / "ws"
+        (tmp / "manifest.json").write_text("{}")
+        (tmp / "template.json.in").write_text("{}")
+        layout = {k: "{sample}/" + k for k in bench.LAYOUT_KEYS}
+        arms = {
+            name: dict(flow="librelane", role="reference",
+                       librelane_config=dict(template="{root}/template.json.in", overlay={}),
+                       producer=dict(argv=["true"], deadline_seconds=10), layout=layout)
+            for name in samples
+        }
+        selection = dict(from_phase="screen", flow="librelane", physical_endpoint="physical_signoff",
+                         target_endpoint="common_signoff")
+        if baseline is not None:
+            selection["baseline_arm"] = baseline
+        if fallback_policy is not None:
+            selection["fallback_policy"] = fallback_policy
+        plan_data = dict(
+            schema=bench.PLAN_SCHEMA, name="fallback-test", root=str(tmp),
+            resources=dict(cpus=[0], memory_mib=256, swap_mib=0), quiet_host={}, budgets=dict(min_free_disk_gib=0),
+            inputs={"manifest": dict(path="{root}/manifest.json", sha256=bench.sha256(tmp / "manifest.json"))},
+            signoff=dict(argv=["true"], deadline_seconds=10, ownership_manifest="{inputs.manifest}",
+                         gates=["drc", "antenna", "lvs", "timing"]),
+            endpoints=dict(gds=[], physical_signoff=["drc", "antenna", "lvs"],
+                           common_signoff=["drc", "antenna", "lvs", "timing"]),
+            arms=arms,
+            phases=dict(screen=dict(samples=list(samples)), confirm=dict(pair=["@selected", list(samples)[0]], blocks=3)),
+            selection=selection,
+        )
+        plan_path = tmp / "plan.json"
+        plan_path.write_text(json.dumps(plan_data))
+        plan = bench.Plan(plan_path)
+        for i, (arm, spec) in enumerate(samples.items(), 1):
+            sid = f"screen-{i:02d}-{arm}"
+            gates = {
+                "drc": dict(verdict="passed" if spec["drc"] == 0 else "failed", violations=spec["drc"], wall_seconds=1.0),
+                "antenna": dict(verdict="passed" if spec["antenna"] == 0 else ("unverified" if spec["antenna"] is None else "failed"),
+                                violations=spec["antenna"], wall_seconds=1.0),
+                "lvs": dict(verdict=spec.get("lvs", "passed"), wall_seconds=1.0),
+                "timing": dict(verdict="failed", wall_seconds=1.0),
+            }
+            endpoints = {
+                "gds": dict(seconds=spec["gds"], blocking={}),
+                "physical_signoff": verdicts.endpoint(spec["gds"], gates, ["drc", "antenna", "lvs"]),
+                "common_signoff": verdicts.endpoint(spec["gds"], gates, ["drc", "antenna", "lvs", "timing"]),
+            }
+            bench.write(ws / "samples" / sid / "sample.json", dict(
+                schema=bench.SAMPLE_SCHEMA, id=sid, arm=arm, flow="librelane", role="reference",
+                block=None, status="complete", endpoints=endpoints, signoff=dict(gates=gates), flags=[],
+            ))
+        return plan, ws
+
+    def test_default_fallback_rejects_physical_regression_from_baseline(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            plan, ws = self._write_workspace(tmp, {
+                "ll-recipe": dict(gds=1730.6, drc=0, antenna=13),
+                "ll-tuned": dict(gds=2312.5, drc=0, antenna=8),
+                "ll-jumpers": dict(gds=1371.4, drc=0, antenna=105),
+                "ll-unverified": dict(gds=1100.0, drc=0, antenna=None),
+                "ll-bad-lvs": dict(gds=1200.0, drc=0, antenna=10, lvs="failed"),
+            })
+            sel = bench.cmd_select(plan, ws, "empty")
+            self.assertEqual(sel["selected"], "ll-recipe")
+            self.assertEqual(sel["fallback_policy"], "no_physical_regression")
+            by_arm = {c["arm"]: c for c in sel["candidates"]}
+            self.assertTrue(by_arm["ll-recipe"]["eligible_no_physical_regression"])
+            self.assertTrue(by_arm["ll-tuned"]["eligible_no_physical_regression"])
+            self.assertFalse(by_arm["ll-jumpers"]["eligible_no_physical_regression"])
+            self.assertFalse(by_arm["ll-unverified"]["eligible_no_physical_regression"])
+            self.assertFalse(by_arm["ll-bad-lvs"]["eligible_no_physical_regression"])
+
+    def test_default_fallback_picks_faster_non_regressing_arm(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            plan, ws = self._write_workspace(tmp, {
+                "ll-recipe": dict(gds=1730.6, drc=0, antenna=13),
+                "ll-better": dict(gds=1500.0, drc=0, antenna=10),
+                "ll-jumpers": dict(gds=1371.4, drc=0, antenna=105),
+            })
+            sel = bench.cmd_select(plan, ws, "empty")
+            self.assertEqual(sel["selected"], "ll-better")
+
+    def test_legacy_fastest_gds_fallback_opt_in(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            plan, ws = self._write_workspace(tmp, {
+                "ll-recipe": dict(gds=1730.6, drc=0, antenna=13),
+                "ll-jumpers": dict(gds=1371.4, drc=0, antenna=105),
+            }, fallback_policy="fastest_gds")
+            sel = bench.cmd_select(plan, ws, "empty")
+            self.assertEqual(sel["selected"], "ll-jumpers")
+
+    def test_no_baseline_minimizes_physical_violations_then_time(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            plan, ws = self._write_workspace(tmp, {
+                "ll-slow-clean": dict(gds=2300.0, drc=0, antenna=8),
+                "ll-fast-clean": dict(gds=2100.0, drc=0, antenna=8),
+                "ll-jumpers": dict(gds=1370.0, drc=0, antenna=105),
+            }, baseline=None)
+            sel = bench.cmd_select(plan, ws, "empty")
+            self.assertEqual(sel["selected"], "ll-fast-clean")
+
+    def test_invalid_fallback_policy_rejected(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            with self.assertRaises(bench.BenchError) as raised:
+                self._write_workspace(tmp, {"ll-recipe": dict(gds=100.0, drc=0, antenna=1)},
+                                      fallback_policy="bogus")
+            self.assertEqual(raised.exception.code, "PLAN_SELECTION")
 
 
 if __name__ == "__main__":

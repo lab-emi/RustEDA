@@ -50,8 +50,12 @@ each arm, the paired ratio for each block, the ratio of medians, and a conservat
 
 Each sample also records the quiet-gate outcome, foreign CPU on the host and on the allowed
 CPUs, package temperature and throttle time, cgroup memory and swap peaks, and output
-identities. GDS identities are also compared with date records masked. Samples with foreign
-load above the plan's flags, swap use or a quiet-gate timeout are listed under `flags`.
+identities. GDS identities are compared raw, with date records masked (`dates_masked_sha256`),
+and with both dates and Magic's per-run random two-character macro sub-cell prefixes canonicalized
+(`magic_prefix_masked_sha256`, which only touches `<XX>_`-prefixed descendants of a defined parent
+macro cell and leaves geometry and ordinary library prefixes such as `RM_...` or `M1_...` untouched).
+Samples with foreign load above the plan's flags, swap use or a quiet-gate timeout are listed under
+`flags`.
 
 ## Use
 
@@ -94,8 +98,15 @@ no swap:
 | `rusteda` | the qualified `profile-aligned-power.json` manifest, unchanged |
 
 The selected LibreLane arm has the fewest seconds to `common_signoff`. If no arm reaches it,
-the selection is the fastest GDS among arms that pass every physical gate. Screening samples
-are not reused in the confirmation blocks.
+the selection is the fastest GDS among arms that pass every physical gate. If no arm passes
+every physical gate, `bench.py` now defaults to `fallback_policy: "no_physical_regression"`:
+among arms that do not regress any physical gate relative to `baseline_arm` (same or fewer
+violations on every countable gate such as DRC and antenna, and no newly failing pass/fail
+gate such as LVS or latch-up; without a baseline, minimizing physical violations first), it
+picks the fastest GDS. Set `fallback_policy: "fastest_gds"` only to reproduce the earlier
+2026-11-18 SKY130A and GF180MCU D selection behavior, where the unconstrained fallback selected
+`librelane-drt-jumpers` despite 105 and 82 antenna findings. Screening samples are not reused
+in the confirmation blocks.
 
 `plans/sky130-same-signoff.json` (CPUs 30–31) and `plans/gf180-same-signoff.json` (CPUs 22–23)
 apply the same protocol to the SKY130A and GF180MCU D pairs, with 4 GiB and no swap. Their

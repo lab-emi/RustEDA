@@ -25,6 +25,7 @@ sample is never rerun, a partial one is kept and refused (`--discard-partial` mo
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict, deque
 import contextlib
 import fcntl
 import glob
@@ -50,6 +51,9 @@ SAMPLE_SCHEMA = "rusteda.paired-bench-sample.v1"
 REPORT_SCHEMA = "rusteda.paired-bench-report.v1"
 HASH_CAP = 4 << 30
 GDS_CAP = 1 << 30
+MAX_GDS_STRUCTURES = 200_000
+COUNTABLE_PHYSICAL_GATES = frozenset({"drc", "antenna"})
+FALLBACK_POLICIES = frozenset({"no_physical_regression", "fastest_gds"})
 LAYOUT_KEYS = ("gds", "def", "netlist", "powered_netlist", "synthesis_netlist")
 HANDLE = re.compile(r"[A-Za-z0-9_-]+")
 
@@ -82,33 +86,144 @@ def sha256(path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def gds_digest(path) -> str:
-    """SHA-256 of the GDS record stream with the BGNLIB/BGNSTR date payloads zeroed, so two
-    streams of the same geometry written at different times compare equal."""
-    path = Path(path)
+def _gds_records(path: Path):
+    """Yield `(header, kind, dtype, payload)` for each record in a GDSII stream."""
     if path.stat().st_size > GDS_CAP:
         raise BenchError("INPUT_TOO_LARGE", f"{path} exceeds {GDS_CAP} bytes")
-    digest = hashlib.sha256()
     with path.open("rb") as stream:
         while header := stream.read(4):
             if len(header) != 4:
                 raise BenchError("GDS_TRUNCATED", str(path))
-            size, kind, _ = struct.unpack(">HBB", header)
+            size, kind, dtype = struct.unpack(">HBB", header)
             if size < 4 or size % 2:
                 raise BenchError("GDS_RECORD", f"{path}: record size {size}")
             payload = stream.read(size - 4)
             if len(payload) != size - 4:
                 raise BenchError("GDS_TRUNCATED", str(path))
-            digest.update(header)
-            digest.update(bytes(len(payload)) if kind in (1, 5) else payload)
+            yield header, kind, dtype, payload
+
+
+def _magic_prefix_map(path: Path) -> dict[bytes, bytes]:
+    """Detect Magic's per-run random two-character macro sub-cell prefixes (`<XX>_`) in one GDS.
+
+    A 2-char alphanumeric prefix `P` (with trailing `_`) is recognized only when a defined cell
+    `S` has the form `P + M + "_" + ...` where `M` (len >= 4) is also a defined STRNAME in the
+    same GDS and `S` is reachable in `M`'s hierarchy. Every reachable descendant of `M` starting
+    with `P` has `P` replaced bijectively by an encounter-order canonical tag (`__MAGIC<n>__`).
+    Normal library prefixes like `RM_IHPSG13_...` or `M1_...` are never touched.
+    """
+    strnames: list[str] = []
+    first_seen: dict[str, int] = {}
+    children: dict[str, set[str]] = defaultdict(set)
+    current: str | None = None
+    for _, kind, _, payload in _gds_records(path):
+        if kind == 6:  # STRNAME
+            name = payload.rstrip(b"\x00").decode("ascii", errors="replace")
+            if name not in first_seen:
+                if len(strnames) >= MAX_GDS_STRUCTURES:
+                    raise BenchError("GDS_STRUCTURE_BUDGET", f"{path} exceeds {MAX_GDS_STRUCTURES} structures")
+                first_seen[name] = len(strnames)
+                strnames.append(name)
+            current = name
+        elif kind == 18 and current is not None:  # SNAME
+            children[current].add(payload.rstrip(b"\x00").decode("ascii", errors="replace"))
+        elif kind == 7:  # ENDSTR
+            current = None
+
+    potential_parents: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    for name in strnames:
+        if len(name) > 7 and name[2] == "_" and name[:2].isascii() and name[:2].isalnum():
+            rest = name[3:]
+            idx = rest.find("_")
+            while idx != -1:
+                if idx >= 4:
+                    cand_parent = rest[:idx]
+                    if cand_parent in first_seen and cand_parent != name:
+                        potential_parents[cand_parent].append((name[:3], name))
+                idx = rest.find("_", idx + 1)
+
+    renames: dict[bytes, bytes] = {}
+    prefix_tag: dict[str, bytes] = {}
+    for parent in sorted(potential_parents, key=lambda p: first_seen[p]):
+        seen: set[str] = set()
+        queue = deque(children[parent])
+        while queue:
+            cell = queue.popleft()
+            if cell in seen:
+                continue
+            seen.add(cell)
+            queue.extend(children[cell])
+        confirmed = [(pfx, cell) for pfx, cell in potential_parents[parent] if cell in seen]
+        if not confirmed:
+            continue
+        pfx_first: dict[str, int] = {}
+        for pfx, cell in confirmed:
+            pos = first_seen[cell]
+            if pfx not in pfx_first or pos < pfx_first[pfx]:
+                pfx_first[pfx] = pos
+        for pfx in sorted(pfx_first, key=lambda p: pfx_first[p]):
+            if pfx not in prefix_tag:
+                prefix_tag[pfx] = f"__MAGIC{len(prefix_tag)}__".encode("ascii")
+            tag = prefix_tag[pfx]
+            for cell in sorted(seen, key=lambda c: first_seen.get(c, MAX_GDS_STRUCTURES)):
+                if cell.startswith(pfx):
+                    raw = cell.encode("ascii")
+                    renames[raw] = tag + cell[len(pfx):].encode("ascii")
+    return renames
+
+
+def _gds_digests(path: Path) -> tuple[str, str, int]:
+    """Compute `(dates_masked_sha256, magic_prefix_masked_sha256, masked_cell_count)`."""
+    renames = _magic_prefix_map(path)
+    dates_digest = hashlib.sha256()
+    canon_digest = hashlib.sha256() if renames else None
+    for header, kind, dtype, payload in _gds_records(path):
+        masked_payload = bytes(len(payload)) if kind in (1, 5) else payload
+        dates_digest.update(header)
+        dates_digest.update(masked_payload)
+        if canon_digest is not None:
+            if kind in (6, 18):
+                stripped = payload.rstrip(b"\x00")
+                if stripped in renames:
+                    new_payload = renames[stripped]
+                    if len(new_payload) % 2:
+                        new_payload += b"\x00"
+                    canon_digest.update(struct.pack(">HBB", 4 + len(new_payload), kind, dtype))
+                    canon_digest.update(new_payload)
+                    continue
+            canon_digest.update(header)
+            canon_digest.update(masked_payload)
+    dates_hex = dates_digest.hexdigest()
+    canon_hex = canon_digest.hexdigest() if canon_digest is not None else dates_hex
+    return dates_hex, canon_hex, len(renames)
+
+
+def gds_digest(path) -> str:
+    """SHA-256 of the GDS record stream with the BGNLIB/BGNSTR date payloads zeroed, so two
+    streams of the same geometry written at different times compare equal."""
+    path = Path(path)
+    digest = hashlib.sha256()
+    for header, kind, _, payload in _gds_records(path):
+        digest.update(header)
+        digest.update(bytes(len(payload)) if kind in (1, 5) else payload)
     return digest.hexdigest()
+
+
+def gds_magic_prefix_digest(path) -> tuple[str, int]:
+    """SHA-256 of the GDS record stream with BGNLIB/BGNSTR dates zeroed and Magic's per-run
+    random macro sub-cell prefixes canonicalized. Returns `(sha256, masked_cell_count)`."""
+    _, canon_hex, masked = _gds_digests(Path(path))
+    return canon_hex, masked
 
 
 def identity(path, gds=False) -> dict:
     path = Path(path).resolve(strict=True)
     out = {"path": str(path), "sha256": sha256(path), "bytes": path.stat().st_size}
     if gds:
-        out["dates_masked_sha256"] = gds_digest(path)
+        dates_hex, canon_hex, masked = _gds_digests(path)
+        out["dates_masked_sha256"] = dates_hex
+        out["magic_prefix_masked_sha256"] = canon_hex
+        out["magic_prefixes_masked"] = masked
     return out
 
 
@@ -159,6 +274,9 @@ class Plan:
             unknown = set(gates) - set(self.gates)
             if unknown:
                 raise BenchError("PLAN_ENDPOINT", f"{name}: {sorted(unknown)} not in signoff.gates")
+        fallback = self.data.get("selection", {}).get("fallback_policy", "no_physical_regression")
+        if fallback not in FALLBACK_POLICIES:
+            raise BenchError("PLAN_SELECTION", f"unknown fallback_policy {fallback!r}")
 
     def ctx(self, **extra) -> dict:
         return self.context | extra
@@ -480,8 +598,9 @@ def run_sample(plan: Plan, workspace: Path, row: dict, *, period: float = 2.0, l
         record["layout"] = {k: identity(v, gds=(k == "gds")) for k, v in layout.items()}
         write(sample / "layout.json", layout)
         expected = arm.get("expected_outputs", {})
-        record["matches_expected"] = {k: record["layout"][k]["sha256"] == v or
-                                      record["layout"][k].get("dates_masked_sha256") == v
+        record["matches_expected"] = {k: v in (record["layout"][k]["sha256"],
+                                               record["layout"][k].get("dates_masked_sha256"),
+                                               record["layout"][k].get("magic_prefix_masked_sha256"))
                                       for k, v in expected.items()}
         signoff = plan.data["signoff"]
         sworker = secrets.token_hex(32)
@@ -616,11 +735,41 @@ def cmd_run(plan: Plan, workspace: Path, phase: str, base_rev: str, max_samples:
         return dict(phase=phase, ran=ran, remaining=len(todo) - len(ran), head=head(workspace))
 
 
+def _physical_quality(sample: dict, physical_gates: list[str]) -> tuple[dict[str, int | None], list[str]]:
+    """Summarize countable violation counts and non-countable failures across `physical_gates`."""
+    gate_rows = (sample.get("signoff") or {}).get("gates") or {}
+    counts: dict[str, int | None] = {}
+    noncount_failed: list[str] = []
+    for name in physical_gates:
+        row = gate_rows.get(name) or {}
+        if name in COUNTABLE_PHYSICAL_GATES:
+            v = row.get("violations")
+            counts[name] = v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else None
+        elif row.get("verdict") != "passed":
+            noncount_failed.append(name)
+    return counts, noncount_failed
+
+
+def _no_physical_regression(candidate: dict, baseline: dict, countable: list[str]) -> bool:
+    """True iff `candidate` is at least as physically clean as `baseline` on every physical gate."""
+    if set(candidate["physical_noncount_failed"]) - set(baseline["physical_noncount_failed"]):
+        return False
+    for gate in countable:
+        base_v = baseline["physical_gate_violations"].get(gate)
+        cand_v = candidate["physical_gate_violations"].get(gate)
+        if base_v is not None and (cand_v is None or cand_v > base_v):
+            return False
+    return True
+
+
 def cmd_select(plan: Plan, workspace: Path, base_rev: str) -> dict:
     with locked(workspace):
         check_base(workspace, base_rev)
         freeze_plan(plan, workspace)
         rule = plan.data["selection"]
+        fallback_policy = rule.get("fallback_policy", "no_physical_regression")
+        physical_gates = plan.endpoints[rule["physical_endpoint"]]
+        countable_gates = [g for g in physical_gates if g in COUNTABLE_PHYSICAL_GATES]
         done = completed(workspace)
         rows = [r for r in plan.schedule(rule["from_phase"], None) if plan.arms[r["arm"]]["flow"] == rule["flow"]]
         missing = [r["id"] for r in rows if r["id"] not in done]
@@ -628,12 +777,16 @@ def cmd_select(plan: Plan, workspace: Path, base_rev: str) -> dict:
             raise BenchError("SCREEN_INCOMPLETE", f"missing {missing}")
         table = []
         for r in rows:
-            e = done[r["id"]]["endpoints"]
+            sample = done[r["id"]]
+            e = sample["endpoints"]
+            counts, noncount_failed = _physical_quality(sample, physical_gates)
             table.append(dict(arm=r["arm"], sample=r["id"], gds_seconds=e["gds"]["seconds"],
                               physical_seconds=e[rule["physical_endpoint"]]["seconds"],
                               target_seconds=e[rule["target_endpoint"]]["seconds"],
                               target_blocking=e[rule["target_endpoint"]]["blocking"],
-                              physical_blocking=e[rule["physical_endpoint"]]["blocking"]))
+                              physical_blocking=e[rule["physical_endpoint"]]["blocking"],
+                              physical_gate_violations=counts,
+                              physical_noncount_failed=noncount_failed))
         reached = [t for t in table if t["target_seconds"] is not None]
         physical = [t for t in table if t["physical_seconds"] is not None]
         produced = [t for t in table if t["gds_seconds"] is not None]
@@ -643,10 +796,30 @@ def cmd_select(plan: Plan, workspace: Path, base_rev: str) -> dict:
             pick = min(physical, key=lambda t: t["gds_seconds"])
             reason = f"no arm reached {rule['target_endpoint']}; fastest GDS among arms passing {rule['physical_endpoint']}"
         elif produced:
-            pick, reason = min(produced, key=lambda t: t["gds_seconds"]), "no arm passed the physical gates; fastest GDS"
+            if fallback_policy == "fastest_gds":
+                pick, reason = min(produced, key=lambda t: t["gds_seconds"]), "no arm passed the physical gates; fastest GDS"
+            else:
+                baseline_arm = rule.get("baseline_arm")
+                baseline = next((t for t in produced if t["arm"] == baseline_arm), None)
+                if baseline is not None:
+                    for t in table:
+                        t["eligible_no_physical_regression"] = (
+                            t["gds_seconds"] is not None and _no_physical_regression(t, baseline, countable_gates)
+                        )
+                    eligible = [t for t in produced if t["eligible_no_physical_regression"]]
+                    pick = min(eligible, key=lambda t: t["gds_seconds"])
+                    reason = (f"no arm passed the physical gates; fastest GDS without physical regression "
+                              f"from {baseline_arm}")
+                else:
+                    def quality_key(t: dict):
+                        unverified = sum(1 for g in countable_gates if t["physical_gate_violations"].get(g) is None)
+                        total_v = sum(v for v in t["physical_gate_violations"].values() if v is not None)
+                        return (len(t["physical_noncount_failed"]), unverified, total_v, t["gds_seconds"])
+                    pick = min(produced, key=quality_key)
+                    reason = "no arm passed the physical gates; fewest physical violations then fastest GDS"
         else:
             raise BenchError("NO_ARM", "no screened arm produced a layout")
-        data = dict(selected=pick["arm"], reason=reason, rule=rule, candidates=table,
+        data = dict(selected=pick["arm"], reason=reason, fallback_policy=fallback_policy, rule=rule, candidates=table,
                     deltas={t["arm"]: config_delta(plan, t["arm"]) for t in table})
         write(workspace / "selection.json", data)
         data["head"] = advance(workspace)
@@ -661,6 +834,8 @@ def determinism(samples: list[dict]) -> dict:
             keys.setdefault(k, set()).add(v["sha256"])
             if "dates_masked_sha256" in v:
                 keys.setdefault(f"{k}_dates_masked", set()).add(v["dates_masked_sha256"])
+            if "magic_prefix_masked_sha256" in v:
+                keys.setdefault(f"{k}_magic_prefix_masked", set()).add(v["magic_prefix_masked_sha256"])
     return {k: dict(distinct=len(v), identical=len(v) == 1) for k, v in sorted(keys.items())}
 
 

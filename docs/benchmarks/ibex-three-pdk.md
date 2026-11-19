@@ -2,8 +2,11 @@
 
 **IHP SG13G2 · SKY130 · GF180MCU.** RustEDA and LibreLane 3.0.17 implement
 Ibex RV32IMC with separate instruction and data SRAM banks. Within each PDK,
-both flows read the same RTL, constraints, macro views and floorplan. Each pair
-uses the same signoff scripts. Bank capacity and the cell library vary by PDK.
+both flows read the same RTL, 100 ns (10 MHz) constraints, macro views, die
+area and macro placements, and are checked by the same independent signoff
+scripts. (On SKY130A, RustEDA adds two 7 × 50 µm vertical placement blockages
+that are not in LibreLane's configuration; see [fairness and known asymmetries](#comparison-fairness-and-known-asymmetries).)
+Bank capacity and the cell library vary by PDK.
 
 | Open PDK | Standard cells | Hard SRAM in each layout |
 | --- | --- | --- |
@@ -11,42 +14,93 @@ uses the same signoff scripts. Bank capacity and the cell library vary by PDK.
 | SKY130A | `sky130_fd_sc_hd` | Two OpenRAM 512 × 32 macros, one 2 KiB bank each. This macro configuration was included in the [UCSC OpenRAM MPW2 tape-out](https://escholarship.org/uc/item/9dc0v8g3). |
 | GF180MCU D | `gf180mcu_fd_sc_mcu7t5v0` | Eight foundry 512 × 8 macros, four byte lanes per 2 KiB bank. [GlobalFoundries SRAM data sheet](https://gf180mcu-pdk.readthedocs.io/en/latest/IPs/SRAM/gf180mcu_fd_ip_sram/cells/gf180mcu_fd_ip_sram__sram512x8m8wm1/gf180mcu_fd_ip_sram__sram512x8m8wm1.html) |
 
-## Power, area and frequency
+<a id="power-area-and-frequency"></a>
+## Power, area and timing margin
 
-Each entry lists **RustEDA / LibreLane**. The matched 17-cycle workload runs
-at **10 MHz** within each PDK. Fmax is the lower bound from the SS setup
-sweep, and area is the standard-cell footprint inside the common die.
+Each entry lists **RustEDA / LibreLane**. The QoR columns (power, area and SS
+setup ceiling) measure each flow's **published layout** — the same layout timed
+in the "published pair (1 run)" column. The last column gives the repeated
+three-block median against the **screened LibreLane arm**, which on SKY130A and
+GF180MCU D is a different layout (`drt-jumpers`) with substantially more
+antenna violations and unmeasured QoR.
 
-| PDK | TT workload power (mW) | Standard-cell area (µm²) | SS setup Fmax (MHz) | RTL to GDS, selected LibreLane arm, median of three (s) | RTL to GDS of these layouts, one run (s) |
+| PDK | TT 17-cycle workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup ceiling at 10 MHz constraints (MHz)¹ | RTL to GDS, published pair, 1 run (s) | RTL to GDS, screened LibreLane arm, median of 3 (s)² |
 |---|---:|---:|---:|---:|---:|
-| IHP SG13G2 | **1.045** / 1.306 | **186,285** / 204,848 | **43.42** / 24.86 | **219.6** / 1,745.5 | **219.8** / 1,806.0 |
-| SKY130A | **2.741** / 2.837 | **174,096** / 176,427 | **24.10** / 17.21 | 1,665.5 / **1,370.0** | **1,660.6** / 1,730.6 |
-| GF180MCU D | **91.24** / 94.33 | **475,913** / 490,812 | **10.91** / 10.75 | **591.3** / 885.6 | **594.1** / 911.0 |
+| IHP SG13G2 (4 cores) | **1.045** / 1.306 | **186,285** / 204,848 | **43.42** / 24.86 | **219.8** / 1,806.0 (8.22×) | **219.6** / 1,745.5 (**7.95×**; `antenna-default`, 0 / 0 phys.) |
+| SKY130A (2 cores)³ | **2.741** / 2.837 | **174,096** / 176,427 | **24.10** / 17.21 | **1,660.6** / 1,730.6 (1.04×; 12 / 13 ant.) | 1,665.5 / **1,370.0** (0.82×; `drt-jumpers`, 12 / 105 ant.) |
+| GF180MCU D (2 cores) | **91.24** / 94.33 | **475,913** / 490,812 | **10.91** / 10.75 | **594.1** / 911.0 (1.53×; 0 / 0 ant.) | **591.3** / 885.6 (**1.50×**; `drt-jumpers-fill`, 0 / 82 ant.) |
 
-Each pair uses the same CPU allocation and memory envelope. The IHP
-samples use four cores, and the SKY130A and GF180MCU D samples use two.
-The GF180MCU D producer includes floating fill. Its timing and power use
-nominal OpenRCX, whose extracted parasitics matched before and after the DEF
-fill. Power covers one 17-cycle activity trace.
+¹ **Not a tight-clock Fmax comparison:** both flows were given a relaxed **100 ns (10 MHz)** clock constraint, with LibreLane on `SYNTH_STRATEGY = "AREA 0"` and +35–49 ns of positive setup slack (so LibreLane's resizer performed zero setup optimization). These numbers are post-route SS setup-sweep ceilings on fixed netlists; on SKY130A RustEDA also excludes all `_1` drive-strength cells and applies five pre-bound critical-path OR-gate rewires.  
+² In the 2026-11-18 campaign, the pre-registered Tier-3 fallback picked the fastest GDS when no LibreLane arm passed every physical gate, selecting `drt-jumpers` despite 105 Magic antenna findings on SKY130A and 82 on GF180MCU D. Neither flow passes every shared gate on SKY130A or GF180MCU D, so neither reaches a signoff endpoint there.  
+³ **SKY130A RustEDA asymmetry:** RustEDA's `1,665.5 s` / `1,660.6 s` producer uses Ibex-trained PGO (`-231 s` on cold detailed routing alone), five distinct `.work` RustROAD binaries, two vertical placement channels not given to LibreLane, and five hardcoded OR-gate rewires; without PGO it runs slower than `librelane-recipe`. See [Comparison fairness and known asymmetries](#comparison-fairness-and-known-asymmetries).
 
-Both time columns run from RTL to GDS. The first is the median of three
-alternating runs against the LibreLane arm chosen by a rule fixed before a
-tuning screen: on IHP the fastest arm that passes the physical gates, and on
-SKY130A and GF180MCU D, where no arm passes them, the fastest GDS. The
-selected SKY130A arm repairs antennas with jumpers and keeps 105 Magic
-antenna findings, where RustEDA keeps 12 and the published LibreLane
-configuration 13. The second column is one screening run of each flow's
-published configuration, which reproduced the DEF and netlists of the
-layouts measured in the power, area and Fmax columns. One run of each is not
-a confirmed difference. Both GF180MCU D flows end in the same floating fill.
-Neither flow passes every shared gate on SKY130A or GF180MCU D, so neither
-reaches a signoff endpoint there.
+Each pair uses the same homogeneous E-core CPU allocation and 4 GiB / zero-swap
+envelope (4 cores on IHP, 2 cores on SKY130A and GF180MCU D). The GF180MCU D
+producer includes floating fill on both flows; its timing and power use nominal
+OpenRCX, whose extracted parasitics matched before and after DEF fill. The VCD
+power column covers one 17-cycle smoke trace at 10 MHz (for vectorless 10 MHz
+power on the aligned layouts, see [Aligned-select power trials](#aligned-select-power-trials):
+1.21 / 5.57 mW on IHP, 6.56 / 9.50 mW on SKY130A and 79.80 / 139.09 mW on
+GF180MCU D). One screening run of each published configuration is not a
+confirmed three-block difference.
+[Fairness audit](#comparison-fairness-and-known-asymmetries) ·
 [IHP](#repeated-ihp-comparison-at-the-same-signoff) ·
 [SKY130A](#repeated-sky130a-comparison-at-the-same-signoff) ·
 [GF180MCU D](#repeated-gf180mcu-d-comparison-at-the-same-signoff)
 
 [SKY130A native local repair](#sky130a-native-local-antenna-repair) ·
 [IHP and GF180MCU D receipts](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+## Comparison fairness and known asymmetries
+
+The three PDKs are not equally fair comparisons. The measurement harness
+(`integration/paired_bench/bench.py`) enforces strict hardware parity
+(homogeneous non-SMT 3.9 GHz E-cores, 4 GiB / 0 swap cgroup scopes, quiet-host
+gates, counterbalanced AB/BA/AB blocks and shared external signoff tools),
+yielding under 1% spread across blocks. However, an audit of the underlying
+producers and configurations exposes substantial asymmetries in **both**
+directions — sharpest on SKY130A and mildest on IHP SG13G2:
+
+| PDK | Overall parity | Main biases favoring LibreLane / hurting RustEDA | Main biases favoring RustEDA / hurting LibreLane |
+| --- | --- | --- | --- |
+| **IHP SG13G2** | Cleanest (single standard `rusteda flow exec`, 9/9 gates pass) | None on runtime; LibreLane fails electrical timing gate | LibreLane's timed GDS window includes `OpenROAD.IRDropReport` (28.6 s), redundant `Magic.StreamOut` (23.7 s) before `KLayout.StreamOut` and 6× OpenSTA (226 s); Fmax swept from 10 MHz `AREA 0` run |
+| **GF180MCU D** | Moderate (no PGO, no hardcoded ECOs) | Legacy Tier-3 rule picked `drt-jumpers-fill` (82 antenna, 7 SS hold) over `recipe-fill` (0 antenna; 1.53×); RustEDA pays ~34 s of in-flow ABC proofs inside GDS time | RustEDA runs via a `.work` wrapper invoking OpenRCX + OpenSTA twice internally (~54 s) for post-route hold/load ECOs; `floating_fill.py` fits RustEDA's PDN geometry better (31.65% vs 26.03% top metal); LibreLane includes IR drop (23.6 s) and 6× OpenSTA (104 s) |
+| **SKY130A** | Lowest (strong bidirectional asymmetry) | Legacy Tier-3 rule picked `drt-jumpers` (105 Magic antenna, 2,953 SS slew) over `recipe` (13 antenna) and mixed its time with `recipe` QoR; RustEDA pays ~32 s of serial in-flow ABC proofs | **Ibex-trained PGO** on cold and staged RustROAD (`-231 s` on cold `be_route` alone: 1,214.9 → 983.9 s — without PGO, RustEDA is ~1,892 s, slower than `librelane-recipe`); **5 distinct `.work` RustROAD binaries**; **2 vertical placement blockages** (`x = 507–514, 526–533 µm`) absent from LibreLane (`FP_OBSTRUCTIONS: null`); **5 offline-discovered hardcoded OR-gate pin rewires** (`g2826/27/29`); 16-decimal Magic-calibrated thresholds; exclusion of all `_1` cells; 2 internal OpenRCX/OpenSTA feedback loops |
+
+Additional cross-PDK scope limits:
+
+- **Selection rule fix (harness updated after the 2026-11-18 runs):** `bench.py`
+  now defaults Tier-3 fallback (when no arm passes all physical gates) to
+  `no_physical_regression`, rejecting any arm that regresses a physical gate or
+  increases DRC/antenna counts relative to `baseline_arm`. Under this rule, the
+  existing screening data would select `librelane-recipe` on SKY130A (13
+  antenna) and `librelane-recipe-fill` on GF180MCU D (0 antenna) instead of
+  `drt-jumpers`. The archived 2026-11-18 plan files and receipts remain
+  unmodified as historical evidence.
+- **Magic random sub-cell prefix fix (harness updated):** `bench.py` now records
+  `magic_prefix_masked_sha256` alongside `dates_masked_sha256`, canonicalizing
+  Magic's per-run two-character macro sub-cell prefix (e.g., `FF_` / `JE_` /
+  `M4_` across all 160 OpenRAM sub-cells) without masking ordinary library cell
+  prefixes (`RM_...`, `M1_...`). Verified on all four SKY130A `drt-jumpers`
+  GDS streams, which now hash identically (`b9f69b5567fc…`).
+- **Limited LibreLane tuning space:** The screening plans varied only four
+  antenna and post-GRT resizer knobs, not `SYNTH_STRATEGY`, placement density,
+  `RUN_IRDROP_REPORT`, or placement obstructions, whereas RustEDA underwent
+  multi-day tuning across synthesis, floorplan, routing and repair.
+- **No post-hoc SKY130A `librelane-recipe` rerun:** We deliberately did not run
+  a 6–7 hour post-hoc three-block confirmation of `librelane-recipe` against
+  the current SKY130A `r02` producer. Confirming a ~1.04× edge post-hoc while
+  `r02` depends on Ibex-trained PGO (`-231 s`), five `.work` binaries,
+  extra placement channels and hardcoded rewires would not establish a clean
+  speedup. A fresh pre-registered SKY130A campaign should wait until RustEDA
+  consolidates into a single standard non-PGO release binary and generic
+  `./rusteda flow` recipe without hardcoded instance edits.
+- **Pinned layout figures:** The side-by-side GDS PNGs on this page are
+  SHA-256 pinned in their original receipts (`aligned-select-power-trials.json`
+  and `sky130-native-local-repair.json`) and therefore retain their original
+  published single-run text captions (for example, `248 s / 1,917 s` on IHP and
+  `637.13 s / 851.48 s` on GF180MCU D without LibreLane fill). Use the summary
+  tables above for the repeated three-block timings and updated caveats.
 
 ### Earlier vectorless results
 
@@ -216,9 +270,10 @@ LibreLane DEF and netlists byte for byte.
 The selected arm and RustEDA then ran three blocks in the order AB, BA, AB.
 No sample used swap or recorded foreign load on its CPUs. RustEDA produced
 the same GDS, DEF and netlists in every run. LibreLane produced the same DEF
-and netlists. Its GDS also matched after masking dates and the random
-two-character prefix that Magic gives the SRAM macro's 160 sub-cells in each
-run.
+and netlists. Its GDS also matched across all three confirmation blocks (and
+`screen-05`) after masking dates and Magic's random two-character prefix on
+the SRAM macro's 160 sub-cells (`bench.py` now computes this directly via
+`magic_prefix_masked_sha256`).
 
 | Endpoint | RustEDA (s) | LibreLane (s) | Ratio | Lowest to highest ratio |
 |---|---:|---:|---:|---:|
@@ -234,7 +289,14 @@ LibreLane's. RustEDA's layout passes every other gate. LibreLane's also fails
 the timing gate (TT 221 / 31 / 34, SS 2,953 / 352 / 34 slew, capacitance and
 fanout findings). The published LibreLane configuration, with 13 antenna
 findings, took 1,730.6 s in its single screening run against RustEDA's
-1,660.6 s; one run of each is not a confirmed difference.
+1,660.6 s; one run of each is not a confirmed difference. Under the updated
+`no_physical_regression` Tier-3 rule in `bench.py`, `librelane-recipe` would
+have been selected over `librelane-drt-jumpers`. Because RustEDA's current
+SKY130A `r02` producer relies on Ibex-trained PGO (`-231 s` on cold detailed
+routing), five `.work` RustROAD binaries, two vertical placement channels and
+five pre-bound OR-gate rewires, no post-hoc confirmation against
+`librelane-recipe` was added; see
+[Comparison fairness and known asymmetries](#comparison-fairness-and-known-asymmetries).
 [Samples, selection and verdicts](evidence/ibex-three-pdk/sky130-repeated-signoff.json)
 
 ## Repeated GF180MCU D comparison at the same signoff
@@ -272,9 +334,11 @@ settings and jumper-only repair instead. The selection rule is the IHP rule.
 Setup, LVS and simulation pass on every layout. Every LibreLane layout keeps
 whole-die coverage findings on Metal4, Metal5 and the top metal (M4.4, M5.4,
 MT.3). RustEDA's keeps one, on Metal4, a layer the emitter does not fill. No
-arm passes the physical gates, so the rule selected the fastest GDS:
+arm passes the physical gates, so the 2026-11-18 rule selected the fastest GDS:
 jumper-only repair, 23 s faster than the published configuration but with 82
-antenna findings. That choice favours LibreLane's time. The published
+antenna findings. That choice favours LibreLane's time; under the updated
+`no_physical_regression` Tier-3 rule in `bench.py`, `librelane-recipe-fill`
+(0 antenna findings, 911.0 s) would be selected instead. The published
 configuration reproduced the published LibreLane DEF and netlists byte for
 byte.
 
