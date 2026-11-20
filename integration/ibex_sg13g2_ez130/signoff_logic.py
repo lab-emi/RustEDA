@@ -12,10 +12,24 @@ expected_hashes bind resource/input policy. A saved cut, relation or pass is
 never an input. Every run creates its gold cut from this raw RTL.
 
 The proof is the existing independent Rust RTL interpreter's TWO-STATE
-X/Z-to-zero event semantics: arbitrary original states and inputs, every
-implementation initial state covered, no reset/case assumptions. It does not
-claim four-state refinement, macro internals equivalence or physical timing.
-The original supplier simulation separately exercises both real SRAMs.
+X/Z-to-zero event semantics, no reset/case assumptions. The same rule applies
+to every netlist; which semantics a proof has follows from what the checker
+finds, never from which flow produced the netlist, and every verdict names it:
+- arbitrary_initial: every implementation state bit has a named RTL owner or
+  share; arbitrary original states and inputs, every implementation initial
+  state covered.
+- reset_reachable: some registers are re-encoded (for example a recoded FSM)
+  or dropped as constants. The checker derives a state map from the netlist and
+  the RTL; it proves the map's valid-code invariants (base and step obligations)
+  in the same miter, never assumes them. Refinement under the proved map plus
+  the same deterministic reset gives equivalence from reset; power-up without
+  reset is not covered.
+ABC "equivalent" is a proof. ABC "not equivalent" is a failure only when a
+differential simulation from reset (original RTL against the cut netlist)
+replays an output mismatch; otherwise the proof failed and the gate reports
+unverified, as it does when ABC exceeds its budget. It does not claim four-state
+refinement, macro internals equivalence or physical timing. The original
+supplier simulation separately exercises both real SRAMs.
 
 Estimate: one worker/corner, <=100k gates, <=1M connected pin bits, serial
 parser/model/ABC; expected <2 GiB. Hard caps: 16 MiB RTL/NL, 64 MiB JSON,
@@ -59,6 +73,16 @@ SCOPE = dict(reference="original RTL independent interpreter and external ABC",
              reset_assumptions=[], case_assumptions=[], input_assumptions=[],
              macro_scope="all functional SRAM interface bits, opaque across the memory boundary",
              wire_model="none", corner="logic", four_state_refinement="unverified")
+# A netlist whose state cannot be related one-to-one (re-encoded FSM registers) is checked
+# from reset: the checker derives a state map, proves its valid-code invariants (base and
+# step obligations) and proves refinement of every implementation step under the map. With
+# the same deterministic reset on both sides, refinement is equivalence from reset. The
+# same rule applies to every netlist; it is triggered by what the checker finds.
+SCOPE_RESET = dict(SCOPE, initial_states="from the deterministic asynchronous reset only; power-up without reset and "
+                   "implementation states outside the image of the state map are not covered",
+                   direction="refinement (every implementation run from reset is an RTL run from reset under the "
+                   "proved state map) plus the same deterministic reset gives equivalence from reset")
+REPLAY = dict(runs=8, cycles=400, seed=1)
 
 
 def read_text(path, limit):
@@ -415,26 +439,46 @@ def structural(job, directory, netlist):
 def verify_manifest(module, directory, manifest):
     n, nr = manifest["gate_state_elements"], manifest["rtl_state_bits"]
     kinds, sides = manifest["obligation_kinds"], manifest["sides"]
-    if (type(n) is not int or not 1 <= n <= 65536 or nr != 2023
-            or manifest["output_bits"] != 384 or len(sides) != 2
-            or manifest.get("all_rtl_inputs_and_states_quantified") is not True
-            or manifest.get("all_gate_initial_states_covered") is not True
-            or manifest.get("reset_assumptions") != [] or manifest.get("case_assumptions") != []
-            or manifest.get("initial_state_choices") != [] or manifest["state_pairs"] != n
-            or kinds.get("output") != 384 or kinds.get("clock", 0) + kinds.get("enable", 0) != n
-            or kinds.get("async-clear") != n or kinds.get("async-preset") != n
-            or kinds.get("next-state", 0) + kinds.get("data", 0) != n
-            or manifest.get("rtl_unknown_literals") != "X/Z-as-zero; distinct from four-state equality"):
-        raise ValueError("complete arbitrary-state/event proof obligations are missing")
+    semantics = manifest.get("semantics", "arbitrary_initial")
+    common_ok = (type(n) is int and 1 <= n <= 65536 and nr == 2023
+                 and manifest["output_bits"] == 384 and len(sides) == 2
+                 and manifest.get("reset_assumptions") == [] and manifest.get("case_assumptions") == []
+                 and manifest["state_pairs"] == n and kinds.get("output") == 384
+                 and manifest.get("rtl_unknown_literals") == "X/Z-as-zero; distinct from four-state equality")
+    if semantics == "arbitrary_initial":
+        ok = (common_ok and manifest.get("all_rtl_inputs_and_states_quantified") is True
+              and manifest.get("all_gate_initial_states_covered") is True
+              and manifest.get("initial_state_choices") == []
+              and kinds.get("clock", 0) + kinds.get("enable", 0) == n
+              and kinds.get("async-clear") == n and kinds.get("async-preset") == n
+              and kinds.get("next-state", 0) + kinds.get("data", 0) == n)
+    elif semantics == "reset_reachable":
+        # Owners and shared elements have event obligations; re-encoded elements have encoded
+        # ones; every valid-code invariant has base and step obligations (checked below).
+        plain = manifest["state_relation_records"] + manifest["shared_state_pairs"]
+        encoded = manifest["encoded_state_elements"]
+        ok = (common_ok and manifest.get("all_gate_initial_states_covered") is False
+              and kinds.get("clock", 0) + kinds.get("enable", 0) == plain
+              and kinds.get("async-clear") == plain and kinds.get("async-preset") == plain
+              and kinds.get("next-state", 0) + kinds.get("data", 0) == plain
+              and all(kinds.get("encoded-" + k, 0) == encoded for k in ("clock", "async-clear", "async-preset", "next-state"))
+              and manifest["state_relation_records"] + encoded == n
+              and isinstance(manifest.get("scope"), str) and isinstance(manifest.get("claim"), str))
+    else:
+        ok = False
+    if not ok:
+        raise ValueError("complete " + str(semantics) + " state/event proof obligations are missing")
     count = sum(kinds.values())
     if count > 1_000_000 or any(type(v) is not int or v < 0 for v in kinds.values()):
         raise ValueError("obligation count/type budget exceeded")
     if (sides[0]["inputs"] != sides[1]["inputs"]
             or not 1 <= sides[0]["inputs"] <= 100000
-            or sides[0]["inputs"] != manifest["primary_input_bits"] + nr
+            or (semantics == "arbitrary_initial" and sides[0]["inputs"] != manifest["primary_input_bits"] + nr)
             or any(side["outputs"] != count for side in sides)):
         raise ValueError("CEC quantified interface differs from obligation inventory")
-    relation = module.verify_relation(directory, manifest)
+    # The state map check counts its own interface (mapped RTL bits are not inputs).
+    relation = (module.verify_relation(directory, manifest) if semantics == "arbitrary_initial"
+                else module.verify_state_map(directory, manifest))
     hashes = {}
     for name, side in zip(("gold.aig", "gate.aig"), sides, strict=True):
         path = directory / name
@@ -481,29 +525,144 @@ def prove(job, label, source, gold_interface, relation_module):
     interface = lambda ports: {name: (port["direction"], len(port["bits"])) for name, port in ports.items()}
     if interface(gate) != interface(gold_interface):
         raise ValueError("fresh original RTL and this gate netlist expose different complete interfaces")
+    # The same rule for every netlist: the checker may relate state through a proved map
+    # (re-encoded registers); the manifest states which semantics the proof has.
     config = dict(library=job["library"], design=dict(top=job["top"], files=[str(root / "original-cut.v")]),
                   netlist=str(directory / "gate.v"), export_obligations=str(directory / "obligations"),
                   export_discovery_work=job["logic_limits"]["discovery_work"],
-                  export_discovery_rounds=job["logic_limits"]["discovery_rounds"])
+                  export_discovery_rounds=job["logic_limits"]["discovery_rounds"],
+                  export_initial_state_map=True)
     common.save(directory / "checker-config.json", config)
     stage(job, directory, "export", [job["tools"]["checker"], directory / "checker-config.json", directory / "checker-result.json"])
+    if not (directory / "obligations/manifest.json").is_file():
+        # No complete state map (for example a register that leaves its valid codes refutes
+        # the map's own obligations): nothing is exported, so nothing can pass.
+        reasons = common.read_json(directory / "checker-result.json", 16 * MIB).get("undecided") or ["no reason given"]
+        raise ValueError("obligation export incomplete: " + "; ".join(map(str, reasons))[:2000])
     manifest = common.read_json(directory / "obligations/manifest.json", 2 * MIB)
     verified = verify_manifest(relation_module, directory / "obligations", manifest)
+    semantics = manifest.get("semantics", "arbitrary_initial")
     abc = f"&cec -T {job['logic_limits']['cec_seconds']} -C {job['logic_limits']['max_conflicts']} {q(directory / 'obligations/gold.aig')} {q(directory / 'obligations/gate.aig')};"
-    stage(job, directory, "abc", [job["tools"]["abc"], "-c", abc], job["logic_limits"]["cec_seconds"] + 10)
-    output = read_text(directory / "abc.log", 16 * MIB)
-    if not re.search(r"^Networks are equivalent\.", output, re.M) or "NOT EQUIVALENT" in output:
-        raise ValueError("external ABC did not prove every original event/output obligation")
+    wall = job["logic_limits"]["cec_seconds"] + 10  # ABC's &cec does not always honour -T
+    try:
+        stage(job, directory, "abc", [job["tools"]["abc"], "-c", abc], wall)
+        output = read_text(directory / "abc.log", 16 * MIB)
+    except subprocess.TimeoutExpired:
+        output = None
     if verified != verify_manifest(relation_module, directory / "obligations", manifest):
         raise ValueError("obligation artifacts changed during external proof")
-    result = dict(status="proven", complete=True, original_rtl_sha256=job["sources"]["rtl"]["sha256"],
+    result = dict(original_rtl_sha256=job["sources"]["rtl"]["sha256"],
                   rtl_sha256=job["sources"]["rtl"]["sha256"], netlist_sha256=common.identity(source)["sha256"],
-                  scope=SCOPE, manifest=manifest, verified=verified,
+                  semantics=semantics, scope=SCOPE if semantics == "arbitrary_initial" else SCOPE_RESET,
+                  invariants=[dict(kind=i["kind"], variable=i["variable"], registers=i["registers"],
+                                   codes=i["codes"], rtl_codes=i.get("rtl_codes"),
+                                   base="unproven", step="unproven") for i in manifest.get("invariants", [])],
+                  manifest=manifest, verified=verified,
                   fresh_original_cut=common.identity(root / "original-cut.v"),
-                  abc_verdict="Networks are equivalent.", physical_models=common.read_json(directory / "physical-models.json", MIB),
-                  stages=[row for row in job["stages"] if Path(row["log"]["path"]).parent == directory])
+                  physical_models=common.read_json(directory / "physical-models.json", MIB))
+    if output is not None and re.search(r"^Networks are equivalent\.", output, re.M) and "NOT EQUIVALENT" not in output:
+        # Base and step obligations are outputs of this miter: proved with everything else.
+        for invariant in result["invariants"]:
+            invariant.update(base="proved", step="proved")
+        result.update(status="proven", complete=True, abc_verdict="Networks are equivalent.")
+    elif output is not None and "NOT EQUIVALENT" in output:
+        cex = counterexample(directory / "obligations", manifest, output)
+        trace = replay(job, directory, gold_interface)
+        # A failed obligation is a design failure only when the difference replays from
+        # reset; otherwise the proof (for example a state map) is what failed.
+        result.update(status="failed" if trace["mismatches"] else "unverified", complete=False,
+                      abc_verdict="Networks are NOT EQUIVALENT.", counterexample=cex, replay=trace,
+                      error=("output mismatch replayed from reset" if trace["mismatches"] else
+                             "obligation " + str(cex.get("obligation")) + " refuted; not reproduced from reset in "
+                             + str(trace["cycles_simulated"]) + " simulated cycles"))
+    else:
+        budget = (f"-T {job['logic_limits']['cec_seconds']} -C {job['logic_limits']['max_conflicts']}"
+                  + (f", killed at the {wall} s wall budget" if output is None else ""))
+        result.update(status="unverified", complete=False, abc_verdict="undecided",
+                      error=f"external ABC did not decide every obligation within its budget ({budget})")
+    result["stages"] = [row for row in job["stages"] if Path(row["log"]["path"]).parent == directory]
     common.save(root / (label + "_equivalence.json"), result)
     return result
+
+
+def counterexample(directory, manifest, output):
+    """The refuted obligation and its input values, read from ABC's log and the export."""
+    match = re.search(r"zero-based number (\d+)|Output (\d+) ", output)
+    index = int(next(g for g in match.groups() if g is not None)) if match else None
+    found = re.search(r"INPUT: a = (\d+)'h([0-9A-Fa-f]+)", output)
+    record = dict(output=index)
+    if index is not None and manifest.get("obligation_index_file"):
+        with (directory / manifest["obligation_index_file"]).open() as stream:
+            for line in stream:
+                entry = json.loads(line)
+                if entry["output"] == index:
+                    record["obligation"] = entry["kind"] + " " + entry["name"]
+                    break
+    if found and manifest.get("input_names_file"):
+        names = (directory / manifest["input_names_file"]).read_text().splitlines()
+        value = int(found.group(2), 16)
+        record["inputs"] = {name: (value >> k) & 1 for k, name in enumerate(names)}
+    return record
+
+
+def replay(job, directory, gold_interface):
+    """Differential simulation from reset: original cut RTL against this cut netlist (cell
+    models from the vendor library), random inputs, reset held for two cycles and pulsed
+    rarely; outputs compared on known bits twice per cycle."""
+    top = job["top"]
+    ident = lambda n: "p_" + re.sub(r"\W", "_", n)
+    esc = lambda n: n if n.isidentifier() else "\\" + n + " "
+    ins = [(n, len(p["bits"])) for n, p in gold_interface.items() if p["direction"] == "input"]
+    outs = [(n, len(p["bits"])) for n, p in gold_interface.items() if p["direction"] == "output"]
+    # Bit i of the concatenation {o1, ..., oN} is bit i of oN, then of the outputs before it.
+    names = [f"{n}[{k}]" for n, w in reversed(outs) for k in range(w)]
+    total = len(names)
+    lines = ["`timescale 1ns/1ps", "module tb;", "  integer seed, cycle, errors, run;"]
+    lines += [f"  reg [{w - 1}:0] {ident(n)};" for n, w in ins]
+    lines += [f"  wire [{w - 1}:0] {s}_{ident(n)};" for s in "rg" for n, w in outs]
+    for side, module in (("r", top), ("g", top + "_gate")):
+        ports = [f".{esc(n)}({ident(n)})" for n, _ in ins] + [f".{esc(n)}({side}_{ident(n)})" for n, _ in outs]
+        lines.append(f"  {module} {side}u (" + ", ".join(ports) + ");")
+    for side in "rg":
+        lines.append(f"  wire [{total - 1}:0] {side}v = {{" + ", ".join(f"{side}_{ident(n)}" for n, _ in outs) + "};")
+    lines += ["  task compare(input integer phase); integer i; begin",
+              f"    for (i = 0; i < {total}; i = i + 1)",
+              "      if (rv[i] !== 1'bx && gv[i] !== 1'bx && rv[i] !== gv[i]) begin",
+              "        if (errors < 20) $display(\"MISMATCH run %0d cycle %0d phase %0d bit %0d rtl %b gate %b\", run, cycle, phase, i, rv[i], gv[i]);",
+              "        errors = errors + 1; end", "  end endtask", "  initial begin",
+              f"    seed = {REPLAY['seed']}; errors = 0;",
+              f"    for (run = 0; run < {REPLAY['runs']}; run = run + 1)",
+              f"      for (cycle = 0; cycle < {REPLAY['cycles']}; cycle = cycle + 1) begin"]
+    for n, w in ins:
+        if n == "clk_i":
+            lines.append(f"        {ident(n)} = 0;")
+        elif n in ("rst_ni", "run_i"):
+            lines.append(f"        {ident(n)} = (cycle < 2) ? 1'b0 : (($random(seed) & 63) == 0 ? 1'b0 : 1'b1);")
+        else:
+            lines.append(f"        {ident(n)} = {{" + ", ".join(["$random(seed)"] * ((w + 31) // 32)) + "};")
+    lines += ["        #5; compare(0); p_clk_i = 1; #5; compare(1);", "      end",
+              "    $display(\"DONE errors %0d\", errors); $finish;", "  end", "endmodule"]
+    sim = directory / "replay"
+    sim.mkdir()
+    (sim / "tb.sv").write_text("\n".join(lines) + "\n")
+    netlist = read_text(directory / "gate.v", 64 * MIB)
+    renamed, count = re.subn(rf"^module {re.escape(top)}\(", f"module {top}_gate(", netlist, flags=re.M)
+    if count != 1:
+        raise ValueError("cut netlist top module not found for replay")
+    (sim / "gate.v").write_text(renamed)
+    stage(job, sim, "compile", [job["tools"]["iverilog"], "-g2012", "-s", "tb", "-o", sim / "sim", sim / "tb.sv",
+                                Path(job["output"]) / "original-cut.v", sim / "gate.v", job["vendor_verilog"][0]])
+    stage(job, sim, "simulate", [job["tools"]["vvp"], sim / "sim"])
+    text = read_text(sim / "simulate.log", 16 * MIB)
+    done = re.search(r"^DONE errors (\d+)", text, re.M)
+    if not done:
+        raise ValueError("replay simulation did not complete")
+    mismatches = [dict(run=int(m[0]), cycle=int(m[1]), phase=int(m[2]), output=names[int(m[3])], rtl=m[4], gate=m[5])
+                  for m in re.findall(r"^MISMATCH run (\d+) cycle (\d+) phase (\d+) bit (\d+) rtl (\w) gate (\w)", text, re.M)]
+    return dict(mismatches=mismatches, mismatch_count=int(done.group(1)), runs=REPLAY["runs"],
+                cycles_simulated=REPLAY["runs"] * REPLAY["cycles"], seed=REPLAY["seed"],
+                stimulus="reset held for two cycles, then released and pulsed in about one cycle in 64; other inputs random",
+                log=common.identity(sim / "simulate.log"))
 
 
 def simulate(job):
@@ -549,9 +708,13 @@ def execute(job):
         sys.path.insert(0, str(Path(job["relation_checker"]).parent))
         relation = module_from(job["relation_checker"], "rusteda_pinned_large_lec")
         failures = {}
+        failed = False
         for label, source in (("synthesis", job["synthesis_netlist"]), ("final", job["final_netlist"])):
             try:
-                prove(job, label, source, gold, relation)
+                proof = prove(job, label, source, gold, relation)
+                if proof["status"] != "proven":
+                    failures[label] = proof["status"] + ": " + proof["error"]
+                    failed = failed or proof["status"] == "failed"
             except (OSError, ValueError, KeyError, TypeError, RuntimeError, MemoryError, subprocess.SubprocessError) as error:
                 failures[label] = str(error)
         # A failed/unknown CEC is never promoted, but it must not prevent an
@@ -560,7 +723,7 @@ def execute(job):
             simulate(job)
         except (OSError, ValueError, KeyError, TypeError, RuntimeError, MemoryError, subprocess.SubprocessError) as error:
             failures["simulation"] = str(error)
-        report.update(status="passed" if not failures else "unverified", complete=not failures,
+        report.update(status="passed" if not failures else "failed" if failed else "unverified", complete=not failures,
                       failures=failures, error=None if not failures else "; ".join(k + ": " + v for k, v in failures.items()))
     except (OSError, ValueError, KeyError, TypeError, RuntimeError, StopIteration, MemoryError, subprocess.SubprocessError) as error:
         report["error"] = str(error)
@@ -608,7 +771,18 @@ def summarize(job, guard):
         doc = common.read_json(path, 16 * MIB)
         complete = bool(complete and doc.get("status") == expected and doc.get("complete") is True)
         artifacts[name] = common.identity(path)
-    report.update(status="passed" if complete else "unverified", complete=bool(complete), artifacts=artifacts)
+    # Each netlist's verdict names its semantics; the aggregate scope is the weakest one.
+    proofs = {}
+    for label in ("synthesis", "final"):
+        doc = common.read_json(root / (label + "_equivalence.json"), 16 * MIB)
+        proofs[label] = {k: doc[k] for k in ("status", "semantics", "invariants", "error", "abc_verdict",
+                                             "counterexample", "replay") if k in doc}
+    if any(p.get("semantics") == "reset_reachable" for p in proofs.values()):
+        report["scope"] = SCOPE_RESET
+    # A replayed design failure stays a failure; anything else short of a pass is unverified.
+    failed = bool(integrity) and any(p.get("status") == "failed" for p in proofs.values())
+    report.update(status="passed" if complete else "failed" if failed else "unverified",
+                  complete=bool(complete), proofs=proofs, artifacts=artifacts)
     common.save(root / "summary.json", report)
     (root / "HEAD").write_text("rev1\n")
     return report
