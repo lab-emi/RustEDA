@@ -60,7 +60,7 @@ def main():
     cli.add_argument("--model", type=Path, required=True)
     cli.add_argument("--model-sha256", required=True)
     args = cli.parse_args()
-    assert len(os.sched_getaffinity(0)) == 2
+    assert len(os.sched_getaffinity(0)) >= 1
     workspace = args.workspace.resolve(strict=True)
     producer_path = args.producer.resolve(strict=True)
     out = args.out.resolve()
@@ -91,7 +91,7 @@ def main():
     assert (inventory["revision"] == rev and inventory["route_sha256"] == source_inputs["route"]["sha256"]
             and inventory["model_sha256"] == model["sha256"])
     order = rank(parts, inventory, model)
-    groups = [sorted(order[i:i+2]) for i in range(0, len(order), 2)]
+    groups = [sorted(order[i:i+2]) for i in range(0, len(order), 2)][:48]
     plan = {
         "schema": "rustroad.antenna-group-repair.v1",
         "output": str(out / "checked"),

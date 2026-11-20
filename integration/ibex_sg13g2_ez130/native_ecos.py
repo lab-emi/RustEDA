@@ -1250,7 +1250,13 @@ def estimated_hold(planner, reports, setups, corners, drvs, geo):
     target = number(policy['hold_margin_ns']); setup_margin = number(policy['setup_margin_ns'])
     require(hold['target_margin_ns'] >= target, 'REPORT', 'hold report target insufficient')
     cell = sorted(bounds)[0]; b = bounds[cell]
-    worst_setup = min(min(r['setup_slack_ns'] for r in x['sections']['endpoints']['rows'] if r.get('setup_slack_ns') is not None) for x in setups)
+    end_setup = {}
+    for x in setups:
+        for r in x['sections']['endpoints']['rows']:
+            if r.get('setup_slack_ns') is not None:
+                e = r['endpoint']
+                end_setup[e] = min(end_setup.get(e, math.inf), r['setup_slack_ns'])
+    worst_setup = min(end_setup.values()) if end_setup else math.inf
     require(math.isfinite(worst_setup), 'REPORT', 'global setup bound')
     details, delta = {}, {}
     for co in hold['corners']:
@@ -1362,7 +1368,12 @@ def estimated_hold(planner, reports, setups, corners, drvs, geo):
         # pin guard the endpoint's other, unlisted launch points (one stage
         # nets ~0: its slow edge raises the pin's hold check, fe10l).
         n = 2 if end in launched else stages([slacks])-credit.get(end, 0)
-        require(n <= depth and worst_setup-chain_setup(b, corners, late, n+credit.get(end, 0), end in credit) >= setup_margin,
+        ep_setup = end_setup.get(end, worst_setup)
+        setup_ok = ep_setup-chain_setup(b, corners, late, n+credit.get(end, 0), end in credit) >= setup_margin
+        if not setup_ok and min(slacks.values()) >= 0.0:
+            planner.excluded.append({'endpoint': end, 'reason': 'tight-clock setup slack leaves no room for hold margin padding (hold already >= 0)'})
+            continue
+        require(n <= depth,
                 'HOLD_INFEASIBLE', f'no bounded all-corner delay chain: {end} (effective slack {min(slacks.values()):.3f} ns, '
                 f'repair charge {max(faster.get((end, c), 0.0) for c in corners):.3f} ns)')
         at = geo.pin(inst, pin)

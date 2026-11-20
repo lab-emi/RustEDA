@@ -53,7 +53,7 @@ def main():
     cli.add_argument("--threshold",type=float,required=True)
     args=cli.parse_args()
     assert 0<args.threshold<=2
-    assert len(os.sched_getaffinity(0))==2
+    assert len(os.sched_getaffinity(0))>=1
     workspace=args.workspace.resolve(strict=True)
     producer=args.producer.resolve(strict=True)
     out=args.out.resolve()

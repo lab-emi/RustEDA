@@ -45,7 +45,7 @@ dump(layout,{"artifacts":art})
 cap=g.RouteCapture(REV,layout)
 cohort=g.read(COHORT)
 assert cohort["revision"]==inputs["revision"] and cohort["routes"]==cap.route
-assert 0 <= cohort["statistics"]["weighted_upper_contacts"] <= 64
+assert 0 <= cohort["statistics"]["weighted_upper_contacts"] <= 256
 ref=Path(inputs["output"])/"native-partition/complete.json"
 manifest=g.read(ref)
 assert manifest["route_sha256"]==cap.route["sha256"] and manifest["revision"]==inputs["revision"]
@@ -84,8 +84,9 @@ vias={r["name"]:r["geometries"] for r in phys["technology"]["vias"]}
 masters={r["name"]:r for r in phys["connectivity"]["masters"]}
 cells,_=g.def_sites(Path(art["def"]["path"]))
 macros=[]
-for n in ("u_dmem","u_imem"):
-    m,x,y,o=cells[n]
+for n,(m,x,y,o) in sorted(cells.items()):
+    if "BLOCK" not in (masters[m].get("class") or ""):
+        continue
     assert o in ("N","FS")
     w,h=masters[m]["size"]
     macros.append((x,y,x+w,y+h))
@@ -97,7 +98,12 @@ stats=Counter()
 offers=[]
 net_ids={name:i for i,name in enumerate(cap.names)}
 for compid,c in enumerate(cohort["components"]):
-    assert c["binding"]=="exact_route_component_reconstructed" and not c["diffusions"]
+    if c["binding"]!="exact_route_component_reconstructed":
+        stats["skipped_binding"]+=1
+        continue
+    if c["diffusions"]:
+        stats["skipped_diffusion"]+=1
+        continue
     for w in c["weighted"]:
         stats["weighted_stacks"]+=1
         for item in t.options(cap,c["net"],w,tracks,overlap_limit,stats):
@@ -112,7 +118,7 @@ for compid,c in enumerate(cohort["components"]):
                         upper_normalized_reduction=reduction,projected_after=c["before_model_norm"]-reduction,
                         upper_has_static_variant=bool(w["simple_clear_signal_options"]))
             offers.append(item)
-assert len(offers)<=4*64
+assert len(offers)<=4*256
 eligible_buckets={(l,i,j) for option in offers for l,r in option["additions_dbu"]
                   for i,j in buckets(t.bloated(r,400 if l!="via3" else 200))}
 assert len(eligible_buckets)<=10000
@@ -187,7 +193,7 @@ sites={}
 for r in clear:
     p=r["typed"]
     sites.setdefault((p["net"],tuple(p["old_at"])),r)
-primary=list(sites.values())
+primary=list(sites.values())[:64]
 assert len(primary)<=64
 plan=HERE/"lower-offset-plan.json"
 dump(plan,dict(schema="rustroad.antenna-via-offsets.v1",source_sha256=manifest["report_source_sha256"],

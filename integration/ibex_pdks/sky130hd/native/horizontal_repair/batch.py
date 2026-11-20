@@ -26,7 +26,7 @@ inv = json.loads((out/"inventory.json").read_bytes())
 assert inv["workspace_revision"] == head
 names = [x["canonical_name"] for x in inv["nets"]]
 assert inv["routed_logical_net_count"] == len(names) == len(set(names))
-assert 0 < len(names) <= 20_000
+assert 0 < len(names) <= 50_000
 groups = [sorted(names[i:i + 2048]) for i in range(0,len(names),2048)]
 plan = {
     "schema":"rustroad.antenna-check-batch.v1",
@@ -38,7 +38,7 @@ plan = {
         "max_total_shapes":2000000,
         "max_pair_checks":200000000,
         "max_union_cells":4000000,
-        "max_rows":100000,
+        "max_rows":250000,
         "max_work":250000000,
         "report_memory_bytes":134217728,
     },

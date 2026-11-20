@@ -1,0 +1,316 @@
+{
+  "schema": "rusteda.paired-bench-plan.v1",
+  "name": "sky130-clean-single-binary-20261119",
+  "description": "SKY130A Ibex clean parity confirmation: single-binary non-PGO standard RustEDA release flow (zero PGO, zero manual vertical placement channels, zero hardcoded OR-gate rewires, zero OpenRCX/OpenSTA in loop) against LibreLane 3.0.17 published reference configuration (librelane-recipe, selected by no_physical_regression). Three counterbalanced AB/BA/AB confirmation blocks with all 8 shared SKY130A signoff gates in identical 2-CPU, 4 GiB, zero-swap scopes.",
+  "resources": {
+    "cpus": [
+      30,
+      31
+    ],
+    "memory_mib": 4096,
+    "swap_mib": 0
+  },
+  "quiet_host": {
+    "window_seconds": 30,
+    "windows": 2,
+    "max_host_busy_cpus": 2.0,
+    "max_allowed_set_busy_cpus": 0.2,
+    "max_package_celsius": 85,
+    "max_wait_seconds": 5400
+  },
+  "flags": {
+    "max_other_busy_cpus_on_allowed_set": 0.25,
+    "max_other_busy_cpus_host": 4.0
+  },
+  "inputs": {
+    "python": {
+      "path": "/home/cgao/.venv/bin/python3",
+      "sha256": "4ceefc12dbe6f01efa99bf5cf594df33cc8dc45a0ff23c3229e2e955059a374e"
+    },
+    "clean_sky130_flow": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/native/clean_sky130_flow.py",
+      "sha256": "fbd4d3a866968288e045e40ce7f60fc5db908e19f6d0b5fc580b71bf454d263b"
+    },
+    "profile_clean": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/native/profile-clean.json",
+      "sha256": "76426aa8297bc6edbf2bbc1d74d037943521d207453a4d1294155889c0df36df"
+    },
+    "physical_clean": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/native/physical-clean.json",
+      "sha256": "385b4b960b75da4f1ae786c79d8ebfe46ff157a0e63721b3ec0fad6461e0acb6"
+    },
+    "routing_clean": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/native/routing-clean.json",
+      "sha256": "e811a2572725828ca93dbcf0f8307e465121c6e0a3593b66926edd98cd591cf4"
+    },
+    "rusteda_bin": {
+      "path": "{root}/.work/target/RustEDA/release/rusteda",
+      "sha256": "a0a8edb9d67734d16802fc7f03dec82fd5565e52c66f7eb100259baf2a797772"
+    },
+    "rustsys_bin": {
+      "path": "{root}/.work/target/RustSys/release/rustsys",
+      "sha256": "c60ac4f610ff94d5ca536a32d1c6c8a63266ed97ed17c5bdc75bdf0148c09964"
+    },
+    "ruststa_bin": {
+      "path": "{root}/.work/target/RustSTA/release/ruststa",
+      "sha256": "e9b0be636bbf75d9e5c54e88810fd281aeaafaddf2c922e2de5c4a272632ec9e"
+    },
+    "rustroad_bin": {
+      "path": "{root}/.work/target/RustROAD/release/rustroad",
+      "sha256": "915c0a4652b50bb348bc073966627ec21fe2ec80c8e7a43b84e475a5dd3f77bb"
+    },
+    "pin_caps_bin": {
+      "path": "{root}/.work/three-pdk-20261114/bin/baseline/export_pin_caps",
+      "sha256": "35d58f074bb5ffacc6f685ed01436107097935160658ef0c9a66da4686e01249"
+    },
+    "checker_bin": {
+      "path": "{root}/.work/three-pdk-20261114/bin/baseline/check_config",
+      "sha256": "b8db8943a2a702d0146260a670f36278a7d2487a34fb2bc40ed1d4bec55e8f47"
+    },
+    "run_env": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/run-env",
+      "sha256": "f8250ee9714616fdf6fc46814224c17889eeb4ebc738fe1f3dc913a94d4fdeb2"
+    },
+    "librelane": {
+      "path": "{root}/.work/three-pdk-20261114/reference-tools/venv/bin/librelane",
+      "sha256": "7f5eaa32cb7c8011f5d37c0a28d8f095e19c0009f96adb9c89a33ea07a94c022"
+    },
+    "librelane_template": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/config.json.in",
+      "sha256": "74e6080ab99603f124ac3b4a305d4082b273d0a2f9a825e50b09162a494de245"
+    },
+    "librelane_published_config": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/sky130-producer-pair-two-cores/librelane/config.json",
+      "sha256": "29e40109a42c1f1e31dc0a86561405cde1cd4aacf4a303d4ea803d84bcba16d4"
+    },
+    "rtl": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/rtl/design.v",
+      "sha256": "e529ea8fe7d16c8538dc5e2f19c13434fbff2cf47268060966c6c8c8f9b18b69"
+    },
+    "constraints": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/constraints.sdc",
+      "sha256": "799485c479ac4f4044fbf007cbf529483e89f24d74ff9b3502dd192d005d937d"
+    },
+    "pnr_sdc": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/pnr.sdc",
+      "sha256": "2ff82ee688dd994fb63df6cc5cea0c8800bdcf60c736d04b5bf9d54a9613fb47"
+    },
+    "cppr_off": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/cppr_off.tcl",
+      "sha256": "2a99c17f1596a21893e53ee2debb490270ec7871f73e6bf49f20f0f1c3d5616a"
+    },
+    "macro_liberty": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep/macro/sky130_sram_2kbyte_1rw1r_32x512_8_TT_1p8V_25C.lib",
+      "sha256": "37b296f426e815120a845b028c849767048ae3771557054ef76bc2be1c27c0db"
+    },
+    "signoff_python": {
+      "path": "/usr/bin/python3.14",
+      "sha256": "9c61adf6f6882c8f00ca6023a8d6e0c35a51b80989ac1b3e8423f4c512bfcafc"
+    },
+    "signoff_driver": {
+      "path": "{root}/integration/ibex_host_benchmark/signoff_layout.py",
+      "sha256": "459841e5de291ee04e556da663a22a91315b8bacf3b3d389f6e17d7be89a71f1"
+    },
+    "signoff_profile": {
+      "path": "{root}/integration/ibex_pdks/sky130hd/gates.json",
+      "sha256": "89aa08e515344c717a609049ab437d5c0aa2e99285e54dfc399c9caa534c245a"
+    },
+    "signoff_host": {
+      "path": "{root}/.work/three-pdk-20261114/sky130-original-restore/matched-gates/host.json",
+      "sha256": "9f689fd3d18b783a0f9fabf7db2527bebab683174f4fdb064a6cdfe65c40dceb"
+    }
+  },
+  "signoff": {
+    "argv": [
+      "{inputs.run_env}",
+      "{inputs.signoff_python}",
+      "{inputs.signoff_driver}",
+      "--profile",
+      "{inputs.signoff_profile}",
+      "--host",
+      "{inputs.signoff_host}",
+      "--layout",
+      "{sample}/layout.json",
+      "--workspace",
+      "{sample}/signoff/gates"
+    ],
+    "deadline_seconds": 10800,
+    "ownership_manifest": "{inputs.profile_clean}",
+    "gates": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "endpoints": {
+    "gds": [],
+    "physical_signoff": [
+      "drc",
+      "antenna",
+      "lvs"
+    ],
+    "common_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density"
+    ],
+    "full_signoff": [
+      "drc",
+      "antenna",
+      "lvs",
+      "extraction",
+      "timing",
+      "simulation",
+      "density",
+      "logic"
+    ]
+  },
+  "arms": {
+    "rusteda-clean": {
+      "flow": "rusteda",
+      "role": "candidate",
+      "description": "Single-binary non-PGO standard RustEDA release flow (profile-clean.json): converged electrostatic target_density_milli=400 with zero manual vertical placement channels, bounded first-pass router scouts, aligned_selects=true, met3:0.40 macro OBS wide-spacing, native postroute-repair, and general native contact-sidewall antenna closure (zero PGO, zero hardcoded OR-gate rewires, zero OpenRCX/OpenSTA in loop).",
+      "producer": {
+        "argv": [
+          "{inputs.python}",
+          "{inputs.clean_sky130_flow}",
+          "--out",
+          "{sample}/case",
+          "--profile",
+          "{inputs.profile_clean}",
+          "--threads",
+          "2",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks/sky130A",
+          "--prep-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/prep",
+          "--rusteda",
+          "{inputs.rusteda_bin}",
+          "--rustsys",
+          "{inputs.rustsys_bin}",
+          "--ruststa",
+          "{inputs.ruststa_bin}",
+          "--rustroad",
+          "{inputs.rustroad_bin}",
+          "--pin-caps",
+          "{inputs.pin_caps_bin}",
+          "--checker",
+          "{inputs.checker_bin}"
+        ],
+        "deadline_seconds": 2700,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/case/final/ibex_sram_bench.gds",
+        "def": "{sample}/case/final/ibex_sram_bench.def",
+        "netlist": "{sample}/case/final/ibex_sram_bench.v",
+        "powered_netlist": "{sample}/case/final/ibex_sram_bench.powered.v",
+        "synthesis_netlist": "{sample}/case/cold/frontend/mapped.v"
+      },
+      "expected_outputs": {
+        "gds": "e4398df2cac888ef58ea08666bc6c359f14d740c07bd4fab23a4803df971d16a",
+        "def": "25349e6465052a57100dbaa396dc5bede74f6c6eb33e192555bc6faff0edd409",
+        "netlist": "90e4e2a7eda6f59ebe0f05eba3f03f7450ed2e84772f6e0bcc1391b1b72d3fed",
+        "powered_netlist": "9e982ef5e1f9556e624cbb82d7512b653c3dd7df1c907371608270bd06e6d097",
+        "synthesis_netlist": "5e116e669e61c1a63e38671bbfb2bfc970cbb06c398e775623c9156c158fbbc1"
+      }
+    },
+    "librelane-recipe": {
+      "flow": "librelane",
+      "role": "reference",
+      "description": "LibreLane 3.0.17 classic flow to Magic.StreamOut: the published reference configuration (13 Magic antenna findings; selected over drt-jumpers under no_physical_regression).",
+      "librelane_config": {
+        "template": "{inputs.librelane_template}",
+        "substitute": {
+          "@WORKSPACE@": "{root}/.work/three-pdk-20261114/sky130-original-restore/prep",
+          "@PDK@": "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks/sky130A"
+        },
+        "overlay": {
+          "DRT_THREADS": 2
+        },
+        "expect_equal": "{inputs.librelane_published_config}"
+      },
+      "producer": {
+        "argv": [
+          "{inputs.run_env}",
+          "{inputs.librelane}",
+          "--manual-pdk",
+          "--pdk-root",
+          "{root}/.work/three-pdk-20261114/sky130-original-restore/pdks",
+          "--pdk",
+          "sky130A",
+          "--scl",
+          "sky130_fd_sc_hd",
+          "--flow",
+          "classic",
+          "--jobs",
+          "2",
+          "--run-tag",
+          "{run_tag}",
+          "--hide-progress-bar",
+          "--design-dir",
+          "{sample}/design",
+          "--to",
+          "Magic.StreamOut",
+          "{sample}/design/config.json"
+        ],
+        "env": {
+          "TMPDIR": "/tmp"
+        },
+        "deadline_seconds": 4500,
+        "worker_scope": false
+      },
+      "layout": {
+        "gds": "{sample}/design/runs/{run_tag}/final/gds/ibex_sram_bench.gds",
+        "def": "{sample}/design/runs/{run_tag}/final/def/ibex_sram_bench.def",
+        "netlist": "{sample}/design/runs/{run_tag}/final/nl/ibex_sram_bench.nl.v",
+        "powered_netlist": "{sample}/design/runs/{run_tag}/final/pnl/ibex_sram_bench.pnl.v",
+        "synthesis_netlist": "{sample}/design/runs/{run_tag}/*-yosys-synthesis/ibex_sram_bench.nl.v"
+      },
+      "expected_outputs": {
+        "def": "7a00c70b2b86937de8e49e63029633698fd68537834d8c09df5cadf20ec61187",
+        "netlist": "0531c12f46f9eb0685d3e207848c61ff9773a6dbdad033baf8deb61d5f6beccc",
+        "powered_netlist": "afc780cffdc1e20e0123fc6928980be41ab28a4605f9d4dda07034e4ba200cd6",
+        "synthesis_netlist": "5fad5c6a29860827e43c23d22b7fb871d8196144016f93c886d84fec4aa07f28"
+      }
+    }
+  },
+  "phases": {
+    "confirm": {
+      "pair": [
+        "librelane-recipe",
+        "rusteda-clean"
+      ],
+      "blocks": 3
+    }
+  },
+  "estimates": {
+    "rusteda-clean": {
+      "sample_seconds": 3600,
+      "disk_mib": 4000,
+      "peak_mib": 1200
+    },
+    "librelane-recipe": {
+      "sample_seconds": 4800,
+      "disk_mib": 4500,
+      "peak_mib": 2800
+    }
+  },
+  "budgets": {
+    "min_free_disk_gib": 100
+  },
+  "tuning_disclosure": {
+    "rusteda": "Single standard non-PGO release binary set (.work/target/{RustEDA,RustSys,RustSTA,RustROAD}/release/), converged electrostatic target_density_milli=400 without manual vertical placement channels, generic bounded first-pass router scouts, met3:0.40 OpenRAM macro OBS wide-spacing, aligned_selects=true, and general native contact-sidewall antenna closure without OpenRCX/OpenSTA in the loop or hardcoded instance rewires.",
+    "librelane": "Published SKY130A LibreLane 3.0.17 classic configuration (librelane-recipe, 13 Magic antenna findings), selected over drt-jumpers (105 Magic antenna findings) under the no_physical_regression fallback rule.",
+    "harness": "Both arms run inside identical 2-CPU (E-cores 30,31), 4 GiB, zero-swap cgroup v2 scopes with quiet-host gates before every sample, shared 8-gate independent signoff, and magic_prefix_masked_sha256 GDS determinism verification. LibreLane runs with TMPDIR=/tmp to avoid the Yosys 0.70 ext4 ABC hang."
+  }
+}

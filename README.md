@@ -71,12 +71,14 @@ unmeasured layout (`drt-jumpers`) with far more antenna violations.
 
 ¹ **Not a tight-clock Fmax race:** both flows targeted a relaxed 100 ns (10 MHz) clock with LibreLane on `SYNTH_STRATEGY = "AREA 0"` (+35–49 ns positive slack, zero setup optimization); on SKY130A RustEDA also excludes `_1` cells and applies five pre-bound OR-gate rewires.  
 ² In the 2026-11-18 runs, no LibreLane arm passed every physical gate on SKY130A or GF180MCU D, so the legacy fallback picked `drt-jumpers` despite 105 and 82 antenna findings (now fixed in `bench.py` to require `no_physical_regression` from baseline for future campaigns). On IHP, through DRC, antenna, latch-up and LVS the three-block medians are **754 / 2,468 s (3.27×)**; LibreLane fails the shared timing gate on electrical limits, and neither flow reaches full signoff on SKY130A or GF180MCU D.  
-³ **SKY130A parity caveat:** the SKY130A RustEDA producer is not yet a single clean release flow — it uses Ibex-trained PGO (`-231 s` on cold detailed routing alone; without PGO it is slower than `librelane-recipe`), five distinct `.work` RustROAD binaries, two vertical placement channels not in LibreLane's config, five hardcoded OR-gate rewires and two internal OpenRCX/OpenSTA loops. IHP SG13G2 (single standard `rusteda flow exec`, no PGO, 9/9 gates passed) is the cleanest comparison.
-[Fairness audit and known asymmetries](docs/benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries) ·
+³ **SKY130A clean single-binary replacement (2026-11-20):** the archived 2026-11-18 SKY130A `r02` producer above carried severe asymmetries (Ibex-trained PGO, five `.work` binaries, two manual vertical placement channels, five hardcoded OR-gate rewires, and internal OpenRCX/OpenSTA loops). Replacing it with a clean single-binary non-PGO standard flow (`clean_sky130_flow.py`, zero manual channels, zero hardcoded rewires, zero PGO) in a fresh 3-block quiet-host confirmation against `librelane-recipe` yields **499.64 s vs 1,771.75 s (3.55× faster, 3/3 blocks, 0.34% spread)**, **−1.4% stdcell area** (173,881 vs 176,427 µm²), **−35.3% TT 10 MHz vectorless power** (6.15 vs 9.50 mW), **+38.4% SS setup ceiling** (23.82 vs 17.21 MHz), **0 / 0 Magic & KLayout DRC**, **0 / 0 / 0 TT & SS DRVs** (vs 3,035/381/64 for LibreLane), LVS/Sim/ABC PASS, and 14 vs 13 Magic antenna findings.
+[Clean SKY130A confirmation](docs/benchmarks/ibex-three-pdk.md#clean-single-binary-sky130a-comparison-2026-11-20) ·
+[Tight-clock Fmax (all 3 PDKs)](docs/benchmarks/tight-clock-fmax.md) ·
+[Multi-design generalization (`picorv32`, `aes`, `sha256`)](docs/benchmarks/multi-design.md) ·
+[Fairness audit](docs/benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries) ·
 [IHP](docs/benchmarks/ibex-three-pdk.md#repeated-ihp-comparison-at-the-same-signoff) ·
 [SKY130A](docs/benchmarks/ibex-three-pdk.md#repeated-sky130a-comparison-at-the-same-signoff) ·
-[GF180MCU D](docs/benchmarks/ibex-three-pdk.md#repeated-gf180mcu-d-comparison-at-the-same-signoff) ·
-[QoR methods and model limits](docs/benchmarks/ibex-three-pdk.md#power-area-and-timing-margin)
+[GF180MCU D](docs/benchmarks/ibex-three-pdk.md#repeated-gf180mcu-d-comparison-at-the-same-signoff)
 
 OpenSTA uses the matched 17-cycle workload activity and nominal OpenRCX
 parasitics (vectorless 10 MHz power on the aligned layouts is also lower for

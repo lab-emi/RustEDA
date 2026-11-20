@@ -1,0 +1,1017 @@
+{
+  "schema": "rusteda.multi-design-evidence.v1",
+  "date": "2026-11-19",
+  "scope": "Non-Ibex permissive-license open-source generalization benchmark (picorv32 ISC, aes_core BSD-2-Clause, sha256_core BSD-2-Clause) across IHP SG13G2/EZ130 (all 3) and SKY130A (sha256_core dual-PDK check) at 50 ns / 20 MHz. Identical RTL, SDC, die/core area, and independent signoff gates for RustEDA and LibreLane 3.0.17. Runtime numbers are single-run isolated-CPU observations (4 E-cores, 4 GiB / 0 swap), not 3-block quiet-host confirmations.",
+  "compose_native_zero_macro_audit": {
+    "compose_rc": 0,
+    "compose_stdout": "{\"final_workspace\": \"frontend/road-final\", \"final_netlist\": \"logs/fe_final_export.stdout\", \"prects_netlist\": \"frontend/eco-hold/netlist.v\", \"temporary_seed\": \"logs/fe_temporary_seed.stdout\", \"final_seed\": \"frontend/eco-hold/seed.json\", \"final_estimate\": \"frontend/estimate-final/result.json\", \"temporary_workspace\": \"frontend/road-temporary\", \"final_sta_workspace\": \"frontend/sta-final\", \"receipt\": \"frontend/result/result.json\", \"stop_after\": \"fe_frontend_validate\"}\n{\"final_workspace\": \"backend/postroute/road\", \"trial_workspace\": \"frontend/road-final\", \"postroute\": \"backend/postroute/result.json\", \"artifacts\": {\"gds\": \"backend/aes_core.gds\", \"def\": \"logs/be_def.stdout\", \"netlist_synth\": \"frontend/mapped.v\", \"netlist_final\": \"logs/be_netlist.stdout\", \"netlist_powered_final\": \"logs/be_powered.stdout\", \"spef_native_nom\": \"backend/native.nom.spef\"}, \"available_gates\": {}, \"stop_after\": \"be_gds\"}\n{\"status\": \"composed_unqualified\", \"manifest\": \"/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/compose_check/compose/be/prefix-manifest.json\", \"profile\": \"/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/compose_check/profile/profile.json\", \"pdk\": \"ihp-sg13g2\", \"library\": \"ez130_8t\", \"steps\": 103, \"stop_after\": \"be_gds\"}",
+    "compose_stderr": ""
+  },
+  "generalization_gaps_found": [
+    {
+      "id": "GAP-1",
+      "component": "rustroad floorplan / rusteda frontend-profiles",
+      "files": [
+        "modules/RustEDA-Common/crates/apps/rusteda-cli/src/flow/helpers.rs",
+        "integration/ibex_sg13g2_ez130/native_frontend_inputs.py:265"
+      ],
+      "summary": "rustroad floorplan omits '\"pin_buses\": {}' when 0 macros exist; rusteda frontend-profiles fails with INPUT error \"'pin_buses'\" unless empty pin_buses/macro_placements dicts are present."
+    },
+    {
+      "id": "GAP-2",
+      "component": "compose_native.py / rusteda eco-round --operation reset (fe_eco_reset)",
+      "files": [
+        "modules/RustEDA-Common/crates/apps/rusteda-cli/src/flow/eco.rs:425-482",
+        "integration/ibex_sg13g2_ez130/native_frontend_inputs.py:300-308"
+      ],
+      "summary": "compose_native.py composes 103 steps with macros: [] cleanly (rc=0, dry-run ok), but fe_eco_reset assumes Ibex topology: >=1000 async-reset sinks, driver.instance.is_some() (rejecting port-driven clk/reset with 'root driven by a port'), and a clock-gating cell from selection.gating_cells driving the primary CK tree."
+    },
+    {
+      "id": "GAP-3",
+      "component": "rusteda export -> rustroad import-pdk (Verilog output reg vector bit naming)",
+      "files": [
+        "modules/RustROAD/crates/rustroad-workspace/src/netlist.rs"
+      ],
+      "summary": "On bare picorv32 (output reg [31:0] mem_addr), rusteda export emits scalar escaped wire \\mem_addr[0] alongside vector port output [31:0] mem_addr, which rustroad rejects as 'scalar escaped identifier collides with a vector bit name in DEF'. Wrapping picorv32 in picorv32_top prefixes internal nets (\\u_core.mem_addr[0]) and avoids the collision."
+    },
+    {
+      "id": "GAP-4",
+      "component": "rustroad hold-eco binding check vs tie-cell fanout cloning",
+      "files": [
+        "modules/RustROAD/crates/rustroad-workspace/src/eco/binding.rs:593-608",
+        "modules/RustROAD/crates/rustroad-workspace/src/physical.rs:894-895"
+      ],
+      "summary": "binding.rs:593 allows tie cells in --timed-netlist only when --netlist had an Expr::Constant literal, failing with STALE_REPORT on picorv32_top when rustsys emitted a TIELO cell driving fanout>1 that import-pdk cloned into rr_tie_copy_net_* under max_tie_fanout=1. Exporting a pre-CTS Verilog after temp_place works around it cleanly."
+    },
+    {
+      "id": "GAP-5",
+      "component": "rustsys (* full_case *) attribute handling",
+      "files": [
+        "src/picorv32/picorv32.v:402"
+      ],
+      "summary": "Yosys honors (* full_case *) in picorv32.v (0 latches); RustSys ignores the pragma and infers 68 LATNQX1 latches. Both are proved valid under their respective semantics (RustSys picorv32_top passes check_config+ABC CEC with assume_full_case=False across 2,297 state pairs incl. 68 latches)."
+    },
+    {
+      "id": "GAP-6",
+      "component": "rustroad floorplan SKY130A defaults & incremental --prior-diode-plan routing",
+      "files": [
+        "integration/ibex_pdks/sky130hd/native/physical-clean.json:58,93",
+        "integration/ibex_pdks/sky130hd/native/routing-clean.json:84,93,99,145"
+      ],
+      "summary": "rustroad floorplan defaults io_width=990 (blocking adjacent met3 tracks on high-pin-count designs like 775-pin sha256_core) and target_density_milli=600. Using io_width=400, target_density_milli=300, cell_spacing_sites=3, pin_density_sites_milli=10000 and routing-clean.json reduced SKY130A routing from >2400s timeout to 90-94s with 0 Magic/KLayout DRC. Also, incremental route --prior-workspace --prior-diode-plan stalled >480s with 85 inserted diodes, while fresh route on the exact same moved_existing=0 diode placement succeeded in 105.6s."
+    },
+    {
+      "id": "GAP-7",
+      "component": "Shared signoff drivers hardcode Ibex / 1 macro master",
+      "files": [
+        "integration/ibex_host_benchmark/signoff_layout.py:38-39",
+        "integration/ibex_sg13g2_ez130/reference_extract.py:66,81",
+        "integration/ibex_sg13g2_ez130/signoff_timing.py:47",
+        "integration/ibex_sg13g2_ez130/signoff_logic.py:87-89",
+        "integration/ibex_pdks/gates/pdk_signoff.py:136",
+        "integration/ibex_sg13g2_ez130/signoff_lvs.py:411"
+      ],
+      "summary": "High-level signoff wrappers hardcode TOP='ibex_sram_bench', len(macros)==1, and SRAM Liberty/LEF; signoff_lvs.py spawns private systemd-run without AllowedCPUs. Lower-level gates (signoff_drc.py, tap_coverage_runner.py, build_lvs_reference.py, check_lvs.py, magic_drc/magic_antenna/netgen_lvs) already work cleanly with 0 macros and arbitrary top modules."
+    },
+    {
+      "id": "GAP-8",
+      "component": "SKY130A horizontal_repair antenna helpers hardcode 2 CPUs and 2 SRAM macros",
+      "files": [
+        "integration/ibex_pdks/sky130hd/native/horizontal_repair/ranked_metal.py:63",
+        "integration/ibex_pdks/sky130hd/native/horizontal_repair/components.py:300"
+      ],
+      "summary": "ranked_metal.py:63 asserts len(os.sched_getaffinity(0))==2 (fails on 4-CPU allocations unless wrapped with taskset -c); components.py:300 asserts len(fixed_macro_boxes)==2 (blocks generate.py/repair-via-offsets on 0-macro SKY130A designs, leaving 8 residual metal4-contact/metal3 Magic antenna violations on sky130_sha256_core after diode+jumper closure reduced them from 53 to 8)."
+    }
+  ],
+  "targets": {
+    "ihp_picorv32_top": {
+      "design_key": "picorv32_top",
+      "top": "picorv32_top",
+      "pdk": "ihp-sg13g2",
+      "scl": "ez130_8t",
+      "repo_url": "https://github.com/YosysHQ/picorv32.git",
+      "git_commit": "ef203c2b0a3fb793280f5114941416c425c5b461",
+      "license": "ISC",
+      "license_file": {
+        "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/src/picorv32/COPYING",
+        "sha256": "041ebc727233e5bf096dd41260cbb81014d3d29ca007a15f3b1807d4e9ff288e",
+        "bytes": 777
+      },
+      "source_note": "Unmodified picorv32.v + thin picorv32_top RV32IMC wrapper (ENABLE_MUL=1, ENABLE_DIV=1, COMPRESSED_ISA=1, BARREL_SHIFTER=1)",
+      "clock_port": "clk",
+      "clock_period_ns": 50.0,
+      "rtl_sha256": "699a09235f847be4561ee18e925b23a1935af8302f54ae08ba88d9ea2d777eb1",
+      "sdc_sha256": "0daf240d0d5d6522110aeeebda532e3ba945aba922dca0b020b8d812e7ad635a",
+      "die_area_um": [
+        0.0,
+        0.0,
+        733.74,
+        732.48
+      ],
+      "core_area_um": [
+        20.16,
+        20.16,
+        713.58,
+        712.32
+      ],
+      "pin_count": 176,
+      "rusteda": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 172.589,
+        "producer_peak_rss_kib": 504296,
+        "signoff_wall_seconds": 344.128,
+        "tools": null,
+        "synthesis_cells": 13146,
+        "final_non_filler_cells": 15083,
+        "final_total_cells": 49001,
+        "diode_cells": 35,
+        "std_cell_area_um2": 152162.64,
+        "core_area_um2": 479957.5872,
+        "utilization_pct": 31.703,
+        "routed_nets": 15332,
+        "routed_wirelength_um": 752662.41,
+        "via_count": 120642,
+        "gates_passed": "8/8",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "passed",
+          "drc": "passed",
+          "antenna": "passed",
+          "latchup": "passed",
+          "lvs": "passed",
+          "logic": "passed"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 15083
+        },
+        "timing": {
+          "status": "passed",
+          "tt_setup_wns_ns": 32.64771301266909,
+          "tt_hold_wns_ns": 0.1970781371656161,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 0,
+          "tt_fanout_violations": 0,
+          "ss_setup_wns_ns": 28.276743524818315,
+          "ss_hold_wns_ns": 0.3443108118295155,
+          "ss_slew_violations": 0,
+          "ss_cap_violations": 0,
+          "ss_fanout_violations": 0,
+          "ss_fmax_mhz": 46.0336,
+          "tt_vectorless_power_mw": 2.594136,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "passed",
+          "synthesis_status": "passed",
+          "synthesis_method": "check_config+abc_cec(assume_full_case=False)",
+          "final_status": "passed",
+          "final_method": "check_config+abc_cec(assume_full_case=False)",
+          "state_pairs": 2213
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/rusteda/backend/picorv32_top.gds",
+            "sha256": "5a3b308e4968ed6ae23c10f4c4bead4943002338a2ba6ea2d0352832f9ac9a72",
+            "bytes": 23537752
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/rusteda/backend/picorv32_top.def",
+            "sha256": "04998ae2418009555e0cfe3cc6ad2dc1b14b95b8ffe5fa7bcd3025bc420a2348",
+            "bytes": 11213438
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/rusteda/backend/picorv32_top.v",
+            "sha256": "56e3d558e0c4a1faf71445a95dd03f3fe285bb2d6499efcb502e2deb507933e2",
+            "bytes": 1590474
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/rusteda/backend/picorv32_top.pnl.v",
+            "sha256": "be7c90872c0d47acdf2105bc2821cdb2d06223a1fc0fcdc864e84a2776bb81b0",
+            "bytes": 3621361
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/signoff_rusteda/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/rusteda/receipt.json"
+        },
+        "latchup": {
+          "status": "passed"
+        }
+      },
+      "librelane": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 1447.544,
+        "producer_peak_rss_kib": 2429764,
+        "signoff_wall_seconds": 423.249,
+        "tools": null,
+        "synthesis_cells": 9754,
+        "final_non_filler_cells": 12176,
+        "final_total_cells": 49676,
+        "diode_cells": 267,
+        "std_cell_area_um2": 141966.72,
+        "core_area_um2": 479957.5872,
+        "utilization_pct": 29.579,
+        "routed_nets": 11685,
+        "routed_wirelength_um": 620864.48,
+        "via_count": 89693,
+        "gates_passed": "7/8",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "passed",
+          "drc": "passed",
+          "antenna": "passed",
+          "latchup": "passed",
+          "lvs": "passed",
+          "logic": "unverified"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 11685
+        },
+        "timing": {
+          "status": "passed",
+          "tt_setup_wns_ns": 30.3810567524932,
+          "tt_hold_wns_ns": 0.18427604408429302,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 0,
+          "tt_fanout_violations": 19,
+          "ss_setup_wns_ns": 24.20977620234659,
+          "ss_hold_wns_ns": 0.3282842979265807,
+          "ss_slew_violations": 0,
+          "ss_cap_violations": 0,
+          "ss_fanout_violations": 19,
+          "ss_fmax_mhz": 38.7744,
+          "tt_vectorless_power_mw": 3.307605,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "unverified",
+          "synthesis_status": "unverified",
+          "synthesis_method": null,
+          "final_status": "unverified",
+          "final_method": null,
+          "state_pairs": null
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/librelane/design/runs/run1/60-klayout-streamout/picorv32_top.gds",
+            "sha256": "48b854474660d3c9b090c2fd46499f2b93167585ea9f1371dbb6209ad9f6d55e",
+            "bytes": 12519560
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/librelane/design/runs/run1/final/def/picorv32_top.def",
+            "sha256": "75f75ec22ecb5e2340fe0922f4981ff3d979fa1685354d9b2a7ab3d2a80e5aea",
+            "bytes": 15351185
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/librelane/design/runs/run1/final/nl/picorv32_top.nl.v",
+            "sha256": "15029fad6b2543ea7b6fadf0fbc41bc2de20f6d52ee0e780c8e94d06628ff984",
+            "bytes": 2425671
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/librelane/design/runs/run1/final/pnl/picorv32_top.pnl.v",
+            "sha256": "110f10d1c182ef244a2717f745528335ea60aefd695c934d6161ec31d7505505",
+            "bytes": 3790349
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/signoff_librelane/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_picorv32_top/librelane/receipt.json"
+        },
+        "latchup": {
+          "status": "passed"
+        }
+      }
+    },
+    "ihp_aes_core": {
+      "design_key": "aes_core",
+      "top": "aes_core",
+      "pdk": "ihp-sg13g2",
+      "scl": "ez130_8t",
+      "repo_url": "https://github.com/secworks/aes.git",
+      "git_commit": "80dc4718e1dcbbdb4b0dd1bdb393d8f7b98981dc",
+      "license": "BSD-2-Clause",
+      "license_file": {
+        "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/src/aes/LICENSE",
+        "sha256": "81899e14798bc6a06e02f48959e1825b9e631f0415bccf5b74e589dabd7c7f80",
+        "bytes": 1303
+      },
+      "source_note": null,
+      "clock_port": "clk",
+      "clock_period_ns": 50.0,
+      "rtl_sha256": "5f1764cb64aeed6051ac2fc36cb8ba86a80c220b9f4a0b8f3dc7ff673df50abc",
+      "sdc_sha256": "ac617749f45b9920bc80cf273ef10b5dde33683df0e3e3b7b733d14a65223cb6",
+      "die_area_um": [
+        0.0,
+        0.0,
+        820.26,
+        819.84
+      ],
+      "core_area_um": [
+        20.16,
+        20.16,
+        800.1,
+        799.68
+      ],
+      "pin_count": 520,
+      "rusteda": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 291.636,
+        "producer_peak_rss_kib": 637824,
+        "signoff_wall_seconds": 426.818,
+        "tools": null,
+        "synthesis_cells": 13059,
+        "final_non_filler_cells": 16309,
+        "final_total_cells": 54260,
+        "diode_cells": 390,
+        "std_cell_area_um2": 211300.3872,
+        "core_area_um2": 607978.8288,
+        "utilization_pct": 34.755,
+        "routed_nets": 17219,
+        "routed_wirelength_um": 1177205.59,
+        "via_count": 151440,
+        "gates_passed": "8/8",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "passed",
+          "drc": "passed",
+          "antenna": "passed",
+          "latchup": "passed",
+          "lvs": "passed",
+          "logic": "passed"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 16638
+        },
+        "timing": {
+          "status": "passed",
+          "tt_setup_wns_ns": 38.46550919991886,
+          "tt_hold_wns_ns": 0.17549029393044385,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 0,
+          "tt_fanout_violations": 0,
+          "ss_setup_wns_ns": 34.40351745309502,
+          "ss_hold_wns_ns": 0.3141071935903714,
+          "ss_slew_violations": 0,
+          "ss_cap_violations": 0,
+          "ss_fanout_violations": 0,
+          "ss_fmax_mhz": 64.117,
+          "tt_vectorless_power_mw": 14.404061,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "passed",
+          "synthesis_status": "passed",
+          "synthesis_method": "check_config+abc_cec(assume_full_case=False)",
+          "final_status": "passed",
+          "final_method": "check_config+abc_cec(assume_full_case=False)",
+          "state_pairs": 2470
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/rusteda/backend/aes_core.gds",
+            "sha256": "1d2c65f1afc4fc8d125ecc30d6a527704bf259eb1d128e296fc19d32b22f6bf6",
+            "bytes": 28915820
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/rusteda/backend/aes_core.def",
+            "sha256": "e0083983e0fda7a1ab4cf6ac17cd20658fe11d06a9b6d669d49d64d3e49860af",
+            "bytes": 13258631
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/rusteda/backend/aes_core.v",
+            "sha256": "6db28abe2e04974db79ff0bf8968c85c85ad0f72b088da6fc7943fb4e7863215",
+            "bytes": 1878773
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/rusteda/backend/aes_core.pnl.v",
+            "sha256": "2ec1752e0367dfc8d58a9c10f557563c46b5f6caa3819fb05edd79c241a40e72",
+            "bytes": 4138667
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/signoff_rusteda/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/rusteda/receipt.json"
+        },
+        "latchup": {
+          "status": "passed"
+        }
+      },
+      "librelane": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 1931.327,
+        "producer_peak_rss_kib": 2527912,
+        "signoff_wall_seconds": 644.04,
+        "tools": null,
+        "synthesis_cells": 14917,
+        "final_non_filler_cells": 19427,
+        "final_total_cells": 70843,
+        "diode_cells": 737,
+        "std_cell_area_um2": 217735.4592,
+        "core_area_um2": 607978.8288,
+        "utilization_pct": 35.813,
+        "routed_nets": 18808,
+        "routed_wirelength_um": 1334759.0,
+        "via_count": 164201,
+        "gates_passed": "6/8",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "failed",
+          "drc": "passed",
+          "antenna": "passed",
+          "latchup": "passed",
+          "lvs": "passed",
+          "logic": "unverified"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 18808
+        },
+        "timing": {
+          "status": "failed",
+          "tt_setup_wns_ns": 31.761445927862813,
+          "tt_hold_wns_ns": 0.2186746401406253,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 17,
+          "tt_fanout_violations": 61,
+          "ss_setup_wns_ns": 23.423702751543516,
+          "ss_hold_wns_ns": 0.37829562775286746,
+          "ss_slew_violations": 0,
+          "ss_cap_violations": 6,
+          "ss_fanout_violations": 61,
+          "ss_fmax_mhz": 37.6275,
+          "tt_vectorless_power_mw": 12.136642,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "unverified",
+          "synthesis_status": "unverified",
+          "synthesis_method": null,
+          "final_status": "unverified",
+          "final_method": null,
+          "state_pairs": null
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/librelane/design/runs/run1/60-klayout-streamout/aes_core.gds",
+            "sha256": "395f572c00884fea302f94bbdf4ecce8bb905e02c5fdf7934c5520c7f1bb6046",
+            "bytes": 21887230
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/librelane/design/runs/run1/final/def/aes_core.def",
+            "sha256": "145f5313902fddc882760e2bb6ca860f0400fb98cb97b3718886d73d716c2f1e",
+            "bytes": 26134888
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/librelane/design/runs/run1/final/nl/aes_core.nl.v",
+            "sha256": "d45b94706445f727f96487ddc169ccc64427124623b051af0b84e549900aa9cf",
+            "bytes": 3470711
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/librelane/design/runs/run1/final/pnl/aes_core.pnl.v",
+            "sha256": "f469e59d1cfec52a75d18a40d8bce5048bcbdfc986e935f8d412a463d99007e9",
+            "bytes": 5429237
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/signoff_librelane/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_aes_core/librelane/receipt.json"
+        },
+        "latchup": {
+          "status": "passed"
+        }
+      }
+    },
+    "ihp_sha256_core": {
+      "design_key": "sha256_core",
+      "top": "sha256_core",
+      "pdk": "ihp-sg13g2",
+      "scl": "ez130_8t",
+      "repo_url": "https://github.com/secworks/sha256.git",
+      "git_commit": "837c5cc396f001d18f2c765721c585716eb439ae",
+      "license": "BSD-2-Clause",
+      "license_file": {
+        "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/src/sha256/LICENSE",
+        "sha256": "943866e8c0449b472dfebe4d10f0641240abb37778165eb4e68200ce1180890d",
+        "bytes": 1303
+      },
+      "source_note": null,
+      "clock_port": "clk",
+      "clock_period_ns": 50.0,
+      "rtl_sha256": "72cfd8caf6faec20f3e258d2e8a1491a264b189fd002c317313debf6a139497c",
+      "sdc_sha256": "a61cda0fcf0396ece2748d3c085db72dd5b6f05f2a0595f76e852c2273ee97c3",
+      "die_area_um": [
+        0.0,
+        0.0,
+        603.96,
+        604.8
+      ],
+      "core_area_um": [
+        20.16,
+        20.16,
+        583.8,
+        584.64
+      ],
+      "pin_count": 775,
+      "rusteda": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 114.006,
+        "producer_peak_rss_kib": 367516,
+        "signoff_wall_seconds": 226.285,
+        "tools": null,
+        "synthesis_cells": 7349,
+        "final_non_filler_cells": 8899,
+        "final_total_cells": 30389,
+        "diode_cells": 517,
+        "std_cell_area_um2": 96432.9408,
+        "core_area_um2": 318163.5072,
+        "utilization_pct": 30.309,
+        "routed_nets": 10023,
+        "routed_wirelength_um": 545431.7,
+        "via_count": 73248,
+        "gates_passed": "8/8",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "passed",
+          "drc": "passed",
+          "antenna": "passed",
+          "latchup": "passed",
+          "lvs": "passed",
+          "logic": "passed"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 9573
+        },
+        "timing": {
+          "status": "passed",
+          "tt_setup_wns_ns": 40.443109561585125,
+          "tt_hold_wns_ns": 0.13601464783891196,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 0,
+          "tt_fanout_violations": 0,
+          "ss_setup_wns_ns": 34.63190721110969,
+          "ss_hold_wns_ns": 0.2523146207827761,
+          "ss_slew_violations": 0,
+          "ss_cap_violations": 0,
+          "ss_fanout_violations": 0,
+          "ss_fmax_mhz": 65.0699,
+          "tt_vectorless_power_mw": 17.057432,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "passed",
+          "synthesis_status": "passed",
+          "synthesis_method": "check_config+abc_cec(assume_full_case=False)",
+          "final_status": "passed",
+          "final_method": "check_config+abc_cec(assume_full_case=False)",
+          "state_pairs": 1033
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/rusteda/backend/sha256_core.gds",
+            "sha256": "2da78329f68a846dd5fc894becf08a2d97fe407733c1707ff989200133a45350",
+            "bytes": 14638882
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/rusteda/backend/sha256_core.def",
+            "sha256": "80ffd176451e3ac9d607856974f8f09b92add99621afc428f82ffa0609f25443",
+            "bytes": 6981639
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/rusteda/backend/sha256_core.v",
+            "sha256": "d5ece7c5fbe27f77b195ea3c17ba4d598a9bc7e8292b71069e7c53897427d6bb",
+            "bytes": 871241
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/rusteda/backend/sha256_core.pnl.v",
+            "sha256": "f745d485e99ec3df296c95631041de88176ca777a4064d60c8c3f0d9b8396cb7",
+            "bytes": 2137265
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/signoff_rusteda/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/rusteda/receipt.json"
+        },
+        "latchup": {
+          "status": "passed"
+        }
+      },
+      "librelane": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 615.739,
+        "producer_peak_rss_kib": 1340392,
+        "signoff_wall_seconds": 291.995,
+        "tools": null,
+        "synthesis_cells": 7117,
+        "final_non_filler_cells": 9395,
+        "final_total_cells": 36017,
+        "diode_cells": 211,
+        "std_cell_area_um2": 96057.5616,
+        "core_area_um2": 318163.5072,
+        "utilization_pct": 30.191,
+        "routed_nets": 9526,
+        "routed_wirelength_um": 460634.49,
+        "via_count": 66412,
+        "gates_passed": "6/8",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "failed",
+          "drc": "passed",
+          "antenna": "passed",
+          "latchup": "passed",
+          "lvs": "passed",
+          "logic": "unverified"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 9526
+        },
+        "timing": {
+          "status": "failed",
+          "tt_setup_wns_ns": 36.9500458466611,
+          "tt_hold_wns_ns": 0.23509972412067281,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 1,
+          "tt_fanout_violations": 16,
+          "ss_setup_wns_ns": 28.625623570657204,
+          "ss_hold_wns_ns": 0.40446780403097565,
+          "ss_slew_violations": 0,
+          "ss_cap_violations": 1,
+          "ss_fanout_violations": 16,
+          "ss_fmax_mhz": 46.785,
+          "tt_vectorless_power_mw": 13.524872,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "unverified",
+          "synthesis_status": "unverified",
+          "synthesis_method": null,
+          "final_status": "unverified",
+          "final_method": null,
+          "state_pairs": null
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/librelane/design/runs/run1/60-klayout-streamout/sha256_core.gds",
+            "sha256": "0320db8873355b201310c0f9e785fb36fb0e490f5c3fc9296db8eaebf305c642",
+            "bytes": 9465022
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/librelane/design/runs/run1/final/def/sha256_core.def",
+            "sha256": "e2132422dc345be13cc9a7a50161f11287b8fc649a6896b18c987775ba9a137d",
+            "bytes": 11422890
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/librelane/design/runs/run1/final/nl/sha256_core.nl.v",
+            "sha256": "b9544f9e13745335695d97dfa43115fd2e887ba5204fac210bcb4555cbb46ccc",
+            "bytes": 1651151
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/librelane/design/runs/run1/final/pnl/sha256_core.pnl.v",
+            "sha256": "18dde405c24a9128b8d9991fa474431b17e8a391dfe211d5864abcff7051f3d2",
+            "bytes": 2644009
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/signoff_librelane/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/ihp_sha256_core/librelane/receipt.json"
+        },
+        "latchup": {
+          "status": "passed"
+        }
+      }
+    },
+    "sky130_sha256_core": {
+      "design_key": "sha256_core",
+      "top": "sha256_core",
+      "pdk": "sky130A",
+      "scl": "sky130_fd_sc_hd",
+      "repo_url": "https://github.com/secworks/sha256.git",
+      "git_commit": "837c5cc396f001d18f2c765721c585716eb439ae",
+      "license": "BSD-2-Clause",
+      "license_file": {
+        "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/src/sha256/LICENSE",
+        "sha256": "943866e8c0449b472dfebe4d10f0641240abb37778165eb4e68200ce1180890d",
+        "bytes": 1303
+      },
+      "source_note": null,
+      "clock_port": "clk",
+      "clock_period_ns": 50.0,
+      "rtl_sha256": "72cfd8caf6faec20f3e258d2e8a1491a264b189fd002c317313debf6a139497c",
+      "sdc_sha256": "8eaa48d94decf653922a765e624845446f945207a8555e0cd24f12798bc59eed",
+      "die_area_um": [
+        0.0,
+        0.0,
+        623.3,
+        625.6
+      ],
+      "core_area_um": [
+        12.42,
+        13.6,
+        610.88,
+        612.0
+      ],
+      "pin_count": 775,
+      "rusteda": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 249.478,
+        "producer_peak_rss_kib": 450780,
+        "signoff_wall_seconds": 419.827,
+        "tools": {
+          "rusteda": {
+            "path": "/home/cgao/git/RustEDA/.work/three-pdk-20261114/bin/wireload-b07874f/rusteda-sta",
+            "sha256": "c3e8b1c0c6381742b6d517768fc9d915d9013637b987fbd794f27740f88cc8fd",
+            "bytes": 42518088
+          },
+          "rustsys": {
+            "path": "/home/cgao/git/RustEDA/.work/power-optimization-20261115/aligned-sys/rustsys",
+            "sha256": "c60ac4f610ff94d5ca536a32d1c6c8a63266ed97ed17c5bdc75bdf0148c09964",
+            "bytes": 73180520
+          },
+          "ruststa": {
+            "path": "/home/cgao/git/RustEDA/.work/ibex-campaign-20261110/bin/ruststa",
+            "sha256": "1e6ff7f337066bc4d9b33fcb57ad6c24f67724c87df721a51bc275aac8bc56aa",
+            "bytes": 67060184
+          },
+          "rustroad": {
+            "path": "/home/cgao/git/RustEDA/.work/target/RustROAD/release/rustroad",
+            "sha256": "915c0a4652b50bb348bc073966627ec21fe2ec80c8e7a43b84e475a5dd3f77bb",
+            "bytes": 89454256
+          }
+        },
+        "synthesis_cells": 7930,
+        "final_non_filler_cells": 10322,
+        "final_total_cells": 55777,
+        "diode_cells": 595,
+        "std_cell_area_um2": 105451.136,
+        "core_area_um2": 358118.464,
+        "utilization_pct": 29.446,
+        "routed_nets": 10711,
+        "routed_wirelength_um": 707104.64,
+        "via_count": 106940,
+        "gates_passed": "5/7",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "failed",
+          "drc": "passed",
+          "antenna": "failed",
+          "lvs": "passed",
+          "logic": "passed"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0,
+          "klayout_violations": 0,
+          "magic_violations": 0
+        },
+        "antenna": {
+          "status": "failed",
+          "violations": 8
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 10427
+        },
+        "timing": {
+          "status": "failed",
+          "tt_setup_wns_ns": 36.38679505138057,
+          "tt_hold_wns_ns": 0.3809814793700017,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 0,
+          "tt_fanout_violations": 0,
+          "ss_setup_wns_ns": 22.993612997780996,
+          "ss_hold_wns_ns": -0.024952485228759796,
+          "ss_slew_violations": 3,
+          "ss_cap_violations": 3,
+          "ss_fanout_violations": 0,
+          "ss_fmax_mhz": 37.0283,
+          "tt_vectorless_power_mw": 1.414413,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "passed",
+          "synthesis_status": "passed",
+          "synthesis_method": "check_config+abc_cec(assume_full_case=False)",
+          "final_status": "passed",
+          "final_method": "check_config+abc_cec(assume_full_case=False)",
+          "state_pairs": 1033
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/rusteda/backend/sha256_core.gds",
+            "sha256": "e867ead9ca411181576f4076e6d1664323ef6e7103c3afffcb970b52dcff6b86",
+            "bytes": 33860170
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/rusteda/backend/sha256_core.def",
+            "sha256": "2420e019be0f7648aedd6efd2730cdcf3ac18678f4c6dd99a5c3d7c68c5b28f2",
+            "bytes": 13643571
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/rusteda/backend/sha256_core.v",
+            "sha256": "32edfcedfed51ae58646d3a2cb758c8dedd831ca2fc7d06a330dba9d8c2d0f65",
+            "bytes": 1223139
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/rusteda/backend/sha256_core.pnl.v",
+            "sha256": "0e1e60c34da76158ae23cb1bc1afde7d94e80519b242b76160002115d86c9760",
+            "bytes": 5816197
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/signoff_rusteda/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/rusteda/receipt.json"
+        }
+      },
+      "librelane": {
+        "producer_status": "completed",
+        "producer_wall_seconds": 397.028,
+        "producer_peak_rss_kib": 1202488,
+        "signoff_wall_seconds": 978.528,
+        "tools": null,
+        "synthesis_cells": 6719,
+        "final_non_filler_cells": 8610,
+        "final_total_cells": 86665,
+        "diode_cells": 50,
+        "std_cell_area_um2": 92255.9808,
+        "core_area_um2": 358118.464,
+        "utilization_pct": 25.761,
+        "routed_nets": 8976,
+        "routed_wirelength_um": 454214.76,
+        "via_count": 68491,
+        "gates_passed": "5/7",
+        "verdicts": {
+          "density": "passed",
+          "extraction": "passed",
+          "timing": "failed",
+          "drc": "passed",
+          "antenna": "passed",
+          "lvs": "passed",
+          "logic": "unverified"
+        },
+        "drc": {
+          "status": "passed",
+          "violations": 0,
+          "klayout_violations": 0,
+          "magic_violations": 0
+        },
+        "antenna": {
+          "status": "passed",
+          "violations": 0
+        },
+        "lvs": {
+          "status": "passed"
+        },
+        "extraction": {
+          "status": "passed",
+          "nets": 8976
+        },
+        "timing": {
+          "status": "failed",
+          "tt_setup_wns_ns": 34.50910765932894,
+          "tt_hold_wns_ns": 0.4423890268217678,
+          "tt_slew_violations": 0,
+          "tt_cap_violations": 0,
+          "tt_fanout_violations": 1,
+          "ss_setup_wns_ns": 19.70911667434016,
+          "ss_hold_wns_ns": 0.5406935052728379,
+          "ss_slew_violations": 605,
+          "ss_cap_violations": 68,
+          "ss_fanout_violations": 1,
+          "ss_fmax_mhz": 33.0132,
+          "tt_vectorless_power_mw": 1.702213,
+          "power_scope": {
+            "corner": "tt",
+            "clock_period_ns": 50.0,
+            "activity": 0.1
+          }
+        },
+        "logic": {
+          "status": "unverified",
+          "synthesis_status": "unverified",
+          "synthesis_method": null,
+          "final_status": "unverified",
+          "final_method": null,
+          "state_pairs": null
+        },
+        "artifacts": {
+          "gds": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/librelane/design/runs/run1/final/gds/sha256_core.gds",
+            "sha256": "5567321b2ca3d3c3f858fcebf2ce6129be4332a6f43289acd4bf7b5cbae48f37",
+            "bytes": 21169390
+          },
+          "def": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/librelane/design/runs/run1/final/def/sha256_core.def",
+            "sha256": "ff416366063c17e4b9391761db0ff13972f8470bb3d08ddd5701c1f443265d7f",
+            "bytes": 14958193
+          },
+          "netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/librelane/design/runs/run1/final/nl/sha256_core.nl.v",
+            "sha256": "8c0a8bb2d684d22960005a3215f0ffde32cc3b11db7d56446699faebe72eeb39",
+            "bytes": 4580820
+          },
+          "powered_netlist": {
+            "path": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/librelane/design/runs/run1/final/pnl/sha256_core.pnl.v",
+            "sha256": "783bcb754ca8d247e75a9a8888c7d67f2323256e11c2e9294751888e79d174a3",
+            "bytes": 9669034
+          },
+          "signoff_summary": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/signoff_librelane/summary.json",
+          "producer_receipt": "/home/cgao/git/RustEDA/.work/three-tracks-20261119/multi-design/runs/sky130_sha256_core/librelane/receipt.json"
+        }
+      }
+    }
+  }
+}

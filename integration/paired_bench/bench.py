@@ -879,7 +879,7 @@ def cmd_summarize(plan: Plan, workspace: Path) -> dict:
                 for a, v in by_arm.items()}
         out = dict(complete=len(samples), scheduled=len(rows), samples=table, arms=arms)
         spec = plan.phases[phase]
-        if "pair" in spec and sel is not None:
+        if "pair" in spec and (sel is not None or "@selected" not in spec["pair"]):
             pair = [sel if a == "@selected" else a for a in spec["pair"]]
             ref = next(a for a in pair if plan.arms[a]["role"] == "reference")
             cand = next(a for a in pair if plan.arms[a]["role"] == "candidate")

@@ -35,12 +35,21 @@ blocks measure **219.6 / 1,745.5 s (7.95×)** to GDS and **754.2 / 2,467.7 s
 SKY130A and GF180MCU D, RustEDA estimates **20.0%**, **3.4%** and **3.3%**
 lower 17-cycle workload power at 10 MHz and higher post-route SS setup timing
 ceilings (measured as residual margin under 10 MHz constraints, not a
-tight-clock Fmax race). On SKY130A and GF180MCU D, the 2026-11-18 repeated runs
-selected LibreLane's jumper-only arm (105 and 82 antenna findings) at
-**1,665.5 / 1,370.0 s** and **591.3 / 885.6 s**, while SKY130A RustEDA also
-carries significant recipe asymmetries (Ibex-trained PGO, multiple `.work`
-binaries, extra placement channels and pre-bound rewires).
+tight-clock Fmax race). On SKY130A, replacing the archived PGO/5-binary `r02` recipe with a clean
+single-binary non-PGO standard flow (zero manual vertical channels, zero
+hardcoded rewires, zero external tools in loop) in a fresh 3-block quiet-host
+confirmation against `librelane-recipe` yields **499.64 / 1,771.75 s (3.55×)**
+to GDS with **0 / 0 Magic & KLayout DRC**, **0 / 0 / 0 TT & SS DRVs** (vs
+3,035/381/64), **−35.3% vectorless power** (6.15 vs 9.50 mW), and **14 / 13**
+Magic antenna findings. Companion studies evaluate genuinely tight clock
+constraints across all three PDKs (IHP 25/20 ns, SKY130A 40 ns, GF180 65 ns)
+and three non-Ibex permissive open-source designs (`picorv32`, `aes_core`,
+`sha256_core` — **8/8 independent signoff gates passing** on all three IHP
+designs at **5.4×–8.4×** speedup, plus a dual-PDK SKY130A `sha256_core` check).
 [Three-PDK benchmark](benchmarks/ibex-three-pdk.md) ·
+[Clean SKY130A confirmation](benchmarks/ibex-three-pdk.md#clean-single-binary-sky130a-comparison-2026-11-20) ·
+[Tight-clock Fmax](benchmarks/tight-clock-fmax.md) ·
+[Multi-design generalization](benchmarks/multi-design.md) ·
 [Fairness audit](benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries)
 
 ### IHP SG13G2 results

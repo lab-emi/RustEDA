@@ -49,7 +49,58 @@ confirmed three-block difference.
 [GF180MCU D](#repeated-gf180mcu-d-comparison-at-the-same-signoff)
 
 [SKY130A native local repair](#sky130a-native-local-antenna-repair) ·
+[Clean single-binary SKY130A (2026-11-20)](#clean-single-binary-sky130a-comparison-2026-11-20) ·
+[Tight-clock Fmax comparison](tight-clock-fmax.md) ·
+[Multi-design generalization](multi-design.md) ·
 [IHP and GF180MCU D receipts](evidence/ibex-three-pdk/aligned-select-power-trials.json)
+
+<a id="clean-single-binary-sky130a-comparison-2026-11-20"></a>
+## Clean single-binary SKY130A comparison (2026-11-20)
+
+To resolve the SKY130A fairness asymmetries documented below (Ibex-trained PGO,
+five `.work` RustROAD binaries, two manual vertical placement channels, five
+hardcoded OR-gate rewires, and OpenRCX/OpenSTA in the loop), we replaced the
+archived `r02` producer with a clean, single-binary, non-PGO standard flow
+(`integration/ibex_pdks/sky130hd/native/clean_sky130_flow.py`,
+`profile-clean.json`, `physical-clean.json`, `routing-clean.json`) and ran a
+fresh pre-registered **three-block counterbalanced (`AB / BA / AB`) quiet-host
+confirmation** (`integration/paired_bench/plans/sky130-clean-single-binary.json`)
+against `librelane-recipe` (the non-regressing baseline selected by
+`no_physical_regression`) on the exact same 2 E-cores (`CPUs 30, 31`), 4 GiB /
+zero-swap cgroup v2 scopes, with all 8 shared independent signoff gates running
+on every sample.
+
+Root cause of the speedup: the archived `physical.json` (`target_density_milli: 550`)
+stalled electrostatic line search at iteration 14 / 200, creating the congestion
+hotspot that previously forced two manual vertical channels and 1,215 s non-PGO
+routing. Setting `target_density_milli: 400` converges all 200 iterations with
+**zero manual vertical channels**, cutting peak pin density by 23.5% and HPWL by
+8.1%, eliminating cold SS DRV violations automatically, and cutting cold non-PGO
+detailed routing **5.0×** (`1,215 s → 242 s`). Adding `"met3": "0.40"` to
+OpenRAM's `obstruction_spacing_um` clears all `met3.3d` DRCs cleanly.
+
+| Metric (SKY130A Ibex, 2 E-cores, 4 GiB / 0 swap) | Archived PGO `r02` (2026-11-18) | **Clean single-binary non-PGO RustEDA (2026-11-20)** | LibreLane 3.0.17 `librelane-recipe` (2026-11-20) | Clean RustEDA vs LibreLane |
+| --- | ---: | ---: | ---: | --- |
+| PGO / `.work` binaries / manual channels / hardcoded rewires | Yes / 5 / 2 / 5 | **No / 0 / 0 / 0** (single standard release set) | Standard LibreLane 3.0.17 | **Clean parity** |
+| **RTL to GDS, quiet-host median of 3 (s)** | 1,665.5 | **499.64** (`498.25–499.97`, spread 0.34%) | 1,771.75 (`1,765.98–1,774.10`, spread 0.46%) | **3.55× faster** (3.53–3.56×, 3/3 blocks) |
+| Cross-block determinism (GDS / DEF / netlist) | Bit-exact | **Bit-exact** (3/3 identical) | **Identical** (`magic_prefix_masked_sha256` 3/3) | Both deterministic |
+| Process Max RSS (MiB) | — | **631** | ~2,190 (cgroup peak 2,165–2,226) | **~3.5× less RAM** |
+| Standard-cell area (µm²) / core util | 174,096 | **173,881** (28.30%) | 176,427 (28.72%) | **−1.4% smaller** |
+| TT 10 MHz vectorless power (`paired-qor` method, mW) | 6.56 | **6.15** | 9.50 | **−35.3% lower** |
+| SS setup ceiling (SDC sweep at 10 MHz, MHz) | 24.10 | **23.82** | 17.21 | **+38.4% higher** |
+| Magic / KLayout DRC | 0 / 0 | **0 / 0** | 0 / 0 | Both 0 / 0 |
+| Magic antenna violations | 12 | 14 (`met3: 10`, `met4: 1`, `via4: 3`) | **13** (`met1: 2`, `met3: 3`, `via4: 8`) | Both fail antenna gate |
+| OpenRCX + OpenSTA TT / SS timing & DRV | Pass (0/0/0) | **Pass** (TT `0/0/0`, SS `0/0/0`) | **Fail** (TT `205/51/64`, SS `3,035/381/64`) | **RustEDA timing-clean** |
+| Netgen LVS / Icarus sim / ABC equivalence | Pass / Pass / Pass | **Pass / Pass / Pass** (7/8 gates pass) | Pass / Pass / unverified (5/8 gates pass) | RustEDA formally proven |
+
+[Clean SKY130A paired confirmation receipt](evidence/ibex-three-pdk/sky130-clean-single-binary.json) ·
+[Paired benchmark plan](https://github.com/lab-emi/RustEDA/blob/main/integration/paired_bench/plans/sky130-clean-single-binary.json)
+
+For tight-clock comparisons where both flows actively optimize setup timing
+(IHP 25/20 ns, SKY130A 40 ns, GF180 65 ns), see
+[Tight-clock Fmax comparison](tight-clock-fmax.md). For non-Ibex open-source
+designs (`picorv32`, `aes_core`, `sha256_core`), see
+[Multi-design generalization](multi-design.md).
 
 ## Comparison fairness and known asymmetries
 
@@ -65,7 +116,7 @@ directions — sharpest on SKY130A and mildest on IHP SG13G2:
 | --- | --- | --- | --- |
 | **IHP SG13G2** | Cleanest (single standard `rusteda flow exec`, 9/9 gates pass) | None on runtime; LibreLane fails electrical timing gate | LibreLane's timed GDS window includes `OpenROAD.IRDropReport` (28.6 s), redundant `Magic.StreamOut` (23.7 s) before `KLayout.StreamOut` and 6× OpenSTA (226 s); Fmax swept from 10 MHz `AREA 0` run |
 | **GF180MCU D** | Moderate (no PGO, no hardcoded ECOs) | Legacy Tier-3 rule picked `drt-jumpers-fill` (82 antenna, 7 SS hold) over `recipe-fill` (0 antenna; 1.53×); RustEDA pays ~34 s of in-flow ABC proofs inside GDS time | RustEDA runs via a `.work` wrapper invoking OpenRCX + OpenSTA twice internally (~54 s) for post-route hold/load ECOs; `floating_fill.py` fits RustEDA's PDN geometry better (31.65% vs 26.03% top metal); LibreLane includes IR drop (23.6 s) and 6× OpenSTA (104 s) |
-| **SKY130A** | Lowest (strong bidirectional asymmetry) | Legacy Tier-3 rule picked `drt-jumpers` (105 Magic antenna, 2,953 SS slew) over `recipe` (13 antenna) and mixed its time with `recipe` QoR; RustEDA pays ~32 s of serial in-flow ABC proofs | **Ibex-trained PGO** on cold and staged RustROAD (`-231 s` on cold `be_route` alone: 1,214.9 → 983.9 s — without PGO, RustEDA is ~1,892 s, slower than `librelane-recipe`); **5 distinct `.work` RustROAD binaries**; **2 vertical placement blockages** (`x = 507–514, 526–533 µm`) absent from LibreLane (`FP_OBSTRUCTIONS: null`); **5 offline-discovered hardcoded OR-gate pin rewires** (`g2826/27/29`); 16-decimal Magic-calibrated thresholds; exclusion of all `_1` cells; 2 internal OpenRCX/OpenSTA feedback loops |
+| **SKY130A (archived 2026-11-18 `r02`)** | Lowest (strong bidirectional asymmetry; superseded by the [clean single-binary 2026-11-20 confirmation](#clean-single-binary-sky130a-comparison-2026-11-20) above) | Legacy Tier-3 rule picked `drt-jumpers` (105 Magic antenna, 2,953 SS slew) over `recipe` (13 antenna) and mixed its time with `recipe` QoR; RustEDA pays ~32 s of serial in-flow ABC proofs | **Ibex-trained PGO** on cold and staged RustROAD (`-231 s` on cold `be_route` alone: 1,214.9 → 983.9 s — without PGO, RustEDA is ~1,892 s, slower than `librelane-recipe`); **5 distinct `.work` RustROAD binaries**; **2 vertical placement blockages** (`x = 507–514, 526–533 µm`) absent from LibreLane (`FP_OBSTRUCTIONS: null`); **5 offline-discovered hardcoded OR-gate pin rewires** (`g2826/27/29`); 16-decimal Magic-calibrated thresholds; exclusion of all `_1` cells; 2 internal OpenRCX/OpenSTA feedback loops |
 
 Additional cross-PDK scope limits:
 
@@ -87,14 +138,15 @@ Additional cross-PDK scope limits:
   antenna and post-GRT resizer knobs, not `SYNTH_STRATEGY`, placement density,
   `RUN_IRDROP_REPORT`, or placement obstructions, whereas RustEDA underwent
   multi-day tuning across synthesis, floorplan, routing and repair.
-- **No post-hoc SKY130A `librelane-recipe` rerun:** We deliberately did not run
-  a 6–7 hour post-hoc three-block confirmation of `librelane-recipe` against
-  the current SKY130A `r02` producer. Confirming a ~1.04× edge post-hoc while
-  `r02` depends on Ibex-trained PGO (`-231 s`), five `.work` binaries,
+- **No post-hoc SKY130A `librelane-recipe` rerun against `r02`:** We deliberately
+  did not run a 6–7 hour post-hoc three-block confirmation of `librelane-recipe`
+  against the archived SKY130A `r02` producer. Confirming a ~1.04× edge post-hoc
+  while `r02` depends on Ibex-trained PGO (`-231 s`), five `.work` binaries,
   extra placement channels and hardcoded rewires would not establish a clean
-  speedup. A fresh pre-registered SKY130A campaign should wait until RustEDA
-  consolidates into a single standard non-PGO release binary and generic
-  `./rusteda flow` recipe without hardcoded instance edits.
+  speedup. Instead, we consolidated RustEDA into a single standard non-PGO
+  release flow and ran a fresh pre-registered three-block confirmation on
+  2026-11-20 (see [Clean single-binary SKY130A comparison](#clean-single-binary-sky130a-comparison-2026-11-20)
+  above: **499.64 s vs 1,771.75 s, 3.55×**).
 - **Pinned layout figures:** The side-by-side GDS PNGs on this page are
   SHA-256 pinned in their original receipts (`aligned-select-power-trials.json`
   and `sky130-native-local-repair.json`) and therefore retain their original

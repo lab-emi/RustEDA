@@ -520,6 +520,59 @@ class SelectionFallbackTest(unittest.TestCase):
                                       fallback_policy="bogus")
             self.assertEqual(raised.exception.code, "PLAN_SELECTION")
 
+    def test_direct_confirm_pair_summarizes_without_select(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            plan_path = tmp / "direct.json"
+            data = {
+                "schema": "rusteda.paired-bench-plan.v1",
+                "name": "direct-confirm-test",
+                "resources": {"cpus": [0, 1], "memory_mib": 1024, "swap_mib": 0},
+                "quiet_host": {"window_seconds": 1, "windows": 1, "max_host_busy_cpus": 2.0,
+                               "max_allowed_set_busy_cpus": 0.2, "max_package_celsius": 85, "max_wait_seconds": 5},
+                "flags": {"max_other_busy_cpus_on_allowed_set": 0.25, "max_other_busy_cpus_host": 4.0},
+                "inputs": {},
+                "signoff": {"argv": ["true"], "deadline_seconds": 10, "ownership_manifest": str(plan_path),
+                            "gates": ["drc"]},
+                "endpoints": {"gds": [], "physical_signoff": ["drc"]},
+                "arms": {
+                    "ll-recipe": {"flow": "librelane", "role": "reference",
+                                  "producer": {"argv": ["true"], "deadline_seconds": 10},
+                                  "layout": {k: f"{{sample}}/{k}" for k in ("gds", "def", "netlist", "powered_netlist", "synthesis_netlist")}},
+                    "rusteda-clean": {"flow": "rusteda", "role": "candidate",
+                                      "producer": {"argv": ["true"], "deadline_seconds": 10},
+                                      "layout": {k: f"{{sample}}/{k}" for k in ("gds", "def", "netlist", "powered_netlist", "synthesis_netlist")}},
+                },
+                "phases": {"confirm": {"pair": ["ll-recipe", "rusteda-clean"], "blocks": 3}},
+                "estimates": {"ll-recipe": {"sample_seconds": 10, "disk_mib": 1, "peak_mib": 1},
+                              "rusteda-clean": {"sample_seconds": 10, "disk_mib": 1, "peak_mib": 1}},
+                "budgets": {"min_free_disk_gib": 1},
+            }
+            plan_path.write_text(json.dumps(data))
+            plan = bench.Plan(plan_path)
+            ws = tmp / "ws"
+            ws.mkdir()
+            bench.freeze_plan(plan, ws)
+            rev = 0
+            for b, (a, c) in enumerate([("ll-recipe", "rusteda-clean"), ("rusteda-clean", "ll-recipe"), ("ll-recipe", "rusteda-clean")], 1):
+                for pos, arm in enumerate((a, c), 1):
+                    rev += 1
+                    sid = f"confirm-b{b}-{pos}-{arm}"
+                    secs = 1770.0 if arm == "ll-recipe" else 500.0
+                    rec = {
+                        "id": sid, "phase": "confirm", "arm": arm, "flow": plan.arms[arm]["flow"], "block": f"b{b}",
+                        "status": "complete", "flags": [],
+                        "producer": {"exit_code": 0, "wall_seconds": secs, "peak_bytes": 1024},
+                        "layout": {k: {"sha256": f"{arm}-{k}"} for k in ("gds", "def", "netlist", "powered_netlist", "synthesis_netlist")},
+                        "signoff": {"gates": {"drc": {"verdict": "passed"}}},
+                        "endpoints": {"gds": {"seconds": secs, "blocking": {}}, "physical_signoff": {"seconds": secs + 10.0, "blocking": {}}},
+                    }
+                    bench.write(ws / "samples" / sid / "sample.json", rec)
+            report = bench.cmd_summarize(plan, ws)
+            comp = report["phases"]["confirm"]["comparisons"]["gds"]
+            self.assertEqual(comp["verdict"], "candidate_faster_in_every_sample")
+            self.assertAlmostEqual(comp["ratio_of_medians"], 3.54, places=2)
+
 
 if __name__ == "__main__":
     unittest.main()

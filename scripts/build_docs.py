@@ -166,6 +166,8 @@ def build(stage, site):
             {'Engine progress': 'engine-status.md'},
             {'Benchmarks': 'benchmarks.md'},
             {'Ibex across three open PDKs': 'benchmarks/ibex-three-pdk.md'},
+            {'Tight-clock Fmax (three PDKs)': 'benchmarks/tight-clock-fmax.md'},
+            {'Multi-design generalization': 'benchmarks/multi-design.md'},
             {'PULPissimo synthesis': 'benchmarks/pulpissimo.md'},
             {'PULPissimo IHP full SoC': 'benchmarks/pulpissimo-ihp.md'},
             {'PULPissimo elaboration': 'benchmarks/pulpissimo-elaboration.md'},

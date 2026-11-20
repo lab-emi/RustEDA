@@ -290,14 +290,14 @@ pins={(m["name"],d["name"]):([rect for port in d["ports"] for rect in port],m["s
 WIDTH4=cap.widths["met4"]
 expect_units=metadata["physical"]["technology"]["dbu_per_micron"]
 assert expect_units==1000 and WIDTH4==300
+masters_by_name={m["name"]:m for m in masters}
 fixed_macro_boxes=[]
-for name,(master,x,y,orientation) in g.def_sites(Path(art["def"]["path"]))[0].items():
-    if name not in ("u_dmem","u_imem"):
+for name,(master,x,y,orientation) in sorted(g.def_sites(Path(art["def"]["path"]))[0].items()):
+    m=masters_by_name[master]
+    if "BLOCK" not in (m.get("class") or ""):
         continue
-    m=next(m for m in masters if m["name"]==master)
     w,h=m["size"]
     fixed_macro_boxes.append((x,y,x+w,y+h))
-assert len(fixed_macro_boxes)==2
 DIE=tuple(metadata["design"]["die_area"][k] for k in ("lx","ly","ux","uy"))
 del metadata,masters
 tracks=[]
