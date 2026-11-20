@@ -1,8 +1,20 @@
 # Engine development
 
-Updated **2026-11-13**. RustEDA’s five engine repositories keep independent
-Git histories. The superproject pins their source revisions; flow, CLI and
-workbench live directly in `apps/`. Version labels describe source previews.
+Updated **2026-11-20**. RustEDA’s five engine repositories keep independent Git histories pinned by the superproject; flow, CLI, and Studio live in `apps/`.
+
+## Latest milestones (2026-11-15 – 2026-11-20)
+
+| Engine | Key Recent Advances | Evidence |
+| --- | --- | --- |
+| **RustSys** | `--aligned-selects` dynamic part-select decoding; reset-reachable FSM state-correspondence discovery with proved valid-code invariants (`verify_state_map`). | [Multi-design](benchmarks/multi-design.md) · [RustSys](../modules/RustSys/docs/index.md) |
+| **RustSTA** | Modular source layout; worst peak RSS 12.6–29.5% below OpenSTA at 4/2 threads with `≤ 0.270 ps` parity; per-endpoint setup-gated hold ECOs. | [Tight-clock Fmax](benchmarks/tight-clock-fmax.md) · [RustSTA](../modules/RustSTA/docs/index.md) |
+| **RustROAD** | Opt-in `pin_density_sites_milli` electrostatic spreading, `scouts.first_pass_expansions` cap, multi-cut antenna fix, clean single-binary SKY130A Ibex (`3.55×`, `631 MiB` RSS, `0/0` DRC, `0` DRV), and 8/8 multi-design physical closure. | [Three-PDK Ibex](benchmarks/ibex-three-pdk.md#clean-single-binary-sky130a-comparison-2026-11-20) · [RustROAD](../modules/RustROAD/docs/index.md) |
+| **RustSpice** | Verified 4.1–7.0× RC speedup vs ngspice-45, Cranelift JIT sparse LU, and `1× LᵀUᵀ` discrete adjoint sensitivities. | [RustSpice](../modules/RustSpice/docs/index.md) |
+| **RustEDA Common** | Single pinned five-crate foundation powering arenas, tri-PDK parsers, mmap workspaces, and shared CLI contracts (`./dev shared`). | [Shared workflow](shared-foundation.md) · [Common](../modules/RustEDA-Common/docs/index.md) |
+
+---
+
+## Archived host campaigns (2026-11-02 – 2026-11-13)
 
 The [2026-11-13 host campaign](benchmarks.md#ibex-host-campaign-2026-11-13)
 rebuilt Ibex on SG13G2/EZ130 with two real IHP SRAMs on another 4-vCPU cloud

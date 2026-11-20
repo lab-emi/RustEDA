@@ -1,36 +1,43 @@
-# One RustEDA family
+# Signal Forge v2 visual identity
 
-The chip frame belongs to the suite. Each module has a different symbol inside it,
-and all six marks use the same geometry, palette and spacing.
+Every RustEDA repository — the suite, five core engine/foundation modules, and RustEDA Studio — shares one precision IC die architecture, palette, typography, and animation contract.
 
-| Token | Value | Use |
+## Mark geometry
+
+Each `256 × 256` emblem places a distinct hardware glyph inside a chamfered Pin-1 silicon package with copper input leads on the left and mint output leads on the right:
+
+| Product | Mark | Hardware symbol | Category tag |
+| --- | --- | --- | --- |
+| **RustEDA** | ![RustEDA mark](assets/rusteda-logo.svg){ width="40" } | Closed-loop silicon forge core | `RTL → GDS` |
+| **RustSys** | ![RustSys mark](../modules/RustSys/docs/assets/rustsys-logo.svg){ width="40" } | Logic gate with formal proof check | `SYNTHESIS` |
+| **RustSTA** | ![RustSTA mark](../modules/RustSTA/docs/assets/ruststa-logo.svg){ width="40" } | Clock launch edge, slew ramp & capture deadline | `TIMING` |
+| **RustROAD** | ![RustROAD mark](../modules/RustROAD/docs/assets/rustroad-logo.svg){ width="40" } | Orthogonal multi-layer metal tracks & vias | `PHYSICAL` |
+| **RustSpice** | ![RustSpice mark](../modules/RustSpice/docs/assets/rustspice-logo.svg){ width="40" } | Step excitation, transient wave & adjoint tangent | `SPICE + AD` |
+| **RustEDA Common** | ![RustEDA Common mark](../modules/RustEDA-Common/docs/assets/rusteda-common-logo.svg){ width="40" } | Isometric arena, mmap & compute planes | `FOUNDATION` |
+| **RustEDA Studio** | ![RustEDA Studio mark](../apps/docs/assets/rusteda-studio-logo.svg){ width="40" } | Split die viewport & cross-probed path | `WORKBENCH` |
+
+## Color tokens
+
+| Token | Hex | Role |
 | --- | --- | --- |
-| Ink | `#101923` | Background |
-| Paper | `#F4F1E9` | Primary text and chip symbols |
-| Copper | `#EF8B52` | Inputs, actions and emphasis |
-| Mint | `#57D6BE` | Outputs and the feedback loop |
-| Slate | `#A4B6BF` | Secondary text |
+| Ink | `#0B121B` | Primary canvas & die substrate |
+| Panel | `#121D2A` | Elevated stage cards |
+| Border | `#273C4F` | Hairline bezels & inactive traces |
+| Paper | `#F5F2EA` | Primary text & die symbols |
+| Copper | `#F08A4B` | Inputs, actions & `Rust` prefix |
+| Mint | `#4ADBC0` | Verified outputs, active paths & feedback |
+| Slate | `#9EB1C0` | Secondary metadata |
 
-Banners share a 1200 × 400 Signal Forge canvas and an 8.4-second (84-frame, 10 fps)
-three-card pipeline animation that illustrates inputs, core transformation, and
-resulting engineering artifacts alongside a runnable CLI command.
-Keep the SVG fallback alongside the GIF, respect reduced-motion preferences,
-omit fixed HTML `height` attributes on responsive README `<picture>` images so
-GitHub preserves the 3:1 aspect ratio, and provide descriptive alternative text.
-Use `width="1200"` for a banner and `width="360"` for the 760 × 176 wordmark
-card, with no HTML height on either. At an 830-pixel README content width the
-banner should render at about 830 × 277 pixels; at 360 pixels wide it should be
-360 × 120 pixels. The mark itself remains square (256 × 256).
-The publication check verifies GIF/poster dimensions, responsive README
-attributes and local links. Validate the 84 frames and 100 ms frame duration
-when regenerating the animations.
-Animation is illustrative, never a way to communicate a benchmark result.
+## Wordmarks and animated banners
 
-The canonical source is [`scripts/generate_brand.py`](../scripts/generate_brand.py).
-Run it from a recursive checkout with Python and Pillow. It renders products
-serially and keeps fewer than 100 MiB of image buffers in memory. Generation is
-offline; the documentation site uses locally served assets and system fonts.
+- **Wordmarks** use a `760 × 176` dark-bezel card with `width="360"` (no HTML `height` attribute) so GitHub renders them crisply across light and dark themes.
+- **Banners** use a `1200 × 400` (3:1) Signal Forge v2 canvas with an 8.4-second loop (`84` frames × `100 ms`, `< 750 KB` GIF) showing stage-by-stage illumination, a runnable CLI command, and a matching `1200 × 400` SVG static poster paired via `<picture>` with `prefers-reduced-motion: reduce`.
+- **Illustrative only**: animations depict data flow and architecture; quantitative benchmark claims belong strictly in receipt-backed tables with explicit scope.
 
-The marks and banners are original vector artwork distributed under Apache-2.0,
-with the rest of this repository. Product names and logos do not imply an
-affiliation with any reference tool, foundry or benchmark design.
+Regenerate all seven asset sets offline via [`scripts/generate_brand.py`](../scripts/generate_brand.py):
+
+```sh
+python3 scripts/generate_brand.py
+```
+
+All marks, wordmarks, and banners are original vector artwork licensed under Apache-2.0. Product names and marks do not imply affiliation with any external tool, foundry, or benchmark design.

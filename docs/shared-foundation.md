@@ -1,37 +1,29 @@
-# 共享库开发工作流
+# Shared foundation workflow
 
-唯一实现来源是 modules/RustEDA-Common。产品目录中的四个核心库已移除，公共
-rusteda-cli 保留薄入口；请直接在共享库中修复实现，避免重新复制代码。
+`modules/RustEDA-Common` is the single source of truth for `rusteda-core`, `rusteda-workspace`, `rusteda-formats`, `rusteda-compute`, and `rusteda-cli-common`. Downstream repositories (`RustSys`, `RustSTA`, and `apps/`) pin one exact Git revision rather than duplicating shared crates.
 
-## 日常操作
+## Routine checks
 
-~~~sh
+```sh
 ./dev status
 ./dev test RustEDA-Common
 ./dev test RustSys
 ./dev test RustSTA
 ./dev test RustEDA --no-default-features
 ./dev shared
-~~~
+```
 
-共享变更的顺序：
+## Updating a shared change
 
-1. 在 Common 的任务分支修改、验证并提交，推送到授权可访问的远端分支。
-2. 将三个消费者 Cargo.toml 中四个基础库和 rusteda-cli-shared 的 rev 一并更新为
-   该完整提交号，随后在各消费者运行 cargo update --workspace。
-3. 在消费者运行所需回归。公共 CLI 适配器必须继续传入产品自己的版本。
-4. 更新 Common 和消费者的根仓 gitlink；运行 ./dev shared 检查版本闭合，再提交根仓。
+1. Implement, test, and push the change on `modules/RustEDA-Common` first so the exact commit SHA is reachable over HTTPS.
+2. Update the `rev = "<sha>"` pin for all five foundation crates in `modules/RustSys/Cargo.toml`, `modules/RustSTA/Cargo.toml`, and `apps/Cargo.toml`, then refresh each lockfile (`cargo update --workspace`).
+3. Run bounded regression checks in each consumer repository; thin CLI adapters must continue reporting their own product version.
+4. Update the submodule gitlinks in `RustEDA`, verify convergence with `./dev shared`, and commit the superproject.
 
-仅修改 Common 的工作区不会改变其他产品当前使用的已固定提交；这有助于区分正在开发的
-版本和已验收的版本。不要用浮动分支代替 rev，也不要将 Cargo.lock 的本地路径覆盖提交。
+Never replace exact `rev` pins with floating branches or commit local path overrides in `Cargo.lock`.
 
-消费者的 cargo xtask coverage 会定位真实共享依赖源码并记录 @common/ 引用。
-维护共享库清单使用 Common 内的 python3 scripts/shared_manifest.py；
-消费者仍用 cargo xtask shared update 维护其薄适配器和公共规范清单。
+## Manifests and verification boundaries
 
-## 验证边界
-
-Common 的 CPU 测试不代表 CUDA、Metal 或签核全部通过。产品级算法改动仍遵守
-各自的独立验证、双 PDK 与资源限制。迁移兼容性工具为 integration/check_cli_compat.py，
-它比较两个实际可执行文件，并且只归一化时间戳、工作区路径和可执行文件路径；
-版本、诊断、导出结果和二进制表仍必须一致。
+- Maintain `RustEDA-Common`'s source manifest with `python3 scripts/shared_manifest.py`; consumers update their thin adapters and shared specs with `cargo xtask shared update`.
+- CPU unit tests in `RustEDA-Common` do not verify CUDA, Metal, or physical signoff; engine-level changes still require independent dual-PDK / signoff verification within bounded resource limits.
+- CLI compatibility across upgrades is verified by `integration/check_cli_compat.py`, which compares real executables while normalizing only timestamps, workspace paths, and binary paths.

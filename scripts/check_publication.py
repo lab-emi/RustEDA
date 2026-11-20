@@ -168,7 +168,7 @@ def main():
         gif=(assets/f'{slug}-banner.gif').read_bytes()
         # Engine gitlinks retain their own published artwork revisions. The older
         # qualified pins use a 1200x360 canvas; the integrated product uses 1200x400.
-        allowed_heights = (400,) if name == 'RustEDA' else (360, 400)
+        allowed_heights = (400,)
         assert gif[:3]==b'GIF' and int.from_bytes(gif[6:8],'little')==1200
         assert int.from_bytes(gif[8:10],'little') in allowed_heights
         assert len(gif)<750000, (name,'banner exceeds byte budget')
@@ -176,9 +176,8 @@ def main():
         assert poster.attrib['viewBox']==f'0 0 {dimensions[0]} {dimensions[1]}', (name,'GIF and static poster ratios differ')
         rm_text = (repo/'README.md').read_text()
         assert 'prefers-reduced-motion: reduce' in rm_text
-        if name in ('RustEDA', 'RustSys', 'RustSTA'):
-            check_responsive_artwork(rm_text, slug)
-            assert dimensions==(1200,400), (name,'expected 3:1 Signal Forge banner')
+        check_responsive_artwork(rm_text, slug)
+        assert dimensions==(1200,400), (name,'expected 3:1 Signal Forge banner')
         assert 'AGENTS.md' in (repo/'.gitignore').read_text().splitlines()
         tracked=subprocess.check_output(['git','-C',str(repo),'ls-files','AGENTS.md','HANDOFF.md'],text=True)
         assert not tracked, (name,'private instructions remain tracked')

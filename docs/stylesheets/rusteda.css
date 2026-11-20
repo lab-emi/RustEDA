@@ -1,28 +1,274 @@
-:root { --md-primary-fg-color: #101923; --md-accent-fg-color: #ba551f; }
-[data-md-color-scheme="slate"] { --md-default-bg-color: #101923; --md-default-fg-color: #f4f1e9; --md-typeset-a-color: #57d6be; --md-accent-fg-color: #57d6be; --md-code-bg-color: #162431; }
-.md-header { border-bottom: 1px solid #304451; }
-.md-header__button.md-logo img { height: 1.8rem; width: 1.8rem; }
-.md-typeset h1, .md-typeset h2 { font-weight: 700; letter-spacing: -.035em; }
-.md-typeset h1 { color: var(--md-default-fg-color); }
-.eda-home h1 { max-width: 850px; font-size: clamp(2.2rem, 5vw, 3.3rem); line-height: 1.08; margin: .35em 0; }
-.eda-home .eda-eyebrow { color: #c66a37; font-size: .65rem; font-weight: 700; letter-spacing: .2em; margin-top: 2em; }
-[data-md-color-scheme="slate"] .eda-home .eda-eyebrow { color: #57d6be; }
-.eda-lead { font-size: 1.2rem; }
-.eda-home picture { display: block; margin: 2rem 0 1rem; }
-.eda-home picture img { border-radius: 12px; width: 100%; height: auto; }
-.md-typeset picture > img { display: block; max-width: 100%; height: auto; }
-.eda-metrics { display: grid; grid-template-columns: repeat(3,1fr); border-block: 1px solid #667b8944; margin: 1.3rem 0; padding: 1.3rem 0; gap: 1rem; }
-.eda-metrics strong { display: block; font-size: clamp(1.3rem,3vw,2rem); letter-spacing: -.04em; }
-.eda-metrics span { display: block; font-size: .68rem; margin-top: .3rem; }
-.eda-home .grid.cards > ul > li { border-radius: 10px; padding: 1rem; }
-.eda-home .grid.cards img { vertical-align: middle; margin-right: .4rem; }
-.eda-home .md-button { border-radius: 5px; margin: .4rem .4rem 0 0; }
-.eda-amdahl { padding: 1.4rem; border: 1px solid #667b8955; border-radius: 12px; margin: 1.4rem 0; max-width: 680px; }
-.eda-amdahl label { display: flex; justify-content: space-between; gap: 1rem; }
-.eda-amdahl input { display: block; width: 100%; accent-color: #3ba68e; margin: .7rem 0 1.4rem; }
-#iteration-speedup { font-size: 2rem; font-weight: 700; letter-spacing: -.04em; }
-.md-typeset table:not([class]) th { white-space: nowrap; }
-.md-typeset .md-typeset__table { display: block; overflow-x: auto; }
-.rustsys-comparison, .rustsys-audit, .ruststa-comparison { max-width: 100%; overflow-x: auto; }
-@media(max-width:600px) { .eda-metrics { grid-template-columns: 1fr; gap: 1.2rem; } .eda-home h1 { font-size: 2rem; } }
-@media(prefers-reduced-motion:reduce) { *, *:before, *:after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+:root {
+  --md-primary-fg-color: #0b121b;
+  --md-accent-fg-color: #c85f24;
+  --sf-ink: #0b121b;
+  --sf-panel: #121d2a;
+  --sf-border: #273c4f;
+  --sf-copper: #f08a4b;
+  --sf-mint: #4adbc0;
+  --sf-paper: #f5f2ea;
+  --sf-muted: #9eb1c0;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #0b121b;
+  --md-default-fg-color: #f5f2ea;
+  --md-default-fg-color--light: #9eb1c0;
+  --md-typeset-a-color: #4adbc0;
+  --md-accent-fg-color: #4adbc0;
+  --md-code-bg-color: #121d2a;
+  --md-code-fg-color: #e6edf3;
+}
+
+.md-header {
+  background-color: #0b121b;
+  border-bottom: 1px solid var(--sf-border);
+}
+
+.md-tabs {
+  background-color: #0e1723;
+  border-bottom: 1px solid #1e3142;
+}
+
+.md-header__button.md-logo img {
+  height: 1.9rem;
+  width: 1.9rem;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+}
+
+.eda-home h1 {
+  max-width: 880px;
+  font-size: clamp(2.15rem, 4.6vw, 3.25rem);
+  line-height: 1.08;
+  margin: 0.3em 0 0.45em;
+}
+
+.eda-home .eda-eyebrow {
+  color: #c85f24;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 1.4em;
+}
+
+[data-md-color-scheme="slate"] .eda-home .eda-eyebrow {
+  color: var(--sf-mint);
+}
+
+.eda-lead {
+  font-size: 1.15rem;
+  max-width: 780px;
+  opacity: 0.92;
+}
+
+.eda-home picture {
+  display: block;
+  margin: 1.8rem 0 1.2rem;
+}
+
+.eda-home picture img {
+  border-radius: 14px;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--sf-border);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+}
+
+.md-typeset picture > img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.eda-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+  margin: 1.6rem 0;
+}
+
+.eda-metrics > div {
+  padding: 1.05rem 1.15rem;
+  border: 1px solid #62778844;
+  border-radius: 12px;
+  background: rgba(18, 29, 42, 0.04);
+}
+
+[data-md-color-scheme="slate"] .eda-metrics > div {
+  background: var(--sf-panel);
+  border-color: var(--sf-border);
+}
+
+.eda-metrics strong {
+  display: block;
+  font-size: clamp(1.35rem, 2.5vw, 1.95rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  color: #c85f24;
+}
+
+[data-md-color-scheme="slate"] .eda-metrics strong {
+  color: var(--sf-mint);
+}
+
+.eda-metrics span {
+  display: block;
+  font-size: 0.74rem;
+  line-height: 1.38;
+  margin-top: 0.35rem;
+  opacity: 0.85;
+}
+
+.eda-home .grid.cards > ul {
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+  gap: 0.9rem;
+}
+
+.eda-home .grid.cards > ul > li {
+  border-radius: 12px;
+  padding: 1.05rem 1.15rem;
+  border: 1px solid #62778844;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+[data-md-color-scheme="slate"] .eda-home .grid.cards > ul > li {
+  background: var(--sf-panel);
+  border-color: var(--sf-border);
+}
+
+.eda-home .grid.cards > ul > li:hover {
+  border-color: var(--sf-mint);
+  transform: translateY(-1px);
+}
+
+.eda-home .grid.cards img {
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  border-radius: 6px;
+}
+
+.eda-home .md-button {
+  border-radius: 7px;
+  margin: 0.45rem 0.5rem 0 0;
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .eda-home .md-button:not(.md-button--primary) {
+  color: var(--sf-paper);
+  border-color: var(--sf-border);
+  background-color: var(--sf-panel);
+}
+
+[data-md-color-scheme="slate"] .eda-home .md-button:not(.md-button--primary):hover {
+  border-color: var(--sf-mint);
+  color: var(--sf-mint);
+  background-color: #162536;
+}
+
+.eda-home .md-button--primary {
+  background-color: var(--sf-copper);
+  border-color: var(--sf-copper);
+  color: #0b121b;
+}
+
+.eda-home .md-button--primary:hover {
+  background-color: var(--sf-mint);
+  border-color: var(--sf-mint);
+  color: #0b121b;
+}
+
+.eda-home table:not([class]) td:nth-child(2),
+.eda-home table:not([class]) td:nth-child(5) {
+  white-space: nowrap;
+}
+
+.eda-amdahl {
+  padding: 1.4rem;
+  border: 1px solid #62778855;
+  border-radius: 12px;
+  margin: 1.4rem 0;
+  max-width: 680px;
+}
+
+[data-md-color-scheme="slate"] .eda-amdahl {
+  background: var(--sf-panel);
+  border-color: var(--sf-border);
+}
+
+.eda-amdahl label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eda-amdahl input {
+  display: block;
+  width: 100%;
+  accent-color: #4adbc0;
+  margin: 0.7rem 0 1.4rem;
+}
+
+#iteration-speedup {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  white-space: nowrap;
+}
+
+.md-typeset .md-typeset__table {
+  display: block;
+  overflow-x: auto;
+}
+
+.rustsys-comparison,
+.rustsys-audit,
+.ruststa-comparison {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 900px) {
+  .eda-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .eda-metrics {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .eda-home h1 {
+    font-size: 1.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

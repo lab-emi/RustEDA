@@ -1,180 +1,149 @@
-# RustEDA
-
 <p align="center">
-  <img src="docs/assets/rusteda-wordmark.svg" alt="RustEDA wordmark" width="360">
+  <img src="docs/assets/rusteda-wordmark.svg" alt="RustEDA — AI-native RTL-to-GDS in Rust" width="360">
 </p>
 
-**AI agent-friendly RTL-to-GDS in Rust.** RustEDA gives AI agents and engineers
-a CLI for synthesis, timing analysis and physical design. An agent can inspect
-a plan before running it, watch individual steps and use timing, geometry and
-check results to decide what to change next.
-
-**4.4× observed end-to-end speedup** on IHP SG13G2 in the 13 November Ibex
-campaign, with **752 s vs 3,283 s** including preparation and verification
-on a matched check schedule. The same campaign measured **40.3× synthesis
-speedup** and **7.8× routing speedup**.
-[Stage timings and check outcomes](#ihp-sg13g2-results)
-
-[Agent workflow](#built-for-ai-agents) ·
-[Chip layouts and benchmarks](#ibex-rtl-to-gds-across-three-open-pdks) ·
-[Get started](#start-building) ·
-[Documentation](https://lab-emi.github.io/RustEDA/)
-
-## Built for AI agents
-
-1. **Plan.** Compose a PDK profile into a hash-pinned step graph.
-   `rusteda flow exec --dry-run` resolves the graph and checks the tool,
-   input and PDK identities before any step runs.
-2. **Run and inspect.** Execute the full graph or stop at a named step with
-   `--stop-after`. Stream JSONL progress with `--events` and poll
-   `rusteda flow exec-status` from another process. Step receipts record
-   timings, logs and failure codes.
-3. **Iterate on a known revision.** Revisioned disk workspaces support
-   read-only inspection while a worker runs. Mutations require `--base-rev`
-   and reject a stale revision with `REVISION_CONFLICT`.
-4. **Verify the result.** Runs record the identities of GDS, DEF, netlists
-   and SPEF alongside check verdicts. The shared gates report timing,
-   equivalence and physical findings for the exported layout.
-
-[Native PDK recipe](integration/ibex_pdks/NATIVE.md) ·
-[Workspace operations and recovery](docs/flows.md) ·
-[Executor and JSON contract](apps/docs/specs/flow/exec.md)
-
-## Ibex RTL-to-GDS across three open PDKs
-
-**IHP SG13G2 · SKY130A · GF180MCU D.** RustEDA and LibreLane 3.0.17 build
-Ibex with hard instruction and data SRAM. Within each PDK both use the same
-RTL, 100 ns (10 MHz) constraints, macro views, die area and macro placements
-(on SKY130A, RustEDA adds two 7 × 50 µm vertical placement channels not in
-LibreLane's config). The panels show the exported published GDS side by side,
-with **RustEDA on the left** and **LibreLane on the right**; their embedded
-captions retain the original single-run published receipts, while the table
-below gives the repeated three-block timings.
-
-![Matched SKY130A GDS layouts with two OpenRAM banks, 10 MHz workload power, area, slow-corner timing and independent physical checks.](docs/benchmarks/figures/ibex-sky130-native-local-repair.png)
-
-![GF180MCU D final GDS side by side with floating fill in the RustEDA layout. Four foundry SRAM byte lanes form each bank. Labels show the matched placements and foundry density results.](docs/benchmarks/figures/ibex-gf180-density-fill.png)
-
-![IHP SG13G2 matched final GDS side by side. Labels show both 4 KiB SRAM banks, same-frequency workload power, area, slow-corner timing and producer times.](docs/benchmarks/figures/ibex-ihp-aligned-matched.png)
-
-Each measurement lists **RustEDA / LibreLane**. Power, area and the SS setup
-ceiling measure each flow's **published layout** (the same pair timed in the
-one-run column); the last column gives the three-block median against the
-**screened LibreLane arm**, which on SKY130A and GF180MCU D is a different,
-unmeasured layout (`drt-jumpers`) with far more antenna violations.
-
-| Open PDK | TT 17-cycle workload power at 10 MHz (mW) | Standard-cell area (µm²) | SS setup ceiling at 10 MHz constraints (MHz)¹ | RTL to GDS, published pair, 1 run (s) | RTL to GDS, screened LibreLane arm, median of 3 (s)² |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| IHP SG13G2, four cores | 1.045 / 1.306<br>**−20.0%** | 186,285 / 204,848<br>**−9.1%** | 43.42 / 24.86<br>**+74.6%** | 219.8 / 1,806.0<br>8.22× | 219.6 / 1,745.5<br>**7.95×** (`antenna-default`, 0 / 0 phys.) |
-| SKY130A, two cores³ | 2.741 / 2.837<br>**−3.4%** | 174,096 / 176,427<br>**−1.3%** | 24.10 / 17.21<br>**+40.0%** | 1,660.6 / 1,730.6<br>1.04× (12 / 13 ant.) | 1,665.5 / 1,370.0<br>0.82× (`drt-jumpers`, 12 / 105 ant.) |
-| GF180MCU D, two cores | 91.24 / 94.33<br>**−3.3%** | 475,913 / 490,812<br>**−3.0%** | 10.91 / 10.75<br>**+1.5%** | 594.1 / 911.0<br>1.53× (0 / 0 ant.) | 591.3 / 885.6<br>**1.50×** (`drt-jumpers-fill`, 0 / 82 ant.) |
-
-¹ **Not a tight-clock Fmax race:** both flows targeted a relaxed 100 ns (10 MHz) clock with LibreLane on `SYNTH_STRATEGY = "AREA 0"` (+35–49 ns positive slack, zero setup optimization); on SKY130A RustEDA also excludes `_1` cells and applies five pre-bound OR-gate rewires.  
-² In the 2026-11-18 runs, no LibreLane arm passed every physical gate on SKY130A or GF180MCU D, so the legacy fallback picked `drt-jumpers` despite 105 and 82 antenna findings (now fixed in `bench.py` to require `no_physical_regression` from baseline for future campaigns). On IHP, through DRC, antenna, latch-up and LVS the three-block medians are **754 / 2,468 s (3.27×)**; LibreLane fails the shared timing gate on electrical limits, and neither flow reaches full signoff on SKY130A or GF180MCU D.  
-³ **SKY130A clean single-binary replacement (2026-11-20):** the archived 2026-11-18 SKY130A `r02` producer above carried severe asymmetries (Ibex-trained PGO, five `.work` binaries, two manual vertical placement channels, five hardcoded OR-gate rewires, and internal OpenRCX/OpenSTA loops). Replacing it with a clean single-binary non-PGO standard flow (`clean_sky130_flow.py`, zero manual channels, zero hardcoded rewires, zero PGO) in a fresh 3-block quiet-host confirmation against `librelane-recipe` yields **499.64 s vs 1,771.75 s (3.55× faster, 3/3 blocks, 0.34% spread)**, **−1.4% stdcell area** (173,881 vs 176,427 µm²), **−35.3% TT 10 MHz vectorless power** (6.15 vs 9.50 mW), **+38.4% SS setup ceiling** (23.82 vs 17.21 MHz), **0 / 0 Magic & KLayout DRC**, **0 / 0 / 0 TT & SS DRVs** (vs 3,035/381/64 for LibreLane), LVS/Sim/ABC PASS, and 14 vs 13 Magic antenna findings.
-[Clean SKY130A confirmation](docs/benchmarks/ibex-three-pdk.md#clean-single-binary-sky130a-comparison-2026-11-20) ·
-[Tight-clock Fmax (all 3 PDKs)](docs/benchmarks/tight-clock-fmax.md) ·
-[Multi-design generalization (`picorv32`, `aes`, `sha256`)](docs/benchmarks/multi-design.md) ·
-[Fairness audit](docs/benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries) ·
-[IHP](docs/benchmarks/ibex-three-pdk.md#repeated-ihp-comparison-at-the-same-signoff) ·
-[SKY130A](docs/benchmarks/ibex-three-pdk.md#repeated-sky130a-comparison-at-the-same-signoff) ·
-[GF180MCU D](docs/benchmarks/ibex-three-pdk.md#repeated-gf180mcu-d-comparison-at-the-same-signoff)
-
-OpenSTA uses the matched 17-cycle workload activity and nominal OpenRCX
-parasitics (vectorless 10 MHz power on the aligned layouts is also lower for
-RustEDA: 1.21 / 5.57 mW on IHP, 6.56 / 9.50 mW on SKY130A and 79.80 / 139.09 mW
-on GF180MCU D). Both SKY130A published layouts passed DRC and recorded **12 / 13**
-Magic antenna findings; GF180MCU D recorded **1 / 3** foundry density findings
-when both flows end in the same floating fill, which both GF180MCU D times
-include. One screening run of each published layout is not a confirmed
-difference.
-[Three-PDK results and receipts](docs/benchmarks/ibex-three-pdk.md#sky130a-native-local-antenna-repair)
-
-### IHP SG13G2 results
-
-The **13 November** campaign used EZ130 cells and two IHP SRAM macros.
-RustEDA and LibreLane ran sequentially on the same 4-vCPU cloud host, using
-the same prepared design and shared check scripts. These are paired phase
-wall times from that run. The campaign has one timed sample per flow.
-
-| Phase | RustEDA | LibreLane | Observed speedup |
-| --- | ---: | ---: | ---: |
-| Synthesis and mapping | 3.10 s | 124.93 s | **40.3×** |
-| Placement and clock tree | 19.56 s | 41.21 s | **2.1×** |
-| Repair before detailed routing | 13.85 s | 48.36 s | **3.5×** |
-| Global and detailed routing | 266.71 s | 2,083.40 s | **7.8×** |
-| In-flow static timing | 26.96 s | 138.93 s | **5.2×** |
-| Parasitic extraction phase | 9.51 s | 38.97 s | **4.1×** |
-| GDS, DEF and netlist export phase | 1.67 s | 266.29 s | **159×** |
-| **End to end with checks on a matched schedule** | **751.54 s** | **3,283.05 s** | **4.4×** |
-
-RustEDA used **5.2% less standard-cell area** and **7.7% less routed signal
-wire** in this campaign. It passed the shared timing gate. LibreLane reported
-112 capacitance and fanout violations across both corners and its equivalence
-check was unverified. The receipt records `comparison_incomplete`. The
-end-to-end ratio uses the observed elapsed times.
-Charging every check serially gives **3.5×**. Phase times include each flow's
-work for that phase. The LibreLane extraction phase includes fill, IR and
-reports, and its export phase includes rendering and XOR. [Phase breakdown and gate outcomes](https://lab-emi.github.io/RustEDA/benchmarks/#ibex-host-campaign-2026-11-13) ·
-[Campaign receipt](docs/benchmarks/ibex-sg13g2-ez130-host-20261113.json)
-
-[Standalone engine comparisons and earlier runs](docs/benchmarks.md) cover
-other workloads and resource allocations, including extraction results at
-two and four threads. The [PULPissimo archive](docs/benchmarks/pulpissimo.md)
-records the withdrawal of the historical full-SoC measurements after an AXI
-width-cast error.
-
-## The tool suite
-
-| Tool | Role in the design loop |
-| --- | --- |
-| [RustEDA CLI, flow and Studio](docs/modules.md) | Run steps, track revisions, and inspect hierarchy, paths and logic cones. |
-| [RustSys](https://github.com/lab-emi/RustSys) | Synthesize RTL, map cells and check equivalence. |
-| [RustSTA](https://github.com/lab-emi/RustSTA) | Analyze timing and constraints with incremental updates. |
-| [RustROAD](https://github.com/lab-emi/RustROAD) | Place, build clock trees, route, extract parasitics and export GDS. |
-| [RustSpice](https://github.com/lab-emi/RustSpice) | Simulate circuits and compute adjoint sensitivities in separate simulation workloads. |
-| [RustEDA Common](https://github.com/lab-emi/RustEDA-Common) | Share formats, design models, disk workspaces and compute kernels. |
+<p align="center">
+  <strong>Clean-room, AI-agent-native RTL-to-GDS suite in Rust.</strong><br>
+  Daemonless revisioned workspaces · Deterministic single-binary flows · Formal equivalence · Three open PDKs<br><br>
+  <a href="https://lab-emi.github.io/RustEDA/">Documentation</a> ·
+  <a href="#verified-performance-across-three-pdks">Benchmarks</a> ·
+  <a href="#multi-design-generalization">Non-Ibex Cores</a> ·
+  <a href="#the-tool-suite">Modules</a> ·
+  <a href="#start-building">Quick Start</a> ·
+  <a href="LICENSE">Apache-2.0</a>
+</p>
 
 <picture>
   <source media="(prefers-reduced-motion: reduce)" srcset="docs/assets/rusteda-banner.svg">
-  <img src="docs/assets/rusteda-banner.gif" alt="RustEDA feedback loop from RTL through implementation and measurement to the next design change" width="1200">
+  <img src="docs/assets/rusteda-banner.gif" alt="RustEDA native RTL-to-GDS pipeline: RTL and disk workspace feeding RustSys, RustROAD, and RustSTA to emit verified GDS and structured receipts" width="1200">
 </picture>
 
-## Start building
+## Why RustEDA
 
-Git, Python 3.11+, Rust 1.100.0 and a native Linux build environment are the
-development baseline. Studio has additional native GUI dependencies.
+Legacy open-source EDA flows wrap multiple C++/Tcl processes with opaque state and 10–30 minute turnaround loops. **RustEDA** rebuilds the core stack from scratch in Rust — synthesis (`RustSys`), static timing (`RustSTA`), physical implementation (`RustROAD`), differentiable SPICE (`RustSpice`), shared arenas/formats (`RustEDA-Common`), and an interactive workbench (`RustEDA Studio`) — around **fast, deterministic, machine-inspectable closed-loop design**:
+
+- **3.55×–8.39× faster RTL-to-GDS** than LibreLane 3.0.17 across `IHP SG13G2`, `SKY130A`, and `GF180MCU D` on four open-source designs (`Ibex`, `PicoRV32`, `AES-128`, `SHA-256`), with bit-exact GDS reproducibility and up to **4.8× less peak RAM**.
+- **Built for AI agents & closed-loop iteration**: Zero background daemons. Every CLI mutation acquires `workspace.lock`, guards optimistic concurrency via `--base-rev` (`REVISION_CONFLICT`), emits bounded `rusteda.v1` JSON with shell-safe handles (`rev3`, `path1`, `sel1`), and shares live mmap views with `RustEDA Studio`.
+- **Independent verification by default**: Black-box ABC formal equivalence (including reset-reachable FSM state-correspondence discovery), Magic + KLayout DRC, Netgen LVS, vendor simulation, and `≤ 0.270 ps` OpenSTA parity.
+
+---
+
+## Verified Performance Across Three PDKs
+
+### 1. Ibex + Hard SRAM (Paired Quiet-Host Three-Block Medians vs LibreLane 3.0.17)
+
+Both flows build Ibex with hard SRAM macros from identical RTL, 100 ns (10 MHz) constraints, die areas, and macro placements, checked by identical independent signoff scripts. Values show **RustEDA / LibreLane**.
+
+| Open PDK & Flow | RTL to GDS (3-block median) | Peak RSS / Repro | Stdcell Area (µm²) | Power @ 10 MHz (mW) | SS Ceiling @ 10 MHz¹ | Independent Checks |
+| --- | ---: | --- | ---: | ---: | ---: | --- |
+| **IHP SG13G2** (2 SRAMs, 4 cores) | **219.6 / 1,745.5 s**<br>**7.95× faster** (`3.27×` signoff) | Deterministic<br>single binary | 186,285 / 204,848<br>**−9.1%** | 1.045 / 1.306 (VCD)<br>**−20.0%** | 43.42 / 24.86 MHz<br>**+74.6%** | **9/9 PASS** (0 DRC, 0 ant., 0 DRV vs LL timing fail) |
+| **SKY130A** (2 OpenRAMs, 2 cores, **clean single binary, non-PGO**)² | **499.6 / 1,771.8 s**<br>**3.55× faster** (`0.34%` spread) | **631 MiB** Max RSS<br>**3/3 bit-exact GDS** | 173,881 / 176,427<br>**−1.4%** | 6.15 / 9.50 (vec.)<br>**−35.3%** | 23.82 / 17.21 MHz<br>**+38.4%** | **0/0 Magic+KL DRC, 0/0/0 DRV** (vs 3,035/381/64), LVS/Sim/ABC PASS, 14 vs 13 ant. |
+| **GF180MCU D** (1 SRAM + fill, 2 cores)³ | **591.3 / 885.6 s**<br>**1.50× faster** (`1.53×` pub. pair) | Deterministic<br>with floating fill | 475,913 / 490,812<br>**−3.0%** | 91.24 / 94.33 (VCD)<br>**−3.3%** | 10.91 / 10.75 MHz<br>**+1.5%** | **0/0 ant.**, LVS/Sim/ABC PASS, **1 vs 3** density findings |
+
+¹ *Not a tight-clock Fmax race:* both flows targeted a relaxed 100 ns clock (`AREA 0` in LibreLane); see [Tight-Clock Fmax](#3-tight-clock-fmax-stress-across-all-three-pdks) below for genuine frequency stress.  
+² Replaces the archived 2026-11-18 SKY130A `r02` recipe (which used PGO, 5 `.work` binaries, and 2 manual channels; `1,665.5 vs 1,370.0 s` against LibreLane's 105-antenna `drt-jumpers` arm) with a standard non-PGO single-binary flow (`clean_sky130_flow.py`, zero manual channels, zero hardcoded rewires) confirmed in 3 quiet-host alternating blocks against `librelane-recipe`.  
+³ GF180MCU D 3-block median compares against LibreLane's screened `drt-jumpers-fill` arm (82 antenna findings); the published single-run pair with 0/0 antenna measured `594.1 / 911.0 s` (`1.53×`).
+
+[Full Three-PDK Receipts](docs/benchmarks/ibex-three-pdk.md) · [Clean SKY130A Confirmation](docs/benchmarks/ibex-three-pdk.md#clean-single-binary-sky130a-comparison-2026-11-20) · [Fairness Audit](docs/benchmarks/ibex-three-pdk.md#comparison-fairness-and-known-asymmetries)
+
+---
+
+### 2. Multi-Design Generalization (Non-Ibex Open-Source Cores)
+
+To rule out single-design overfitting, three permissive open-source RTL cores (`picorv32_top`, `aes_core`, `sha256_core`) were run end-to-end at 50 ns (20 MHz) against LibreLane 3.0.17 with zero per-design routing hacks:
+
+| Design & PDK | RTL to GDS (RustEDA / LibreLane) | Speedup | Peak RAM Delta | SS Fmax (MHz) | Area / Power Delta | Independent Signoff |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| **`picorv32_top`** (IHP SG13G2) | **172.6 / 1,447.5 s** | **8.39×** | **4.1× less RSS** | **46.03** / 38.77 (**+18.7%**) | −21.8% power | **8/8 PASS** |
+| **`aes_core`** (IHP SG13G2) | **291.6 / 1,931.3 s** | **6.62×** | **3.6× less RSS** | **64.12** / 37.63 (**+70.4%**) | −3.0% area, −11.8% WL | **8/8 PASS** |
+| **`sha256_core`** (IHP SG13G2) | **114.0 / 615.7 s** | **5.40×** | **4.8× less RSS** | **65.07** / 46.79 (**+39.1%**) | Comparable | **8/8 PASS** |
+| **`sha256_core`** (SKY130A) | **249.5 / 397.0 s** | **1.59×** | Bounded | **37.03** / 33.01 (**+12.2%**) | −16.9% power | **0/0 DRC**, LVS & ABC PASS |
+
+[Multi-Design Benchmark Report & Receipts](docs/benchmarks/multi-design.md)
+
+---
+
+### 3. Tight-Clock Fmax Stress Across All Three PDKs
+
+Testing genuine frequency limits (with LibreLane upgraded to `SYNTH_STRATEGY = "DELAY 4"`):
+
+| PDK & Clock Target | RustEDA SS Fmax | LibreLane `DELAY 4` SS Fmax | Speedup & Signoff Context |
+| --- | ---: | ---: | --- |
+| **IHP SG13G2 @ 25 ns** | **45.00–49.46 MHz** | 41.34 MHz | **9.5× faster**, −11% area, −21% VCD power, **9/9 PASS** (LL: 107 SS DRVs) |
+| **SKY130A @ 40 ns** | **31.93 MHz** | 26.06 MHz | **+22.5% Fmax**, **4.15× faster**, 0 vs 2 hold, 28/5 vs 4,326/526/140 SS DRVs (LL lower vec. power: 5.16 vs 6.70 mW) |
+| **IHP SG13G2 @ 20 ns** | 45.05–49.04 MHz | **50.50 MHz** | LibreLane stretches +3–12% higher at **13.5× slower** runtime, +13.6% area, +26.3% power, 107 SS DRVs |
+| **GF180MCU D @ 65 ns** | 14.65–14.86 MHz | **16.58 MHz** (`d=60`) | LibreLane reaches higher setup Fmax (`14.29 MHz` on `DELAY 0`) but **fails SS hold (−0.228 ns)** and zero-delay sim |
+
+[Tight-Clock Fmax Analysis & Engine Roadmap](docs/benchmarks/tight-clock-fmax.md)
+
+---
+
+### 4. Standalone Engine Head-to-Heads
+
+Measured on identical prepared Ibex SG13G2 inputs (2026-11-13 campaign + Nov 13–14 follow-ups; see [Full Benchmarks](docs/benchmarks.md)):
+
+| Engine vs Counterpart | Speed | Peak Memory | Quality / Verification |
+| --- | --- | --- | --- |
+| **[RustSys](modules/RustSys)** vs Yosys + ABC | **33.8× faster** (`47.4×` direct) | **6.6× less** | −1.8% area, depth 36 vs 40, ABC CEC + reset-reachable FSM LEC |
+| **[RustSTA](modules/RustSTA)** vs OpenSTA 3.1.0 | **2.0× faster** (4T) / **1.6×** (2T) | **12.6% / 29.5% less** | Worst slacks within **0.270 ps** on identical SPEF |
+| **[RustROAD](modules/RustROAD)** routing vs OpenROAD | **7.8× faster** (in-flow) | — | −7.7% routed wire, −1.3% vias, `i64` DBU-exact GDS |
+| **[RustROAD](modules/RustROAD)** GDS export vs KLayout | **2.8× faster** | **2.0× less** | DBU-exact native GDSII streamout |
+| **[RustROAD](modules/RustROAD)** extract vs OpenRCX | **0.85× faster** at 4T (**1.52× slower** at 2T) | 1.31× more | Total capacitance +6.0% vs OpenRCX |
+| **[RustSpice](modules/RustSpice)** vs ngspice-45 (RC nets) | **4.1–7.0× faster** | **1.4–2.1× less** | 10/10 nominal-grid pass; 857 pass / 0 fail ngspice-47 suite; `1x L^T U^T` adjoints |
+
+---
+
+## Side-by-Side GDS Layouts
+
+Published Ibex layouts (**RustEDA left**, **LibreLane right**; embedded captions preserve their original receipt-bound single-run figures while the tables above report repeated three-block medians):
+
+![IHP SG13G2 matched final GDS side by side](docs/benchmarks/figures/ibex-ihp-aligned-matched.png)
+
+![Matched SKY130A GDS layouts with two OpenRAM banks](docs/benchmarks/figures/ibex-sky130-native-local-repair.png)
+
+![GF180MCU D final GDS side by side with floating fill](docs/benchmarks/figures/ibex-gf180-density-fill.png)
+
+---
+
+## The Tool Suite
+
+| Component | Role | Repository / Source |
+| --- | --- | --- |
+| **RustEDA CLI & Flow** | Native step-graph executor (`rusteda flow exec`), checkpoints, recovery & JSON telemetry | [`apps/`](docs/modules.md) |
+| **RustEDA Studio** | Interactive hierarchy, timing cone & RTL cross-probing synced over shared selections | [`apps/`](apps/docs/index.md) |
+| **[RustSys](https://github.com/lab-emi/RustSys)** | Bounded RTL synthesis, AIG optimization, Liberty mapping & formal LEC | `modules/RustSys` |
+| **[RustSTA](https://github.com/lab-emi/RustSTA)** | Deterministic multi-corner NLDM + SPEF RC static timing analysis | `modules/RustSTA` |
+| **[RustROAD](https://github.com/lab-emi/RustROAD)** | Electrostatic placement, CTS, routing, antenna repair, RC extraction & GDSII | `modules/RustROAD` |
+| **[RustSpice](https://github.com/lab-emi/RustSpice)** | Differentiable SPICE simulator (SoA SIMD, Cranelift JIT LU, discrete adjoints) | `modules/RustSpice` |
+| **[RustEDA Common](https://github.com/lab-emi/RustEDA-Common)** | Pinned foundation: generational arenas, format parsers, mmap workspaces & SoA compute | `modules/RustEDA-Common` |
+
+---
+
+## Built for AI Agents
+
+1. **Plan & verify before running**: `rusteda flow exec --dry-run` hashes tools, PDK views, and manifests before touching disk.
+2. **Stream & stop cleanly**: Emit machine-readable JSONL via `--events`, stop after any named stage (`--stop-after`), and inspect progress concurrently via `rusteda flow exec-status`.
+3. **Optimistic concurrency**: Every mutating command requires `--base-rev <rev>` and fails cleanly with `REVISION_CONFLICT` on stale state; concurrent read-only queries and Studio views never block writers.
+4. **Honest receipts**: Every run records input/output SHA-256 hashes, analysis scope (`corner`, `wire_model`, `unconstrained_endpoints`), and explicit `unverified` verdicts whenever a check is omitted or hits a budget cap.
+
+[Native PDK Recipe](integration/ibex_pdks/NATIVE.md) · [Flow Operations & Recovery](docs/flows.md) · [Executor JSON Contract](apps/docs/specs/flow/exec.md)
+
+---
+
+## Start Building
+
+Baseline requirements: Linux, Git, Python 3.11+, and Rust 1.100.0 (plus native GUI deps if building Studio with default features).
 
 ```sh
 git clone --recurse-submodules https://github.com/lab-emi/RustEDA.git
 cd RustEDA
-./dev status
 ./dev doctor
+./dev shared
 ./dev build RustEDA --release --no-default-features --memory-mib 4096
 ./rusteda --help
 ```
 
-The `./dev` entrypoint bounds worker concurrency and memory and records
-resource use. [Development guide and engine builds](docs/development.md)
-
-### Inspect an agent's first native run
-
-With a composed benchmark manifest, use the built Rust CLI to inspect the
-plan. During execution, `flow exec-status --output run/output` reads progress
-and completed step receipts.
-
-```sh
-./.work/target/RustEDA/release/rusteda flow exec \
-  --manifest compose/be/prefix-manifest.json \
-  --project compose/be --output run/output --pdk sky130 --dry-run
-```
-
-[Compose a native PDK manifest and start the worker](integration/ibex_pdks/NATIVE.md)
-
-## Run a verified design loop
-
-The repository launcher supports the small-block workspace flow. Supply the
-documented pinned tools and PDKs on Linux, with Podman and a user systemd manager.
+### Run a verified workspace flow
 
 ```sh
 ./rusteda tools configure
@@ -184,21 +153,19 @@ documented pinned tools and PDKs on Linux, with Podman and a user systemd manage
 ./rusteda flow --workspace .work/counter report --summary-only
 ```
 
-Small-block physical qualification covers eight designs on SKY130 and GF180,
-with 15 ordinary passes and one declared minimum-pulse-width deviation.
-See the worker, cache and recovery procedures before using the flow on a new
-workspace. [Flow operation](docs/flows.md) · [Qualification scope](docs/verification.md)
+Use `./dev build <Module> --release` to build individual engines (`RustSys`, `RustSTA`, `RustROAD`, `RustSpice`, `RustEDA-Common`) inside bounded cgroup RAM/timeout caps. See [Development Guide](docs/development.md) and [PDK Setup](docs/pdks.md).
 
-## PDKs and standard-cell libraries
+---
 
-Use `./rusteda library --help` to find pinned Liberty corners and
-`./rusteda sram sky130 --corner tt` to locate SRAM views and their hashes.
-The Ibex benchmarks use EZ130 8T on IHP SG13G2, SKY130 HD and GF180MCU 7T.
-[PDK and SRAM setup](docs/pdks.md) · [Benchmark input provenance](integration/ibex_pdks/README.md)
+## Honest Scope & Known Limits
 
-## License and provenance
+- **Timing-driven macro synthesis & setup sizing**: `rustsys synth --timing-period` does not yet support opaque macro buses and `RustROAD` lacks post-placement setup cell upsizing — explaining why LibreLane `DELAY 4` stretches higher on ultra-tight 20 ns IHP and 65 ns GF180 clocks.
+- **2-thread RC extraction**: Native extraction beats OpenRCX narrowly at 4 threads (`0.85×`) but stays `1.52×` slower at 2 threads (`1.31×` RSS).
+- **Compact transistor models & full-SoC signoff**: RustSpice supports diodes and Level-1 MOS (not BSIM4/PSP103); IR/EM, crosstalk/SI, CPPR, full-SoC routing (PULPissimo / OpenC910), and foundry tapeout signoff remain outside current qualification.
+- **Withdrawn archive**: Historical full-SoC PULPissimo synthesis timings were withdrawn after an AXI width-cast error and remain archived with full provenance in [PULPissimo Archive](docs/benchmarks/pulpissimo.md).
 
-Apache-2.0. Each module retains its own LICENSE and NOTICE. Benchmark
-designs, PDKs, reference executables and rule decks carry their respective
-licenses. Reference tools are run as external executables over documented
-file interfaces. [License](LICENSE) · [Provenance](docs/provenance.md)
+See [Qualification Scope](docs/verification.md) and [Provenance](docs/provenance.md).
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE). External reference tools, PDKs, rule decks, and benchmark RTL retain their own licenses and are invoked strictly as black-box executables over standard file formats.

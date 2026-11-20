@@ -1,15 +1,13 @@
-# Ibex RTL-to-GDS benchmarks
+# Benchmarks & Verification Receipts
 
-**Three open PDKs · IHP SG13G2, SKY130 and GF180MCU.** The Ibex campaign
-pairs RustEDA and LibreLane with hard SRAM on each process. See the annotated
-layout pairs, shared-gate results and macro provenance on the
-[three-PDK benchmark page](benchmarks/ibex-three-pdk.md).
+**Latest benchmark suites (2026-11-20):**
 
-The PULPissimo synthesis archive preserves the full-SoC measurements
-withdrawn after an AXI width-cast error and the standalone core comparison
-awaiting independent validation. [PULPissimo synthesis archive](benchmarks/pulpissimo.md)
+- **[Ibex across three open PDKs](benchmarks/ibex-three-pdk.md)** — Paired quiet-host 3-block medians on **IHP SG13G2** (`7.95×`, `9/9 PASS`), **clean single-binary non-PGO SKY130A** (`3.55×`, `631 MiB` RSS, `0/0` DRC, `0/0/0` DRVs, `−35.3%` power), and **GF180MCU D** (`1.50×` with fill), plus full fairness audit.
+- **[Multi-design generalization](benchmarks/multi-design.md)** — Three non-Ibex permissive RTL cores (`picorv32_top` `8.39×`, `aes_core` `6.62×`, `sha256_core` `5.40×` on IHP SG13G2, all **8/8 PASS**, plus SKY130A `sha256_core` `1.59×`).
+- **[Tight-clock Fmax across three PDKs](benchmarks/tight-clock-fmax.md)** — Genuine frequency stress against LibreLane `DELAY 4` (IHP 25/20 ns, SKY130A 40 ns, GF180 65 ns), highlighting both wins and open engine gaps.
+- **[PULPissimo synthesis archive](benchmarks/pulpissimo.md)** — Preserves the withdrawn full-SoC measurements (AXI width-cast error) and archived standalone core inputs.
 
-This page holds five Ibex result sets for RustEDA and its modules, newest first: the [host campaign of 2026-11-13](#ibex-host-campaign-2026-11-13), which runs the current RustEDA recipe and engines, built with Rust 1.100.0 and driven by the Rust step-graph executor, against LibreLane on a 4-vCPU cloud host, with module head-to-heads and same-load reruns; the [host campaign of 2026-11-05](#ibex-host-campaign-2026-11-05), the same comparison with the recipe and engines of that date; the [host campaign of 2026-11-02](#ibex-host-campaign-2026-11-02), the first such campaign on another host; the [R20/R21 native development runs of 2026-11-01](#latest-native-development-results-2026-11-01); and the [historical matched comparison of 2026-10-30](#historical-matched-comparison-2026-10-30). Between the two newest campaigns, the [latch-up checker change of 2026-11-12](#latch-up-checker-change-2026-11-12) records a change to a shared gate, measured on both layouts. After the newest campaign, [RustSTA peak memory and RustROAD extraction · 2026-11-13](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13) records two module changes, measured against the campaign's binaries in the same runs, and [RustROAD extraction, second round · 2026-11-14](#rustroad-extraction-second-round-2026-11-14) and [third round · 2026-11-14](#rustroad-extraction-third-round-2026-11-14) two further RustROAD changes, measured the same way. Each set names its own host, inputs and schedule, and times from different hosts are not comparable. The target is Ibex on the IHP SG13G2 process, using the EZ130 standard-cell library and **two real SRAM macros**. EZ130 is a cell library for SG13G2, not a separate process.
+Below are the detailed standalone engine head-to-heads and five chronological IHP SG13G2 / EZ130 Ibex campaign archives (newest first): the [host campaign of 2026-11-13](#ibex-host-campaign-2026-11-13) (plus post-campaign [RustSTA memory & RustROAD extraction follow-ups](#ruststa-peak-memory-and-rustroad-extraction-2026-11-13), [round 2](#rustroad-extraction-second-round-2026-11-14), and [round 3](#rustroad-extraction-third-round-2026-11-14)), the [2026-11-05](#ibex-host-campaign-2026-11-05) and [2026-11-02](#ibex-host-campaign-2026-11-02) host campaigns, the [R20/R21 native development runs](#latest-native-development-results-2026-11-01), and the [historical matched comparison of 2026-10-30](#historical-matched-comparison-2026-10-30). Each set names its own host, inputs, and schedule; times from different hosts are not comparable.
 
 ## At a glance · 2026-11-13
 
